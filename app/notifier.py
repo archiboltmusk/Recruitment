@@ -10,26 +10,28 @@ class Notifier:
     @staticmethod
     def format_telegram_message(vacancy: Vacancy) -> str:
         last_date_str = vacancy.last_date.strftime("%d-%b-%Y") if vacancy.last_date else "Not Specified"
+        exam_str = vacancy.exam_date.strftime("%d-%b-%Y") if vacancy.exam_date else "To be announced"
         
         msg = (
             f"🩺 <b>NEW MEDICAL OFFICER RECRUITMENT</b>\n\n"
-            f"<b>Title:</b> {vacancy.title}\n"
-            f"<b>Organization:</b> {vacancy.organization}\n"
-            f"<b>Category:</b> {vacancy.category} ({vacancy.state})\n"
-            f"<b>Designation:</b> {vacancy.designation}\n"
-            f"<b>Total Posts:</b> {vacancy.total_posts}\n"
-            f"<b>Required Qualification:</b> {vacancy.qualification}\n"
-            f"<b>Pay Scale:</b> {vacancy.pay_scale or 'Standard Govt Norms'}\n"
-            f"<b>Deadline to Apply:</b> 📅 {last_date_str}\n\n"
-            f"📝 <b>Summary:</b> {vacancy.summary or 'Refer to official advertisement.'}\n\n"
-            f"🔗 <a href='{vacancy.notification_url or vacancy.apply_url or '#' }'>Official Notification PDF</a> | "
+            f"📌 <b>Title:</b> {vacancy.title}\n"
+            f"🏥 <b>Organization:</b> {vacancy.organization}\n"
+            f"🏛️ <b>Category:</b> {vacancy.category} ({vacancy.state})\n"
+            f"🎯 <b>Status:</b> {vacancy.stage.replace('_', ' ').title()}\n"
+            f"👥 <b>Total Posts:</b> {vacancy.total_posts} Seats\n"
+            f"🎓 <b>Qualification:</b> {vacancy.qualification}\n"
+            f"💰 <b>Pay Scale:</b> {vacancy.pay_scale or 'Level 10 Pay Matrix'}\n"
+            f"📜 <b>Service Bond:</b> {vacancy.bond_penalty_amount or 'No Bond'}\n"
+            f"📝 <b>Selection Mode:</b> {vacancy.selection_mode or 'Written Exam / Interview'}\n"
+            f"📅 <b>Application Deadline:</b> {last_date_str}\n"
+            f"🗓️ <b>Exam / Interview:</b> {exam_str}\n\n"
+            f"🔗 <a href='{vacancy.notification_url or vacancy.apply_url or '#' }'>Official Gazette PDF</a> | "
             f"<a href='{vacancy.apply_url or vacancy.notification_url or '#' }'>Apply Portal</a>"
         )
         return msg
 
     @classmethod
     def send_to_subscription(cls, db: Session, sub: Subscription, vacancy: Vacancy) -> bool:
-        # Check filters
         if sub.qualification_filter != "ALL" and sub.qualification_filter.upper() not in vacancy.qualification.upper():
             return False
             
@@ -44,7 +46,6 @@ class Notifier:
         status = "SUCCESS"
         details = ""
 
-        # Dispatch based on channel
         if sub.channel == "telegram":
             if TELEGRAM_BOT_TOKEN:
                 url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
@@ -82,6 +83,8 @@ class Notifier:
                             "organization": vacancy.organization,
                             "qualification": vacancy.qualification,
                             "total_posts": vacancy.total_posts,
+                            "stage": vacancy.stage,
+                            "bond": vacancy.bond_penalty_amount,
                             "last_date": vacancy.last_date.isoformat() if vacancy.last_date else None,
                             "apply_url": vacancy.apply_url
                         }
@@ -100,7 +103,6 @@ class Notifier:
         elif sub.channel == "email":
             details = f"Simulated email notification dispatched to {sub.target}"
 
-        # Record log
         log = NotificationLog(
             vacancy_id=vacancy.id,
             channel=sub.channel,

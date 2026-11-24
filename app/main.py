@@ -1,6 +1,7 @@
 import os
+import json
 from datetime import datetime, timedelta
-from typing import Optional, List
+from typing import Optional, List, Dict, Any
 from fastapi import FastAPI, Depends, Query, HTTPException, status
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
@@ -12,14 +13,16 @@ from .database import engine, Base, get_db
 from .models import Vacancy, Subscription, NotificationLog
 from .collector import VacancyCollector
 from .notifier import Notifier
+from .scheduler import start_scheduler, shutdown_scheduler, scheduler
+from .pdf_parser import GovtNotificationPDFParser
 
 # Initialize database schema
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title="MedAlerts - Medical Officer Vacancies Aggregator",
-    description="Unified API & notification engine for Medical Officer posts across UPSC, State PSCs, NHM, and AIIMS.",
-    version="1.1.0"
+    description="Unified API, automated background poller & eligibility matcher for Medical Officer vacancies.",
+    version="2.0.0"
 )
 
 # Schemas
@@ -31,8 +34,9 @@ class VacancyCreate(BaseModel):
     designation: str
     qualification: str = "MBBS"
     total_posts: int = 1
-    pay_scale: Optional[str] = None
+    pay_scale: Optional[str] = "Level 10 Pay Matrix"
     last_date: Optional[datetime] = None
+    exam_date: Optional[datetime] = None
     notification_url: Optional[str] = None
     apply_url: Optional[str] = None
     summary: Optional[str] = None
@@ -41,6 +45,12 @@ class VacancyCreate(BaseModel):
     experience_years_required: int = 0
     internship_must_complete: bool = True
     state_registration_mandatory: bool = False
+    stage: str = "APPLICATION_OPEN"
+    selection_mode: str = "Written Exam + Interview"
+    bond_years: int = 0
+    bond_penalty_amount: str = "No Bond"
+    category_seats_json: Optional[str] = None
+    application_fee: str = "As per rules"
 
 class SubscriptionCreate(BaseModel):
     channel: str = Field(..., description="telegram, email, or webhook")
@@ -51,16 +61,22 @@ class SubscriptionCreate(BaseModel):
 
 class DoctorProfile(BaseModel):
     name: str
-    qualification: str = "MBBS"  # MBBS, MD/MS, BDS, AYUSH
+    qualification: str = "MBBS"
     college_name: str
     passing_year: int
-    internship_status: str = "completed"  # completed, ongoing
+    internship_status: str = "completed"
     age: int
-    category: str = "UR"  # UR, OBC, SC, ST, EWS
+    category: str = "UR"
     home_state: str = "All India"
     registered_with_smc: bool = True
 
-# Mount static files
+class PDFAnalyzeURLRequest(BaseModel):
+    url: str
+
+class PDFAnalyzeTextRequest(BaseModel):
+    text: str
+
+# Mount static directory
 static_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static")
 if not os.path.exists(static_dir):
     os.makedirs(static_dir, exist_ok=True)
@@ -77,6 +93,13 @@ def on_startup():
             VacancyCollector.sync_sample_feed(db)
     finally:
         db.close()
+    
+    # Start automated background polling scheduler
+    start_scheduler()
+
+@app.on_event("shutdown")
+def on_shutdown():
+    shutdown_scheduler()
 
 @app.get("/")
 def serve_index():
@@ -108,7 +131,8 @@ def get_stats(db: Session = Depends(get_db)):
         "active_notices": total_active,
         "total_vacancies_seats": int(total_seats),
         "closing_in_7_days": closing_soon,
-        "active_subscribers": subscribers_count
+        "active_subscribers": subscribers_count,
+        "scheduler_running": scheduler.running
     }
 
 @app.get("/api/vacancies")
@@ -117,6 +141,8 @@ def list_vacancies(
     qualification: Optional[str] = None,
     category: Optional[str] = None,
     state: Optional[str] = None,
+    stage: Optional[str] = None,
+    bond: Optional[str] = None,
     active_only: bool = True,
     db: Session = Depends(get_db)
 ):
@@ -145,6 +171,12 @@ def list_vacancies(
     if state and state != "ALL":
         query = query.filter(or_(Vacancy.state == state, Vacancy.state == "All India"))
 
+    if stage and stage != "ALL":
+        query = query.filter(Vacancy.stage == stage)
+
+    if bond == "NO_BOND":
+        query = query.filter(Vacancy.bond_years == 0)
+
     vacancies = query.order_by(Vacancy.last_date.asc()).all()
 
     results = []
@@ -154,6 +186,14 @@ def list_vacancies(
         if v.last_date:
             delta = (v.last_date - now).total_seconds() / 86400.0
             days_left = max(0, int(delta))
+
+        # Parse category seats JSON
+        seats_dict = {}
+        if v.category_seats_json:
+            try:
+                seats_dict = json.loads(v.category_seats_json)
+            except Exception:
+                seats_dict = {}
 
         results.append({
             "id": v.id,
@@ -169,7 +209,14 @@ def list_vacancies(
             "max_age": v.max_age,
             "experience_years_required": v.experience_years_required,
             "internship_must_complete": v.internship_must_complete,
+            "stage": v.stage,
+            "selection_mode": v.selection_mode,
+            "bond_years": v.bond_years,
+            "bond_penalty_amount": v.bond_penalty_amount,
+            "category_seats": seats_dict,
+            "application_fee": v.application_fee,
             "last_date": v.last_date.strftime("%Y-%m-%d") if v.last_date else None,
+            "exam_date": v.exam_date.strftime("%Y-%m-%d") if v.exam_date else None,
             "days_left": days_left,
             "notification_url": v.notification_url,
             "apply_url": v.apply_url,
@@ -179,13 +226,26 @@ def list_vacancies(
 
     return results
 
+@app.post("/api/parser/analyze-url")
+def analyze_pdf_url(payload: PDFAnalyzeURLRequest):
+    try:
+        text = GovtNotificationPDFParser.extract_from_url(payload.url)
+        extracted = GovtNotificationPDFParser.parse_notice_text(text)
+        return {"success": True, "data": extracted, "raw_preview": text[:500]}
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Failed to analyze PDF from URL: {str(e)}")
+
+@app.post("/api/parser/analyze-text")
+def analyze_gazette_text(payload: PDFAnalyzeTextRequest):
+    extracted = GovtNotificationPDFParser.parse_notice_text(payload.text)
+    return {"success": True, "data": extracted}
+
 @app.post("/api/check-eligibility")
 def check_eligibility(profile: DoctorProfile, db: Session = Depends(get_db)):
     vacancies = db.query(Vacancy).filter(Vacancy.is_active == True).all()
     results = []
     now = datetime.utcnow()
 
-    # Category age relaxation rules
     age_relaxation = 0
     if profile.category in ["SC", "ST"]:
         age_relaxation = 5
@@ -276,7 +336,15 @@ def check_eligibility(profile: DoctorProfile, db: Session = Depends(get_db)):
         else:
             criteria_checks.append({"name": "Jurisdiction", "pass": True, "detail": "Eligible (Home State or All India Cadre)"})
 
-        # Determine Final Status
+        # 5. Extract reserved seats for this specific candidate category
+        user_cat_seats = None
+        if v.category_seats_json:
+            try:
+                s_map = json.loads(v.category_seats_json)
+                user_cat_seats = s_map.get(profile.category) or s_map.get("All India Open") or s_map.get("UR")
+            except Exception:
+                user_cat_seats = None
+
         if is_hard_fail:
             status_tag = "INELIGIBLE"
             status_label = "Not Eligible"
@@ -304,8 +372,13 @@ def check_eligibility(profile: DoctorProfile, db: Session = Depends(get_db)):
             "designation": v.designation,
             "qualification": v.qualification,
             "total_posts": v.total_posts,
+            "user_category_seats": user_cat_seats,
             "pay_scale": v.pay_scale,
+            "stage": v.stage,
+            "selection_mode": v.selection_mode,
+            "bond_penalty_amount": v.bond_penalty_amount,
             "last_date": v.last_date.strftime("%Y-%m-%d") if v.last_date else None,
+            "exam_date": v.exam_date.strftime("%Y-%m-%d") if v.exam_date else None,
             "days_left": days_left,
             "apply_url": v.apply_url,
             "notification_url": v.notification_url,
@@ -315,7 +388,6 @@ def check_eligibility(profile: DoctorProfile, db: Session = Depends(get_db)):
             "criteria_checks": criteria_checks
         })
 
-    # Sort results: ELIGIBLE first, then CONDITIONALLY_ELIGIBLE, then INELIGIBLE
     sort_order = {"ELIGIBLE": 0, "CONDITIONALLY_ELIGIBLE": 1, "INELIGIBLE": 2}
     results.sort(key=lambda x: (sort_order[x["status"]], x["days_left"] if x["days_left"] is not None else 999))
 

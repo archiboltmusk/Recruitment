@@ -1,3 +1,4 @@
+import json
 import re
 from datetime import datetime, timedelta
 from typing import List, Dict, Any
@@ -14,16 +15,23 @@ SAMPLE_VACANCIES: List[Dict[str, Any]] = [
         "designation": "Assistant Divisional Medical Officer (Railways) / GDMO (CHS & NDMC)",
         "qualification": "MBBS",
         "total_posts": 827,
-        "pay_scale": "Level 10 (₹56,100 - ₹1,77,500) + NPA",
+        "pay_scale": "Level 10 (₹56,100 - ₹1,77,500) + 20% NPA",
         "last_date": datetime.utcnow() + timedelta(days=22),
+        "exam_date": datetime.utcnow() + timedelta(days=75),
         "notification_url": "https://upsc.gov.in/sites/default/files/ExamNotif-CMS-2026.pdf",
         "apply_url": "https://upsconline.nic.in",
-        "summary": "Recruitment to Medical Officers in Central Health Service, Indian Railways (ADMO), and New Delhi Municipal Council (NDMC). Written exam followed by personality test.",
+        "summary": "Premier Central Government recruitment to Medical Officers in Central Health Service (CHS), Indian Railways (ADMO), and New Delhi Municipal Council (NDMC).",
         "min_age": 21,
         "max_age": 32,
         "experience_years_required": 0,
-        "internship_must_complete": False, # Appearing/interns allowed to sit for CMS
-        "state_registration_mandatory": False
+        "internship_must_complete": False,
+        "state_registration_mandatory": False,
+        "stage": "APPLICATION_OPEN",
+        "selection_mode": "2 Papers CBT (500 Marks) + Personality Test (100 Marks)",
+        "bond_years": 0,
+        "bond_penalty_amount": "No Bond (Direct Central Govt Gazetted Cadre)",
+        "category_seats_json": json.dumps({"UR": 345, "OBC": 224, "SC": 124, "ST": 62, "EWS": 72}),
+        "application_fee": "₹200 (Female/SC/ST/PwBD: Exempted)"
     },
     {
         "title": "Insurance Medical Officer (IMO) Grade-II Recruitment",
@@ -35,6 +43,7 @@ SAMPLE_VACANCIES: List[Dict[str, Any]] = [
         "total_posts": 571,
         "pay_scale": "Level 10 of Pay Matrix (₹56,100) + 20% NPA",
         "last_date": datetime.utcnow() + timedelta(days=14),
+        "exam_date": datetime.utcnow() + timedelta(days=60),
         "notification_url": "https://www.esic.gov.in/recruitments/imo-grade-2.pdf",
         "apply_url": "https://www.esic.gov.in",
         "summary": "Regular posts for medical officers across ESIC hospitals and dispensaries nationwide. Candidate must have completed compulsory rotatory internship.",
@@ -42,7 +51,13 @@ SAMPLE_VACANCIES: List[Dict[str, Any]] = [
         "max_age": 35,
         "experience_years_required": 0,
         "internship_must_complete": True,
-        "state_registration_mandatory": False
+        "state_registration_mandatory": False,
+        "stage": "APPLICATION_OPEN",
+        "selection_mode": "Computer Based Test (CBT) (200 Marks)",
+        "bond_years": 0,
+        "bond_penalty_amount": "No Bond",
+        "category_seats_json": json.dumps({"UR": 240, "OBC": 154, "SC": 85, "ST": 42, "EWS": 50}),
+        "application_fee": "₹500 (SC/ST/Female: ₹250)"
     },
     {
         "title": "Recruitment of Senior Medical Officer & Specialist MO",
@@ -54,6 +69,7 @@ SAMPLE_VACANCIES: List[Dict[str, Any]] = [
         "total_posts": 46,
         "pay_scale": "Level 11 (₹67,700 - ₹2,08,700)",
         "last_date": datetime.utcnow() + timedelta(days=18),
+        "exam_date": None,
         "notification_url": "https://www.aiimsexams.ac.in/recruitment/smo-2026.pdf",
         "apply_url": "https://www.aiimsexams.ac.in",
         "summary": "Direct recruitment for clinical and administrative specialist medical roles across AIIMS New Delhi and associated trauma centers.",
@@ -61,7 +77,13 @@ SAMPLE_VACANCIES: List[Dict[str, Any]] = [
         "max_age": 40,
         "experience_years_required": 3,
         "internship_must_complete": True,
-        "state_registration_mandatory": False
+        "state_registration_mandatory": False,
+        "stage": "APPLICATION_OPEN",
+        "selection_mode": "Personal Interview & Academic Record Evaluation",
+        "bond_years": 0,
+        "bond_penalty_amount": "No Bond",
+        "category_seats_json": json.dumps({"UR": 21, "OBC": 12, "SC": 7, "ST": 3, "EWS": 3}),
+        "application_fee": "₹1500 (SC/ST: ₹1200)"
     },
     {
         "title": "National Health Mission (NHM) Medical Officers (MBBS & Specialists)",
@@ -73,6 +95,7 @@ SAMPLE_VACANCIES: List[Dict[str, Any]] = [
         "total_posts": 420,
         "pay_scale": "₹60,000 - ₹75,000 per month (Consolidated)",
         "last_date": datetime.utcnow() + timedelta(days=7),
+        "exam_date": None,
         "notification_url": "https://arogya.maharashtra.gov.in/nhm-recruitment-mo.pdf",
         "apply_url": "https://arogya.maharashtra.gov.in",
         "summary": "Walk-in interview and online application for contractual Medical Officers at Primary Health Centres (PHCs) and Community Health Centres (CHCs).",
@@ -80,7 +103,13 @@ SAMPLE_VACANCIES: List[Dict[str, Any]] = [
         "max_age": 43,
         "experience_years_required": 0,
         "internship_must_complete": True,
-        "state_registration_mandatory": True
+        "state_registration_mandatory": True,
+        "stage": "CLOSING_SOON",
+        "selection_mode": "Walk-in Interview & Document Verification",
+        "bond_years": 1,
+        "bond_penalty_amount": "1-Year Service Agreement",
+        "category_seats_json": json.dumps({"UR": 160, "OBC": 113, "SC": 55, "ST": 50, "EWS": 42}),
+        "application_fee": "₹150 (Reserved: ₹100)"
     },
     {
         "title": "Allopathic Medical Officer Grade-1 Recruitment",
@@ -92,6 +121,7 @@ SAMPLE_VACANCIES: List[Dict[str, Any]] = [
         "total_posts": 1280,
         "pay_scale": "Level 10 (Grade Pay ₹5400) + Allowances",
         "last_date": datetime.utcnow() + timedelta(days=30),
+        "exam_date": datetime.utcnow() + timedelta(days=90),
         "notification_url": "https://uppsc.up.nic.in/notices/mo-allopathic-advt.pdf",
         "apply_url": "https://uppsc.up.nic.in",
         "summary": "State health cadre permanent positions in Uttar Pradesh Provincial Medical and Health Services across various district hospitals.",
@@ -99,7 +129,13 @@ SAMPLE_VACANCIES: List[Dict[str, Any]] = [
         "max_age": 40,
         "experience_years_required": 0,
         "internship_must_complete": True,
-        "state_registration_mandatory": True
+        "state_registration_mandatory": True,
+        "stage": "APPLICATION_OPEN",
+        "selection_mode": "Screening Test + Viva-Voce Interview",
+        "bond_years": 2,
+        "bond_penalty_amount": "2 Years Mandatory Rural Service (Penalty: ₹5,00,000)",
+        "category_seats_json": json.dumps({"UR": 520, "OBC": 345, "SC": 268, "ST": 19, "EWS": 128}),
+        "application_fee": "₹105 (SC/ST: ₹65)"
     },
     {
         "title": "Short Service Commissioned Medical Officers (AFMS)",
@@ -111,6 +147,7 @@ SAMPLE_VACANCIES: List[Dict[str, Any]] = [
         "total_posts": 212,
         "pay_scale": "Military Pay Matrix Level 10B + MSP (₹15,500) + NPA",
         "last_date": datetime.utcnow() + timedelta(days=25),
+        "exam_date": None,
         "notification_url": "https://amcsscentry.gov.in/guidelines.pdf",
         "apply_url": "https://amcsscentry.gov.in",
         "summary": "Applications invited from Indian citizens for grant of Short Service Commission in Armed Forces Medical Services for male and female doctors.",
@@ -118,7 +155,13 @@ SAMPLE_VACANCIES: List[Dict[str, Any]] = [
         "max_age": 30,
         "experience_years_required": 0,
         "internship_must_complete": True,
-        "state_registration_mandatory": False
+        "state_registration_mandatory": False,
+        "stage": "APPLICATION_OPEN",
+        "selection_mode": "Interview at New Delhi + Military Medical Examination",
+        "bond_years": 5,
+        "bond_penalty_amount": "5 Years Initial Commission Tenure",
+        "category_seats_json": json.dumps({"All India Open": 212}),
+        "application_fee": "₹200"
     },
     {
         "title": "AYUSH Medical Officer (Ayurveda / Homeopathy / Unani)",
@@ -130,6 +173,7 @@ SAMPLE_VACANCIES: List[Dict[str, Any]] = [
         "total_posts": 350,
         "pay_scale": "Level 9 (₹53,100 - ₹1,67,800)",
         "last_date": datetime.utcnow() + timedelta(days=12),
+        "exam_date": None,
         "notification_url": "https://btsc.bih.nic.in/ayush-mo-2026.pdf",
         "apply_url": "https://btsc.bih.nic.in",
         "summary": "Recruitment for AYUSH medical officers across primary and community health dispensaries in Bihar.",
@@ -137,14 +181,19 @@ SAMPLE_VACANCIES: List[Dict[str, Any]] = [
         "max_age": 37,
         "experience_years_required": 0,
         "internship_must_complete": True,
-        "state_registration_mandatory": True
+        "state_registration_mandatory": True,
+        "stage": "APPLICATION_OPEN",
+        "selection_mode": "Merit Basis (Degree Marks & Work Experience)",
+        "bond_years": 1,
+        "bond_penalty_amount": "1 Year Service Bond",
+        "category_seats_json": json.dumps({"UR": 140, "OBC": 95, "SC": 56, "ST": 4, "EWS": 55}),
+        "application_fee": "₹200 (Reserved/Female: ₹50)"
     }
 ]
 
 class VacancyCollector:
     @staticmethod
     def sync_sample_feed(db: Session) -> Dict[str, int]:
-        """Loads and syncs standard verified medical officer vacancies."""
         added_count = 0
         updated_count = 0
 
@@ -165,6 +214,7 @@ class VacancyCollector:
                     total_posts=item["total_posts"],
                     pay_scale=item["pay_scale"],
                     last_date=item["last_date"],
+                    exam_date=item.get("exam_date"),
                     notification_url=item["notification_url"],
                     apply_url=item["apply_url"],
                     summary=item["summary"],
@@ -173,6 +223,12 @@ class VacancyCollector:
                     experience_years_required=item.get("experience_years_required", 0),
                     internship_must_complete=item.get("internship_must_complete", True),
                     state_registration_mandatory=item.get("state_registration_mandatory", False),
+                    stage=item.get("stage", "APPLICATION_OPEN"),
+                    selection_mode=item.get("selection_mode", "Written Exam + Interview"),
+                    bond_years=item.get("bond_years", 0),
+                    bond_penalty_amount=item.get("bond_penalty_amount", "No Bond"),
+                    category_seats_json=item.get("category_seats_json"),
+                    application_fee=item.get("application_fee", "As per rules"),
                     is_active=True
                 )
                 db.add(vacancy)
@@ -184,9 +240,12 @@ class VacancyCollector:
                 existing.last_date = item["last_date"]
                 existing.min_age = item.get("min_age", 21)
                 existing.max_age = item.get("max_age", 35)
-                existing.experience_years_required = item.get("experience_years_required", 0)
-                existing.internship_must_complete = item.get("internship_must_complete", True)
-                existing.state_registration_mandatory = item.get("state_registration_mandatory", False)
+                existing.stage = item.get("stage", "APPLICATION_OPEN")
+                existing.selection_mode = item.get("selection_mode", "Written Exam + Interview")
+                existing.bond_years = item.get("bond_years", 0)
+                existing.bond_penalty_amount = item.get("bond_penalty_amount", "No Bond")
+                existing.category_seats_json = item.get("category_seats_json")
+                existing.application_fee = item.get("application_fee", "As per rules")
                 existing.is_active = (existing.last_date >= datetime.utcnow()) if existing.last_date else True
                 db.commit()
                 updated_count += 1
@@ -195,7 +254,6 @@ class VacancyCollector:
 
     @staticmethod
     def parse_and_add_custom(db: Session, data: Dict[str, Any]) -> Vacancy:
-        """Allows adding or web-crawling custom notifications."""
         vacancy = Vacancy(
             title=data.get("title", "Medical Officer Vacancy"),
             organization=data.get("organization", "Govt Department"),
@@ -204,7 +262,7 @@ class VacancyCollector:
             designation=data.get("designation", "Medical Officer"),
             qualification=data.get("qualification", "MBBS"),
             total_posts=int(data.get("total_posts", 1)),
-            pay_scale=data.get("pay_scale", "As per rules"),
+            pay_scale=data.get("pay_scale", "Level 10 Pay Matrix"),
             last_date=datetime.fromisoformat(data["last_date"]) if data.get("last_date") else datetime.utcnow() + timedelta(days=14),
             notification_url=data.get("notification_url", ""),
             apply_url=data.get("apply_url", ""),
@@ -214,6 +272,12 @@ class VacancyCollector:
             experience_years_required=int(data.get("experience_years_required", 0)),
             internship_must_complete=bool(data.get("internship_must_complete", True)),
             state_registration_mandatory=bool(data.get("state_registration_mandatory", False)),
+            stage=data.get("stage", "APPLICATION_OPEN"),
+            selection_mode=data.get("selection_mode", "Written Exam + Interview"),
+            bond_years=int(data.get("bond_years", 0)),
+            bond_penalty_amount=data.get("bond_penalty_amount", "No Bond"),
+            category_seats_json=json.dumps(data.get("category_seats")) if isinstance(data.get("category_seats"), dict) else data.get("category_seats_json"),
+            application_fee=data.get("application_fee", "As per rules"),
             is_active=True
         )
         db.add(vacancy)

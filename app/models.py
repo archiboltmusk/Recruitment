@@ -20,12 +20,25 @@ class Vacancy(Base):
     apply_url = Column(Text, nullable=True)
     summary = Column(Text, nullable=True)
     
-    # Eligibility criteria parameters
+    # Eligibility & Criteria Parameters
     min_age = Column(Integer, default=21)
     max_age = Column(Integer, default=35)
     experience_years_required = Column(Integer, default=0)
     internship_must_complete = Column(Boolean, default=True)
     state_registration_mandatory = Column(Boolean, default=False)
+    
+    # Lifecycle Tracking
+    stage = Column(String(50), default="APPLICATION_OPEN")  # APPLICATION_OPEN, ADMIT_CARD_OUT, EXAM_SCHEDULED, RESULTS_OUT
+    exam_date = Column(DateTime, nullable=True)
+    selection_mode = Column(String(100), default="Written Exam + Interview")  # Written CBT, Walk-in Interview, Merit
+    
+    # Bond & Service Terms (Critical for Doctors)
+    bond_years = Column(Integer, default=0)
+    bond_penalty_amount = Column(String(100), default="No Bond")
+    
+    # Category Distribution & Fees
+    category_seats_json = Column(Text, nullable=True)  # JSON string: {"UR": 100, "OBC": 50, ...}
+    application_fee = Column(String(100), default="As per rules")
     
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime, default=datetime.utcnow)

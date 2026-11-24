@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MedAlerts - All Medical Officer Vacancies in One Place</title>
+    <title>MedAlerts - All Medical Officer Vacancies & Recruitment Intelligence</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -32,14 +32,14 @@
     <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between">
             <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 rounded-xl bg-brand-600 flex items-center justify-center text-white shadow-md shadow-brand-500/20">
+                <a href="/" class="w-10 h-10 rounded-xl bg-brand-600 flex items-center justify-center text-white shadow-md shadow-brand-500/20">
                     <i class="fa-solid fa-user-doctor text-xl"></i>
-                </div>
+                </a>
                 <div>
                     <h1 class="text-xl font-bold text-slate-900 leading-tight flex items-center gap-2">
                         MedAlerts
                         <span class="text-xs px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-semibold border border-emerald-200">
-                            Live MO Feed
+                            v2.0 Pro
                         </span>
                     </h1>
                     <p class="text-xs text-slate-500">All India Medical Officer & GDMO Vacancies Aggregator</p>
@@ -49,13 +49,17 @@
             <div class="flex items-center space-x-2 sm:space-x-3">
                 <a href="/onboarding" class="px-3.5 py-2 text-xs sm:text-sm font-semibold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 rounded-lg transition flex items-center gap-2">
                     <i class="fa-solid fa-clipboard-check"></i>
-                    <span>Check Eligibility</span>
+                    <span class="hidden sm:inline">Eligibility Matcher</span>
                 </a>
-                <button onclick="refreshData()" id="refreshBtn" class="px-3.5 py-2 text-xs sm:text-sm font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition flex items-center gap-2">
-                    <i class="fa-solid fa-arrows-rotate" id="refreshIcon"></i>
-                    <span class="hidden sm:inline">Sync</span>
+                <button onclick="openModal('pdfModal')" class="px-3.5 py-2 text-xs sm:text-sm font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-200 rounded-lg transition flex items-center gap-2">
+                    <i class="fa-solid fa-file-invoice text-red-500"></i>
+                    <span class="hidden sm:inline">Analyze Notice PDF</span>
                 </button>
-                <button onclick="openModal('subscribeModal')" class="px-4 py-2 text-xs sm:text-sm font-semibold text-white bg-brand-600 hover:bg-brand-700 rounded-lg shadow-sm hover:shadow transition flex items-center gap-2">
+                <button onclick="refreshData()" id="refreshBtn" class="px-3 py-2 text-xs sm:text-sm font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-arrows-rotate" id="refreshIcon"></i>
+                    <span class="hidden md:inline">Sync</span>
+                </button>
+                <button onclick="openModal('subscribeModal')" class="px-3.5 py-2 text-xs sm:text-sm font-semibold text-white bg-brand-600 hover:bg-brand-700 rounded-lg shadow-sm hover:shadow transition flex items-center gap-1.5">
                     <i class="fa-solid fa-bell"></i>
                     <span>Get Alerts</span>
                 </button>
@@ -67,17 +71,20 @@
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 w-full space-y-6">
 
         <!-- Onboarding Eligibility Banner -->
-        <div class="bg-gradient-to-r from-indigo-900 to-indigo-800 rounded-2xl p-4 sm:p-5 text-white flex flex-col sm:flex-row items-center justify-between gap-4 shadow-md">
-            <div class="flex items-center space-x-3.5">
-                <div class="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-indigo-200 text-xl flex-shrink-0">
+        <div class="bg-gradient-to-r from-indigo-900 via-indigo-950 to-slate-900 rounded-2xl p-5 text-white flex flex-col md:flex-row items-center justify-between gap-4 shadow-lg border border-indigo-800/40">
+            <div class="flex items-center space-x-4">
+                <div class="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center text-indigo-300 text-2xl flex-shrink-0 border border-white/10">
                     <i class="fa-solid fa-stethoscope"></i>
                 </div>
                 <div>
-                    <h2 class="text-sm sm:text-base font-bold leading-tight">Are you fulfilling the eligibility criteria for active Medical Officer posts?</h2>
-                    <p class="text-xs text-indigo-200 mt-0.5">Enter your MBBS college, passing year, and age to get an instant breakdown of where you can apply.</p>
+                    <div class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[11px] font-semibold mb-1">
+                        <i class="fa-solid fa-check-double text-[10px]"></i> Automated Qualification & Age Verifier
+                    </div>
+                    <h2 class="text-sm sm:text-base font-bold leading-tight">Do you fulfill criteria for active UPSC, ESIC & State PSC circulars?</h2>
+                    <p class="text-xs text-indigo-200 mt-0.5">Select your degree (MBBS/MD/MS), college, and passing year to get your personalized eligibility breakdown.</p>
                 </div>
             </div>
-            <a href="/onboarding" class="px-4 py-2 text-xs sm:text-sm font-bold bg-white text-indigo-900 hover:bg-indigo-50 rounded-xl shadow transition flex items-center gap-2 whitespace-nowrap">
+            <a href="/onboarding" class="px-5 py-2.5 text-xs sm:text-sm font-bold bg-white text-indigo-950 hover:bg-indigo-50 rounded-xl shadow-md transition flex items-center gap-2 whitespace-nowrap">
                 <span>Start Doctor Onboarding</span>
                 <i class="fa-solid fa-arrow-right text-xs"></i>
             </a>
@@ -117,59 +124,64 @@
 
             <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center space-x-3">
                 <div class="p-3 bg-purple-50 text-purple-600 rounded-lg">
-                    <i class="fa-solid fa-paper-plane text-xl"></i>
+                    <i class="fa-solid fa-robot text-xl"></i>
                 </div>
                 <div>
-                    <p class="text-xs font-medium text-slate-500">Subscribed Doctors</p>
-                    <p class="text-2xl font-bold text-slate-900" id="statSubscribers">-</p>
+                    <p class="text-xs font-medium text-slate-500">Background Poller</p>
+                    <p class="text-sm font-bold text-emerald-600 flex items-center gap-1.5 mt-1">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                        Active (Auto 6h)
+                    </p>
                 </div>
             </div>
         </div>
 
         <!-- Filter & Search Bar -->
-        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-3">
-            <div class="flex flex-col md:flex-row gap-3">
+        <div class="bg-white p-4 sm:p-5 rounded-xl border border-slate-200 shadow-sm space-y-3">
+            <div class="flex flex-col lg:flex-row gap-3">
                 <div class="flex-1 relative">
                     <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-slate-400"></i>
-                    <input type="text" id="searchInput" placeholder="Search by role, commission (e.g. UPSC, UPPSC, AIIMS, NHM), or keywords..." 
+                    <input type="text" id="searchInput" placeholder="Search by commission (UPSC, AIIMS, ESIC, UPPSC), designation, or keywords..." 
                            class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white transition"
                            onkeyup="applyFilters()">
                 </div>
 
-                <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                    <select id="qualificationFilter" onchange="applyFilters()" class="px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs sm:text-sm focus:ring-2 focus:ring-brand-500 outline-none">
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                    <select id="qualificationFilter" onchange="applyFilters()" class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs sm:text-sm focus:ring-2 focus:ring-brand-500 outline-none">
                         <option value="ALL">All Qualifications</option>
                         <option value="MBBS">MBBS</option>
                         <option value="MD/MS">Specialist (MD/MS)</option>
                         <option value="AYUSH">AYUSH (BAMS/BHMS)</option>
-                        <option value="BDS">Dental (BDS)</option>
                     </select>
 
-                    <select id="categoryFilter" onchange="applyFilters()" class="px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs sm:text-sm focus:ring-2 focus:ring-brand-500 outline-none">
-                        <option value="ALL">All Categories</option>
-                        <option value="Central Govt">Central Govt (UPSC/ESIC)</option>
+                    <select id="categoryFilter" onchange="applyFilters()" class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs sm:text-sm focus:ring-2 focus:ring-brand-500 outline-none">
+                        <option value="ALL">All Cadres</option>
+                        <option value="Central Govt">Central Govt</option>
                         <option value="State PSC">State PSC</option>
-                        <option value="NHM">NHM / Contractual</option>
+                        <option value="NHM">NHM Contractual</option>
                         <option value="Autonomous">AIIMS / Institutes</option>
-                        <option value="Armed Forces">Armed Forces (AFMS)</option>
+                        <option value="Armed Forces">Armed Forces</option>
                     </select>
 
-                    <select id="stateFilter" onchange="applyFilters()" class="px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs sm:text-sm focus:ring-2 focus:ring-brand-500 outline-none col-span-2 sm:col-span-1">
-                        <option value="ALL">All India & States</option>
-                        <option value="All India">All India Cadre</option>
-                        <option value="Delhi">Delhi</option>
-                        <option value="Maharashtra">Maharashtra</option>
-                        <option value="Uttar Pradesh">Uttar Pradesh</option>
-                        <option value="Bihar">Bihar</option>
+                    <select id="stageFilter" onchange="applyFilters()" class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs sm:text-sm focus:ring-2 focus:ring-brand-500 outline-none">
+                        <option value="ALL">All Stages</option>
+                        <option value="APPLICATION_OPEN">Application Open</option>
+                        <option value="CLOSING_SOON">Closing Soon</option>
+                        <option value="ADMIT_CARD_OUT">Admit Card Out</option>
+                    </select>
+
+                    <select id="bondFilter" onchange="applyFilters()" class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs sm:text-sm focus:ring-2 focus:ring-brand-500 outline-none">
+                        <option value="ALL">Any Bond Status</option>
+                        <option value="NO_BOND">No Bond Only</option>
                     </select>
                 </div>
             </div>
 
             <div class="flex items-center justify-between text-xs text-slate-500 pt-2 border-t border-slate-100">
                 <span id="filteredCount">Showing 0 vacancies</span>
-                <span class="flex items-center gap-1.5 text-slate-500">
-                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                    Verified from official gazettes & recruitment portals
+                <span class="flex items-center gap-1.5 text-slate-500 text-[11px]">
+                    <i class="fa-solid fa-clock-rotate-left text-brand-600"></i>
+                    Syncs twice daily across official gazettes & health directorates
                 </span>
             </div>
         </div>
@@ -196,9 +208,9 @@
             <div class="flex items-center justify-between">
                 <h2 class="text-sm font-bold text-slate-900 flex items-center gap-2">
                     <i class="fa-solid fa-satellite-dish text-brand-600"></i>
-                    Recent Push & Telegram Broadcast Activity
+                    Live Push & Telegram Broadcast Activity
                 </h2>
-                <span class="text-xs text-slate-400">Live Dispatches</span>
+                <span class="text-xs text-slate-400">Automated Pipeline</span>
             </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-left text-xs text-slate-600">
@@ -221,6 +233,57 @@
         </div>
 
     </main>
+
+    <!-- Modal: Notice PDF Analyzer Tool -->
+    <div id="pdfModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-xl w-full p-6 shadow-2xl border border-slate-100 space-y-4">
+            <div class="flex items-start justify-between">
+                <div>
+                    <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                        <i class="fa-solid fa-file-invoice text-rose-600"></i>
+                        Analyze Govt Circular / Gazette PDF
+                    </h3>
+                    <p class="text-xs text-slate-500 mt-0.5">Paste any official PDF URL to auto-extract criteria, quotas, and bond terms.</p>
+                </div>
+                <button onclick="closeModal('pdfModal')" class="text-slate-400 hover:text-slate-600">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Official Notification PDF Link</label>
+                    <div class="flex gap-2">
+                        <input type="url" id="pdfUrlInput" placeholder="https://upsc.gov.in/notices/exam-2026.pdf" 
+                               class="flex-1 px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-brand-500">
+                        <button onclick="analyzePdfUrl()" id="analyzeBtn" class="px-4 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs rounded-lg transition whitespace-nowrap">
+                            Extract
+                        </button>
+                    </div>
+                </div>
+
+                <div class="text-center text-xs text-slate-400 font-semibold my-1">— OR PASTE NOTICE TEXT —</div>
+
+                <div>
+                    <textarea id="pdfTextInput" rows="4" placeholder="Paste circular paragraphs containing eligibility, age limit, bond clauses, or vacancies..." 
+                              class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-brand-500"></textarea>
+                    <button onclick="analyzePdfText()" class="mt-2 w-full py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-lg transition">
+                        Analyze Pasted Text
+                    </button>
+                </div>
+
+                <!-- Analysis Results Box -->
+                <div id="pdfResultBox" class="hidden p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2 text-xs">
+                    <span class="font-bold text-slate-800 block text-xs border-b border-slate-200 pb-1">
+                        <i class="fa-solid fa-wand-magic-sparkles text-brand-600 mr-1"></i> Extracted Parameters:
+                    </span>
+                    <div class="grid grid-cols-2 gap-2 text-slate-700" id="pdfResultGrid">
+                        <!-- Injected -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Subscribe / Get Alerts Modal -->
     <div id="subscribeModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
@@ -270,16 +333,6 @@
                     </select>
                 </div>
 
-                <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-1">Cadre Preference</label>
-                    <select id="subCategory" class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:ring-2 focus:ring-brand-500">
-                        <option value="ALL">All (Central + State PSC + NHM)</option>
-                        <option value="Central Govt">Central Govt Only (UPSC / ESIC / Railways)</option>
-                        <option value="State PSC">State PSC Only</option>
-                        <option value="NHM">NHM Contractual Only</option>
-                    </select>
-                </div>
-
                 <div class="pt-2">
                     <button type="submit" id="subBtn" class="w-full py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-lg text-sm shadow transition flex items-center justify-center gap-2">
                         <span>Subscribe for Notifications</span>
@@ -309,7 +362,6 @@
                 document.getElementById('statActive').innerText = data.active_notices;
                 document.getElementById('statPosts').innerText = data.total_vacancies_seats.toLocaleString();
                 document.getElementById('statClosing').innerText = data.closing_in_7_days;
-                document.getElementById('statSubscribers').innerText = data.active_subscribers;
             } catch (err) {
                 console.error('Error fetching stats:', err);
             }
@@ -331,7 +383,7 @@
                 const logs = await res.json();
                 const tbody = document.getElementById('notificationLogsBody');
                 if (logs.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="5" class="py-4 text-center text-slate-400">No notifications sent yet. Add a subscription or sync to test!</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="5" class="py-4 text-center text-slate-400">No notifications dispatched yet.</td></tr>';
                     return;
                 }
                 tbody.innerHTML = logs.map(l => `
@@ -358,7 +410,8 @@
             const search = document.getElementById('searchInput').value.toLowerCase();
             const qual = document.getElementById('qualificationFilter').value;
             const cat = document.getElementById('categoryFilter').value;
-            const state = document.getElementById('stateFilter').value;
+            const stage = document.getElementById('stageFilter').value;
+            const bond = document.getElementById('bondFilter').value;
 
             const filtered = allVacancies.filter(v => {
                 const matchSearch = !search || 
@@ -368,9 +421,10 @@
                 
                 const matchQual = qual === 'ALL' || v.qualification.toLowerCase().includes(qual.toLowerCase());
                 const matchCat = cat === 'ALL' || v.category.toLowerCase().includes(cat.toLowerCase());
-                const matchState = state === 'ALL' || v.state === state || v.state === 'All India';
+                const matchStage = stage === 'ALL' || v.stage === stage;
+                const matchBond = bond === 'ALL' || (bond === 'NO_BOND' && v.bond_years === 0);
 
-                return matchSearch && matchQual && matchCat && matchState;
+                return matchSearch && matchQual && matchCat && matchStage && matchBond;
             });
 
             document.getElementById('filteredCount').innerText = `Showing ${filtered.length} of ${allVacancies.length} vacancies`;
@@ -389,7 +443,6 @@
             empty.classList.add('hidden');
 
             container.innerHTML = list.map(v => {
-                // Deadline pill color
                 let deadlineBadge = 'bg-slate-100 text-slate-700';
                 if (v.days_left !== null) {
                     if (v.days_left <= 7) deadlineBadge = 'bg-rose-100 text-rose-700 border border-rose-200 font-bold';
@@ -397,25 +450,51 @@
                     else deadlineBadge = 'bg-emerald-100 text-emerald-800 border border-emerald-200';
                 }
 
+                // Stage Badge
+                let stagePill = `<span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-100 text-blue-800"><i class="fa-solid fa-door-open mr-1"></i> Application Open</span>`;
+                if (v.stage === 'CLOSING_SOON') {
+                    stagePill = `<span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-100 text-rose-800"><i class="fa-solid fa-hourglass mr-1"></i> Closing Soon</span>`;
+                }
+
+                // Bond badge
+                const isNoBond = v.bond_years === 0;
+                const bondPill = isNoBond ? 
+                    `<span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200"><i class="fa-solid fa-shield-halved mr-1"></i> No Service Bond</span>` :
+                    `<span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200"><i class="fa-solid fa-file-contract mr-1"></i> ${v.bond_penalty_amount}</span>`;
+
+                // Seat category chips
+                let seatsHTML = '';
+                if (v.category_seats && Object.keys(v.category_seats).length > 0) {
+                    seatsHTML = Object.entries(v.category_seats).map(([k, count]) => `
+                        <span class="text-[10px] px-1.5 py-0.5 bg-white border border-slate-200 rounded text-slate-600 font-mono">
+                            ${k}: <strong>${count}</strong>
+                        </span>
+                    `).join('');
+                }
+
                 return `
                 <div class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm hover:shadow-md transition flex flex-col justify-between space-y-4">
                     <div>
-                        <!-- Header Tags -->
-                        <div class="flex items-center justify-between gap-2 mb-2.5">
-                            <span class="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700">
-                                <i class="fa-solid fa-building-columns mr-1 text-slate-400"></i> ${v.category}
-                            </span>
+                        <!-- Header Badges -->
+                        <div class="flex items-center justify-between gap-2 mb-2 flex-wrap">
+                            <div class="flex items-center gap-1.5 flex-wrap">
+                                <span class="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700">
+                                    <i class="fa-solid fa-building-columns mr-1 text-slate-400"></i> ${v.category}
+                                </span>
+                                ${stagePill}
+                                ${bondPill}
+                            </div>
                             <span class="text-[11px] font-medium px-2 py-0.5 rounded-full ${deadlineBadge}">
                                 <i class="fa-solid fa-hourglass-half mr-1"></i> ${v.days_left !== null ? v.days_left + ' days left' : 'Check Notice'}
                             </span>
                         </div>
 
                         <!-- Title & Org -->
-                        <h3 class="text-base font-bold text-slate-900 hover:text-brand-600 transition leading-snug">
+                        <h3 class="text-base font-bold text-slate-900 leading-snug">
                             ${v.title}
                         </h3>
                         <p class="text-xs font-semibold text-brand-700 mt-0.5">
-                            <i class="fa-solid fa-hospital mr-1"></i> ${v.organization}
+                            <i class="fa-solid fa-hospital mr-1"></i> ${v.organization} (${v.state})
                         </p>
 
                         <!-- Highlights Grid -->
@@ -433,12 +512,20 @@
                                 <span class="font-bold text-emerald-700">${v.total_posts} Seats</span>
                             </div>
                             <div>
-                                <span class="text-slate-400 block text-[10px] uppercase font-bold">Jurisdiction</span>
-                                <span class="font-medium text-slate-700">${v.state}</span>
+                                <span class="text-slate-400 block text-[10px] uppercase font-bold">Selection Mode</span>
+                                <span class="font-medium text-slate-700 truncate block">${v.selection_mode || 'Exam + Viva'}</span>
                             </div>
                         </div>
 
-                        <p class="text-xs text-slate-500 mt-3 line-clamp-2 leading-relaxed">
+                        <!-- Reservation Seat Distribution -->
+                        ${seatsHTML ? `
+                        <div class="mt-2.5 flex items-center gap-1 flex-wrap text-slate-400 text-[10px]">
+                            <span class="font-semibold uppercase text-slate-400">Seats:</span>
+                            ${seatsHTML}
+                        </div>
+                        ` : ''}
+
+                        <p class="text-xs text-slate-500 mt-2.5 line-clamp-2 leading-relaxed">
                             ${v.summary || 'Click below to read full official notification and qualifications required.'}
                         </p>
                     </div>
@@ -462,6 +549,65 @@
             }).join('');
         }
 
+        async function analyzePdfUrl() {
+            const url = document.getElementById('pdfUrlInput').value.trim();
+            if (!url) return alert('Please enter a valid PDF URL');
+            const btn = document.getElementById('analyzeBtn');
+            btn.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i>';
+            btn.disabled = true;
+
+            try {
+                const res = await fetch('/api/parser/analyze-url', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ url: url })
+                });
+                const result = await res.json();
+                if (result.success) {
+                    showExtracted(result.data);
+                }
+            } catch(e) {
+                alert('Analysis failed: ' + e.message);
+            } finally {
+                btn.innerHTML = 'Extract';
+                btn.disabled = false;
+            }
+        }
+
+        async function analyzePdfText() {
+            const text = document.getElementById('pdfTextInput').value.trim();
+            if (!text) return alert('Please paste notification text');
+
+            try {
+                const res = await fetch('/api/parser/analyze-text', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ text: text })
+                });
+                const result = await res.json();
+                if (result.success) {
+                    showExtracted(result.data);
+                }
+            } catch(e) {
+                alert('Analysis failed: ' + e.message);
+            }
+        }
+
+        function showExtracted(data) {
+            const box = document.getElementById('pdfResultBox');
+            const grid = document.getElementById('pdfResultGrid');
+            box.classList.remove('hidden');
+
+            grid.innerHTML = `
+                <div><strong>Qualification:</strong> ${data.qualification}</div>
+                <div><strong>Total Posts:</strong> ${data.total_posts}</div>
+                <div><strong>Max Age:</strong> ${data.max_age} Years</div>
+                <div><strong>Service Bond:</strong> ${data.bond_penalty_amount}</div>
+                <div class="col-span-2"><strong>Selection Mode:</strong> ${data.selection_mode}</div>
+                <div class="col-span-2"><strong>Quotas:</strong> ${JSON.stringify(data.category_seats || {})}</div>
+            `;
+        }
+
         async function refreshData() {
             const icon = document.getElementById('refreshIcon');
             icon.classList.add('animate-spin');
@@ -481,7 +627,8 @@
             document.getElementById('searchInput').value = '';
             document.getElementById('qualificationFilter').value = 'ALL';
             document.getElementById('categoryFilter').value = 'ALL';
-            document.getElementById('stateFilter').value = 'ALL';
+            document.getElementById('stageFilter').value = 'ALL';
+            document.getElementById('bondFilter').value = 'ALL';
             applyFilters();
         }
 
@@ -507,7 +654,6 @@
             const channel = document.querySelector('input[name="channel"]:checked').value;
             const target = document.getElementById('targetInput').value;
             const qual = document.getElementById('subQualification').value;
-            const cat = document.getElementById('subCategory').value;
 
             try {
                 const res = await fetch('/api/subscriptions', {
@@ -516,8 +662,7 @@
                     body: JSON.stringify({
                         channel: channel,
                         target: target,
-                        qualification_filter: qual,
-                        category_filter: cat
+                        qualification_filter: qual
                     })
                 });
                 const data = await res.json();
@@ -530,13 +675,8 @@
             }
         }
 
-        function openModal(id) {
-            document.getElementById(id).classList.remove('hidden');
-        }
-
-        function closeModal(id) {
-            document.getElementById(id).classList.add('hidden');
-        }
+        function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
 
         function showToast(msg) {
             const toast = document.getElementById('toast');

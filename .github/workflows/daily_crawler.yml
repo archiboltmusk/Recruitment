@@ -1,0 +1,36 @@
+name: Daily Recruitment Crawler & Health Check
+
+on:
+  schedule:
+    # Runs everyday at 04:00 UTC (09:30 AM IST)
+    - cron: '0 4 * * *'
+  workflow_dispatch:
+
+jobs:
+  crawl_and_verify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run Crawler & Link Verification Suite
+        run: |
+          python -c "
+          from app.database import engine, Base, SessionLocal
+          from app.collector import VacancyCollector
+          Base.metadata.create_all(bind=engine)
+          db = SessionLocal()
+          res = VacancyCollector.sync_sample_feed(db)
+          print('Sync completed:', res)
+          "

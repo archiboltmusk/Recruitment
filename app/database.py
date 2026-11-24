@@ -5,13 +5,16 @@ from sqlalchemy.orm import sessionmaker, declarative_base
 DB_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "med_vacancies.db")
 raw_db_url = os.getenv("DATABASE_URL", f"sqlite:///{DB_PATH}")
 
-# Fix SQLAlchemy 2.0 compatibility: Render, Supabase, and Heroku provide 'postgres://', but SQLAlchemy requires 'postgresql://'
+# Fix PostgreSQL driver resolution:
+# In SQLAlchemy 2+, 'postgresql://' defaults to psycopg3 ('psycopg').
+# Normalizing both 'postgres://' and 'postgresql://' to 'postgresql+psycopg2://' guarantees compatibility with both psycopg2 and psycopg.
 if raw_db_url.startswith("postgres://"):
-    DATABASE_URL = raw_db_url.replace("postgres://", "postgresql://", 1)
+    DATABASE_URL = raw_db_url.replace("postgres://", "postgresql+psycopg2://", 1)
+elif raw_db_url.startswith("postgresql://") and not raw_db_url.startswith("postgresql+"):
+    DATABASE_URL = raw_db_url.replace("postgresql://", "postgresql+psycopg2://", 1)
 else:
     DATABASE_URL = raw_db_url
 
-# Configure engine with robust pooling for PostgreSQL and multithread support for SQLite
 if "sqlite" in DATABASE_URL:
     engine = create_engine(
         DATABASE_URL,
@@ -20,7 +23,7 @@ if "sqlite" in DATABASE_URL:
 else:
     engine = create_engine(
         DATABASE_URL,
-        pool_pre_ping=True,  # Automatically detects and recovers from dropped connections
+        pool_pre_ping=True,
         pool_recycle=300
     )
 

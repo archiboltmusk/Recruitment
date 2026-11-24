@@ -19,6 +19,14 @@ class Vacancy(Base):
     notification_url = Column(Text, nullable=True)
     apply_url = Column(Text, nullable=True)
     summary = Column(Text, nullable=True)
+    
+    # Eligibility criteria parameters
+    min_age = Column(Integer, default=21)
+    max_age = Column(Integer, default=35)
+    experience_years_required = Column(Integer, default=0)
+    internship_must_complete = Column(Boolean, default=True)
+    state_registration_mandatory = Column(Boolean, default=False)
+    
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime, default=datetime.utcnow)
 

@@ -11,7 +11,7 @@ SAMPLE_VACANCIES: List[Dict[str, Any]] = [
         "organization": "Union Public Service Commission (UPSC)",
         "category": "Central Govt",
         "state": "All India",
-        "designation": "Assistant Divisional Medical Officer / General Duty Medical Officer (GDMO)",
+        "designation": "Assistant Divisional Medical Officer (Railways) / GDMO (CHS & NDMC)",
         "qualification": "MBBS",
         "total_posts": 827,
         "pay_scale": "Level 10 (₹56,100 - ₹1,77,500) + NPA",
@@ -19,9 +19,14 @@ SAMPLE_VACANCIES: List[Dict[str, Any]] = [
         "notification_url": "https://upsc.gov.in/sites/default/files/ExamNotif-CMS-2026.pdf",
         "apply_url": "https://upsconline.nic.in",
         "summary": "Recruitment to Medical Officers in Central Health Service, Indian Railways (ADMO), and New Delhi Municipal Council (NDMC). Written exam followed by personality test.",
+        "min_age": 21,
+        "max_age": 32,
+        "experience_years_required": 0,
+        "internship_must_complete": False, # Appearing/interns allowed to sit for CMS
+        "state_registration_mandatory": False
     },
     {
-        "title": "Recruitment of Insurance Medical Officer (IMO) Grade-II",
+        "title": "Insurance Medical Officer (IMO) Grade-II Recruitment",
         "organization": "Employees' State Insurance Corporation (ESIC)",
         "category": "Central Govt",
         "state": "All India",
@@ -33,20 +38,30 @@ SAMPLE_VACANCIES: List[Dict[str, Any]] = [
         "notification_url": "https://www.esic.gov.in/recruitments/imo-grade-2.pdf",
         "apply_url": "https://www.esic.gov.in",
         "summary": "Regular posts for medical officers across ESIC hospitals and dispensaries nationwide. Candidate must have completed compulsory rotatory internship.",
+        "min_age": 21,
+        "max_age": 35,
+        "experience_years_required": 0,
+        "internship_must_complete": True,
+        "state_registration_mandatory": False
     },
     {
-        "title": "Recruitment of Senior Medical Officer & GDMO on Direct Recruitment",
+        "title": "Recruitment of Senior Medical Officer & Specialist MO",
         "organization": "AIIMS New Delhi & Regional AIIMS",
         "category": "Autonomous Institute",
         "state": "Delhi / Multi-State",
-        "designation": "Senior Medical Officer / Blood Transfusion Officer",
-        "qualification": "MD/MS or MBBS with 3 yrs experience",
+        "designation": "Senior Medical Officer / Specialist Grade",
+        "qualification": "MD/MS",
         "total_posts": 46,
         "pay_scale": "Level 11 (₹67,700 - ₹2,08,700)",
         "last_date": datetime.utcnow() + timedelta(days=18),
         "notification_url": "https://www.aiimsexams.ac.in/recruitment/smo-2026.pdf",
         "apply_url": "https://www.aiimsexams.ac.in",
-        "summary": "Direct recruitment for clinical and administrative medical roles across AIIMS New Delhi and associated trauma centers.",
+        "summary": "Direct recruitment for clinical and administrative specialist medical roles across AIIMS New Delhi and associated trauma centers.",
+        "min_age": 25,
+        "max_age": 40,
+        "experience_years_required": 3,
+        "internship_must_complete": True,
+        "state_registration_mandatory": False
     },
     {
         "title": "National Health Mission (NHM) Medical Officers (MBBS & Specialists)",
@@ -54,13 +69,18 @@ SAMPLE_VACANCIES: List[Dict[str, Any]] = [
         "category": "NHM / Contractual",
         "state": "Maharashtra",
         "designation": "Medical Officer (Urban PHCs & Rural Hospitals)",
-        "qualification": "MBBS / BAMS",
+        "qualification": "MBBS",
         "total_posts": 420,
         "pay_scale": "₹60,000 - ₹75,000 per month (Consolidated)",
         "last_date": datetime.utcnow() + timedelta(days=7),
         "notification_url": "https://arogya.maharashtra.gov.in/nhm-recruitment-mo.pdf",
         "apply_url": "https://arogya.maharashtra.gov.in",
         "summary": "Walk-in interview and online application for contractual Medical Officers at Primary Health Centres (PHCs) and Community Health Centres (CHCs).",
+        "min_age": 21,
+        "max_age": 43,
+        "experience_years_required": 0,
+        "internship_must_complete": True,
+        "state_registration_mandatory": True
     },
     {
         "title": "Allopathic Medical Officer Grade-1 Recruitment",
@@ -68,13 +88,18 @@ SAMPLE_VACANCIES: List[Dict[str, Any]] = [
         "category": "State PSC",
         "state": "Uttar Pradesh",
         "designation": "Medical Officer (Allopathic)",
-        "qualification": "MBBS / Post Graduate Degree/Diploma",
+        "qualification": "MBBS",
         "total_posts": 1280,
         "pay_scale": "Level 10 (Grade Pay ₹5400) + Allowances",
         "last_date": datetime.utcnow() + timedelta(days=30),
         "notification_url": "https://uppsc.up.nic.in/notices/mo-allopathic-advt.pdf",
         "apply_url": "https://uppsc.up.nic.in",
         "summary": "State health cadre permanent positions in Uttar Pradesh Provincial Medical and Health Services across various district hospitals.",
+        "min_age": 21,
+        "max_age": 40,
+        "experience_years_required": 0,
+        "internship_must_complete": True,
+        "state_registration_mandatory": True
     },
     {
         "title": "Short Service Commissioned Medical Officers (AFMS)",
@@ -82,13 +107,18 @@ SAMPLE_VACANCIES: List[Dict[str, Any]] = [
         "category": "Armed Forces",
         "state": "All India",
         "designation": "Captain / Surgeon Lieutenant / Flight Lieutenant",
-        "qualification": "MBBS (Permanent Registration)",
+        "qualification": "MBBS",
         "total_posts": 212,
-        "pay_scale": "Military Pay Matrix Level 10B + Military Service Pay (₹15,500) + NPA",
+        "pay_scale": "Military Pay Matrix Level 10B + MSP (₹15,500) + NPA",
         "last_date": datetime.utcnow() + timedelta(days=25),
         "notification_url": "https://amcsscentry.gov.in/guidelines.pdf",
         "apply_url": "https://amcsscentry.gov.in",
         "summary": "Applications invited from Indian citizens for grant of Short Service Commission in Armed Forces Medical Services for male and female doctors.",
+        "min_age": 21,
+        "max_age": 30,
+        "experience_years_required": 0,
+        "internship_must_complete": True,
+        "state_registration_mandatory": False
     },
     {
         "title": "AYUSH Medical Officer (Ayurveda / Homeopathy / Unani)",
@@ -96,13 +126,18 @@ SAMPLE_VACANCIES: List[Dict[str, Any]] = [
         "category": "State PSC",
         "state": "Bihar",
         "designation": "Ayush Medical Officer",
-        "qualification": "BAMS / BHMS / BUMS",
+        "qualification": "AYUSH",
         "total_posts": 350,
         "pay_scale": "Level 9 (₹53,100 - ₹1,67,800)",
         "last_date": datetime.utcnow() + timedelta(days=12),
         "notification_url": "https://btsc.bih.nic.in/ayush-mo-2026.pdf",
         "apply_url": "https://btsc.bih.nic.in",
         "summary": "Recruitment for AYUSH medical officers across primary and community health dispensaries in Bihar.",
+        "min_age": 21,
+        "max_age": 37,
+        "experience_years_required": 0,
+        "internship_must_complete": True,
+        "state_registration_mandatory": True
     }
 ]
 
@@ -114,7 +149,6 @@ class VacancyCollector:
         updated_count = 0
 
         for item in SAMPLE_VACANCIES:
-            # Check if exists by title and organization
             existing = db.query(Vacancy).filter(
                 Vacancy.title == item["title"],
                 Vacancy.organization == item["organization"]
@@ -134,18 +168,25 @@ class VacancyCollector:
                     notification_url=item["notification_url"],
                     apply_url=item["apply_url"],
                     summary=item["summary"],
+                    min_age=item.get("min_age", 21),
+                    max_age=item.get("max_age", 35),
+                    experience_years_required=item.get("experience_years_required", 0),
+                    internship_must_complete=item.get("internship_must_complete", True),
+                    state_registration_mandatory=item.get("state_registration_mandatory", False),
                     is_active=True
                 )
                 db.add(vacancy)
                 db.commit()
                 db.refresh(vacancy)
-                
-                # Dispatch notification alerts
                 Notifier.broadcast_new_vacancy(db, vacancy)
                 added_count += 1
             else:
-                # Update existing status
                 existing.last_date = item["last_date"]
+                existing.min_age = item.get("min_age", 21)
+                existing.max_age = item.get("max_age", 35)
+                existing.experience_years_required = item.get("experience_years_required", 0)
+                existing.internship_must_complete = item.get("internship_must_complete", True)
+                existing.state_registration_mandatory = item.get("state_registration_mandatory", False)
                 existing.is_active = (existing.last_date >= datetime.utcnow()) if existing.last_date else True
                 db.commit()
                 updated_count += 1
@@ -168,6 +209,11 @@ class VacancyCollector:
             notification_url=data.get("notification_url", ""),
             apply_url=data.get("apply_url", ""),
             summary=data.get("summary", ""),
+            min_age=int(data.get("min_age", 21)),
+            max_age=int(data.get("max_age", 35)),
+            experience_years_required=int(data.get("experience_years_required", 0)),
+            internship_must_complete=bool(data.get("internship_must_complete", True)),
+            state_registration_mandatory=bool(data.get("state_registration_mandatory", False)),
             is_active=True
         )
         db.add(vacancy)

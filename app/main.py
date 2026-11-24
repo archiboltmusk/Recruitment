@@ -19,7 +19,7 @@ Base.metadata.create_all(bind=engine)
 app = FastAPI(
     title="MedAlerts - Medical Officer Vacancies Aggregator",
     description="Unified API & notification engine for Medical Officer posts across UPSC, State PSCs, NHM, and AIIMS.",
-    version="1.0.0"
+    version="1.1.0"
 )
 
 # Schemas
@@ -36,6 +36,11 @@ class VacancyCreate(BaseModel):
     notification_url: Optional[str] = None
     apply_url: Optional[str] = None
     summary: Optional[str] = None
+    min_age: int = 21
+    max_age: int = 35
+    experience_years_required: int = 0
+    internship_must_complete: bool = True
+    state_registration_mandatory: bool = False
 
 class SubscriptionCreate(BaseModel):
     channel: str = Field(..., description="telegram, email, or webhook")
@@ -43,6 +48,17 @@ class SubscriptionCreate(BaseModel):
     qualification_filter: str = "ALL"
     state_filter: str = "ALL"
     category_filter: str = "ALL"
+
+class DoctorProfile(BaseModel):
+    name: str
+    qualification: str = "MBBS"  # MBBS, MD/MS, BDS, AYUSH
+    college_name: str
+    passing_year: int
+    internship_status: str = "completed"  # completed, ongoing
+    age: int
+    category: str = "UR"  # UR, OBC, SC, ST, EWS
+    home_state: str = "All India"
+    registered_with_smc: bool = True
 
 # Mount static files
 static_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static")
@@ -53,7 +69,6 @@ app.mount("/static", StaticFiles(directory=static_dir), name="static")
 
 @app.on_event("startup")
 def on_startup():
-    # Automatically seed sample vacancies if DB is empty
     from .database import SessionLocal
     db = SessionLocal()
     try:
@@ -68,7 +83,14 @@ def serve_index():
     index_file = os.path.join(static_dir, "index.html")
     if os.path.exists(index_file):
         return FileResponse(index_file)
-    return {"message": "MedAlerts API is live. Visit /docs for the API Swagger."}
+    return {"message": "MedAlerts API is live."}
+
+@app.get("/onboarding")
+def serve_onboarding():
+    onboarding_file = os.path.join(static_dir, "onboarding.html")
+    if os.path.exists(onboarding_file):
+        return FileResponse(onboarding_file)
+    return {"message": "Onboarding page"}
 
 @app.get("/api/stats")
 def get_stats(db: Session = Depends(get_db)):
@@ -123,10 +145,8 @@ def list_vacancies(
     if state and state != "ALL":
         query = query.filter(or_(Vacancy.state == state, Vacancy.state == "All India"))
 
-    # Order by nearest deadline first
     vacancies = query.order_by(Vacancy.last_date.asc()).all()
 
-    # Calculate days left for each
     results = []
     now = datetime.utcnow()
     for v in vacancies:
@@ -145,6 +165,10 @@ def list_vacancies(
             "qualification": v.qualification,
             "total_posts": v.total_posts,
             "pay_scale": v.pay_scale,
+            "min_age": v.min_age,
+            "max_age": v.max_age,
+            "experience_years_required": v.experience_years_required,
+            "internship_must_complete": v.internship_must_complete,
             "last_date": v.last_date.strftime("%Y-%m-%d") if v.last_date else None,
             "days_left": days_left,
             "notification_url": v.notification_url,
@@ -154,6 +178,168 @@ def list_vacancies(
         })
 
     return results
+
+@app.post("/api/check-eligibility")
+def check_eligibility(profile: DoctorProfile, db: Session = Depends(get_db)):
+    vacancies = db.query(Vacancy).filter(Vacancy.is_active == True).all()
+    results = []
+    now = datetime.utcnow()
+
+    # Category age relaxation rules
+    age_relaxation = 0
+    if profile.category in ["SC", "ST"]:
+        age_relaxation = 5
+    elif profile.category == "OBC":
+        age_relaxation = 3
+
+    current_year = 2026
+    approx_experience = max(0, current_year - profile.passing_year)
+
+    for v in vacancies:
+        criteria_checks = []
+        is_hard_fail = False
+        is_conditional = False
+
+        # 1. Qualification Check
+        user_qual = profile.qualification.upper()
+        req_qual = v.qualification.upper()
+
+        if req_qual == "MD/MS":
+            if user_qual == "MD/MS":
+                criteria_checks.append({"name": "Qualification", "pass": True, "detail": "Postgraduate Specialist (MD/MS) matched"})
+            else:
+                is_hard_fail = True
+                criteria_checks.append({"name": "Qualification", "pass": False, "detail": "Requires Specialist MD/MS/DNB degree (You have MBBS)"})
+        elif req_qual == "AYUSH":
+            if user_qual == "AYUSH":
+                criteria_checks.append({"name": "Qualification", "pass": True, "detail": "BAMS/BHMS qualification matched"})
+            else:
+                is_hard_fail = True
+                criteria_checks.append({"name": "Qualification", "pass": False, "detail": "Requires AYUSH degree (BAMS / BHMS)"})
+        elif req_qual == "BDS":
+            if user_qual == "BDS":
+                criteria_checks.append({"name": "Qualification", "pass": True, "detail": "Dental (BDS) degree matched"})
+            else:
+                is_hard_fail = True
+                criteria_checks.append({"name": "Qualification", "pass": False, "detail": "Requires BDS degree"})
+        else: # MBBS
+            if user_qual in ["MBBS", "MD/MS"]:
+                criteria_checks.append({"name": "Qualification", "pass": True, "detail": "MBBS degree criterion satisfied"})
+            else:
+                is_hard_fail = True
+                criteria_checks.append({"name": "Qualification", "pass": False, "detail": "Requires basic MBBS degree"})
+
+        # 2. Age Check (with relaxation)
+        allowed_max_age = (v.max_age or 35) + age_relaxation
+        min_req_age = v.min_age or 21
+
+        if profile.age < min_req_age:
+            is_hard_fail = True
+            criteria_checks.append({"name": "Age Limit", "pass": False, "detail": f"Underage: Minimum age is {min_req_age} yrs (You are {profile.age})"})
+        elif profile.age > allowed_max_age:
+            is_hard_fail = True
+            criteria_checks.append({"name": "Age Limit", "pass": False, "detail": f"Overage: Max age allowed is {allowed_max_age} yrs for {profile.category} (You are {profile.age})"})
+        else:
+            relax_msg = f" (incl. {age_relaxation} yrs {profile.category} relaxation)" if age_relaxation > 0 else ""
+            criteria_checks.append({"name": "Age Limit", "pass": True, "detail": f"Eligible: Under {allowed_max_age} yrs limit{relax_msg}"})
+
+        # 3. Internship & Experience Check
+        if v.experience_years_required > 0:
+            if approx_experience < v.experience_years_required:
+                is_hard_fail = True
+                criteria_checks.append({"name": "Clinical Experience", "pass": False, "detail": f"Requires {v.experience_years_required} yrs experience post-internship (You have ~{approx_experience} yrs)"})
+            else:
+                criteria_checks.append({"name": "Clinical Experience", "pass": True, "detail": f"Satisfies {v.experience_years_required}+ years post-graduation experience"})
+        else:
+            criteria_checks.append({"name": "Experience", "pass": True, "detail": "Fresh graduates eligible (0 years experience required)"})
+
+        if v.internship_must_complete:
+            if profile.internship_status != "completed":
+                is_hard_fail = True
+                criteria_checks.append({"name": "Internship", "pass": False, "detail": "Requires completed compulsory rotatory internship before applying"})
+            else:
+                criteria_checks.append({"name": "Internship", "pass": True, "detail": "Internship completed"})
+        else:
+            if profile.internship_status != "completed":
+                is_conditional = True
+                criteria_checks.append({"name": "Internship", "pass": True, "conditional": True, "detail": "Appearing / Interns allowed provisionally (must complete before joining)"})
+            else:
+                criteria_checks.append({"name": "Internship", "pass": True, "detail": "Internship completed"})
+
+        # 4. State Domicile & Registration Check
+        if v.state != "All India" and v.state != profile.home_state:
+            if v.state_registration_mandatory:
+                is_conditional = True
+                criteria_checks.append({"name": "State Registration", "pass": True, "conditional": True, "detail": f"State Council registration with {v.state} Medical Council required before final joining"})
+            else:
+                criteria_checks.append({"name": "Jurisdiction", "pass": True, "detail": f"All India applicants accepted ({v.state} posting)"})
+        else:
+            criteria_checks.append({"name": "Jurisdiction", "pass": True, "detail": "Eligible (Home State or All India Cadre)"})
+
+        # Determine Final Status
+        if is_hard_fail:
+            status_tag = "INELIGIBLE"
+            status_label = "Not Eligible"
+            badge_color = "red"
+        elif is_conditional:
+            status_tag = "CONDITIONALLY_ELIGIBLE"
+            status_label = "Conditionally Eligible"
+            badge_color = "amber"
+        else:
+            status_tag = "ELIGIBLE"
+            status_label = "Fully Eligible to Apply"
+            badge_color = "emerald"
+
+        days_left = None
+        if v.last_date:
+            delta = (v.last_date - now).total_seconds() / 86400.0
+            days_left = max(0, int(delta))
+
+        results.append({
+            "vacancy_id": v.id,
+            "title": v.title,
+            "organization": v.organization,
+            "category": v.category,
+            "state": v.state,
+            "designation": v.designation,
+            "qualification": v.qualification,
+            "total_posts": v.total_posts,
+            "pay_scale": v.pay_scale,
+            "last_date": v.last_date.strftime("%Y-%m-%d") if v.last_date else None,
+            "days_left": days_left,
+            "apply_url": v.apply_url,
+            "notification_url": v.notification_url,
+            "status": status_tag,
+            "status_label": status_label,
+            "badge_color": badge_color,
+            "criteria_checks": criteria_checks
+        })
+
+    # Sort results: ELIGIBLE first, then CONDITIONALLY_ELIGIBLE, then INELIGIBLE
+    sort_order = {"ELIGIBLE": 0, "CONDITIONALLY_ELIGIBLE": 1, "INELIGIBLE": 2}
+    results.sort(key=lambda x: (sort_order[x["status"]], x["days_left"] if x["days_left"] is not None else 999))
+
+    eligible_count = sum(1 for r in results if r["status"] == "ELIGIBLE")
+    conditional_count = sum(1 for r in results if r["status"] == "CONDITIONALLY_ELIGIBLE")
+
+    return {
+        "candidate": {
+            "name": profile.name,
+            "qualification": profile.qualification,
+            "college": profile.college_name,
+            "passing_year": profile.passing_year,
+            "age": profile.age,
+            "category": profile.category,
+            "home_state": profile.home_state
+        },
+        "summary": {
+            "total_evaluated": len(results),
+            "fully_eligible": eligible_count,
+            "conditionally_eligible": conditional_count,
+            "ineligible": len(results) - eligible_count - conditional_count
+        },
+        "matches": results
+    }
 
 @app.post("/api/vacancies", status_code=status.HTTP_201_CREATED)
 def create_vacancy(payload: VacancyCreate, db: Session = Depends(get_db)):
@@ -167,7 +353,6 @@ def refresh_collector(db: Session = Depends(get_db)):
 
 @app.post("/api/subscriptions", status_code=status.HTTP_201_CREATED)
 def subscribe(payload: SubscriptionCreate, db: Session = Depends(get_db)):
-    # Check if existing
     existing = db.query(Subscription).filter(
         Subscription.channel == payload.channel,
         Subscription.target == payload.target

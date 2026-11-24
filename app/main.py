@@ -144,6 +144,49 @@ def serve_exam():
         return FileResponse(exam_file)
     return {"message": "Exam Simulator page"}
 
+@app.get("/api/health/db")
+def health_check_db():
+    from urllib.parse import urlparse
+    from sqlalchemy import text
+    from .database import DATABASE_URL, engine, SessionLocal
+    parsed = urlparse(DATABASE_URL)
+    host = parsed.hostname or "local-sqlite"
+    port = parsed.port
+    scheme = parsed.scheme
+    try:
+        with engine.connect() as conn:
+            conn.execute(text("SELECT 1"))
+        Base.metadata.create_all(bind=engine)
+        db = SessionLocal()
+        try:
+            count = db.query(Vacancy).count()
+            if count == 0:
+                VacancyCollector.sync_sample_feed(db)
+                count = db.query(Vacancy).count()
+        finally:
+            db.close()
+        return {
+            "status": "ok",
+            "driver": scheme,
+            "host": host,
+            "port": port,
+            "vacancies_count": count,
+            "message": "Database connection and schema verified!"
+        }
+    except Exception as e:
+        err_str = str(e)
+        hint = None
+        if "supabase.co" in host and ("Network is unreachable" in err_str or "could not translate host name" in err_str or "timeout" in err_str.lower()):
+            hint = "Render Free Tier only supports IPv4, whereas Supabase Direct Connection (db.*.supabase.co) uses IPv6. Switch to Supabase's Pooler URL (*.pooler.supabase.com:6543 or :5432)."
+        return {
+            "status": "error",
+            "driver": scheme,
+            "host": host,
+            "port": port,
+            "error": err_str,
+            "hint": hint
+        }
+
 @app.get("/api/exams")
 def list_exams():
     return EXAMS_CATALOG

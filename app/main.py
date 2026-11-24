@@ -102,6 +102,7 @@ def on_shutdown():
     shutdown_scheduler()
 
 @app.get("/")
+@app.head("/")
 def serve_index():
     index_file = os.path.join(static_dir, "index.html")
     if os.path.exists(index_file):
@@ -109,6 +110,7 @@ def serve_index():
     return {"message": "MedAlerts API is live."}
 
 @app.get("/onboarding")
+@app.head("/onboarding")
 def serve_onboarding():
     onboarding_file = os.path.join(static_dir, "onboarding.html")
     if os.path.exists(onboarding_file):
@@ -116,6 +118,7 @@ def serve_onboarding():
     return {"message": "Onboarding page"}
 
 @app.get("/api/stats")
+@app.head("/api/stats")
 def get_stats(db: Session = Depends(get_db)):
     now = datetime.utcnow()
     total_active = db.query(Vacancy).filter(Vacancy.is_active == True).count()

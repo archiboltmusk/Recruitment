@@ -6,7 +6,7 @@ EXAMS_CATALOG: List[Dict[str, Any]] = [
         "id": "upsc-cms-paper-1",
         "title": "UPSC Combined Medical Services (CMS) — Paper 1",
         "subtitle": "General Medicine (96 Qs) & Pediatrics (24 Qs)",
-        "total_questions": 12, # representative high-yield set for immediate test run
+        "total_questions": 12,
         "total_marks": 250,
         "duration_minutes": 120,
         "negative_marking": 0.33,
@@ -27,6 +27,32 @@ EXAMS_CATALOG: List[Dict[str, Any]] = [
         "year": "2024 Official Pattern",
         "difficulty": "Medium to High",
         "cutoff_reference": 132
+    },
+    {
+        "id": "cms-clinical-pharma",
+        "title": "Clinical Pharmacology & Antimicrobial Stewardship Drill",
+        "subtitle": "High-Yield Antibiotics, Toxicities, and Emergency Antidotes",
+        "total_questions": 6,
+        "total_marks": 100,
+        "duration_minutes": 45,
+        "negative_marking": 0.33,
+        "subjects": ["Clinical Pharmacology"],
+        "year": "2024 High-Yield",
+        "difficulty": "Moderate",
+        "cutoff_reference": 60
+    },
+    {
+        "id": "cms-psm-national-programs",
+        "title": "National Health Programs & Epidemiology Vault",
+        "subtitle": "NTEP (TB), UIP (Vaccines), NVBDCP, and Demography Indices",
+        "total_questions": 6,
+        "total_marks": 100,
+        "duration_minutes": 45,
+        "negative_marking": 0.33,
+        "subjects": ["Preventive & Social Medicine"],
+        "year": "2024 High-Yield",
+        "difficulty": "Moderate",
+        "cutoff_reference": 65
     },
     {
         "id": "esic-imo-clinical-drill",
@@ -383,6 +409,267 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
             "correct_option": 1,
             "explanation": "Infant Mortality Rate (IMR)—number of infant deaths under 1 year of age per 1,000 live births in a given year—is universally regarded as the most sensitive single index of health, sanitation, nutrition, and general socioeconomic conditions of a population.",
             "citation": "Park's Textbook of Preventive and Social Medicine, Chapter on Demography and Family Planning"
+        }
+    ],
+
+    "cms-clinical-pharma": [
+        {
+            "id": "pharma-01",
+            "subject": "Clinical Pharmacology",
+            "text": "Which of the following is the specific antidote for acute Paracetamol (Acetaminophen) toxicity and what is its primary mechanism of action?",
+            "options": [
+                "N-Acetylcysteine (NAC); replenishes intracellular glutathione reserves",
+                "Flumazenil; competitive antagonism at GABA-A receptors",
+                "Deferoxamine; chelates free iron ions",
+                "Pralidoxime; reactivates acetylcholinesterase enzyme"
+            ],
+            "correct_option": 0,
+            "explanation": "N-Acetylcysteine (NAC) acts as a glutathione precursor and substitute, binding and detoxifying the hepatotoxic reactive metabolite N-acetyl-p-benzoquinone imine (NAPQI). It is most effective when administered within 8-10 hours of paracetamol ingestion.",
+            "citation": "KD Tripathi's Essentials of Medical Pharmacology, 8th Edition; Harrison's Toxicology"
+        },
+        {
+            "id": "pharma-02",
+            "subject": "Clinical Pharmacology",
+            "text": "A 30-year-old pregnant patient in her third trimester presents with acute pyelonephritis. Which of the following antimicrobial classes is strictly CONTRAINDICATED due to the risk of fetal arthropathy and cartilage damage?",
+            "options": [
+                "Cephalosporins (e.g. Ceftriaxone)",
+                "Fluoroquinolones (e.g. Ciprofloxacin)",
+                "Penicillins (e.g. Amoxicillin-Clavulanate)",
+                "Macrolides (e.g. Azithromycin)"
+            ],
+            "correct_option": 1,
+            "explanation": "Fluoroquinolones (Ciprofloxacin, Levofloxacin) are contraindicated in pregnancy because they bind to developing connective tissue and cartilage, causing fetal arthropathy and chondrodysplasia in animal studies. Cephalosporins and aminopenicillins are safe in pregnancy.",
+            "citation": "KD Tripathi's Essentials of Medical Pharmacology; Briggs Drugs in Pregnancy and Lactation"
+        },
+        {
+            "id": "pharma-03",
+            "subject": "Clinical Pharmacology",
+            "text": "Which oral anticoagulant acts as a direct Factor Xa inhibitor and does NOT require routine monitoring of PT/INR?",
+            "options": [
+                "Warfarin",
+                "Rivaroxaban",
+                "Dabigatran",
+                "Unfractionated Heparin"
+            ],
+            "correct_option": 1,
+            "explanation": "Rivaroxaban and Apixaban are Direct Oral Anticoagulants (DOACs) that selectively inhibit Factor Xa directly. Dabigatran, by contrast, is a direct thrombin (Factor IIa) inhibitor. Warfarin requires strict PT/INR monitoring.",
+            "citation": "Harrison's Principles of Internal Medicine; KD Tripathi's Pharmacology"
+        },
+        {
+            "id": "pharma-04",
+            "subject": "Clinical Pharmacology",
+            "text": "Which drug is the treatment of choice for acute anaphylactic shock and what is the recommended adult dose and route?",
+            "options": [
+                "Epinephrine (Adrenaline) 1:1,000, 0.5 mg Intramuscular in the anterolateral thigh",
+                "Epinephrine (Adrenaline) 1:10,000, 1.0 mg rapid IV bolus",
+                "Hydrocortisone 100 mg IV alone",
+                "Diphenhydramine 50 mg oral"
+            ],
+            "correct_option": 0,
+            "explanation": "Intramuscular Epinephrine (1:1,000 dilution, 0.5 mg in adults, 0.01 mg/kg in children) injected into the vastus lateralis (anterolateral thigh) is the immediate first-line lifesaving drug in anaphylaxis. IV epinephrine bolus without dilution poses severe risk of ventricular fibrillation and cerebral hemorrhage.",
+            "citation": "Resuscitation Council UK Anaphylaxis Guidelines; Harrison's Allergy and Clinical Immunology"
+        },
+        {
+            "id": "pharma-05",
+            "subject": "Clinical Pharmacology",
+            "text": "The classic 'Red Man Syndrome' characterized by flushing, erythema, and pruritus of the face and upper torso is an infusion-related adverse reaction caused by which antibiotic?",
+            "options": [
+                "Vancomycin",
+                "Gentamicin",
+                "Clindamycin",
+                "Amphotericin B"
+            ],
+            "correct_option": 0,
+            "explanation": "Red Man Syndrome is an adverse reaction caused by rapid intravenous infusion of Vancomycin leading to direct, non-IgE-mediated histamine release from mast cells. It is prevented by slow infusion over at least 60 minutes and pre-treatment with antihistamines.",
+            "citation": "KD Tripathi's Essentials of Medical Pharmacology; Goodman & Gilman's Pharmacological Basis of Therapeutics"
+        },
+        {
+            "id": "pharma-06",
+            "subject": "Clinical Pharmacology",
+            "text": "A patient on chronic Lithium therapy for Bipolar Disorder is started on Hydrochlorothiazide for hypertension. What dangerous drug interaction is likely to occur?",
+            "options": [
+                "Severe Lithium Toxicity due to decreased renal clearance",
+                "Rapid loss of Lithium efficacy due to enhanced excretion",
+                "Severe Hyperkalemia",
+                "Acute pancreatitis"
+            ],
+            "correct_option": 0,
+            "explanation": "Thiazide diuretics cause sodium depletion at the distal convoluted tubule, which triggers compensatory increased reabsorption of sodium AND lithium in the proximal tubule. This reduces lithium clearance by 25-40% and precipitates severe lithium toxicity (tremors, ataxia, seizures, arrhythmias).",
+            "citation": "Harrison's Principles of Internal Medicine; KD Tripathi's Pharmacology"
+        }
+    ],
+
+    "cms-psm-national-programs": [
+        {
+            "id": "psm-01",
+            "subject": "Preventive & Social Medicine",
+            "text": "Under the National Tuberculosis Elimination Program (NTEP) of India, what is the standard first-line intensive phase regimen for drug-sensitive pulmonary tuberculosis in adults?",
+            "options": [
+                "2 months of daily HRZE (Isoniazid, Rifampicin, Pyrazinamide, Ethambutol)",
+                "2 months of thrice-weekly HRZ",
+                "6 months of daily Rifampicin alone",
+                "3 months of Bedaquiline + Delamanid"
+            ],
+            "correct_option": 0,
+            "explanation": "Under NTEP, the standard treatment regimen for drug-sensitive TB consists of an Intensive Phase of 2 months of daily fixed-dose combinations of 4 drugs: HRZE (Isoniazid, Rifampicin, Pyrazinamide, Ethambutol), followed by a Continuation Phase of 4 months of 3 drugs: HRE (Isoniazid, Rifampicin, Ethambutol).",
+            "citation": "NTEP Guidelines, Central TB Division, MoHFW; Park's PSM 26th Edition"
+        },
+        {
+            "id": "psm-02",
+            "subject": "Preventive & Social Medicine",
+            "text": "Under the Universal Immunization Programme (UIP) of India, which vaccine is administered intradermally at birth or up to 1 year of age over the left deltoid?",
+            "options": [
+                "BCG (Bacillus Calmette-Guérin)",
+                "Hepatitis B birth dose",
+                "Oral Polio Vaccine (OPV-0)",
+                "Inactivated Polio Vaccine (fIPV)"
+            ],
+            "correct_option": 0,
+            "explanation": "BCG is given intradermally (0.05 mL at birth or 0.1 mL after 1 month up to 1 year) over the left deltoid insertion. A permanent wheal appears, followed in 2-3 weeks by a papule that crusts and forms a typical permanent round scar by 6-12 weeks.",
+            "citation": "Universal Immunization Programme Guidelines, MoHFW; Park's PSM"
+        },
+        {
+            "id": "psm-03",
+            "subject": "Preventive & Social Medicine",
+            "text": "What is the key epidemiological criterion defined by the NVBDCP to confirm that a malaria-endemic area has entered the pre-elimination/elimination phase?",
+            "options": [
+                "Annual Parasite Index (API) < 1 case per 1,000 population at risk",
+                "Slide Positivity Rate (SPR) > 5%",
+                "Infant Parasite Rate (IPR) > 10%",
+                "Annual Blood Examination Rate (ABER) < 2%"
+            ],
+            "correct_option": 0,
+            "explanation": "The Annual Parasite Index (API = confirmed malaria cases in a year / total population × 1,000) is the primary index to assess malaria transmission. An API < 1 case per 1,000 population indicates that the district has entered the malaria pre-elimination phase.",
+            "citation": "NVBDCP National Strategic Plan for Malaria Elimination in India; Park's PSM"
+        },
+        {
+            "id": "psm-04",
+            "subject": "Preventive & Social Medicine",
+            "text": "According to the Janani Suraksha Yojana (JSY) guidelines, what is the primary objective of the program and how is it implemented?",
+            "options": [
+                "Promote institutional deliveries among pregnant women via cash incentives to reduce Maternal and Neonatal Mortality",
+                "Provide free school meals to adolescent girls",
+                "Eradicate iron deficiency in preschool children",
+                "Offer compulsory tubectomy incentives"
+            ],
+            "correct_option": 0,
+            "explanation": "Janani Suraksha Yojana (JSY) is a safe motherhood intervention under NHM that integrates cash assistance with antenatal care and institutional delivery in government or accredited private health facilities, directly targeting reductions in MMR and NMR.",
+            "citation": "National Health Mission Guidelines; Park's Textbook of Preventive and Social Medicine"
+        },
+        {
+            "id": "psm-05",
+            "subject": "Preventive & Social Medicine",
+            "text": "Under the Biomedical Waste Management Rules (2016) in India, into which color-coded container must contaminated anatomical waste (placenta, amputated limbs) and soiled bandages be discarded?",
+            "options": [
+                "Yellow non-chlorinated plastic bag (for Incineration / Deep burial)",
+                "Red container (for Autoclaving and recycling)",
+                "Blue cardboard box (for Glassware and ampoules)",
+                "Translucent white puncture-proof container (for Needles and sharps)"
+            ],
+            "correct_option": 0,
+            "explanation": "BMWM Rules 2016: Yellow bags = Human anatomical waste, animal waste, soiled dressings, expired cytotoxic medicines (treated via incineration or plasma pyrolysis). Red = Contaminated recyclable plastics (catheters, IV tubing). White translucent = Needles, scalpels, sharps. Blue = Glassware and metallic body implants.",
+            "citation": "Biomedical Waste Management Rules 2016, Ministry of Environment, Forest and Climate Change; Park's PSM"
+        },
+        {
+            "id": "psm-06",
+            "subject": "Preventive & Social Medicine",
+            "text": "What is the targeted replacement-level Total Fertility Rate (TFR) required for a population to achieve stabilization?",
+            "options": [
+                "2.1 children per woman",
+                "1.5 children per woman",
+                "2.8 children per woman",
+                "3.0 children per woman"
+            ],
+            "correct_option": 0,
+            "explanation": "Replacement-level fertility is the average number of children that a couple must bear in their reproductive lifetime to replace themselves. In demography, a Total Fertility Rate (TFR) of 2.1 is defined as replacement level fertility.",
+            "citation": "NFHS-5 Report; Park's Textbook of Preventive and Social Medicine, Demography chapter"
+        }
+    ],
+
+    "esic-imo-clinical-drill": [
+        {
+            "id": "esic-01",
+            "subject": "Emergency Medicine",
+            "text": "An agricultural industrial worker is brought to casualty with excessive salivation, pinpoint pupils (miosis), bilateral diffuse rhonchi, bradycardia, and fasciculations following pesticide exposure. What is the immediate pharmacological antidote of choice?",
+            "options": [
+                "Atropine Sulfate IV until signs of full atropinization (clearing of bronchorrhea) appear",
+                "Physostigmine IV",
+                "Naloxone IV",
+                "Sodium Thiosulfate IV"
+            ],
+            "correct_option": 0,
+            "explanation": "The clinical picture of SLUDGE (Salivation, Lacrimation, Urination, Defecation, GI cramps, Emesis) with miosis and bronchorrhea confirms acute Organophosphate Poisoning. Intravenous Atropine (1.8-3 mg bolus, doubled every 5 minutes until pulmonary secretions clear and heart rate >80 bpm) is the immediate lifesaving muscarinic antagonist.",
+            "citation": "Harrison's Principles of Internal Medicine; KD Tripathi's Medical Pharmacology"
+        },
+        {
+            "id": "esic-02",
+            "subject": "General Medicine",
+            "text": "A 52-year-old factory supervisor presents to the dispensary with crushing retrosternal chest pain of 45 minutes duration. 12-lead ECG reveals 3 mm ST-segment elevation in leads V1 to V4. What is the immediate antiplatelet loading dose protocol recommended prior to emergency referral for PCI or thrombolysis?",
+            "options": [
+                "Aspirin 325 mg chewed + Clopidogrel 300-600 mg oral load",
+                "Low molecular weight heparin alone",
+                "Aspirin 75 mg daily starting next morning",
+                "Streptokinase 1.5 million units oral"
+            ],
+            "correct_option": 0,
+            "explanation": "In acute ST-Elevation Myocardial Infarction (STEMI), Dual Antiplatelet Therapy (DAPT) with chewed non-enteric coated Aspirin (162-325 mg) plus a P2Y12 inhibitor (Clopidogrel 300-600 mg or Ticagrelor 180 mg) should be administered immediately upon diagnosis unless contraindicated.",
+            "citation": "AHA/ACC STEMI Management Guidelines; Harrison's Cardiology"
+        },
+        {
+            "id": "esic-03",
+            "subject": "Preventive & Social Medicine",
+            "text": "A patient presents with a deep transdermal dog bite on the right calf with active oozing of blood (WHO Category III exposure). What is the mandatory immediate post-exposure prophylaxis protocol?",
+            "options": [
+                "Immediate wound washing under running tap water with soap for 15 minutes, local infiltration of Rabies Immunoglobulin (RIG), and Modern Cell Culture Vaccine (IM on Days 0, 3, 7, 28)",
+                "Anti-rabies vaccine alone on Day 0 and Day 3",
+                "Primary suturing of the wound immediately under local anesthesia",
+                "Tetanus toxoid only with observation of dog for 10 days"
+            ],
+            "correct_option": 0,
+            "explanation": "WHO Category III animal bites (transdermal bites or scratches, licks on broken skin) strictly require: 1) Vigorous washing with soap and water for at least 15 minutes; 2) Rabies Immunoglobulin (HRIG 20 IU/kg) infiltrated directly into and around the wound; 3) Rabies vaccination on days 0, 3, 7, and 28. Wounds should NOT be primarily sutured.",
+            "citation": "National Guidelines on Rabies Prophylaxis, NVBDCP / MoHFW; Park's PSM"
+        },
+        {
+            "id": "esic-04",
+            "subject": "Emergency Medicine",
+            "text": "A 30-year-old patient is brought to casualty in continuous generalized tonic-clonic status epilepticus lasting >10 minutes. What is the first-line intravenous benzodiazepine of choice?",
+            "options": [
+                "IV Lorazepam (0.1 mg/kg given at 2 mg/min)",
+                "IV Phenytoin 15 mg/kg bolus",
+                "Oral Carbamazepine",
+                "IV Propofol infusion"
+            ],
+            "correct_option": 0,
+            "explanation": "Intravenous Lorazepam (0.1 mg/kg up to 4 mg bolus) is the universally preferred first-line agent for terminating early status epilepticus due to its rapid onset and longer duration of action in brain tissue compared to Diazepam.",
+            "citation": "Neurocritical Care Society Guidelines for Status Epilepticus; Harrison's Neurology"
+        },
+        {
+            "id": "esic-05",
+            "subject": "General Medicine",
+            "text": "Which chest X-ray finding is characteristically associated with Silicosis in stone-crushing and pottery industrial workers under the ESI Act?",
+            "options": [
+                "'Eggshell calcification' of hilar lymph nodes and multiple nodular opacities in upper lung zones",
+                "Pleural plaques in lower lung zones with asbestosis",
+                "Cavitation in bilateral apices with air-fluid levels",
+                "Honeycombing with basal subpleural reticulation"
+            ],
+            "correct_option": 0,
+            "explanation": "Eggshell calcification (peripheral rim calcification of enlarged hilar and mediastinal lymph nodes) along with diffuse rounded nodular opacities predominantly affecting the upper lung zones is pathognomonic for chronic Silicosis.",
+            "citation": "Park's Textbook of Preventive and Social Medicine, Chapter on Occupational Health; Harrison's Pulmonology"
+        },
+        {
+            "id": "esic-06",
+            "subject": "Emergency Medicine",
+            "text": "A rural laborer presents 2 hours after a Russel's Viper bite with severe local swelling, bleeding from gums, and prolonged Whole Blood Clotting Time (20WBCT > 20 minutes). How many vials of Polyvalent Anti-Snake Venom (ASV) are initially indicated?",
+            "options": [
+                "10 vials of reconstituted Polyvalent ASV infused in 0.9% Normal Saline over 1 hour",
+                "1 vial administered subcutaneously",
+                "2 vials administered intramuscularly",
+                "50 vials given as rapid IV push"
+            ],
+            "correct_option": 0,
+            "explanation": "According to the National Snakebite Management Protocol of India, in patients with systemic envenomation (hemotoxicity or neurotoxicity), the initial dose is 10 vials of Lyophilized Polyvalent Anti-Snake Venom (ASV) reconstituted in 500 mL of normal saline and infused intravenously over 1 hour.",
+            "citation": "National Protocol for Management of Snakebites, MoHFW India"
         }
     ]
 }

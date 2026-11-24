@@ -6,12 +6,22 @@ DB_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__)
 raw_db_url = os.getenv("DATABASE_URL", f"sqlite:///{DB_PATH}")
 
 # Fix PostgreSQL driver resolution:
-# In SQLAlchemy 2+, 'postgresql://' defaults to psycopg3 ('psycopg').
-# Normalizing both 'postgres://' and 'postgresql://' to 'postgresql+psycopg2://' guarantees compatibility with both psycopg2 and psycopg.
+# Detect available driver (psycopg2 or psycopg 3) to ensure zero ModuleNotFoundError regardless of environment
+driver_scheme = "postgresql+psycopg2://"
+try:
+    import psycopg2
+    driver_scheme = "postgresql+psycopg2://"
+except ImportError:
+    try:
+        import psycopg
+        driver_scheme = "postgresql+psycopg://"
+    except ImportError:
+        driver_scheme = "postgresql+psycopg2://"
+
 if raw_db_url.startswith("postgres://"):
-    DATABASE_URL = raw_db_url.replace("postgres://", "postgresql+psycopg2://", 1)
+    DATABASE_URL = raw_db_url.replace("postgres://", driver_scheme, 1)
 elif raw_db_url.startswith("postgresql://") and not raw_db_url.startswith("postgresql+"):
-    DATABASE_URL = raw_db_url.replace("postgresql://", "postgresql+psycopg2://", 1)
+    DATABASE_URL = raw_db_url.replace("postgresql://", driver_scheme, 1)
 else:
     DATABASE_URL = raw_db_url
 
@@ -36,3 +46,4 @@ def get_db():
         yield db
     finally:
         db.close()
+

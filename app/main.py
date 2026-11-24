@@ -17,8 +17,11 @@ from .scheduler import start_scheduler, shutdown_scheduler, scheduler
 from .pdf_parser import GovtNotificationPDFParser
 from .exam_data import EXAMS_CATALOG, EXAM_QUESTIONS
 
-# Initialize database schema
-Base.metadata.create_all(bind=engine)
+# Initialize database schema safely
+try:
+    Base.metadata.create_all(bind=engine)
+except Exception as e:
+    print(f"Warning: Initial Base.metadata.create_all failed: {e}")
 
 app = FastAPI(
     title="MedAlerts - Medical Officer Vacancies Aggregator",
@@ -95,16 +98,22 @@ app.mount("/static", StaticFiles(directory=static_dir), name="static")
 @app.on_event("startup")
 def on_startup():
     from .database import SessionLocal
-    db = SessionLocal()
     try:
-        count = db.query(Vacancy).count()
-        if count == 0:
-            VacancyCollector.sync_sample_feed(db)
-    finally:
-        db.close()
+        db = SessionLocal()
+        try:
+            count = db.query(Vacancy).count()
+            if count == 0:
+                VacancyCollector.sync_sample_feed(db)
+        finally:
+            db.close()
+    except Exception as e:
+        print(f"Startup database check notification: {e}")
     
     # Start automated background polling scheduler
-    start_scheduler()
+    try:
+        start_scheduler()
+    except Exception as e:
+        print(f"Scheduler startup notification: {e}")
 
 @app.on_event("shutdown")
 def on_shutdown():

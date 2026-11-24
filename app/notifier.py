@@ -123,3 +123,60 @@ class Notifier:
             if cls.send_to_subscription(db, sub, vacancy):
                 sent_count += 1
         return sent_count
+
+    @classmethod
+    def broadcast_closing_reminder(cls, db: Session, vacancy: Vacancy) -> int:
+        """Sends a one-time T-48h closing-soon reminder to active Telegram subscribers."""
+        already_reminded = db.query(NotificationLog).filter(
+            NotificationLog.vacancy_id == vacancy.id,
+            NotificationLog.details.like("%CLOSING_48H%")
+        ).first()
+        if already_reminded:
+            return 0
+
+        bot_token = os.getenv("TELEGRAM_BOT_TOKEN")
+        subscriptions = db.query(Subscription).filter(
+            Subscription.is_active == True,
+            Subscription.channel == "telegram"
+        ).all()
+
+        sent = 0
+        due_str = vacancy.last_date.strftime("%d %b %Y") if vacancy.last_date else "Soon"
+        msg = (
+            f"⏰ <b>CLOSING IN 48 HOURS</b>\n\n"
+            f"📌 <b>{vacancy.title}</b>\n"
+            f"🏢 {vacancy.organization} ({vacancy.state})\n"
+            f"👥 <b>Seats:</b> {vacancy.total_posts} | 🎓 <b>Qual:</b> {vacancy.qualification}\n"
+            f"📅 <b>Deadline:</b> {due_str}\n\n"
+            f"🔗 <a href='{vacancy.apply_url or 'https://medalerts.onrender.com'}'>Apply Before Portal Closes</a>"
+        )
+
+        for sub in subscriptions:
+            status = "SUCCESS"
+            details = "CLOSING_48H reminder logged"
+            if bot_token:
+                try:
+                    res = requests.post(
+                        f"https://api.telegram.org/bot{bot_token}/sendMessage",
+                        json={"chat_id": sub.target, "text": msg, "parse_mode": "HTML"},
+                        timeout=6
+                    )
+                    if res.ok:
+                        details = "CLOSING_48H Telegram reminder sent"
+                        sent += 1
+                    else:
+                        status = "FAILED"
+                        details = f"CLOSING_48H HTTP {res.status_code}"
+                except Exception as e:
+                    status = "FAILED"
+                    details = f"CLOSING_48H err: {e}"
+            db.add(NotificationLog(
+                vacancy_id=vacancy.id,
+                channel="telegram",
+                target=sub.target,
+                sent_at=datetime.utcnow(),
+                status=status,
+                details=details
+            ))
+            db.commit()
+        return sent

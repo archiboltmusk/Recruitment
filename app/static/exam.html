@@ -204,6 +204,20 @@
                     </div>
                 </div>
 
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2.5">
+                        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-600">Subject-Wise Accuracy</h4>
+                        <div id="subjectBreakdownBox" class="space-y-2 text-xs"></div>
+                    </div>
+                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2.5">
+                        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-600 flex items-center justify-between">
+                            <span>Peer Leaderboard</span>
+                            <span id="peerAvgLabel" class="font-mono text-tealmed-700">Avg: -</span>
+                        </h4>
+                        <div id="peerLeaderboardBox" class="space-y-1.5 text-xs"></div>
+                    </div>
+                </div>
+
                 <div class="flex items-center justify-between p-4 bg-tealmed-50/70 rounded-xl border border-tealmed-200 text-xs">
                     <span class="font-semibold text-tealmed-900"><i class="fa-solid fa-book-medical mr-1.5"></i> Detailed Explanations &amp; Textbook Citations below</span>
                     <button onclick="returnToLobby()" class="px-4 py-1.5 bg-tealmed-700 hover:bg-tealmed-800 text-white font-bold rounded-lg transition">
@@ -495,6 +509,36 @@
             document.getElementById('resWrong').innerText = res.wrong;
             document.getElementById('resUnattempted').innerText = res.unattempted;
             document.getElementById('resAccuracy').innerText = `${res.accuracy_pct}%`;
+
+            // Subject Breakdown Bars
+            const subjBox = document.getElementById('subjectBreakdownBox');
+            subjBox.innerHTML = Object.entries(res.subject_breakdown || {}).map(([subj, st]) => {
+                const pct = st.total > 0 ? Math.round((st.correct / st.total) * 100) : 0;
+                return `
+                    <div>
+                        <div class="flex justify-between font-medium text-slate-700 mb-1">
+                            <span>${subj}</span>
+                            <span class="font-mono">${st.correct}/${st.total} (${pct}%)</span>
+                        </div>
+                        <div class="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
+                            <div class="h-full bg-tealmed-600 rounded-full" style="width: ${pct}%"></div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            // Peer Leaderboard
+            fetch(`/api/exams/${currentExam.id}/leaderboard`)
+                .then(r => r.json())
+                .then(lb => {
+                    document.getElementById('peerAvgLabel').innerText = `Peer Avg: ${lb.peer_average} (${lb.total_attempts} runs)`;
+                    document.getElementById('peerLeaderboardBox').innerHTML = (lb.top_scores || []).slice(0, 5).map((s, i) => `
+                        <div class="flex items-center justify-between py-1 border-b border-slate-200/70 last:border-0">
+                            <span class="font-medium text-slate-700">#${i + 1} ${s.candidate_name}</span>
+                            <span class="font-mono font-bold text-tealmed-800">${s.final_score.toFixed(1)} pts (${s.accuracy_pct}%)</span>
+                        </div>
+                    `).join('') || '<p class="text-slate-400">First attempt recorded!</p>';
+                }).catch(() => {});
 
             const container = document.getElementById('reviewContainer');
             const letters = ['A', 'B', 'C', 'D'];

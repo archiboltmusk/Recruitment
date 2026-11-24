@@ -4,6 +4,8 @@ from datetime import datetime, timedelta
 from apscheduler.schedulers.background import BackgroundScheduler
 from .database import SessionLocal
 from .collector import VacancyCollector
+from .scraper import LiveGazetteScraper
+from .notifier import Notifier
 from .models import Vacancy
 
 logger = logging.getLogger("medalerts.scheduler")
@@ -12,15 +14,16 @@ logging.basicConfig(level=logging.INFO)
 scheduler = BackgroundScheduler()
 
 def scheduled_recruitment_sync():
-    """Runs periodic sync and updates lifecycle statuses."""
+    """Runs periodic sync, live portal scraping, and T-48h closing alerts."""
     logger.info("Executing automated recruitment sync job...")
     db = SessionLocal()
     try:
-        # 1. Sync feeds
+        # 1. Sync curated & live gazette feeds
         sync_result = VacancyCollector.sync_sample_feed(db)
-        logger.info(f"Sync completed: Added={sync_result['added']}, Updated={sync_result['updated']}")
+        live_result = LiveGazetteScraper.sync_live_portals(db)
+        logger.info(f"Sync completed: Sample={sync_result}, Live={live_result}")
 
-        # 2. Update expired vacancies & stages
+        # 2. Update expired vacancies & trigger T-48h closing alerts
         now = datetime.utcnow()
         active_vacancies = db.query(Vacancy).filter(Vacancy.is_active == True).all()
         for v in active_vacancies:
@@ -28,7 +31,10 @@ def scheduled_recruitment_sync():
                 v.is_active = False
                 v.stage = "APPLICATION_CLOSED"
                 logger.info(f"Closed expired vacancy: {v.title}")
-            elif v.last_date and v.last_date <= now + timedelta(days=3):
+            elif v.last_date and v.last_date <= now + timedelta(hours=48):
+                v.stage = "CLOSING_SOON"
+                Notifier.broadcast_closing_reminder(db, v)
+            elif v.last_date and v.last_date <= now + timedelta(days=7):
                 v.stage = "CLOSING_SOON"
         db.commit()
     except Exception as e:

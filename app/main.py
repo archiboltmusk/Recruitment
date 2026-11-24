@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 from typing import Optional, List, Dict, Any
 from fastapi import FastAPI, Depends, Query, HTTPException, status, Request, Header
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, Response
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 from sqlalchemy import func, or_
@@ -15,6 +15,7 @@ from sqlalchemy import func, or_
 from .database import engine, Base, get_db
 from .models import Vacancy, Subscription, NotificationLog, ExamAttempt
 from .collector import VacancyCollector
+from .scraper import LiveGazetteScraper
 from .notifier import Notifier
 from .scheduler import start_scheduler, shutdown_scheduler, scheduler
 from .pdf_parser import GovtNotificationPDFParser
@@ -182,6 +183,14 @@ def serve_exam():
     if os.path.exists(exam_file):
         return FileResponse(exam_file)
     return {"message": "Exam Simulator page"}
+
+@app.get("/bonds")
+@app.head("/bonds")
+def serve_bonds():
+    bonds_file = os.path.join(static_dir, "bonds.html")
+    if os.path.exists(bonds_file):
+        return FileResponse(bonds_file)
+    return {"message": "All-India Bond & Pay Matrix page"}
 
 @app.get("/api/health/db")
 def health_check_db():
@@ -371,6 +380,55 @@ def list_exam_attempts(limit: int = 10, db: Session = Depends(get_db)):
         }
         for r in rows
     ]
+
+@app.get("/api/exams/{exam_id}/leaderboard")
+def get_exam_leaderboard(exam_id: str, db: Session = Depends(get_db)):
+    attempts = db.query(ExamAttempt).filter(ExamAttempt.exam_id == exam_id).order_by(ExamAttempt.final_score.desc()).limit(10).all()
+    avg_score = db.query(func.avg(ExamAttempt.final_score)).filter(ExamAttempt.exam_id == exam_id).scalar()
+    total_attempts = db.query(func.count(ExamAttempt.id)).filter(ExamAttempt.exam_id == exam_id).scalar() or 0
+    return {
+        "exam_id": exam_id,
+        "total_attempts": total_attempts,
+        "peer_average": round(float(avg_score), 2) if avg_score is not None else 0.0,
+        "top_scores": [
+            {
+                "candidate_name": a.candidate_name,
+                "final_score": a.final_score,
+                "accuracy_pct": a.accuracy_pct,
+                "qualified": a.qualified
+            }
+            for a in attempts
+        ]
+    }
+
+@app.get("/api/vacancies/{vacancy_id}/calendar.ics")
+def download_vacancy_calendar(vacancy_id: str, db: Session = Depends(get_db)):
+    v = db.query(Vacancy).filter(Vacancy.id == vacancy_id).first()
+    if not v:
+        raise HTTPException(status_code=404, detail="Vacancy not found")
+    target_dt = v.last_date or (datetime.utcnow() + timedelta(days=7))
+    dt_str = target_dt.strftime("%Y%m%dT090000Z")
+    dt_end = target_dt.strftime("%Y%m%dT100000Z")
+    ics_content = (
+        "BEGIN:VCALENDAR\r\n"
+        "VERSION:2.0\r\n"
+        "PRODID:-//MedAlerts//Medical Officer Alerts//EN\r\n"
+        "BEGIN:VEVENT\r\n"
+        f"UID:{v.id}@medalerts.onrender.com\r\n"
+        f"DTSTAMP:{datetime.utcnow().strftime('%Y%m%dT%H%M%SZ')}\r\n"
+        f"DTSTART:{dt_str}\r\n"
+        f"DTEND:{dt_end}\r\n"
+        f"SUMMARY:Deadline: {v.title} ({v.organization})\r\n"
+        f"DESCRIPTION:Qual: {v.qualification} | Seats: {v.total_posts} | Apply: {v.apply_url or ''}\r\n"
+        f"URL:{v.apply_url or 'https://medalerts.onrender.com'}\r\n"
+        "END:VEVENT\r\n"
+        "END:VCALENDAR\r\n"
+    )
+    return Response(
+        content=ics_content,
+        media_type="text/calendar",
+        headers={"Content-Disposition": f"attachment; filename=medalerts-{v.id[:8]}.ics"}
+    )
 
 @app.get("/api/stats")
 @app.head("/api/stats")
@@ -682,7 +740,8 @@ def create_vacancy(payload: VacancyCreate, db: Session = Depends(get_db)):
 def refresh_collector(request: Request, db: Session = Depends(get_db)):
     check_rate_limit(request, "sync", max_calls=6, window_sec=300)
     result = VacancyCollector.sync_sample_feed(db)
-    return {"message": "Recruitment aggregator executed successfully", **result}
+    live = LiveGazetteScraper.sync_live_portals(db)
+    return {"message": "Recruitment aggregator executed successfully", **result, **live}
 
 @app.post("/api/subscriptions", status_code=status.HTTP_201_CREATED)
 @app.post("/api/subscribe", status_code=status.HTTP_201_CREATED)

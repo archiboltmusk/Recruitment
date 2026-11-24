@@ -1,9 +1,11 @@
 import os
 import json
+import time
+import threading
 import requests
 from datetime import datetime, timedelta
 from typing import Optional, List, Dict, Any
-from fastapi import FastAPI, Depends, Query, HTTPException, status
+from fastapi import FastAPI, Depends, Query, HTTPException, status, Request, Header
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
@@ -11,12 +13,51 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func, or_
 
 from .database import engine, Base, get_db
-from .models import Vacancy, Subscription, NotificationLog
+from .models import Vacancy, Subscription, NotificationLog, ExamAttempt
 from .collector import VacancyCollector
 from .notifier import Notifier
 from .scheduler import start_scheduler, shutdown_scheduler, scheduler
 from .pdf_parser import GovtNotificationPDFParser
 from .exam_data import EXAMS_CATALOG, EXAM_QUESTIONS
+
+# Thread-safe in-memory rate limiter & security helpers
+_RATE_LOCK = threading.Lock()
+_RATE_BUCKETS: Dict[str, List[float]] = {}
+
+def check_rate_limit(request: Request, bucket: str, max_calls: int = 5, window_sec: int = 300):
+    client_ip = request.headers.get("x-forwarded-for", request.client.host if request.client else "unknown").split(",")[0].strip()
+    key = f"{bucket}:{client_ip}"
+    now = time.time()
+    with _RATE_LOCK:
+        timestamps = [t for t in _RATE_BUCKETS.get(key, []) if now - t < window_sec]
+        if len(timestamps) >= max_calls:
+            raise HTTPException(
+                status_code=429,
+                detail=f"Rate limit exceeded for {bucket}. Please wait a few minutes and try again."
+            )
+        timestamps.append(now)
+        _RATE_BUCKETS[key] = timestamps
+
+def verify_admin_key(x_admin_key: Optional[str] = Header(default=None)):
+    expected = os.getenv("ADMIN_API_KEY", "").strip()
+    if not expected:
+        raise HTTPException(
+            status_code=503,
+            detail="Admin endpoint is locked. Configure ADMIN_API_KEY in environment variables to enable."
+        )
+    if x_admin_key != expected:
+        raise HTTPException(status_code=403, detail="Invalid or missing X-Admin-Key")
+
+def mask_target(target: str) -> str:
+    if not target:
+        return "***"
+    if "@" in target and not target.startswith("@"):
+        local, domain = target.split("@", 1)
+        prefix = local[:2] if len(local) >= 2 else local[:1]
+        return f"{prefix}***@{domain}"
+    if len(target) <= 5:
+        return target[:1] + "***"
+    return f"{target[:4]}***{target[-2:]}"
 
 # Initialize database schema safely
 try:
@@ -211,7 +252,7 @@ def get_exam_questions(exam_id: str):
     }
 
 @app.post("/api/exams/{exam_id}/submit")
-def submit_exam(exam_id: str, payload: ExamSubmissionRequest):
+def submit_exam(exam_id: str, payload: ExamSubmissionRequest, db: Session = Depends(get_db)):
     exam_meta = next((e for e in EXAMS_CATALOG if e["id"] == exam_id), None)
     if not exam_meta:
         raise HTTPException(status_code=404, detail="Exam not found")
@@ -272,8 +313,29 @@ def submit_exam(exam_id: str, payload: ExamSubmissionRequest):
     
     cutoff = exam_meta.get("cutoff_reference", 125)
     qualified = final_score >= cutoff
-    
+
+    attempt_id = None
+    try:
+        attempt = ExamAttempt(
+            exam_id=exam_id,
+            exam_title=exam_meta["title"],
+            candidate_name=payload.candidate_name[:120],
+            final_score=final_score,
+            correct=correct_count,
+            wrong=wrong_count,
+            unattempted=unattempted_count,
+            accuracy_pct=accuracy,
+            qualified=qualified
+        )
+        db.add(attempt)
+        db.commit()
+        db.refresh(attempt)
+        attempt_id = attempt.id
+    except Exception as e:
+        print(f"Exam attempt persistence warning: {e}")
+
     return {
+        "attempt_id": attempt_id,
         "candidate_name": payload.candidate_name,
         "exam_title": exam_meta["title"],
         "total_questions": total_q,
@@ -292,6 +354,23 @@ def submit_exam(exam_id: str, payload: ExamSubmissionRequest):
         "subject_breakdown": subject_stats,
         "review": detailed_review
     }
+
+@app.get("/api/exams-history")
+def list_exam_attempts(limit: int = 10, db: Session = Depends(get_db)):
+    rows = db.query(ExamAttempt).order_by(ExamAttempt.created_at.desc()).limit(min(limit, 50)).all()
+    return [
+        {
+            "id": r.id,
+            "exam_id": r.exam_id,
+            "exam_title": r.exam_title,
+            "candidate_name": r.candidate_name,
+            "final_score": r.final_score,
+            "accuracy_pct": r.accuracy_pct,
+            "qualified": r.qualified,
+            "created_at": r.created_at.isoformat() if r.created_at else None
+        }
+        for r in rows
+    ]
 
 @app.get("/api/stats")
 @app.head("/api/stats")
@@ -406,18 +485,19 @@ def list_vacancies(
     return results
 
 @app.post("/api/parser/analyze-url")
-def analyze_pdf_url(payload: PDFAnalyzeURLRequest):
+def analyze_pdf_url(payload: PDFAnalyzeURLRequest, request: Request):
+    check_rate_limit(request, "pdf_url", max_calls=10, window_sec=300)
     try:
         text = GovtNotificationPDFParser.extract_from_url(payload.url)
         extracted = GovtNotificationPDFParser.parse_notice_text(text)
-        return {"success": True, "data": extracted, "raw_preview": text[:500]}
+        return {"success": True, "extracted": extracted, "data": extracted, "raw_preview": text[:500]}
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Failed to analyze PDF from URL: {str(e)}")
 
 @app.post("/api/parser/analyze-text")
 def analyze_gazette_text(payload: PDFAnalyzeTextRequest):
     extracted = GovtNotificationPDFParser.parse_notice_text(payload.text)
-    return {"success": True, "data": extracted}
+    return {"success": True, "extracted": extracted, "data": extracted}
 
 @app.post("/api/check-eligibility")
 def check_eligibility(profile: DoctorProfile, db: Session = Depends(get_db)):
@@ -592,18 +672,22 @@ def check_eligibility(profile: DoctorProfile, db: Session = Depends(get_db)):
         "matches": results
     }
 
-@app.post("/api/vacancies", status_code=status.HTTP_201_CREATED)
+@app.post("/api/vacancies", status_code=status.HTTP_201_CREATED, dependencies=[Depends(verify_admin_key)])
 def create_vacancy(payload: VacancyCreate, db: Session = Depends(get_db)):
     vacancy = VacancyCollector.parse_and_add_custom(db, payload.dict())
     return {"message": "Vacancy added and broadcast dispatched", "id": vacancy.id}
 
 @app.post("/api/collector/refresh")
-def refresh_collector(db: Session = Depends(get_db)):
+@app.post("/api/sync")
+def refresh_collector(request: Request, db: Session = Depends(get_db)):
+    check_rate_limit(request, "sync", max_calls=6, window_sec=300)
     result = VacancyCollector.sync_sample_feed(db)
     return {"message": "Recruitment aggregator executed successfully", **result}
 
 @app.post("/api/subscriptions", status_code=status.HTTP_201_CREATED)
-def subscribe(payload: SubscriptionCreate, db: Session = Depends(get_db)):
+@app.post("/api/subscribe", status_code=status.HTTP_201_CREATED)
+def subscribe(payload: SubscriptionCreate, request: Request, db: Session = Depends(get_db)):
+    check_rate_limit(request, "subscribe", max_calls=10, window_sec=300)
     existing = db.query(Subscription).filter(
         Subscription.channel == payload.channel,
         Subscription.target == payload.target
@@ -630,17 +714,29 @@ def subscribe(payload: SubscriptionCreate, db: Session = Depends(get_db)):
     db.refresh(sub)
     return {"message": f"Successfully subscribed to {sub.channel} alerts", "id": sub.id}
 
-@app.get("/api/subscriptions")
+@app.get("/api/subscriptions", dependencies=[Depends(verify_admin_key)])
 def list_subscriptions(db: Session = Depends(get_db)):
     return db.query(Subscription).all()
 
 @app.get("/api/notifications/recent")
 def list_notifications(limit: int = 15, db: Session = Depends(get_db)):
-    logs = db.query(NotificationLog).order_by(NotificationLog.sent_at.desc()).limit(limit).all()
-    return logs
+    logs = db.query(NotificationLog).order_by(NotificationLog.sent_at.desc()).limit(min(limit, 50)).all()
+    return [
+        {
+            "id": l.id,
+            "vacancy_id": l.vacancy_id,
+            "channel": l.channel,
+            "target": mask_target(l.target),
+            "sent_at": l.sent_at.isoformat() if l.sent_at else None,
+            "status": l.status,
+            "details": l.details
+        }
+        for l in logs
+    ]
 
 @app.post("/api/telegram/test")
-def test_telegram_broadcast(payload: TelegramTestRequest):
+def test_telegram_broadcast(payload: TelegramTestRequest, request: Request):
+    check_rate_limit(request, "telegram_test", max_calls=5, window_sec=300)
     token = (payload.bot_token or os.getenv("TELEGRAM_BOT_TOKEN", "")).strip()
     if not token:
         return {

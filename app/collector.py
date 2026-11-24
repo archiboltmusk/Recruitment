@@ -393,16 +393,20 @@ class VacancyCollector:
                 Notifier.broadcast_new_vacancy(db, vacancy)
                 added_count += 1
             else:
-                existing.last_date = item["last_date"]
+                if existing.last_date is None:
+                    existing.last_date = item["last_date"]
                 existing.min_age = item.get("min_age", 21)
                 existing.max_age = item.get("max_age", 35)
-                existing.stage = item.get("stage", "APPLICATION_OPEN")
                 existing.selection_mode = item.get("selection_mode", "Written Exam + Interview")
                 existing.bond_years = item.get("bond_years", 0)
                 existing.bond_penalty_amount = item.get("bond_penalty_amount", "No Bond")
                 existing.category_seats_json = item.get("category_seats_json")
                 existing.application_fee = item.get("application_fee", "As per rules")
-                existing.is_active = (existing.last_date >= datetime.utcnow()) if existing.last_date else True
+                if existing.last_date and existing.last_date < datetime.utcnow():
+                    existing.is_active = False
+                    existing.stage = "APPLICATION_CLOSED"
+                else:
+                    existing.is_active = True
                 db.commit()
                 updated_count += 1
 

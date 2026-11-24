@@ -1,6 +1,6 @@
 import uuid
 from datetime import datetime
-from sqlalchemy import Column, String, Integer, DateTime, Boolean, Text
+from sqlalchemy import Column, String, Integer, Float, DateTime, Boolean, Text
 from .database import Base
 
 class Vacancy(Base):
@@ -65,3 +65,18 @@ class NotificationLog(Base):
     sent_at = Column(DateTime, default=datetime.utcnow)
     status = Column(String(50), default="SUCCESS")
     details = Column(Text, nullable=True)
+
+class ExamAttempt(Base):
+    __tablename__ = "exam_attempts"
+
+    id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    exam_id = Column(String(100), nullable=False)
+    exam_title = Column(String(255), nullable=False)
+    candidate_name = Column(String(120), nullable=False)
+    final_score = Column(Float, nullable=False)
+    correct = Column(Integer, default=0)
+    wrong = Column(Integer, default=0)
+    unattempted = Column(Integer, default=0)
+    accuracy_pct = Column(Float, default=0.0)
+    qualified = Column(Boolean, default=False)
+    created_at = Column(DateTime, default=datetime.utcnow)

@@ -1,5 +1,6 @@
 import os
 import json
+import requests
 from datetime import datetime, timedelta
 from typing import Optional, List, Dict, Any
 from fastapi import FastAPI, Depends, Query, HTTPException, status

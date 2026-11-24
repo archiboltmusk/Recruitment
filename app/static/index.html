@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MedAlerts - All Medical Officer Vacancies in One Place</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#ecfdf5',
+                            100: '#d1fae5',
+                            500: '#10b981',
+                            600: '#059669',
+                            700: '#047857',
+                            900: '#064e3b'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col font-sans">
+
+    <!-- Top Header -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-brand-600 flex items-center justify-center text-white shadow-md shadow-brand-500/20">
+                    <i class="fa-solid fa-user-doctor text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold text-slate-900 leading-tight flex items-center gap-2">
+                        MedAlerts
+                        <span class="text-xs px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-semibold border border-emerald-200">
+                            Live MO Feed
+                        </span>
+                    </h1>
+                    <p class="text-xs text-slate-500">All India Medical Officer & GDMO Vacancies Aggregator</p>
+                </div>
+            </div>
+
+            <div class="flex items-center space-x-2 sm:space-x-3">
+                <button onclick="refreshData()" id="refreshBtn" class="px-3.5 py-2 text-xs sm:text-sm font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition flex items-center gap-2">
+                    <i class="fa-solid fa-arrows-rotate" id="refreshIcon"></i>
+                    <span class="hidden sm:inline">Sync Vacancies</span>
+                </button>
+                <button onclick="openModal('subscribeModal')" class="px-4 py-2 text-xs sm:text-sm font-semibold text-white bg-brand-600 hover:bg-brand-700 rounded-lg shadow-sm hover:shadow transition flex items-center gap-2">
+                    <i class="fa-solid fa-bell"></i>
+                    <span>Get Instant Alerts</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 w-full space-y-6">
+
+        <!-- Metrics Cards -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="statsGrid">
+            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center space-x-3">
+                <div class="p-3 bg-blue-50 text-blue-600 rounded-lg">
+                    <i class="fa-solid fa-newspaper text-xl"></i>
+                </div>
+                <div>
+                    <p class="text-xs font-medium text-slate-500">Active Notices</p>
+                    <p class="text-2xl font-bold text-slate-900" id="statActive">-</p>
+                </div>
+            </div>
+
+            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center space-x-3">
+                <div class="p-3 bg-emerald-50 text-emerald-600 rounded-lg">
+                    <i class="fa-solid fa-users text-xl"></i>
+                </div>
+                <div>
+                    <p class="text-xs font-medium text-slate-500">Total Posts Open</p>
+                    <p class="text-2xl font-bold text-slate-900" id="statPosts">-</p>
+                </div>
+            </div>
+
+            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center space-x-3">
+                <div class="p-3 bg-amber-50 text-amber-600 rounded-lg">
+                    <i class="fa-solid fa-clock text-xl"></i>
+                </div>
+                <div>
+                    <p class="text-xs font-medium text-slate-500">Closing in 7 Days</p>
+                    <p class="text-2xl font-bold text-amber-600" id="statClosing">-</p>
+                </div>
+            </div>
+
+            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center space-x-3">
+                <div class="p-3 bg-purple-50 text-purple-600 rounded-lg">
+                    <i class="fa-solid fa-paper-plane text-xl"></i>
+                </div>
+                <div>
+                    <p class="text-xs font-medium text-slate-500">Subscribed Doctors</p>
+                    <p class="text-2xl font-bold text-slate-900" id="statSubscribers">-</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter & Search Bar -->
+        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-3">
+            <div class="flex flex-col md:flex-row gap-3">
+                <div class="flex-1 relative">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-slate-400"></i>
+                    <input type="text" id="searchInput" placeholder="Search by role, commission (e.g. UPSC, UPPSC, AIIMS, NHM), or keywords..." 
+                           class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white transition"
+                           onkeyup="applyFilters()">
+                </div>
+
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                    <select id="qualificationFilter" onchange="applyFilters()" class="px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs sm:text-sm focus:ring-2 focus:ring-brand-500 outline-none">
+                        <option value="ALL">All Qualifications</option>
+                        <option value="MBBS">MBBS</option>
+                        <option value="MD/MS">Specialist (MD/MS)</option>
+                        <option value="AYUSH">AYUSH (BAMS/BHMS)</option>
+                        <option value="BDS">Dental (BDS)</option>
+                    </select>
+
+                    <select id="categoryFilter" onchange="applyFilters()" class="px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs sm:text-sm focus:ring-2 focus:ring-brand-500 outline-none">
+                        <option value="ALL">All Categories</option>
+                        <option value="Central Govt">Central Govt (UPSC/ESIC)</option>
+                        <option value="State PSC">State PSC</option>
+                        <option value="NHM">NHM / Contractual</option>
+                        <option value="Autonomous">AIIMS / Institutes</option>
+                        <option value="Armed Forces">Armed Forces (AFMS)</option>
+                    </select>
+
+                    <select id="stateFilter" onchange="applyFilters()" class="px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs sm:text-sm focus:ring-2 focus:ring-brand-500 outline-none col-span-2 sm:col-span-1">
+                        <option value="ALL">All India & States</option>
+                        <option value="All India">All India Cadre</option>
+                        <option value="Delhi">Delhi</option>
+                        <option value="Maharashtra">Maharashtra</option>
+                        <option value="Uttar Pradesh">Uttar Pradesh</option>
+                        <option value="Bihar">Bihar</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-between text-xs text-slate-500 pt-2 border-t border-slate-100">
+                <span id="filteredCount">Showing 0 vacancies</span>
+                <span class="flex items-center gap-1.5 text-slate-500">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    Verified from official gazettes & recruitment portals
+                </span>
+            </div>
+        </div>
+
+        <!-- Vacancies List / Cards -->
+        <div id="vacanciesList" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Dynamic cards injected via JS -->
+        </div>
+
+        <!-- Empty State -->
+        <div id="emptyState" class="hidden text-center py-16 bg-white rounded-xl border border-slate-200 p-8">
+            <div class="w-16 h-16 mx-auto mb-4 bg-slate-100 text-slate-400 rounded-full flex items-center justify-center text-2xl">
+                <i class="fa-solid fa-stethoscope"></i>
+            </div>
+            <h3 class="text-base font-semibold text-slate-800">No vacancies matching your criteria</h3>
+            <p class="text-sm text-slate-500 mt-1 max-w-sm mx-auto">Try clearing some filters or click Sync to fetch latest posts.</p>
+            <button onclick="resetFilters()" class="mt-4 px-4 py-2 text-xs font-medium text-brand-700 bg-brand-50 rounded-lg hover:bg-brand-100 transition">
+                Reset Filters
+            </button>
+        </div>
+
+        <!-- Recent Notification Broadcast Activity -->
+        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-3">
+            <div class="flex items-center justify-between">
+                <h2 class="text-sm font-bold text-slate-900 flex items-center gap-2">
+                    <i class="fa-solid fa-satellite-dish text-brand-600"></i>
+                    Recent Push & Telegram Broadcast Activity
+                </h2>
+                <span class="text-xs text-slate-400">Live Dispatches</span>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs text-slate-600">
+                    <thead class="bg-slate-50 text-slate-500 uppercase tracking-wider text-[11px] border-b border-slate-200">
+                        <tr>
+                            <th class="py-2 px-3">Time</th>
+                            <th class="py-2 px-3">Channel</th>
+                            <th class="py-2 px-3">Recipient / Target</th>
+                            <th class="py-2 px-3">Delivery Status</th>
+                            <th class="py-2 px-3">Details</th>
+                        </tr>
+                    </thead>
+                    <tbody id="notificationLogsBody" class="divide-y divide-slate-100">
+                        <tr>
+                            <td colspan="5" class="py-4 text-center text-slate-400">Loading recent notification logs...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Subscribe / Get Alerts Modal -->
+    <div id="subscribeModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-100 space-y-4">
+            <div class="flex items-start justify-between">
+                <div>
+                    <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                        <i class="fa-solid fa-bell text-brand-600"></i>
+                        Get Instant Vacancy Alerts
+                    </h3>
+                    <p class="text-xs text-slate-500 mt-0.5">Never miss an application deadline again.</p>
+                </div>
+                <button onclick="closeModal('subscribeModal')" class="text-slate-400 hover:text-slate-600">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <form id="subscribeForm" onsubmit="handleSubscribe(event)" class="space-y-3.5">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Notification Channel</label>
+                    <div class="grid grid-cols-2 gap-2">
+                        <label class="flex items-center gap-2 p-2.5 border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-50 text-xs font-medium">
+                            <input type="radio" name="channel" value="telegram" checked onchange="updateChannelPlaceholder()">
+                            <i class="fa-brands fa-telegram text-sky-500 text-sm"></i> Telegram
+                        </label>
+                        <label class="flex items-center gap-2 p-2.5 border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-50 text-xs font-medium">
+                            <input type="radio" name="channel" value="email" onchange="updateChannelPlaceholder()">
+                            <i class="fa-solid fa-envelope text-amber-500 text-sm"></i> Email Digest
+                        </label>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1" id="targetLabel">Telegram Chat ID / Username</label>
+                    <input type="text" id="targetInput" required placeholder="@doctor_alerts or chat_id" 
+                           class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+                    <p class="text-[11px] text-slate-400 mt-1" id="targetHelp">For Telegram, enter your Chat ID or Channel ID.</p>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Only Alert Me For</label>
+                    <select id="subQualification" class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:ring-2 focus:ring-brand-500">
+                        <option value="ALL">All Qualifications (MBBS, Specialists, AYUSH)</option>
+                        <option value="MBBS">MBBS Only</option>
+                        <option value="MD/MS">Specialists (MD / MS) Only</option>
+                        <option value="AYUSH">AYUSH Only</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Cadre Preference</label>
+                    <select id="subCategory" class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:ring-2 focus:ring-brand-500">
+                        <option value="ALL">All (Central + State PSC + NHM)</option>
+                        <option value="Central Govt">Central Govt Only (UPSC / ESIC / Railways)</option>
+                        <option value="State PSC">State PSC Only</option>
+                        <option value="NHM">NHM Contractual Only</option>
+                    </select>
+                </div>
+
+                <div class="pt-2">
+                    <button type="submit" id="subBtn" class="w-full py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-lg text-sm shadow transition flex items-center justify-center gap-2">
+                        <span>Subscribe for Notifications</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-6 right-6 bg-slate-900 text-white px-4 py-3 rounded-xl shadow-xl text-xs z-50 hidden flex items-center gap-2">
+        <i class="fa-solid fa-circle-check text-emerald-400"></i>
+        <span id="toastMsg">Action completed successfully</span>
+    </div>
+
+    <script>
+        let allVacancies = [];
+
+        async function init() {
+            await Promise.all([fetchStats(), fetchVacancies(), fetchLogs()]);
+        }
+
+        async function fetchStats() {
+            try {
+                const res = await fetch('/api/stats');
+                const data = await res.json();
+                document.getElementById('statActive').innerText = data.active_notices;
+                document.getElementById('statPosts').innerText = data.total_vacancies_seats.toLocaleString();
+                document.getElementById('statClosing').innerText = data.closing_in_7_days;
+                document.getElementById('statSubscribers').innerText = data.active_subscribers;
+            } catch (err) {
+                console.error('Error fetching stats:', err);
+            }
+        }
+
+        async function fetchVacancies() {
+            try {
+                const res = await fetch('/api/vacancies');
+                allVacancies = await res.json();
+                applyFilters();
+            } catch (err) {
+                console.error('Error fetching vacancies:', err);
+            }
+        }
+
+        async function fetchLogs() {
+            try {
+                const res = await fetch('/api/notifications/recent');
+                const logs = await res.json();
+                const tbody = document.getElementById('notificationLogsBody');
+                if (logs.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" class="py-4 text-center text-slate-400">No notifications sent yet. Add a subscription or sync to test!</td></tr>';
+                    return;
+                }
+                tbody.innerHTML = logs.map(l => `
+                    <tr class="hover:bg-slate-50 transition">
+                        <td class="py-2 px-3 text-slate-500 font-mono text-[11px]">${new Date(l.sent_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</td>
+                        <td class="py-2 px-3 font-semibold capitalize flex items-center gap-1.5">
+                            ${l.channel === 'telegram' ? '<i class="fa-brands fa-telegram text-sky-500"></i> Telegram' : '<i class="fa-solid fa-envelope text-amber-500"></i> Email'}
+                        </td>
+                        <td class="py-2 px-3 text-slate-700">${l.target}</td>
+                        <td class="py-2 px-3">
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${l.status === 'SUCCESS' ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}">
+                                ${l.status}
+                            </span>
+                        </td>
+                        <td class="py-2 px-3 text-slate-500 truncate max-w-xs">${l.details || '-'}</td>
+                    </tr>
+                `).join('');
+            } catch (err) {
+                console.error('Error fetching logs:', err);
+            }
+        }
+
+        function applyFilters() {
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            const qual = document.getElementById('qualificationFilter').value;
+            const cat = document.getElementById('categoryFilter').value;
+            const state = document.getElementById('stateFilter').value;
+
+            const filtered = allVacancies.filter(v => {
+                const matchSearch = !search || 
+                    v.title.toLowerCase().includes(search) || 
+                    v.organization.toLowerCase().includes(search) || 
+                    v.designation.toLowerCase().includes(search);
+                
+                const matchQual = qual === 'ALL' || v.qualification.toLowerCase().includes(qual.toLowerCase());
+                const matchCat = cat === 'ALL' || v.category.toLowerCase().includes(cat.toLowerCase());
+                const matchState = state === 'ALL' || v.state === state || v.state === 'All India';
+
+                return matchSearch && matchQual && matchCat && matchState;
+            });
+
+            document.getElementById('filteredCount').innerText = `Showing ${filtered.length} of ${allVacancies.length} vacancies`;
+            renderCards(filtered);
+        }
+
+        function renderCards(list) {
+            const container = document.getElementById('vacanciesList');
+            const empty = document.getElementById('emptyState');
+
+            if (list.length === 0) {
+                container.innerHTML = '';
+                empty.classList.remove('hidden');
+                return;
+            }
+            empty.classList.add('hidden');
+
+            container.innerHTML = list.map(v => {
+                // Deadline pill color
+                let deadlineBadge = 'bg-slate-100 text-slate-700';
+                if (v.days_left !== null) {
+                    if (v.days_left <= 7) deadlineBadge = 'bg-rose-100 text-rose-700 border border-rose-200 font-bold';
+                    else if (v.days_left <= 14) deadlineBadge = 'bg-amber-100 text-amber-800 border border-amber-200';
+                    else deadlineBadge = 'bg-emerald-100 text-emerald-800 border border-emerald-200';
+                }
+
+                return `
+                <div class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm hover:shadow-md transition flex flex-col justify-between space-y-4">
+                    <div>
+                        <!-- Header Tags -->
+                        <div class="flex items-center justify-between gap-2 mb-2.5">
+                            <span class="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700">
+                                <i class="fa-solid fa-building-columns mr-1 text-slate-400"></i> ${v.category}
+                            </span>
+                            <span class="text-[11px] font-medium px-2 py-0.5 rounded-full ${deadlineBadge}">
+                                <i class="fa-solid fa-hourglass-half mr-1"></i> ${v.days_left !== null ? v.days_left + ' days left' : 'Check Notice'}
+                            </span>
+                        </div>
+
+                        <!-- Title & Org -->
+                        <h3 class="text-base font-bold text-slate-900 hover:text-brand-600 transition leading-snug">
+                            ${v.title}
+                        </h3>
+                        <p class="text-xs font-semibold text-brand-700 mt-0.5">
+                            <i class="fa-solid fa-hospital mr-1"></i> ${v.organization}
+                        </p>
+
+                        <!-- Highlights Grid -->
+                        <div class="grid grid-cols-2 gap-2 mt-3.5 py-2.5 px-3 bg-slate-50 rounded-lg text-xs">
+                            <div>
+                                <span class="text-slate-400 block text-[10px] uppercase font-bold">Designation</span>
+                                <span class="font-semibold text-slate-800 truncate block">${v.designation}</span>
+                            </div>
+                            <div>
+                                <span class="text-slate-400 block text-[10px] uppercase font-bold">Qualification</span>
+                                <span class="font-semibold text-indigo-700">${v.qualification}</span>
+                            </div>
+                            <div>
+                                <span class="text-slate-400 block text-[10px] uppercase font-bold">Total Posts</span>
+                                <span class="font-bold text-emerald-700">${v.total_posts} Seats</span>
+                            </div>
+                            <div>
+                                <span class="text-slate-400 block text-[10px] uppercase font-bold">Jurisdiction</span>
+                                <span class="font-medium text-slate-700">${v.state}</span>
+                            </div>
+                        </div>
+
+                        <p class="text-xs text-slate-500 mt-3 line-clamp-2 leading-relaxed">
+                            ${v.summary || 'Click below to read full official notification and qualifications required.'}
+                        </p>
+                    </div>
+
+                    <!-- Footer Action Buttons -->
+                    <div class="pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+                        <span class="text-[11px] text-slate-400">
+                            Deadline: <strong class="text-slate-700 font-medium">${v.last_date || 'N/A'}</strong>
+                        </span>
+                        <div class="flex items-center space-x-2">
+                            <a href="${v.notification_url || '#'}" target="_blank" class="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-md font-medium transition flex items-center gap-1 text-[11px]">
+                                <i class="fa-regular fa-file-pdf text-red-500"></i> PDF Notice
+                            </a>
+                            <a href="${v.apply_url || '#'}" target="_blank" class="px-3 py-1.5 bg-brand-600 hover:bg-brand-700 text-white rounded-md font-semibold transition flex items-center gap-1 text-[11px] shadow-sm">
+                                Apply Online <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                `;
+            }).join('');
+        }
+
+        async function refreshData() {
+            const icon = document.getElementById('refreshIcon');
+            icon.classList.add('animate-spin');
+            try {
+                const res = await fetch('/api/collector/refresh', { method: 'POST' });
+                const result = await res.json();
+                showToast(`Aggregator synced! Added: ${result.added}, Updated: ${result.updated}`);
+                await Promise.all([fetchStats(), fetchVacancies(), fetchLogs()]);
+            } catch (err) {
+                showToast('Failed to sync feed: ' + err.message);
+            } finally {
+                icon.classList.remove('animate-spin');
+            }
+        }
+
+        function resetFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('qualificationFilter').value = 'ALL';
+            document.getElementById('categoryFilter').value = 'ALL';
+            document.getElementById('stateFilter').value = 'ALL';
+            applyFilters();
+        }
+
+        function updateChannelPlaceholder() {
+            const channel = document.querySelector('input[name="channel"]:checked').value;
+            const targetLabel = document.getElementById('targetLabel');
+            const targetInput = document.getElementById('targetInput');
+            const targetHelp = document.getElementById('targetHelp');
+
+            if (channel === 'telegram') {
+                targetLabel.innerText = 'Telegram Chat ID / Channel';
+                targetInput.placeholder = '@doctor_alerts or -100123456';
+                targetHelp.innerText = 'Enter your Telegram username or numeric chat ID.';
+            } else {
+                targetLabel.innerText = 'Email Address';
+                targetInput.placeholder = 'doctor@hospital.org';
+                targetHelp.innerText = 'You will receive instant alerts whenever new circulars match your filters.';
+            }
+        }
+
+        async function handleSubscribe(e) {
+            e.preventDefault();
+            const channel = document.querySelector('input[name="channel"]:checked').value;
+            const target = document.getElementById('targetInput').value;
+            const qual = document.getElementById('subQualification').value;
+            const cat = document.getElementById('subCategory').value;
+
+            try {
+                const res = await fetch('/api/subscriptions', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        channel: channel,
+                        target: target,
+                        qualification_filter: qual,
+                        category_filter: cat
+                    })
+                });
+                const data = await res.json();
+                showToast(data.message);
+                closeModal('subscribeModal');
+                fetchStats();
+                fetchLogs();
+            } catch (err) {
+                showToast('Error subscribing: ' + err.message);
+            }
+        }
+
+        function openModal(id) {
+            document.getElementById(id).classList.remove('hidden');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.add('hidden');
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMsg').innerText = msg;
+            toast.classList.remove('hidden');
+            setTimeout(() => toast.classList.add('hidden'), 3500);
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>

@@ -102,9 +102,7 @@ def on_startup():
     try:
         db = SessionLocal()
         try:
-            count = db.query(Vacancy).count()
-            if count == 0:
-                VacancyCollector.sync_sample_feed(db)
+            VacancyCollector.sync_sample_feed(db)
         finally:
             db.close()
     except Exception as e:

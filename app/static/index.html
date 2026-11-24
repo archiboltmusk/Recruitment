@@ -235,12 +235,14 @@
                     </select>
 
                     <select id="categoryFilter" onchange="applyFilters()" class="px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-700 focus:border-tealmed-600 outline-none">
-                        <option value="">All Cadres</option>
+                        <option value="">All Cadres &amp; Types</option>
+                        <option value="Walk-in">Contractual / Walk-in</option>
                         <option value="Central Govt">Central Govt (UPSC/CGHS)</option>
-                        <option value="ESIC">ESIC (IMO)</option>
-                        <option value="AIIMS">AIIMS</option>
-                        <option value="State PSC">State PSC</option>
-                        <option value="NHM">NHM / Contract</option>
+                        <option value="ESIC">ESIC (IMO / SR Walk-in)</option>
+                        <option value="AIIMS">AIIMS / Central Hospitals</option>
+                        <option value="State PSC">State PSC (Permanent)</option>
+                        <option value="NHM">NHM / District Health</option>
+                        <option value="Armed Forces">Armed Forces (AFMS)</option>
                     </select>
 
                     <select id="stageFilter" onchange="applyFilters()" class="px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-700 focus:border-tealmed-600 outline-none">
@@ -522,7 +524,11 @@
                     (v.summary && v.summary.toLowerCase().includes(q));
                 
                 const matchQual = !qual || v.qualification.includes(qual);
-                const matchCat = !cat || v.category === cat;
+                const matchCat = !cat || (
+                    v.category.toLowerCase().includes(cat.toLowerCase()) ||
+                    v.organization.toLowerCase().includes(cat.toLowerCase()) ||
+                    (v.selection_mode && v.selection_mode.toLowerCase().includes(cat.toLowerCase()))
+                );
                 const matchStage = !stage || v.stage === stage;
                 const matchBond = !bond || (bond === 'no_bond' && v.bond_years === 0);
 
@@ -562,6 +568,10 @@
                     `<span class="text-[10px] font-semibold px-2.5 py-0.5 rounded-full bg-tealmed-50 text-tealmed-800 border border-tealmed-200"><i class="fa-solid fa-shield-halved mr-1"></i> Zero Bond</span>` :
                     `<span class="text-[10px] font-semibold px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200"><i class="fa-solid fa-file-contract mr-1"></i> ${v.bond_penalty_amount}</span>`;
 
+                const isWalkIn = v.selection_mode && v.selection_mode.toLowerCase().includes('walk-in');
+                const walkInPill = isWalkIn ?
+                    `<span class="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-purple-50 text-purple-800 border border-purple-200"><i class="fa-solid fa-person-walking mr-1"></i> Walk-in</span>` : '';
+
                 let seatsHTML = '';
                 if (v.category_seats && Object.keys(v.category_seats).length > 0) {
                     seatsHTML = Object.entries(v.category_seats).map(([k, count]) => `
@@ -580,6 +590,7 @@
                                     ${v.category}
                                 </span>
                                 ${stagePill}
+                                ${walkInPill}
                                 ${bondPill}
                             </div>
                             <span class="font-mono text-[11px] px-2.5 py-0.5 rounded-full border ${deadlineBadge}">

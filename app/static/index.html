@@ -358,11 +358,16 @@
                     </label>
                 </div>
 
-                <div class="pt-2">
+                <div class="pt-2 flex flex-col gap-2">
                     <button type="submit" id="subBtn" class="w-full py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-lg text-sm shadow transition flex items-center justify-center gap-2">
                         <span>Subscribe for Notifications</span>
                     </button>
+                    <button type="button" onclick="testTelegramLive()" id="tgTestBtn" class="w-full py-2 bg-sky-50 hover:bg-sky-100 text-sky-800 border border-sky-200 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5">
+                        <i class="fa-brands fa-telegram text-sky-500"></i>
+                        <span>Send Test Dispatch to Telegram</span>
+                    </button>
                 </div>
+                <div id="tgTestResult" class="hidden p-3 rounded-xl text-xs space-y-1"></div>
             </form>
         </div>
     </div>
@@ -701,6 +706,60 @@
                 fetchLogs();
             } catch (err) {
                 showToast('Error subscribing: ' + err.message);
+            }
+        }
+
+        async function testTelegramLive() {
+            const target = document.getElementById('targetInput').value.trim();
+            const resBox = document.getElementById('tgTestResult');
+            const btn = document.getElementById('tgTestBtn');
+
+            if (!target) {
+                alert('Please enter your Telegram chat ID or @channel_name in the input above first.');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i> Testing Connection...';
+            resBox.classList.add('hidden');
+
+            try {
+                const res = await fetch('/api/telegram/test', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ chat_id: target })
+                });
+                const data = await res.json();
+                resBox.classList.remove('hidden');
+
+                if (data.success) {
+                    resBox.className = 'p-3 rounded-xl text-xs bg-emerald-50 border border-emerald-200 text-emerald-900 space-y-1';
+                    resBox.innerHTML = `
+                        <p class="font-bold"><i class="fa-solid fa-circle-check text-emerald-600 mr-1"></i> Success!</p>
+                        <p>${data.message}</p>
+                    `;
+                } else if (data.status === 'TOKEN_MISSING') {
+                    resBox.className = 'p-3 rounded-xl text-xs bg-amber-50 border border-amber-200 text-amber-900 space-y-1.5';
+                    resBox.innerHTML = `
+                        <p class="font-bold"><i class="fa-solid fa-triangle-exclamation text-amber-600 mr-1"></i> Bot Token Not Set</p>
+                        <p>${data.message}</p>
+                        <p class="text-[10px] text-slate-500">Add <strong>TELEGRAM_BOT_TOKEN</strong> in your Render dashboard environment variables.</p>
+                    `;
+                } else {
+                    resBox.className = 'p-3 rounded-xl text-xs bg-rose-50 border border-rose-200 text-rose-900 space-y-1.5';
+                    resBox.innerHTML = `
+                        <p class="font-bold"><i class="fa-solid fa-circle-xmark text-rose-600 mr-1"></i> Telegram Delivery Error</p>
+                        <p>${data.message || (data.error_from_telegram && data.error_from_telegram.description) || 'Failed'}</p>
+                        ${data.troubleshooting ? `<p class="text-[10px] text-slate-600 italic">${data.troubleshooting}</p>` : ''}
+                    `;
+                }
+            } catch(e) {
+                resBox.classList.remove('hidden');
+                resBox.className = 'p-3 rounded-xl text-xs bg-rose-50 border border-rose-200 text-rose-900';
+                resBox.innerHTML = `<p class="font-bold">Error:</p><p>${e.message}</p>`;
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-brands fa-telegram text-sky-500"></i> <span>Send Test Dispatch to Telegram</span>';
             }
         }
 

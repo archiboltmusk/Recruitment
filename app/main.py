@@ -81,6 +81,10 @@ class ExamSubmissionRequest(BaseModel):
     candidate_name: str = "Dr. Candidate"
     answers: Dict[str, Optional[int]] = {}
 
+class TelegramTestRequest(BaseModel):
+    chat_id: str
+    bot_token: Optional[str] = None
+
 # Mount static directory
 static_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static")
 if not os.path.exists(static_dir):
@@ -583,3 +587,74 @@ def list_subscriptions(db: Session = Depends(get_db)):
 def list_notifications(limit: int = 15, db: Session = Depends(get_db)):
     logs = db.query(NotificationLog).order_by(NotificationLog.sent_at.desc()).limit(limit).all()
     return logs
+
+@app.post("/api/telegram/test")
+def test_telegram_broadcast(payload: TelegramTestRequest):
+    token = (payload.bot_token or os.getenv("TELEGRAM_BOT_TOKEN", "")).strip()
+    if not token:
+        return {
+            "success": False,
+            "status": "TOKEN_MISSING",
+            "message": "No Telegram Bot Token configured on the server. Set TELEGRAM_BOT_TOKEN in Render or provide it in the test form.",
+            "guide": {
+                "step1": "Open Telegram and message @BotFather",
+                "step2": "Send /newbot and choose a bot name",
+                "step3": "Copy the HTTP API Token and add it as TELEGRAM_BOT_TOKEN in your Render dashboard environment variables",
+                "step4": "Add your bot as an Administrator to your channel"
+            }
+        }
+    
+    # 1. Verify token with Telegram getMe
+    try:
+        get_me_res = requests.get(f"https://api.telegram.org/bot{token}/getMe", timeout=8)
+        if not get_me_res.ok:
+            return {
+                "success": False,
+                "status": "INVALID_TOKEN",
+                "message": f"Telegram API rejected this token: {get_me_res.text}"
+            }
+        bot_info = get_me_res.json().get("result", {})
+    except Exception as e:
+        return {"success": False, "status": "NETWORK_ERROR", "message": f"Could not reach Telegram API: {str(e)}"}
+    
+    # 2. Dispatch a Test Vacancy Alert
+    sample_text = (
+        f"🩺 <b>MEDALERTS TEST DISPATCH</b>\n\n"
+        f"✅ <b>Telegram Integration Verified!</b>\n"
+        f"🤖 <b>Bot Name:</b> @{bot_info.get('username')}\n"
+        f"📌 <b>Sample Circular:</b> UPSC Combined Medical Services (CMS) 2026\n"
+        f"👥 <b>Total Posts:</b> 827 Seats (MBBS)\n"
+        f"💰 <b>Pay:</b> Level 10 Matrix (₹56,100 - ₹1,77,500)\n"
+        f"📅 <b>Status:</b> Live & Connected to Supabase Database\n\n"
+        f"🔗 <a href='https://medalerts.onrender.com'>Open MedAlerts Portal</a>"
+    )
+    
+    try:
+        send_res = requests.post(
+            f"https://api.telegram.org/bot{token}/sendMessage",
+            json={
+                "chat_id": payload.chat_id,
+                "text": sample_text,
+                "parse_mode": "HTML",
+                "disable_web_page_preview": False
+            },
+            timeout=10
+        )
+        if send_res.ok:
+            return {
+                "success": True,
+                "status": "SENT",
+                "bot_username": bot_info.get("username"),
+                "recipient": payload.chat_id,
+                "message": f"Test message successfully delivered to {payload.chat_id} via @{bot_info.get('username')}!"
+            }
+        else:
+            return {
+                "success": False,
+                "status": "DELIVERY_FAILED",
+                "bot_username": bot_info.get("username"),
+                "error_from_telegram": send_res.json(),
+                "troubleshooting": "If sending to a public channel, make sure the bot is added as an ADMINISTRATOR with Post Messages permission. If sending to a private user, that user must send /start to the bot first."
+            }
+    except Exception as e:
+        return {"success": False, "status": "SEND_ERROR", "message": str(e)}

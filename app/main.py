@@ -15,6 +15,7 @@ from .collector import VacancyCollector
 from .notifier import Notifier
 from .scheduler import start_scheduler, shutdown_scheduler, scheduler
 from .pdf_parser import GovtNotificationPDFParser
+from .exam_data import EXAMS_CATALOG, EXAM_QUESTIONS
 
 # Initialize database schema
 Base.metadata.create_all(bind=engine)
@@ -76,6 +77,10 @@ class PDFAnalyzeURLRequest(BaseModel):
 class PDFAnalyzeTextRequest(BaseModel):
     text: str
 
+class ExamSubmissionRequest(BaseModel):
+    candidate_name: str = "Dr. Candidate"
+    answers: Dict[str, Optional[int]] = {}
+
 # Mount static directory
 static_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static")
 if not os.path.exists(static_dir):
@@ -116,6 +121,122 @@ def serve_onboarding():
     if os.path.exists(onboarding_file):
         return FileResponse(onboarding_file)
     return {"message": "Onboarding page"}
+
+@app.get("/exam")
+@app.head("/exam")
+def serve_exam():
+    exam_file = os.path.join(static_dir, "exam.html")
+    if os.path.exists(exam_file):
+        return FileResponse(exam_file)
+    return {"message": "Exam Simulator page"}
+
+@app.get("/api/exams")
+def list_exams():
+    return EXAMS_CATALOG
+
+@app.get("/api/exams/{exam_id}")
+def get_exam_questions(exam_id: str):
+    exam_meta = next((e for e in EXAMS_CATALOG if e["id"] == exam_id), None)
+    if not exam_meta:
+        raise HTTPException(status_code=404, detail="Exam not found")
+    
+    questions = EXAM_QUESTIONS.get(exam_id, [])
+    safe_questions = []
+    for q in questions:
+        safe_questions.append({
+            "id": q["id"],
+            "subject": q["subject"],
+            "text": q["text"],
+            "options": q["options"]
+        })
+    
+    return {
+        "exam": exam_meta,
+        "questions": safe_questions
+    }
+
+@app.post("/api/exams/{exam_id}/submit")
+def submit_exam(exam_id: str, payload: ExamSubmissionRequest):
+    exam_meta = next((e for e in EXAMS_CATALOG if e["id"] == exam_id), None)
+    if not exam_meta:
+        raise HTTPException(status_code=404, detail="Exam not found")
+        
+    questions = EXAM_QUESTIONS.get(exam_id, [])
+    if not questions:
+        raise HTTPException(status_code=404, detail="No questions found for this exam")
+        
+    total_q = len(questions)
+    marks_per_q = exam_meta["total_marks"] / total_q
+    neg_multiplier = exam_meta.get("negative_marking", 0.33)
+    
+    correct_count = 0
+    wrong_count = 0
+    unattempted_count = 0
+    
+    detailed_review = []
+    subject_stats = {}
+    
+    for q in questions:
+        subj = q["subject"]
+        if subj not in subject_stats:
+            subject_stats[subj] = {"total": 0, "correct": 0, "wrong": 0, "unattempted": 0}
+        subject_stats[subj]["total"] += 1
+        
+        user_choice = payload.answers.get(q["id"])
+        is_correct = False
+        is_attempted = (user_choice is not None)
+        
+        if not is_attempted:
+            unattempted_count += 1
+            subject_stats[subj]["unattempted"] += 1
+        elif user_choice == q["correct_option"]:
+            correct_count += 1
+            subject_stats[subj]["correct"] += 1
+            is_correct = True
+        else:
+            wrong_count += 1
+            subject_stats[subj]["wrong"] += 1
+            
+        detailed_review.append({
+            "id": q["id"],
+            "subject": q["subject"],
+            "text": q["text"],
+            "options": q["options"],
+            "user_choice": user_choice,
+            "correct_option": q["correct_option"],
+            "is_correct": is_correct,
+            "is_attempted": is_attempted,
+            "explanation": q.get("explanation", ""),
+            "citation": q.get("citation", "")
+        })
+        
+    positive_marks = correct_count * marks_per_q
+    negative_marks = wrong_count * marks_per_q * neg_multiplier
+    final_score = round(max(0.0, positive_marks - negative_marks), 2)
+    accuracy = round((correct_count / (correct_count + wrong_count) * 100), 1) if (correct_count + wrong_count) > 0 else 0
+    
+    cutoff = exam_meta.get("cutoff_reference", 125)
+    qualified = final_score >= cutoff
+    
+    return {
+        "candidate_name": payload.candidate_name,
+        "exam_title": exam_meta["title"],
+        "total_questions": total_q,
+        "attempted": correct_count + wrong_count,
+        "correct": correct_count,
+        "wrong": wrong_count,
+        "unattempted": unattempted_count,
+        "positive_marks": round(positive_marks, 2),
+        "negative_marks": round(negative_marks, 2),
+        "final_score": final_score,
+        "total_marks": exam_meta["total_marks"],
+        "accuracy_pct": accuracy,
+        "cutoff_reference": cutoff,
+        "qualified": qualified,
+        "status_label": "QUALIFIED FOR INTERVIEW" if qualified else "NEEDS REVISION",
+        "subject_breakdown": subject_stats,
+        "review": detailed_review
+    }
 
 @app.get("/api/stats")
 @app.head("/api/stats")

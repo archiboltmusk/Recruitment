@@ -1,10 +1,51 @@
 import re
 import io
+import socket
+import ipaddress
 import requests
+from urllib.parse import urlparse
 from typing import Dict, Any, Optional
 from pypdf import PdfReader
 
+MAX_PDF_SIZE_BYTES = 15 * 1024 * 1024  # 15 MB limit to prevent DoS
+
 class GovtNotificationPDFParser:
+    @staticmethod
+    def is_safe_url(url: str) -> bool:
+        """Validates that a URL does not point to internal, private, or loopback network addresses (SSRF Protection)."""
+        try:
+            parsed = urlparse(url)
+            if parsed.scheme not in ("http", "https"):
+                return False
+
+            hostname = parsed.hostname
+            if not hostname:
+                return False
+
+            # Block obvious localhost strings
+            if hostname.lower() in ("localhost", "127.0.0.1", "::1", "0.0.0.0"):
+                return False
+
+            # Resolve DNS and check all returned IP addresses
+            addr_info = socket.getaddrinfo(hostname, None)
+            for family, _, _, _, sockaddr in addr_info:
+                ip_str = sockaddr[0]
+                ip_obj = ipaddress.ip_address(ip_str)
+
+                # Reject private, loopback, link-local, multicast, or reserved ranges
+                if (
+                    ip_obj.is_private
+                    or ip_obj.is_loopback
+                    or ip_obj.is_link_local
+                    or ip_obj.is_multicast
+                    or ip_obj.is_reserved
+                ):
+                    return False
+
+            return True
+        except Exception:
+            return False
+
     @staticmethod
     def extract_text_from_bytes(pdf_bytes: bytes) -> str:
         """Extracts text from PDF bytes using pypdf."""
@@ -20,10 +61,31 @@ class GovtNotificationPDFParser:
 
     @classmethod
     def extract_from_url(cls, url: str) -> str:
-        headers = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)"}
-        resp = requests.get(url, headers=headers, timeout=15)
-        resp.raise_for_status()
-        return cls.extract_text_from_bytes(resp.content)
+        # SSRF Verification Gate
+        if not cls.is_safe_url(url):
+            raise ValueError("Invalid or restricted URL. Access to local, private, or non-HTTP addresses is blocked.")
+
+        headers = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko)"}
+        
+        # Stream response with strict size limit to prevent memory exhaustion DoS
+        with requests.get(url, headers=headers, stream=True, timeout=12) as resp:
+            resp.raise_for_status()
+            
+            # Check Content-Length header if present
+            cl = resp.headers.get("Content-Length")
+            if cl and int(cl) > MAX_PDF_SIZE_BYTES:
+                raise ValueError("PDF file size exceeds maximum permitted limit (15 MB).")
+
+            pdf_bytes = io.BytesIO()
+            downloaded = 0
+            for chunk in resp.iter_content(chunk_size=65536):
+                if chunk:
+                    downloaded += len(chunk)
+                    if downloaded > MAX_PDF_SIZE_BYTES:
+                        raise ValueError("PDF stream exceeded 15 MB limit.")
+                    pdf_bytes.write(chunk)
+
+            return cls.extract_text_from_bytes(pdf_bytes.getvalue())
 
     @classmethod
     def parse_notice_text(cls, text: str) -> Dict[str, Any]:

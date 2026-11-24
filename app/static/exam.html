@@ -1,281 +1,309 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UPSC CMS & Medical Officer CBT Mock Simulator - MedAlerts</title>
-    <!-- Tailwind CSS CDN -->
+    <title>UPSC CMS & MO CBT Simulator — MedAlerts Club</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Syne:wght@700;800&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
+            darkMode: 'class',
             theme: {
                 extend: {
+                    fontFamily: {
+                        display: ['"Syne"', 'sans-serif'],
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        mono: ['"JetBrains Mono"', 'monospace'],
+                    },
                     colors: {
-                        brand: {
-                            50: '#ecfdf5',
-                            100: '#d1fae5',
-                            500: '#10b981',
-                            600: '#059669',
-                            700: '#047857',
-                            900: '#064e3b'
-                        }
+                        obsidian: { 950: '#070709', 900: '#0D0D10', 850: '#121216', 800: '#18181E' },
+                        surgical: { 400: '#34D399', 500: '#00E599', 600: '#059669' },
+                        champagne: { 400: '#F3D578', 500: '#E5C158', 600: '#B48E28' }
                     }
                 }
             }
         }
     </script>
+    <style>
+        :root { color-scheme: dark; }
+        body {
+            background-color: #070709;
+            color: #F4F4F6;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            overflow-x: hidden;
+        }
+        .bg-grid-pattern {
+            background-image:
+                linear-gradient(to right, rgba(255, 255, 255, 0.028) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.028) 1px, transparent 1px);
+            background-size: 56px 56px;
+        }
+        .noise-overlay {
+            position: fixed; inset: 0; pointer-events: none; z-index: 60; opacity: 0.025;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+        .cred-card {
+            position: relative;
+            background: linear-gradient(180deg, rgba(22, 22, 28, 0.92) 0%, rgba(13, 13, 16, 0.98) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 20px 40px -24px rgba(0, 0, 0, 0.85);
+        }
+        .neopop-emerald {
+            background: #00E599; color: #042F2E; box-shadow: 0 4px 0 #047857;
+            transition: transform 0.12s, box-shadow 0.12s, filter 0.15s;
+        }
+        .neopop-emerald:hover { filter: brightness(1.06); }
+        .neopop-emerald:active { transform: translateY(2px); box-shadow: 0 2px 0 #047857; }
+        .neopop-gold {
+            background: linear-gradient(135deg, #F3D578 0%, #E5C158 100%);
+            color: #181408; box-shadow: 0 4px 0 #926F18;
+            transition: transform 0.12s, box-shadow 0.12s;
+        }
+        .neopop-gold:active { transform: translateY(2px); box-shadow: 0 2px 0 #926F18; }
+        .neopop-white {
+            background: #FFFFFF; color: #070709; box-shadow: 0 4px 0 #A1A1AA;
+            transition: transform 0.12s, box-shadow 0.12s;
+        }
+        .neopop-white:active { transform: translateY(2px); box-shadow: 0 2px 0 #A1A1AA; }
+        .neopop-dark {
+            background: #16161C; color: #E4E4E7; border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 3px 0 #050507;
+            transition: transform 0.12s, box-shadow 0.12s, border-color 0.15s;
+        }
+        .neopop-dark:hover { border-color: rgba(255, 255, 255, 0.22); }
+        .neopop-dark:active { transform: translateY(2px); box-shadow: 0 1px 0 #050507; }
+    </style>
 </head>
-<body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col font-sans select-none">
+<body class="min-h-screen flex flex-col bg-grid-pattern selection:bg-champagne-500 selection:text-obsidian-950">
+    <div class="noise-overlay"></div>
+    <div class="fixed top-0 left-1/2 -translate-x-1/2 w-[800px] h-[380px] bg-champagne-500/[0.045] blur-[140px] rounded-full pointer-events-none -z-10"></div>
 
-    <!-- Top Navigation Bar -->
-    <header class="bg-slate-900 text-white border-b border-slate-800 sticky top-0 z-30 shadow-md">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-2.5 flex items-center justify-between">
-            <div class="flex items-center space-x-3">
-                <a href="/" class="w-8 h-8 rounded-lg bg-brand-600 flex items-center justify-center text-white shadow font-bold text-sm">
-                    <i class="fa-solid fa-user-doctor"></i>
-                </a>
+    <!-- Frosted Top Bar -->
+    <header class="sticky top-0 z-30 border-b border-white/[0.07] bg-obsidian-950/80 backdrop-blur-xl">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
+            <a href="/" class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-champagne-400 to-amber-700 flex items-center justify-center text-obsidian-950 shadow-[0_0_20px_rgba(229,193,88,0.25)]">
+                    <i class="fa-solid fa-graduation-cap text-base"></i>
+                </div>
                 <div>
-                    <h1 class="text-sm font-bold tracking-tight flex items-center gap-2">
-                        MedAlerts CBT Simulator
-                        <span class="text-[10px] px-2 py-0.2 rounded bg-indigo-500/30 text-indigo-200 border border-indigo-400/30">
-                            UPSC CMS / ESIC Pattern
-                        </span>
-                    </h1>
+                    <span class="font-display text-lg font-extrabold tracking-tight text-white flex items-center gap-2">
+                        MEDALERTS <span class="font-mono text-[10px] px-2 py-0.5 rounded-full bg-champagne-500/15 text-champagne-400 border border-champagne-500/30">CBT ARENA</span>
+                    </span>
+                    <p class="text-[10px] font-mono text-zinc-400 uppercase tracking-widest hidden sm:block">UPSC CMS • ESIC IMO • -0.33 Negative Marking</p>
                 </div>
-            </div>
+            </a>
 
-            <!-- Active Test Timer Bar (Hidden in Lobby) -->
-            <div id="testTimerBar" class="hidden flex items-center space-x-4">
-                <div class="flex items-center gap-2 bg-slate-800 px-3.5 py-1.5 rounded-lg border border-slate-700">
-                    <i class="fa-regular fa-clock text-amber-400 text-xs"></i>
-                    <span class="text-xs font-mono font-bold text-slate-200" id="timerDisplay">120:00</span>
+            <!-- Test Timer (Active during exam) -->
+            <div id="testTimerBar" class="hidden flex items-center gap-3">
+                <div class="px-3.5 py-1.5 rounded-xl bg-obsidian-900 border border-white/[0.12] flex items-center gap-2">
+                    <i class="fa-regular fa-clock text-champagne-400 text-xs"></i>
+                    <span class="text-xs font-mono font-bold text-white tabular-nums" id="timerDisplay">120:00</span>
                 </div>
-                <button onclick="confirmSubmitTest()" class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-lg shadow transition">
-                    Submit Exam
+                <button onclick="confirmSubmitTest()" class="neopop-emerald px-4 py-1.5 font-extrabold text-xs rounded-lg">
+                    Finish & Submit
                 </button>
             </div>
 
-            <div id="lobbyNavBtns" class="flex items-center space-x-2">
-                <a href="/" class="px-3 py-1.5 text-xs text-slate-300 hover:text-white bg-slate-800 rounded-lg transition">
-                    <i class="fa-solid fa-arrow-left mr-1"></i> Vacancies Feed
+            <!-- Lobby Nav Buttons -->
+            <div id="lobbyNavBtns" class="flex items-center gap-2">
+                <a href="/onboarding" class="neopop-dark px-3.5 py-2 text-xs font-semibold rounded-lg text-surgical-400 flex items-center gap-1.5">
+                    <i class="fa-solid fa-clipboard-check"></i>
+                    <span class="hidden sm:inline">Eligibility</span>
+                </a>
+                <a href="/" class="neopop-dark px-3.5 py-2 text-xs font-semibold rounded-lg flex items-center gap-1.5">
+                    <i class="fa-solid fa-arrow-left text-zinc-400"></i>
+                    <span>Dashboard</span>
                 </a>
             </div>
         </div>
     </header>
 
-    <!-- MAIN VIEW CONTAINER -->
-    <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 flex flex-col justify-center">
+    <!-- Main Container -->
+    <main class="flex-grow max-w-7xl mx-auto w-full p-4 sm:p-6 flex flex-col">
 
-        <!-- VIEW 1: LOBBY & TEST SELECTOR -->
-        <div id="lobbyView" class="max-w-3xl mx-auto w-full space-y-6">
-            <div class="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-sm space-y-4">
-                <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700 text-xs font-bold">
-                    <i class="fa-solid fa-trophy text-amber-500"></i> Phase 2: High-Yield Career Prep
-                </div>
-                <h2 class="text-2xl font-black text-slate-900 tracking-tight">
-                    UPSC Combined Medical Services (CMS) CBT Simulator
-                </h2>
-                <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                    Practice with authentic previous years' clinical scenarios designed strictly under the official UPSC CMS pattern (negative marking: <strong>-0.33 per incorrect answer</strong>). Detailed textbook explanations from <em>Harrison's</em>, <em>Bailey & Love</em>, and <em>Park</em> provided immediately after submission.
+        <!-- VIEW 1: EXAM LOBBY -->
+        <div id="lobbyView" class="max-w-4xl mx-auto w-full space-y-6 py-4">
+            <div class="cred-card rounded-2xl p-6 sm:p-8 lg:p-10">
+                <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-champagne-500/10 border border-champagne-500/25 font-mono text-[10px] uppercase tracking-[0.2em] text-champagne-400 mb-3">
+                    <i class="fa-solid fa-bolt"></i> High-Yield Clinical CBT Vault
+                </span>
+                <h1 class="font-display text-3xl sm:text-4xl font-extrabold text-white tracking-tight leading-tight">
+                    practice like it’s exam day.<br>
+                    <span class="text-zinc-400">zero distractions.</span>
+                </h1>
+                <p class="text-sm text-zinc-400 mt-2.5 max-w-xl leading-relaxed">
+                    Timed CBT simulation for UPSC CMS Paper 1 & 2, Clinical Pharmacology, PSM National Programs, and ESIC IMO with authentic -1/3 negative marking and Harrison's / Park's textbook pearls.
                 </p>
 
-                <div class="pt-2">
-                    <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Candidate Name / Roll</label>
-                    <input type="text" id="candidateNameInput" placeholder="Dr. Candidate Name" value="Dr. Candidate" 
-                           class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-brand-500 outline-none font-medium">
+                <div class="mt-5 flex flex-col sm:flex-row sm:items-center gap-3">
+                    <div class="relative flex-grow max-w-sm">
+                        <i class="fa-solid fa-user-doctor absolute left-3.5 top-3 text-zinc-500 text-xs"></i>
+                        <input type="text" id="candidateNameInput" placeholder="Dr. Candidate Name" value="Dr. Candidate" 
+                            class="w-full pl-9 pr-4 py-2 bg-obsidian-950 border border-white/[0.12] rounded-xl text-sm text-white focus:border-champagne-500 outline-none">
+                    </div>
+                    <span class="font-mono text-[11px] text-zinc-500 uppercase tracking-wider">Displayed on final scorecard</span>
                 </div>
             </div>
 
-            <!-- Exam Papers Cards -->
-            <div class="space-y-3" id="examsListContainer">
-                <!-- Dynamically loaded -->
-            </div>
+            <div class="space-y-3.5" id="examsListContainer"></div>
         </div>
 
-        <!-- VIEW 2: ACTIVE CBT TEST INTERFACE -->
-        <div id="cbtView" class="hidden flex-1 grid grid-cols-1 lg:grid-cols-4 gap-4 h-[calc(100vh-95px)]">
-            
-            <!-- Left: Question & Options Panel (3 cols) -->
-            <div class="lg:col-span-3 bg-white rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between overflow-hidden">
-                <!-- Subject Tabs & Question Header -->
-                <div>
-                    <div class="bg-slate-50 border-b border-slate-200 px-5 py-3 flex items-center justify-between flex-wrap gap-2">
-                        <div class="flex items-center gap-2">
-                            <span class="text-xs font-bold px-2.5 py-1 rounded bg-indigo-100 text-indigo-800" id="qSubjectBadge">Subject</span>
-                            <span class="text-xs text-slate-400 font-mono" id="qNumberText">Question 1 of 12</span>
-                        </div>
-                        <span class="text-[11px] text-slate-500 font-medium">
-                            Marks: <strong class="text-emerald-700">+20.83</strong> | Negative: <strong class="text-rose-600">-6.94</strong>
-                        </span>
+        <!-- VIEW 2: ACTIVE CBT INTERFACE -->
+        <div id="cbtView" class="hidden flex-1 grid grid-cols-1 lg:grid-cols-4 gap-5 min-h-[calc(100vh-110px)]">
+            <!-- Left: Question Display Area (3 Cols) -->
+            <div class="lg:col-span-3 cred-card rounded-2xl flex flex-col overflow-hidden">
+                <div class="px-6 py-4 bg-obsidian-950/70 border-b border-white/[0.07] flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <span class="font-mono text-[11px] font-bold px-3 py-1 rounded-full bg-champagne-500/15 text-champagne-400 border border-champagne-500/30" id="qSubjectBadge">Subject</span>
+                        <span class="text-xs text-zinc-400 font-mono" id="qNumberText">Question 1 of 12</span>
                     </div>
-
-                    <!-- Question Text -->
-                    <div class="p-6 space-y-6 overflow-y-auto max-h-[calc(100vh-270px)]">
-                        <p class="text-sm sm:text-base font-semibold text-slate-900 leading-relaxed" id="qText">
-                            Loading question text...
-                        </p>
-
-                        <!-- Options List -->
-                        <div class="space-y-3" id="qOptionsContainer">
-                            <!-- Injected -->
-                        </div>
+                    <div class="flex items-center gap-2 font-mono text-[11px]">
+                        <span class="px-2 py-0.5 rounded bg-surgical-500/15 text-surgical-400 font-bold">+1.0</span>
+                        <span class="px-2 py-0.5 rounded bg-rose-500/15 text-rose-400 font-bold">-0.33</span>
                     </div>
                 </div>
 
-                <!-- Footer Control Buttons -->
-                <div class="bg-slate-50 border-t border-slate-200 p-4 flex items-center justify-between flex-wrap gap-2">
-                    <div class="flex items-center space-x-2">
-                        <button onclick="clearResponse()" class="px-3.5 py-2 text-xs font-semibold text-slate-600 hover:text-slate-900 bg-white border border-slate-200 rounded-lg hover:bg-slate-100 transition">
+                <div class="p-6 sm:p-8 flex-grow overflow-y-auto space-y-6">
+                    <p class="text-base sm:text-lg font-semibold text-white leading-relaxed" id="qText">
+                        Question text loads here...
+                    </p>
+
+                    <div class="space-y-3" id="qOptionsContainer"></div>
+                </div>
+
+                <div class="px-6 py-4 bg-obsidian-950/80 border-t border-white/[0.07] flex flex-wrap items-center justify-between gap-3">
+                    <div class="flex items-center gap-2">
+                        <button onclick="clearResponse()" class="neopop-dark px-3.5 py-2 text-xs font-semibold rounded-lg">
                             Clear Response
                         </button>
-                        <button onclick="markForReviewAndNext()" class="px-3.5 py-2 text-xs font-semibold text-purple-700 bg-purple-50 hover:bg-purple-100 border border-purple-200 rounded-lg transition flex items-center gap-1.5">
-                            <i class="fa-solid fa-bookmark text-[10px]"></i> Mark for Review & Next
+                        <button onclick="markForReviewAndNext()" class="neopop-dark px-3.5 py-2 text-xs font-semibold text-purple-400 border-purple-500/30 rounded-lg flex items-center gap-1.5">
+                            <i class="fa-solid fa-bookmark"></i> Mark Review & Next
                         </button>
                     </div>
 
-                    <div class="flex items-center space-x-2">
-                        <button onclick="prevQuestion()" id="prevBtn" class="px-4 py-2 text-xs font-semibold text-slate-700 bg-white border border-slate-200 rounded-lg hover:bg-slate-100 transition">
+                    <div class="flex items-center gap-2.5">
+                        <button onclick="prevQuestion()" id="prevBtn" class="neopop-dark px-4 py-2 text-xs font-semibold rounded-lg">
                             <i class="fa-solid fa-chevron-left mr-1"></i> Previous
                         </button>
-                        <button onclick="saveAndNext()" id="nextBtn" class="px-5 py-2 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow transition flex items-center gap-1.5">
-                            <span>Save & Next</span> <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                        <button onclick="saveAndNext()" id="nextBtn" class="neopop-white px-5 py-2 text-xs font-extrabold rounded-lg flex items-center gap-1.5">
+                            Save & Next <i class="fa-solid fa-chevron-right"></i>
                         </button>
                     </div>
                 </div>
             </div>
 
-            <!-- Right: Question Palette & Status (1 col) -->
-            <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4 flex flex-col justify-between overflow-y-auto">
-                <div class="space-y-4">
-                    <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider border-b border-slate-100 pb-2">
-                        Question Palette
-                    </h3>
-
-                    <!-- Legend -->
-                    <div class="grid grid-cols-2 gap-2 text-[11px] text-slate-600">
-                        <div class="flex items-center gap-1.5">
-                            <span class="w-5 h-5 rounded bg-emerald-500 text-white flex items-center justify-center font-bold text-[10px]" id="countAnswered">0</span> Answered
-                        </div>
-                        <div class="flex items-center gap-1.5">
-                            <span class="w-5 h-5 rounded bg-rose-500 text-white flex items-center justify-center font-bold text-[10px]" id="countNotAnswered">0</span> Not Answered
-                        </div>
-                        <div class="flex items-center gap-1.5">
-                            <span class="w-5 h-5 rounded bg-purple-600 text-white flex items-center justify-center font-bold text-[10px]" id="countMarked">0</span> Marked Review
-                        </div>
-                        <div class="flex items-center gap-1.5">
-                            <span class="w-5 h-5 rounded bg-slate-200 text-slate-700 flex items-center justify-center font-bold text-[10px]" id="countNotVisited">0</span> Not Visited
-                        </div>
-                    </div>
-
-                    <!-- Number Grid -->
-                    <div class="grid grid-cols-4 gap-2 pt-2 border-t border-slate-100 max-h-[300px] overflow-y-auto" id="paletteGrid">
-                        <!-- Buttons injected -->
-                    </div>
+            <!-- Right: Question Palette Sidebar -->
+            <div class="cred-card rounded-2xl flex flex-col overflow-hidden">
+                <div class="px-5 py-4 bg-obsidian-950/70 border-b border-white/[0.07]">
+                    <h3 class="font-mono text-xs font-bold uppercase tracking-wider text-zinc-300">Question Palette</h3>
                 </div>
 
-                <div class="pt-4 border-t border-slate-100">
-                    <button onclick="confirmSubmitTest()" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg text-xs shadow transition">
-                        Final Submit Exam
+                <div class="p-5 space-y-5 flex-grow overflow-y-auto">
+                    <div class="grid grid-cols-2 gap-2.5 text-[11px] font-mono text-zinc-400">
+                        <div class="flex items-center gap-2">
+                            <span class="w-5 h-5 rounded bg-surgical-500 text-obsidian-950 flex items-center justify-center font-bold text-[10px]" id="countAnswered">0</span> Answered
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="w-5 h-5 rounded bg-rose-500 text-white flex items-center justify-center font-bold text-[10px]" id="countNotAnswered">0</span> Unanswered
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="w-5 h-5 rounded bg-purple-600 text-white flex items-center justify-center font-bold text-[10px]" id="countMarked">0</span> Review
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="w-5 h-5 rounded bg-white/[0.08] text-zinc-300 flex items-center justify-center font-bold text-[10px]" id="countNotVisited">0</span> Unvisited
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-4 gap-2.5 pt-3 border-t border-white/[0.07] max-h-[320px] overflow-y-auto" id="paletteGrid"></div>
+                </div>
+
+                <div class="p-5 bg-obsidian-950/80 border-t border-white/[0.07]">
+                    <button onclick="confirmSubmitTest()" class="neopop-emerald w-full py-2.5 font-extrabold rounded-xl text-xs">
+                        Submit Final Exam
                     </button>
                 </div>
             </div>
-
         </div>
 
-        <!-- VIEW 3: SCORECARD & PERFORMANCE REVIEW -->
-        <div id="resultsView" class="hidden max-w-4xl mx-auto w-full space-y-6">
-            
-            <!-- Result Banner -->
-            <div class="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-sm space-y-6">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-6">
+        <!-- VIEW 3: DETAILED SCORECARD & CLINICAL PEARLS REVIEW -->
+        <div id="resultsView" class="hidden max-w-4xl mx-auto w-full space-y-6 py-4">
+            <div class="cred-card rounded-2xl p-6 sm:p-8 space-y-6 border-t-2 border-t-champagne-500">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/[0.08] pb-5">
                     <div>
-                        <span class="text-xs font-bold uppercase tracking-wider text-slate-400" id="resExamTitle">UPSC CMS Paper 1</span>
-                        <h2 class="text-xl sm:text-2xl font-black text-slate-900 mt-0.5" id="resCandidate">Dr. Candidate</h2>
-                        <span class="inline-block mt-1 px-3 py-1 rounded-full text-xs font-extrabold" id="resStatusBadge">
-                            QUALIFIED FOR INTERVIEW
+                        <span class="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-champagne-400" id="resExamTitle">UPSC CMS Paper 1</span>
+                        <h2 class="font-display text-2xl sm:text-3xl font-extrabold text-white mt-1" id="resCandidate">Dr. Candidate</h2>
+                        <span class="inline-block mt-2 font-mono px-3 py-1 rounded-full text-[11px] font-bold" id="resStatusBadge">
+                            EVALUATION COMPLETE
                         </span>
                     </div>
 
-                    <!-- Score Highlight -->
-                    <div class="text-right bg-slate-50 p-4 rounded-xl border border-slate-200 min-w-[160px]">
-                        <span class="text-[11px] font-bold text-slate-400 uppercase block">Total Score</span>
-                        <span class="text-3xl font-black text-slate-900" id="resScore">0.0</span>
-                        <span class="text-xs text-slate-500 font-medium block">out of 250 Marks</span>
+                    <div class="text-left sm:text-right">
+                        <span class="font-mono text-[10px] text-zinc-500 uppercase tracking-wider block">Final Score</span>
+                        <div class="flex items-baseline sm:justify-end gap-1 mt-0.5">
+                            <span class="font-mono text-4xl font-black text-white tabular-nums" id="resScore">0.0</span>
+                            <span class="font-mono text-xs text-zinc-500">pts</span>
+                        </div>
                     </div>
                 </div>
 
-                <!-- 4 Metrics Counters -->
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
-                    <div class="p-3 bg-emerald-50 rounded-xl border border-emerald-100">
-                        <span class="text-xl font-black text-emerald-700" id="resCorrect">0</span>
-                        <p class="text-[11px] font-bold text-emerald-800 uppercase mt-0.5">Correct</p>
+                    <div class="p-3.5 bg-obsidian-950 rounded-xl border border-surgical-500/30">
+                        <span class="font-mono text-2xl font-bold text-surgical-400 tabular-nums" id="resCorrect">0</span>
+                        <p class="font-mono text-[10px] uppercase text-zinc-400 mt-1">Correct (+1)</p>
                     </div>
-                    <div class="p-3 bg-rose-50 rounded-xl border border-rose-100">
-                        <span class="text-xl font-black text-rose-700" id="resWrong">0</span>
-                        <p class="text-[11px] font-bold text-rose-800 uppercase mt-0.5">Wrong (-0.33)</p>
+                    <div class="p-3.5 bg-obsidian-950 rounded-xl border border-rose-500/30">
+                        <span class="font-mono text-2xl font-bold text-rose-400 tabular-nums" id="resWrong">0</span>
+                        <p class="font-mono text-[10px] uppercase text-zinc-400 mt-1">Wrong (-0.33)</p>
                     </div>
-                    <div class="p-3 bg-slate-50 rounded-xl border border-slate-200">
-                        <span class="text-xl font-black text-slate-700" id="resUnattempted">0</span>
-                        <p class="text-[11px] font-bold text-slate-600 uppercase mt-0.5">Unattempted</p>
+                    <div class="p-3.5 bg-obsidian-950 rounded-xl border border-white/[0.08]">
+                        <span class="font-mono text-2xl font-bold text-zinc-300 tabular-nums" id="resUnattempted">0</span>
+                        <p class="font-mono text-[10px] uppercase text-zinc-400 mt-1">Unattempted</p>
                     </div>
-                    <div class="p-3 bg-indigo-50 rounded-xl border border-indigo-100">
-                        <span class="text-xl font-black text-indigo-700" id="resAccuracy">0%</span>
-                        <p class="text-[11px] font-bold text-indigo-800 uppercase mt-0.5">Accuracy</p>
+                    <div class="p-3.5 bg-obsidian-950 rounded-xl border border-champagne-500/30">
+                        <span class="font-mono text-2xl font-bold text-champagne-400 tabular-nums" id="resAccuracy">0%</span>
+                        <p class="font-mono text-[10px] uppercase text-zinc-400 mt-1">Accuracy</p>
                     </div>
                 </div>
 
-                <!-- Cutoff Context Box -->
-                <div class="p-4 bg-indigo-50/70 rounded-xl border border-indigo-100 flex items-center justify-between text-xs text-indigo-900">
-                    <span class="flex items-center gap-2">
-                        <i class="fa-solid fa-chart-line text-indigo-600"></i>
-                        <span>UPSC CMS Qualifying Cutoff Reference: <strong>~128 / 250 Marks</strong></span>
-                    </span>
-                    <button onclick="returnToLobby()" class="font-bold underline hover:text-indigo-950">
-                        Take Another Mock Test
+                <div class="flex items-center justify-between p-4 bg-obsidian-950/90 rounded-xl border border-white/[0.08] text-xs">
+                    <span class="font-semibold text-zinc-300"><i class="fa-solid fa-book-medical mr-1.5 text-champagne-400"></i> Detailed Explanations & Textbook Citations below</span>
+                    <button onclick="returnToLobby()" class="neopop-white px-4 py-1.5 rounded-lg font-extrabold text-[11px]">
+                        Back to Mock Lobby
                     </button>
                 </div>
             </div>
 
-            <!-- Question-by-Question Review with Explanations -->
             <div class="space-y-4">
-                <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
-                    <i class="fa-solid fa-book-open text-brand-600"></i>
-                    Clinical Review & High-Yield Pearls
+                <h3 class="font-mono text-xs uppercase tracking-[0.18em] text-zinc-300 flex items-center gap-2">
+                    <i class="fa-solid fa-microscope text-surgical-400"></i> Question-by-Question Review & Clinical Pearls
                 </h3>
-
-                <div id="reviewContainer" class="space-y-4">
-                    <!-- Cards injected -->
-                </div>
+                <div id="reviewContainer" class="space-y-4"></div>
             </div>
-
-            <!-- Medicolegal & Educational Disclaimer -->
-            <footer class="mt-8 pt-6 pb-4 border-t border-slate-200 text-slate-500 text-[11px] space-y-2 text-center max-w-3xl mx-auto">
-                <p class="font-semibold text-slate-600">
-                    <i class="fa-solid fa-stethoscope mr-1 text-slate-400"></i> Medicolegal & Educational Disclaimer
-                </p>
-                <p class="leading-relaxed text-slate-400">
-                    All examination questions, clinical pearls, and explanations are compiled solely for academic training and recruitment examination preparation (UPSC CMS, ESIC, State PSCs). They <strong>do not constitute direct clinical advice, prescription recommendations, or clinical practice guidelines</strong> for patient management. Registered Medical Practitioners (RMPs) must exercise independent clinical discretion in accordance with standard medical literature and local hospital protocols.
-                </p>
-                <p class="text-slate-400 text-[10px] pt-1">
-                    © 2026 MedAlerts • Not affiliated with the Union Public Service Commission (UPSC) or National Examination Board.
-                </p>
-            </footer>
-
         </div>
-
     </main>
 
     <script>
         let currentExam = null;
         let questions = [];
         let currentIndex = 0;
-        let userResponses = {}; // { qId: selectedOptionIndex }
-        let questionStatus = {}; // { qId: 'NOT_VISITED' | 'NOT_ANSWERED' | 'ANSWERED' | 'MARKED' }
+        let userResponses = {};
+        let questionStatus = {};
         let timerInterval = null;
-        let timeRemainingSeconds = 120 * 60;
+        let timeRemainingSeconds = 0;
 
-        window.onload = loadExams;
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedProfile = localStorage.getItem('med_doctor_profile');
+            if (savedProfile) {
+                try {
+                    const p = JSON.parse(savedProfile);
+                    if (p.name) document.getElementById('candidateNameInput').value = p.name;
+                } catch(e){}
+            }
+            loadExams();
+        });
 
         async function loadExams() {
             try {
@@ -284,25 +312,25 @@
                 const container = document.getElementById('examsListContainer');
 
                 container.innerHTML = exams.map(e => `
-                    <div class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm hover:shadow-md transition flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                        <div class="space-y-1">
+                    <div class="cred-card rounded-2xl p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div class="space-y-1.5">
                             <div class="flex items-center gap-2">
-                                <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-indigo-100 text-indigo-800">${e.year}</span>
-                                <span class="text-[10px] font-semibold text-slate-400">Duration: ${e.duration_minutes} Mins</span>
+                                <span class="font-mono text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-champagne-500/15 text-champagne-400 border border-champagne-500/30">${e.year}</span>
+                                <span class="font-mono text-[10px] text-zinc-500 uppercase">Duration: ${e.duration_minutes} Mins</span>
                             </div>
-                            <h3 class="text-base font-bold text-slate-900">${e.title}</h3>
-                            <p class="text-xs text-slate-500">${e.subtitle}</p>
-                            <div class="flex items-center gap-3 pt-1 text-xs text-slate-600">
-                                <span><i class="fa-solid fa-list-ol text-slate-400 mr-1"></i> ${e.total_questions} Questions</span>
-                                <span><i class="fa-solid fa-award text-amber-500 mr-1"></i> ${e.total_marks} Marks</span>
-                                <span><i class="fa-solid fa-circle-minus text-rose-500 mr-1"></i> -1/3 Negative Marking</span>
+                            <h3 class="font-display text-lg font-bold text-white">${e.title}</h3>
+                            <p class="text-xs text-zinc-400">${e.subtitle}</p>
+                            <div class="flex items-center gap-4 pt-1.5 font-mono text-[11px] text-zinc-400">
+                                <span><i class="fa-solid fa-list-ol text-zinc-500 mr-1"></i> ${e.total_questions} Qs</span>
+                                <span><i class="fa-solid fa-award text-champagne-400 mr-1"></i> ${e.total_marks} Marks</span>
+                                <span><i class="fa-solid fa-circle-minus text-rose-400 mr-1"></i> -1/3 Neg</span>
                             </div>
                         </div>
 
                         <div>
-                            <button onclick="startTest('${e.id}')" class="w-full sm:w-auto px-5 py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs rounded-xl shadow transition flex items-center justify-center gap-2">
+                            <button onclick="startTest('${e.id}')" class="neopop-gold w-full sm:w-auto px-5 py-2.5 font-extrabold text-xs rounded-xl flex items-center justify-center gap-2 whitespace-nowrap">
                                 <i class="fa-solid fa-play text-[10px]"></i>
-                                <span>Start Live Mock Test</span>
+                                <span>Launch CBT</span>
                             </button>
                         </div>
                     </div>
@@ -319,21 +347,18 @@
                 currentExam = data.exam;
                 questions = data.questions;
 
-                // Reset state
                 currentIndex = 0;
                 userResponses = {};
                 questionStatus = {};
                 questions.forEach(q => questionStatus[q.id] = 'NOT_VISITED');
                 questionStatus[questions[0].id] = 'NOT_ANSWERED';
 
-                // Switch Views
                 document.getElementById('lobbyView').classList.add('hidden');
                 document.getElementById('resultsView').classList.add('hidden');
                 document.getElementById('cbtView').classList.remove('hidden');
                 document.getElementById('testTimerBar').classList.remove('hidden');
                 document.getElementById('lobbyNavBtns').classList.add('hidden');
 
-                // Start timer
                 timeRemainingSeconds = currentExam.duration_minutes * 60;
                 startTimer();
 
@@ -375,10 +400,10 @@
             const letters = ['A', 'B', 'C', 'D'];
 
             optionsContainer.innerHTML = q.options.map((opt, idx) => `
-                <label class="flex items-start gap-3 p-3.5 rounded-xl border ${selected === idx ? 'bg-indigo-50 border-indigo-400 ring-1 ring-indigo-400' : 'bg-slate-50 border-slate-200 hover:bg-slate-100'} cursor-pointer transition">
-                    <input type="radio" name="optRadio" value="${idx}" ${selected === idx ? 'checked' : ''} onchange="selectOption(${idx})" class="mt-1 text-indigo-600 focus:ring-indigo-500">
-                    <span class="text-xs sm:text-sm text-slate-800">
-                        <strong class="font-bold text-slate-700 mr-1.5">${letters[idx]}.</strong> ${opt}
+                <label class="flex items-start gap-3.5 p-4 rounded-xl border ${selected === idx ? 'bg-champagne-500/10 border-champagne-500/60 ring-1 ring-champagne-500/40' : 'bg-obsidian-950/90 border-white/[0.08] hover:border-white/[0.2]'} cursor-pointer transition">
+                    <input type="radio" name="optRadio" value="${idx}" ${selected === idx ? 'checked' : ''} onchange="selectOption(${idx})" class="mt-1 accent-amber-400">
+                    <span class="text-xs sm:text-sm text-zinc-100 leading-relaxed">
+                        <strong class="font-mono font-bold text-champagne-400 mr-2">${letters[idx]}.</strong> ${opt}
                     </span>
                 </label>
             `).join('');
@@ -391,6 +416,7 @@
             const qId = questions[currentIndex].id;
             userResponses[qId] = idx;
             questionStatus[qId] = 'ANSWERED';
+            renderQuestion();
             renderPalette();
             updateStatusCounts();
         }
@@ -455,15 +481,15 @@
             const grid = document.getElementById('paletteGrid');
             grid.innerHTML = questions.map((q, idx) => {
                 const st = questionStatus[q.id];
-                let bg = 'bg-slate-200 text-slate-700'; // NOT_VISITED
-                if (st === 'ANSWERED') bg = 'bg-emerald-500 text-white font-bold';
+                let bg = 'bg-white/[0.06] text-zinc-400 border border-white/[0.08]';
+                if (st === 'ANSWERED') bg = 'bg-surgical-500 text-obsidian-950 font-bold';
                 else if (st === 'NOT_ANSWERED') bg = 'bg-rose-500 text-white font-bold';
                 else if (st === 'MARKED') bg = 'bg-purple-600 text-white font-bold';
 
-                const isCurrent = (idx === currentIndex) ? 'ring-2 ring-indigo-900 ring-offset-1' : '';
+                const isCurrent = (idx === currentIndex) ? 'ring-2 ring-white ring-offset-2 ring-offset-obsidian-950' : '';
 
                 return `
-                    <button onclick="jumpToQuestion(${idx})" class="w-8 h-8 rounded-lg flex items-center justify-center text-xs transition ${bg} ${isCurrent}">
+                    <button onclick="jumpToQuestion(${idx})" class="w-9 h-9 rounded-lg flex items-center justify-center font-mono text-xs transition ${bg} ${isCurrent}">
                         ${idx + 1}
                     </button>
                 `;
@@ -524,9 +550,9 @@
             const badge = document.getElementById('resStatusBadge');
             badge.innerText = res.status_label;
             if (res.qualified) {
-                badge.className = 'inline-block mt-1 px-3 py-1 rounded-full text-xs font-extrabold bg-emerald-100 text-emerald-800 border border-emerald-200';
+                badge.className = 'inline-block mt-2 font-mono px-3 py-1 rounded-full text-[11px] font-bold bg-surgical-500/15 text-surgical-400 border border-surgical-500/30';
             } else {
-                badge.className = 'inline-block mt-1 px-3 py-1 rounded-full text-xs font-extrabold bg-amber-100 text-amber-800 border border-amber-200';
+                badge.className = 'inline-block mt-2 font-mono px-3 py-1 rounded-full text-[11px] font-bold bg-champagne-500/15 text-champagne-400 border border-champagne-500/30';
             }
 
             document.getElementById('resCorrect').innerText = res.correct;
@@ -534,54 +560,52 @@
             document.getElementById('resUnattempted').innerText = res.unattempted;
             document.getElementById('resAccuracy').innerText = `${res.accuracy_pct}%`;
 
-            // Review questions
             const container = document.getElementById('reviewContainer');
             const letters = ['A', 'B', 'C', 'D'];
 
             container.innerHTML = res.review.map((q, idx) => {
                 let statusBadge = '';
                 if (!q.is_attempted) {
-                    statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-600">Unattempted</span>';
+                    statusBadge = '<span class="font-mono px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-white/[0.06] text-zinc-400">UNATTEMPTED</span>';
                 } else if (q.is_correct) {
-                    statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800"><i class="fa-solid fa-check mr-1"></i> Correct</span>';
+                    statusBadge = '<span class="font-mono px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-surgical-500/15 text-surgical-400 border border-surgical-500/30"><i class="fa-solid fa-check mr-1"></i> CORRECT</span>';
                 } else {
-                    statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-100 text-rose-800"><i class="fa-solid fa-xmark mr-1"></i> Incorrect (-0.33)</span>';
+                    statusBadge = '<span class="font-mono px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-500/15 text-rose-400 border border-rose-500/30"><i class="fa-solid fa-xmark mr-1"></i> WRONG (-0.33)</span>';
                 }
 
                 return `
-                <div class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm space-y-3">
-                    <div class="flex items-center justify-between border-b border-slate-100 pb-2">
-                        <span class="text-xs font-bold text-indigo-700">Q${idx + 1}. ${q.subject}</span>
+                <div class="cred-card rounded-2xl p-6 space-y-4">
+                    <div class="flex items-center justify-between border-b border-white/[0.07] pb-3">
+                        <span class="font-mono text-xs font-bold text-champagne-400">Q${idx + 1} • ${q.subject}</span>
                         ${statusBadge}
                     </div>
 
-                    <p class="text-xs sm:text-sm font-semibold text-slate-900 leading-relaxed">${q.text}</p>
+                    <p class="text-sm font-semibold text-white leading-relaxed">${q.text}</p>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
                         ${q.options.map((opt, oIdx) => {
-                            let optClass = 'bg-slate-50 border-slate-200 text-slate-700';
+                            let optClass = 'bg-obsidian-950 border-white/[0.08] text-zinc-400';
                             if (oIdx === q.correct_option) {
-                                optClass = 'bg-emerald-50 border-emerald-300 text-emerald-900 font-bold ring-1 ring-emerald-400';
+                                optClass = 'bg-surgical-500/10 border-surgical-500/50 text-surgical-300 font-bold';
                             } else if (q.user_choice === oIdx && !q.is_correct) {
-                                optClass = 'bg-rose-50 border-rose-300 text-rose-900 font-bold ring-1 ring-rose-400';
+                                optClass = 'bg-rose-500/10 border-rose-500/50 text-rose-300 font-bold';
                             }
                             return `
-                                <div class="p-2.5 rounded-lg border text-xs ${optClass}">
-                                    <strong>${letters[oIdx]}.</strong> ${opt}
-                                    ${oIdx === q.correct_option ? ' <i class="fa-solid fa-circle-check text-emerald-600 ml-1"></i>' : ''}
-                                    ${q.user_choice === oIdx && !q.is_correct ? ' <i class="fa-solid fa-circle-xmark text-rose-600 ml-1"></i> (Your Choice)' : ''}
+                                <div class="p-3 rounded-xl border text-xs ${optClass}">
+                                    <strong class="font-mono mr-1.5">${letters[oIdx]}.</strong> ${opt}
+                                    ${oIdx === q.correct_option ? ' <i class="fa-solid fa-circle-check text-surgical-400 ml-1"></i>' : ''}
+                                    ${q.user_choice === oIdx && !q.is_correct ? ' <i class="fa-solid fa-circle-xmark text-rose-400 ml-1"></i> (Your Choice)' : ''}
                                 </div>
                             `;
                         }).join('')}
                     </div>
 
-                    <!-- Clinical Pearl & Textbook Citation -->
-                    <div class="p-3 bg-amber-50/70 border border-amber-200/60 rounded-xl space-y-1.5 text-xs text-amber-950">
-                        <span class="font-bold flex items-center gap-1.5 text-amber-900 text-[11px] uppercase tracking-wide">
-                            <i class="fa-solid fa-lightbulb text-amber-600"></i> High-Yield Clinical Pearl
+                    <div class="p-4 bg-champagne-500/[0.06] border border-champagne-500/25 rounded-xl space-y-2 text-xs">
+                        <span class="font-mono font-bold flex items-center gap-1.5 text-champagne-400 text-[10px] uppercase tracking-wider">
+                            <i class="fa-solid fa-lightbulb"></i> High-Yield Clinical Pearl
                         </span>
-                        <p class="leading-relaxed text-slate-700">${q.explanation}</p>
-                        <p class="text-[10px] text-slate-400 italic font-mono pt-1 border-t border-amber-100">
+                        <p class="leading-relaxed text-zinc-300">${q.explanation}</p>
+                        <p class="text-[10px] text-zinc-500 italic font-mono pt-1.5 border-t border-white/[0.06]">
                             Reference: ${q.citation}
                         </p>
                     </div>

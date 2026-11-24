@@ -14,10 +14,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Python 3.10
+      - name: Set up Python 3.11
         uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          python-version: '3.11.8'
 
       - name: Install dependencies
         run: |
@@ -25,6 +25,9 @@ jobs:
           pip install -r requirements.txt
 
       - name: Run Crawler & Link Verification Suite
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
         run: |
           python -c "
           from app.database import engine, Base, SessionLocal

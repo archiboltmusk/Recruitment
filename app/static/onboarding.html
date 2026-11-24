@@ -497,9 +497,14 @@
 
                     <!-- Footer Action Buttons -->
                     <div class="flex items-center justify-between pt-2">
-                        <a href="${m.notification_url || '#'}" target="_blank" class="text-xs text-slate-500 hover:text-slate-800 font-medium flex items-center gap-1">
-                            <i class="fa-regular fa-file-pdf text-red-500"></i> View Official Notice PDF
-                        </a>
+                        <div class="flex items-center space-x-3">
+                            <a href="${m.notification_url || '#'}" target="_blank" class="text-xs text-slate-500 hover:text-slate-800 font-medium flex items-center gap-1">
+                                <i class="fa-regular fa-file-pdf text-red-500"></i> View PDF
+                            </a>
+                            <button onclick="shareMatchToWhatsApp('${m.vacancy_id}')" class="text-xs text-emerald-700 hover:text-emerald-800 font-semibold flex items-center gap-1">
+                                <i class="fa-brands fa-whatsapp text-emerald-600"></i> Share with Batch
+                            </button>
+                        </div>
                         <div>
                             ${m.status !== 'INELIGIBLE' ? `
                                 <a href="${m.apply_url || '#'}" target="_blank" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-lg text-xs shadow-sm hover:shadow transition flex items-center gap-1.5">
@@ -516,6 +521,25 @@
                 </div>
                 `;
             }).join('');
+        }
+
+        function shareMatchToWhatsApp(vacancyId) {
+            if (!currentEvaluation) return;
+            const m = currentEvaluation.matches.find(x => x.vacancy_id === vacancyId);
+            if (!m) return;
+            const text = 
+                `🩺 *CHECK THIS MEDICAL OFFICER VACANCY*\n\n` +
+                `📌 *${m.title}*\n` +
+                `🏥 *Org:* ${m.organization} (${m.state})\n` +
+                `👥 *Seats:* ${m.total_posts} Posts | 🎓 *Eligibility:* ${m.qualification}\n` +
+                `💰 *Pay:* ${m.pay_scale || 'Level 10'}\n` +
+                `📜 *Bond:* ${m.bond_penalty_amount || 'No Bond'}\n` +
+                `📅 *Last Date:* ${m.last_date || 'Check Notice'}\n\n` +
+                `👉 Check if you're eligible & where to apply:\n` +
+                `${window.location.origin}/onboarding`;
+            
+            const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`;
+            window.open(url, '_blank');
         }
     </script>
 </body>

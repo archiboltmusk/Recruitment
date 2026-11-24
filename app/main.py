@@ -381,6 +381,17 @@ def list_exam_attempts(limit: int = 10, db: Session = Depends(get_db)):
         for r in rows
     ]
 
+def _mask_leaderboard_name(name: str) -> str:
+    parts = (name or "Dr. Candidate").strip().split()
+    if len(parts) <= 1:
+        return parts[0] if parts else "Dr. Candidate"
+    if parts[0].lower().rstrip(".") == "dr" and len(parts) >= 3:
+        return f"{parts[0]} {parts[1]} {parts[-1][0]}."
+    return f"{parts[0]} {parts[-1][0]}."
+
+def _clean_ics(val: str) -> str:
+    return (val or "").replace("\r", " ").replace("\n", " ").strip()
+
 @app.get("/api/exams/{exam_id}/leaderboard")
 def get_exam_leaderboard(exam_id: str, db: Session = Depends(get_db)):
     attempts = db.query(ExamAttempt).filter(ExamAttempt.exam_id == exam_id).order_by(ExamAttempt.final_score.desc()).limit(10).all()
@@ -392,7 +403,7 @@ def get_exam_leaderboard(exam_id: str, db: Session = Depends(get_db)):
         "peer_average": round(float(avg_score), 2) if avg_score is not None else 0.0,
         "top_scores": [
             {
-                "candidate_name": a.candidate_name,
+                "candidate_name": _mask_leaderboard_name(a.candidate_name),
                 "final_score": a.final_score,
                 "accuracy_pct": a.accuracy_pct,
                 "qualified": a.qualified
@@ -418,9 +429,9 @@ def download_vacancy_calendar(vacancy_id: str, db: Session = Depends(get_db)):
         f"DTSTAMP:{datetime.utcnow().strftime('%Y%m%dT%H%M%SZ')}\r\n"
         f"DTSTART:{dt_str}\r\n"
         f"DTEND:{dt_end}\r\n"
-        f"SUMMARY:Deadline: {v.title} ({v.organization})\r\n"
-        f"DESCRIPTION:Qual: {v.qualification} | Seats: {v.total_posts} | Apply: {v.apply_url or ''}\r\n"
-        f"URL:{v.apply_url or 'https://medalerts.onrender.com'}\r\n"
+        f"SUMMARY:Deadline: {_clean_ics(v.title)} ({_clean_ics(v.organization)})\r\n"
+        f"DESCRIPTION:Qual: {_clean_ics(v.qualification)} | Seats: {v.total_posts} | Apply: {_clean_ics(v.apply_url or '')}\r\n"
+        f"URL:{_clean_ics(v.apply_url or 'https://medalerts.onrender.com')}\r\n"
         "END:VEVENT\r\n"
         "END:VCALENDAR\r\n"
     )

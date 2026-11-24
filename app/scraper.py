@@ -1,4 +1,5 @@
 import logging
+import re
 from datetime import datetime, timedelta
 from typing import List, Dict, Any
 from urllib.parse import urljoin
@@ -11,10 +12,9 @@ from .notifier import Notifier
 
 logger = logging.getLogger("medalerts.scraper")
 
-MEDICAL_KEYWORDS = (
-    "medical officer", "gdmo", "cms", "combined medical", "imo",
-    "senior resident", "junior resident", "specialist", "doctor",
-    "ayush", "walk-in", "contract medical", "cmp"
+MEDICAL_PATTERN = re.compile(
+    r"\b(medical officer|gdmo|cms|combined medical|imo|senior resident|junior resident|rmo|clinical tutor|demonstrator|specialist|doctor|ayush|nuhm|uhwc|walk-in|contract medical|cmp)\b",
+    re.IGNORECASE,
 )
 
 PORTAL_SOURCES = [
@@ -42,6 +42,38 @@ PORTAL_SOURCES = [
         "state": "Delhi / Multi-State",
         "pay_scale": "Level 10 / Level 11 + NPA",
     },
+    {
+        "name": "WBHRB",
+        "organization": "West Bengal Health Recruitment Board (WBHRB)",
+        "url": "https://hrb.wb.gov.in",
+        "category": "State PSC / WBHRB",
+        "state": "West Bengal",
+        "pay_scale": "Pay Level 16 (WBHS ₹56,100 - ₹1,44,300) + NPA",
+    },
+    {
+        "name": "WBHealth",
+        "organization": "WB State Health & Family Welfare Samiti (Swasthya Bhawan)",
+        "url": "https://www.wbhealth.gov.in/pages/career",
+        "category": "NHM / Contractual",
+        "state": "West Bengal",
+        "pay_scale": "₹60,000/month (Consolidated NUHM / NHM)",
+    },
+    {
+        "name": "AIIMS_Kalyani",
+        "organization": "AIIMS Kalyani (West Bengal)",
+        "url": "https://aiimskalyani.edu.in",
+        "category": "Autonomous Institute",
+        "state": "West Bengal",
+        "pay_scale": "Level 10 / Level 11 + NPA",
+    },
+    {
+        "name": "KMC_Kolkata",
+        "organization": "Kolkata Municipal Corporation (KMC)",
+        "url": "https://www.kmcgov.in",
+        "category": "Contractual / Walk-in",
+        "state": "West Bengal",
+        "pay_scale": "₹60,000/month (UPHC / Polyclinic)",
+    },
 ]
 
 
@@ -68,7 +100,7 @@ class LiveGazetteScraper:
                 if len(text) < 12 or len(text) > 220:
                     continue
                 low = text.lower()
-                if not any(kw in low for kw in MEDICAL_KEYWORDS):
+                if not MEDICAL_PATTERN.search(text):
                     continue
                 if text in seen_titles:
                     continue

@@ -244,6 +244,7 @@
 
                     <select id="categoryFilter" onchange="applyFilters()" class="px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-700 focus:border-tealmed-600 outline-none">
                         <option value="">All Cadres &amp; Types</option>
+                        <option value="West Bengal">West Bengal (WBHRB/KMC/NHM)</option>
                         <option value="Walk-in">Contractual / Walk-in</option>
                         <option value="Central Govt">Central Govt (UPSC/CGHS)</option>
                         <option value="ESIC">ESIC (IMO / SR Walk-in)</option>
@@ -585,6 +586,7 @@
                 const matchCat = !cat || (
                     v.category.toLowerCase().includes(cat.toLowerCase()) ||
                     v.organization.toLowerCase().includes(cat.toLowerCase()) ||
+                    v.state.toLowerCase().includes(cat.toLowerCase()) ||
                     (v.selection_mode && v.selection_mode.toLowerCase().includes(cat.toLowerCase()))
                 );
                 const matchStage = !stage || v.stage === stage;

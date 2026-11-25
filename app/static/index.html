@@ -119,24 +119,33 @@
             </div>
         </section>
 
-        <!-- Simple Search & 3 Clean Filters -->
+        <!-- Simple Search & 2-Row Clean Filters -->
         <section class="space-y-4">
-            <div class="apple-card p-3 sm:p-4 flex flex-col md:flex-row items-stretch md:items-center gap-3">
-                <div class="relative flex-grow">
-                    <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-[#86868B] text-xs"></i>
-                    <input type="text" id="searchInput" placeholder="Search UPSC, WBHRB, ESIC, AIIMS, Walk-in, or State..." 
-                        class="w-full pl-10 pr-4 py-2.5 bg-[#F5F5F7] rounded-xl text-sm text-[#1D1D1F] placeholder-[#86868B] outline-none focus:ring-2 focus:ring-[#0F766E]/25">
+            <div class="apple-card p-3 sm:p-4 space-y-2.5">
+                <div class="flex items-center gap-2">
+                    <div class="relative flex-grow">
+                        <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-[#86868B] text-xs"></i>
+                        <input type="text" id="searchInput" placeholder="Search UPSC, WBHRB, ESIC, AIIMS, Walk-in, or State... (Press /)" 
+                            class="w-full pl-10 pr-4 py-2.5 bg-[#F5F5F7] rounded-xl text-sm text-[#1D1D1F] placeholder-[#86868B] outline-none focus:ring-2 focus:ring-[#0F766E]/25">
+                    </div>
+                    <button onclick="openModal('pdfModal')" title="Scan any Govt PDF" class="hidden sm:flex px-3.5 py-2.5 bg-[#F5F5F7] hover:bg-gray-200 rounded-xl text-xs font-semibold text-[#1D1D1F] items-center gap-1.5 shrink-0">
+                        <i class="fa-regular fa-file-pdf text-[#DC2626]"></i>
+                        <span>Scan PDF</span>
+                    </button>
+                    <button onclick="refreshData()" id="refreshBtn" title="Refresh feeds" class="px-3 py-2.5 bg-[#F5F5F7] hover:bg-gray-200 rounded-xl text-xs text-[#1D1D1F] shrink-0">
+                        <i class="fa-solid fa-arrows-rotate" id="refreshIcon"></i>
+                    </button>
                 </div>
 
-                <div class="flex flex-wrap sm:flex-nowrap items-center gap-2">
-                    <select id="qualificationFilter" onchange="applyFilters()" class="px-3.5 py-2.5 bg-[#F5F5F7] rounded-xl text-xs font-medium text-[#1D1D1F] outline-none">
+                <div class="flex flex-wrap items-center gap-2">
+                    <select id="qualificationFilter" onchange="applyFilters()" class="px-3 py-2 bg-[#F5F5F7] rounded-xl text-xs font-medium text-[#1D1D1F] outline-none">
                         <option value="MBBS" selected>MBBS / General Practice</option>
                         <option value="MBBS_ONLY">MBBS Only (Exclude PG)</option>
                         <option value="MD/MS">PG / Super-Specialty (MD, MS, DNB, Diploma)</option>
                         <option value="AYUSH">AYUSH (BAMS, BHMS, BUMS, BSMS)</option>
                         <option value="">All 3 Groups</option>
                     </select>
-                    <select id="roleFilter" onchange="applyFilters()" class="px-3.5 py-2.5 bg-[#F5F5F7] rounded-xl text-xs font-medium text-[#1D1D1F] outline-none">
+                    <select id="roleFilter" onchange="applyFilters()" class="px-3 py-2 bg-[#F5F5F7] rounded-xl text-xs font-medium text-[#1D1D1F] outline-none">
                         <option value="">All Roles</option>
                         <option value="gdmo_mo">GDMO / Medical Officer</option>
                         <option value="jr_housestaff">JR / House Staff</option>
@@ -144,8 +153,7 @@
                         <option value="sr_specialist">SR / Specialist / Consultant</option>
                         <option value="faculty">Professor / Faculty</option>
                     </select>
-
-                    <select id="categoryFilter" onchange="applyFilters()" class="px-3.5 py-2.5 bg-[#F5F5F7] rounded-xl text-xs font-medium text-[#1D1D1F] outline-none">
+                    <select id="categoryFilter" onchange="applyFilters()" class="px-3 py-2 bg-[#F5F5F7] rounded-xl text-xs font-medium text-[#1D1D1F] outline-none">
                         <option value="">All Job Types</option>
                         <option value="Walk-in">Walk-in (No Exam)</option>
                         <option value="West Bengal">West Bengal</option>
@@ -154,33 +162,21 @@
                         <option value="ESIC">ESIC</option>
                         <option value="AIIMS">AIIMS</option>
                     </select>
-
-                    <select id="bondFilter" onchange="applyFilters()" class="px-3.5 py-2.5 bg-[#F5F5F7] rounded-xl text-xs font-medium text-[#1D1D1F] outline-none">
+                    <select id="bondFilter" onchange="applyFilters()" class="px-3 py-2 bg-[#F5F5F7] rounded-xl text-xs font-medium text-[#1D1D1F] outline-none">
                         <option value="">Any Bond</option>
                         <option value="no_bond">Zero Bond Only</option>
                     </select>
-
-                    <select id="sortFilter" onchange="applyFilters()" title="Sort vacancies" class="px-3.5 py-2.5 bg-[#F5F5F7] rounded-xl text-xs font-medium text-[#1D1D1F] outline-none">
+                    <select id="sortFilter" onchange="applyFilters()" title="Sort vacancies" class="px-3 py-2 bg-[#F5F5F7] rounded-xl text-xs font-medium text-[#1D1D1F] outline-none">
                         <option value="closing">Sort: Closing Soonest</option>
                         <option value="seats">Sort: Most Seats</option>
                         <option value="newest">Sort: Newest Added</option>
                     </select>
-
-                    <select id="stageFilter" onchange="applyFilters()" class="px-3.5 py-2.5 bg-[#F5F5F7] rounded-xl text-xs font-medium text-[#1D1D1F] outline-none">
+                    <select id="stageFilter" onchange="applyFilters()" class="px-3 py-2 bg-[#F5F5F7] rounded-xl text-xs font-medium text-[#1D1D1F] outline-none">
                         <option value="">All Stages</option>
                         <option value="APPLICATION_OPEN">Open</option>
                         <option value="CLOSING_SOON">Closing Soon</option>
                         <option value="ADMIT_CARD_OUT">Admit Card / Exam</option>
                     </select>
-
-                    <button onclick="openModal('pdfModal')" title="Scan any Govt PDF" class="hidden sm:flex px-3.5 py-2.5 bg-[#F5F5F7] hover:bg-gray-200 rounded-xl text-xs font-semibold text-[#1D1D1F] items-center gap-1.5">
-                        <i class="fa-regular fa-file-pdf text-[#DC2626]"></i>
-                        <span>Scan PDF</span>
-                    </button>
-
-                    <button onclick="refreshData()" id="refreshBtn" title="Refresh feeds" class="px-3 py-2.5 bg-[#F5F5F7] hover:bg-gray-200 rounded-xl text-xs text-[#1D1D1F]">
-                        <i class="fa-solid fa-arrows-rotate" id="refreshIcon"></i>
-                    </button>
                 </div>
             </div>
 
@@ -188,6 +184,7 @@
             <div class="flex items-center gap-2 overflow-x-auto pb-1">
                 <button onclick="setQuickFilter('ALL', this)" class="quick-pill px-4 py-1.5 rounded-full text-xs font-semibold bg-[#1D1D1F] text-white shrink-0 transition">All</button>
                 <button onclick="setQuickFilter('ELIGIBLE_ME', this)" class="quick-pill px-4 py-1.5 rounded-full text-xs font-semibold bg-emerald-50 border border-emerald-200 text-[#0F766E] hover:bg-emerald-100 shrink-0 transition"><i class="fa-solid fa-user-check mr-1"></i>Eligible for Me</button>
+                <button onclick="setQuickFilter('VERIFIED_DATE', this)" class="quick-pill px-4 py-1.5 rounded-full text-xs font-semibold bg-white border border-black/10 text-[#1D1D1F] hover:bg-gray-50 shrink-0 transition">Verified Deadlines</button>
                 <button onclick="setQuickFilter('Walk-in', this)" class="quick-pill px-4 py-1.5 rounded-full text-xs font-semibold bg-white border border-black/10 text-[#1D1D1F] hover:bg-gray-50 shrink-0 transition">Walk-in (No Exam)</button>
                 <button onclick="setQuickFilter('West Bengal', this)" class="quick-pill px-4 py-1.5 rounded-full text-xs font-semibold bg-white border border-black/10 text-[#1D1D1F] hover:bg-gray-50 shrink-0 transition">West Bengal</button>
                 <button onclick="setQuickFilter('Delhi', this)" class="quick-pill px-4 py-1.5 rounded-full text-xs font-semibold bg-white border border-black/10 text-[#1D1D1F] hover:bg-gray-50 shrink-0 transition">Delhi NCR</button>
@@ -385,7 +382,7 @@
                     </label>
                 </div>
                 <div class="flex flex-wrap items-center gap-2">
-                    <input type="text" id="cloudSyncKeyInput" placeholder="Cloud Sync PIN/Key (min 6 chars)" class="flex-1 min-w-[180px] px-3.5 py-1.5 bg-[#F5F5F7] rounded-full text-xs outline-none">
+                    <input type="text" id="cloudSyncKeyInput" placeholder="Cloud Sync PIN/Key (min 8 chars)" class="flex-1 min-w-[180px] px-3.5 py-1.5 bg-[#F5F5F7] rounded-full text-xs outline-none">
                     <button onclick="saveCloudBackup()" class="pill-btn px-3.5 py-1.5 rounded-full bg-[#0F766E] text-white text-xs font-semibold">Save Cloud</button>
                     <button onclick="loadCloudBackup()" class="pill-btn px-3.5 py-1.5 rounded-full bg-[#1D1D1F] text-white text-xs font-semibold">Restore Cloud</button>
                 </div>
@@ -532,7 +529,8 @@
                 const matchBond = !bond || (bond === 'no_bond' && v.bond_years === 0);
                 const matchUR = activeQuickFilter !== 'UR_ONLY' || !(v.category_seats && v.category_seats.UR === 0);
                 const matchEligible = activeQuickFilter !== 'ELIGIBLE_ME' || (eligibleIdSet && eligibleIdSet.has(String(v.id)));
-                return matchSearch && matchQual && matchRole && matchCat && matchStage && matchBond && matchUR && matchEligible;
+                const matchVerifiedDate = activeQuickFilter !== 'VERIFIED_DATE' || Boolean(v.last_date);
+                return matchSearch && matchQual && matchRole && matchCat && matchStage && matchBond && matchUR && matchEligible && matchVerifiedDate;
             });
             renderRegionalStrip(allVacancies);
 
@@ -618,7 +616,7 @@
                         </h3>
 
                         <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-[#6E6E73] pt-1">
-                            <span class="font-semibold text-[#1D1D1F]">${(v.category_seats && v.category_seats.UR !== undefined) ? (v.category_seats.UR > 0 ? `${v.category_seats.UR} UR Seats (${v.total_posts} Total)` : `<span class="text-[#DC2626]">0 UR Seats (${v.total_posts} Reserved)</span>`) : (v.total_posts > 0 ? `${v.total_posts} Seats` : 'Seats: Check PDF')}</span>
+                            <span class="font-semibold text-[#1D1D1F]">${(v.category_seats && v.category_seats.UR !== undefined) ? (v.category_seats.UR > 0 ? `${v.category_seats.UR} UR Seats (${v.total_posts} Total)` : `<span class="text-[#DC2626]">0 UR Seats (${v.total_posts} Reserved)</span>`) : (v.total_posts > 0 ? (v.total_posts === 1 ? '1 Seat' : `${v.total_posts} Seats`) : 'Seats: Check PDF')}</span>
                             <span>•</span>
                             <span>${escapeHtml(v.pay_scale || 'Govt Pay Matrix')}</span>
                             <span>•</span>
@@ -789,7 +787,7 @@
                 document.getElementById('bondFilter').value = 'no_bond';
             } else if (val === 'Delhi') {
                 document.getElementById('searchInput').value = 'Delhi';
-            } else if (val !== 'ALL' && val !== 'UR_ONLY' && val !== 'ELIGIBLE_ME') {
+            } else if (val !== 'ALL' && val !== 'UR_ONLY' && val !== 'ELIGIBLE_ME' && val !== 'VERIFIED_DATE') {
                 document.getElementById('categoryFilter').value = val;
             }
             applyFilters();

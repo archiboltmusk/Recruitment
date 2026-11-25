@@ -46,8 +46,17 @@ _TITLE_TXT_DATE_RE = re.compile(
 )
 
 
+def _clean_notice_title(text: str) -> str:
+    t = (text or "").replace("â€¦", "...").replace("â€“", "–").replace("â€”", "—").replace("â€™", "'").replace("â€œ", '"').replace("â€", '"')
+    t = re.sub(r"\s*(?:for\s+more\s+details?\s+(?:kindly\s+refer|click\s+the\s+link).*|Downlo(?:ad)?)$", "", t, flags=re.IGNORECASE)
+    return " ".join(t.split()).strip(" .,:;")
+
+
 def _norm_title(title: str) -> str:
-    return re.sub(r"[^a-z0-9]+", " ", (title or "").lower()).strip()[:75]
+    t = _clean_notice_title(title).lower()
+    t = re.sub(r"^(?:2nd\s+notice\s+)?(?:online\s+)?applications?\s+(?:are|is)\s+invited\s+(?:online\s+)?(?:from\s+(?:the\s+)?eligible\s+candidates?\s+)?(?:for\s+(?:the\s+)?)?(?:engagement\s+of\s+(?:the\s+)?(?:post\s+of\s+)?)?", "", t)
+    t = re.sub(r"^(?:notification\s+for\s+(?:engagement\s+of\s+)?|walk[-\s]?in[-\s]?interview\s+for\s+(?:the\s+)?post\s+of\s+)", "", t)
+    return re.sub(r"[^a-z0-9]+", " ", t).strip()[:65]
 
 
 def _is_stale_dated_title(text: str, today) -> bool:
@@ -518,6 +527,8 @@ class LiveGazetteScraper:
         }
         try:
             resp = requests.get(source["url"], headers=cls.HEADERS, timeout=8)
+            if not resp.encoding or resp.encoding.lower() == "iso-8859-1":
+                resp.encoding = resp.apparent_encoding or "utf-8"
             telemetry["last_status"] = resp.status_code
             if not resp.ok:
                 logger.warning(f"Portal {source['name']} returned HTTP {resp.status_code}")
@@ -535,9 +546,9 @@ class LiveGazetteScraper:
             seen_titles = set()
             pdf_parsed_count = 0
             for text, full_url in cls._extract_candidate_links(soup, resp.text, source["url"]):
+                text = _clean_notice_title(text)
                 if len(text) < 12 or len(text) > 260:
                     continue
-                text = re.sub(r"\s+Downlo(?:ad)?$", "", text, flags=re.IGNORECASE).strip()
                 low = text.lower()
                 if not MEDICAL_PATTERN.search(text) or NON_JOB_PATTERN.search(text):
                     continue
@@ -612,6 +623,16 @@ class LiveGazetteScraper:
                             entry["summary"] = f"Auto-parsed from official PDF ({parsed.get('memo_number') or source['name']}).{cadre_note} Verify annexures before applying."
                     except Exception as pdf_err:
                         logger.debug(f"PDF auto-parse skipped for {full_url}: {pdf_err}")
+                else:
+                    t_parsed = GovtNotificationPDFParser.parse_notice_text(text)
+                    if t_parsed.get("total_posts"):
+                        entry["total_posts"] = t_parsed["total_posts"]
+                    else:
+                        cnt_m = re.search(r"\bengagement\s+of\s+(\d+)\s*(?:\([a-z]+\))?\s+", text, re.IGNORECASE)
+                        if cnt_m:
+                            entry["total_posts"] = int(cnt_m.group(1))
+                    if t_parsed.get("last_date") and not entry.get("last_date"):
+                        entry["last_date"] = datetime.strptime(t_parsed["last_date"], "%Y-%m-%d")
 
                 if entry.get("qualification") == "BDS":
                     continue

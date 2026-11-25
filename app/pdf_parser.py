@@ -189,7 +189,7 @@ class GovtNotificationPDFParser:
             signals += 1
 
         # 2. Qualification
-        if re.search(r"\b(?:MD|MS|DNB|Specialist)\b", text, re.IGNORECASE):
+        if re.search(r"\b(?:MD|MS|DNB|Specialist|Senior\s+Resident|Sr\.?\s*Resident)\b", text, re.IGNORECASE):
             extracted["qualification"] = "MD/MS"
         elif re.search(r"\b(?:BAMS|BHMS|BUMS|AYUSH)\b", text, re.IGNORECASE):
             extracted["qualification"] = "AYUSH"

@@ -15,7 +15,7 @@ from .pdf_parser import GovtNotificationPDFParser
 logger = logging.getLogger("medalerts.scraper")
 
 MEDICAL_PATTERN = re.compile(
-    r"\b(medical officer|gdmo|cms|combined medical|imo|insurance medical|senior resident|junior resident|rmo|rmo-cum-tutor|clinical tutor|demonstrator|specialist|part-time specialist|super specialist|house staff|house staffship|house-staff|ptmo|health officer|doctor|ayush|nuhm|uhwc|walk-in|contract medical|cmp)\b",
+    r"\b(medical officer|gdmo|cms|combined medical|imo|insurance medical|senior resident|sr\.?\s*resident|junior resident|jr\.?\s*resident|rmo|rmo-cum-tutor|clinical tutor|demonstrator|specialist|part-time specialist|super specialist|house staff|house staffship|house-staff|ptmo|health officer|doctor|ayush|nuhm|uhwc|walk-in|contract medical|cmp)\b",
     re.IGNORECASE,
 )
 
@@ -336,11 +336,11 @@ class LiveGazetteScraper:
         low = text.lower()
         if "ayush" in low or "ayurved" in low or "homeopath" in low:
             return {"qualification": "AYUSH", "designation": "AYUSH Medical Officer"}
-        if "senior resident" in low or "specialist" in low:
+        if re.search(r"\b(?:senior\s+resident|sr\.?\s*resident|specialist)\b", low):
             return {"qualification": "MD/MS", "designation": "Senior Resident / Specialist"}
         if "rmo" in low or "clinical tutor" in low:
             return {"qualification": "MBBS / MD/MS", "designation": "RMO-cum-Clinical Tutor"}
-        if "junior resident" in low or "house staff" in low or "house-staff" in low:
+        if re.search(r"\b(?:junior\s+resident|jr\.?\s*resident|house[-\s]?staff)\b", low):
             return {"qualification": "MBBS", "designation": "Junior Resident / House Staff"}
         return {"qualification": "MBBS", "designation": "Medical Officer / GDMO"}
 
@@ -488,6 +488,9 @@ class LiveGazetteScraper:
                     except Exception as pdf_err:
                         logger.debug(f"PDF auto-parse skipped for {full_url}: {pdf_err}")
 
+                if entry.get("last_date") and entry["last_date"].date() < datetime.utcnow().date():
+                    continue
+
                 discovered.append(entry)
                 if len(discovered) >= 5:
                     break
@@ -499,6 +502,14 @@ class LiveGazetteScraper:
     def sync_live_portals(cls, db: Session) -> Dict[str, Any]:
         added = 0
         checked_portals = 0
+        now = datetime.utcnow()
+        db.query(Vacancy).filter(
+            Vacancy.is_active == True,
+            Vacancy.last_date.isnot(None),
+            Vacancy.last_date < now,
+        ).update({"is_active": False, "stage": "APPLICATION_CLOSED"}, synchronize_session=False)
+        db.commit()
+
         for source in PORTAL_SOURCES:
             checked_portals += 1
             items = cls.fetch_portal_links(source)

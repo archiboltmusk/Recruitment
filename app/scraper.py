@@ -16,7 +16,7 @@ from .pdf_parser import GovtNotificationPDFParser
 logger = logging.getLogger("medalerts.scraper")
 
 MEDICAL_PATTERN = re.compile(
-    r"\b(medical officer|gdmo|cms|combined medical|imo|insurance medical|senior resident|sr\.?\s*resident|junior resident|jr\.?\s*resident|rmo|rmo-cum-tutor|clinical tutor|demonstrator|specialist|part-time specialist|super specialist|house staff|house staffship|house-staff|ptmo|health officer|doctor|ayush|nuhm|uhwc|walk-in|contract medical|cmp)\b",
+    r"\b(medical officer|gdmo|cms|combined medical|imo|insurance medical|senior resident|sr\.?\s*resident|junior resident|jr\.?\s*resident|\bjr\b|rmo|rmo-cum-tutor|clinical tutor|tutor|demonstrator|specialist|part-time specialist|super specialist|house staff|house staffship|house-staff|ptmo|health officer|doctor|ayush|bams|bhms|bums|bsms|homeopath(?:y|ic)?|ayurved(?:a|ic)?|nuhm|uhwc|walk-in|contract medical|cmp)\b",
     re.IGNORECASE,
 )
 
@@ -385,8 +385,8 @@ class LiveGazetteScraper:
     @staticmethod
     def _infer_role_and_qual(text: str) -> Dict[str, str]:
         low = text.lower()
-        if "ayush" in low or "ayurved" in low or "homeopath" in low or "unani" in low or "siddha" in low:
-            return {"qualification": "AYUSH", "designation": "AYUSH Medical Officer"}
+        if "ayush" in low or "ayurved" in low or "homeopath" in low or "unani" in low or "siddha" in low or re.search(r"\b(?:bams|bhms|bums|bsms)\b", low):
+            return {"qualification": "AYUSH", "designation": "AYUSH / BHMS / BAMS Medical Officer"}
         if re.search(r"\b(?:bds|mds|dental|dentistry)\b", low):
             return {"qualification": "BDS", "designation": "Dental Surgeon"}
         # Non-Specialist (GDMO) is explicitly MBBS, even if title says "Non-Specialist consultant(GDMO)"

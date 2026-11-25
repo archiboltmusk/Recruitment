@@ -632,6 +632,8 @@ def list_vacancies(
     if qualification and qualification != "ALL":
         if qualification == "MBBS_ONLY":
             query = query.filter(Vacancy.qualification == "MBBS")
+        elif qualification.upper() in ("MD/MS/DNB", "MD/MS"):
+            query = query.filter(Vacancy.qualification.ilike("%MD/MS%"))
         else:
             query = query.filter(Vacancy.qualification.ilike(f"%{qualification}%"))
 

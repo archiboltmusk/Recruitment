@@ -128,11 +128,10 @@
 
                 <div class="flex flex-wrap sm:flex-nowrap items-center gap-2">
                     <select id="qualificationFilter" onchange="applyFilters()" class="px-3.5 py-2.5 bg-[#F5F5F7] rounded-xl text-xs font-medium text-[#1D1D1F] outline-none">
-                        <option value="MBBS" selected>MBBS Eligible</option>
-                        <option value="MBBS_ONLY">MBBS Only (Strict)</option>
-                        <option value="">All Degrees</option>
+                        <option value="MBBS" selected>MBBS</option>
                         <option value="MD/MS">MD / MS / DNB</option>
-                        <option value="AYUSH">AYUSH</option>
+                        <option value="AYUSH">AYUSH / BHMS / BAMS</option>
+                        <option value="">All 3 Groups</option>
                     </select>
 
                     <select id="categoryFilter" onchange="applyFilters()" class="px-3.5 py-2.5 bg-[#F5F5F7] rounded-xl text-xs font-medium text-[#1D1D1F] outline-none">
@@ -271,10 +270,10 @@
                 <div>
                     <label class="block text-xs font-semibold text-[#1D1D1F] mb-1">Degree Filter</label>
                     <select id="subQualification" class="w-full px-4 py-2.5 bg-[#F5F5F7] rounded-xl text-xs outline-none">
-                        <option value="ALL">All Degrees (MBBS, MD/MS, AYUSH)</option>
-                        <option value="MBBS">MBBS Only</option>
-                        <option value="MD/MS">MD / MS Only</option>
-                        <option value="AYUSH">AYUSH Only</option>
+                        <option value="ALL">All 3 Groups (MBBS, MD/MS/DNB, AYUSH)</option>
+                        <option value="MBBS">MBBS</option>
+                        <option value="MD/MS">MD / MS / DNB</option>
+                        <option value="AYUSH">AYUSH / BHMS / BAMS</option>
                     </select>
                 </div>
 

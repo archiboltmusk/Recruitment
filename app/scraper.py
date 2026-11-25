@@ -16,12 +16,12 @@ from .pdf_parser import GovtNotificationPDFParser
 logger = logging.getLogger("medalerts.scraper")
 
 MEDICAL_PATTERN = re.compile(
-    r"\b(medical officer|gdmo|cms|combined medical|imo|insurance medical|senior resident|sr\.?\s*resident|junior resident|jr\.?\s*resident|\bjr\b|rmo|rmo-cum-tutor|clinical tutor|tutor|demonstrator|specialist|part-time specialist|super specialist|associate consultant|consultant|house staff|house staffship|house-staff|ptmo|health officer|doctor|ayush|bams|bhms|bums|bsms|bnys|homeopath(?:y|ic)?|ayurved(?:a|ic)?|naturopath(?:y|ic)?|nuhm|uhwc|walk-in|contract medical|cmp)\b",
+    r"\b(medical officer|gdmo|cgdmo|cms|combined medical|imo|insurance medical|senior resident|sr\.?\s*resident|junior resident|jr\.?\s*resident|rmo|rmo-cum-tutor|clinical tutor|tutor|demonstrator|specialist|part-time specialist|super specialist|associate consultant|consultant|house staff|house staffship|house-staff|ptmo|health officer|doctor|ayush|bams|bhms|bums|bsms|bnys|homeopath(?:y|ic)?|ayurved(?:a|ic)?|naturopath(?:y|ic)?|contract medical|cmp)\b",
     re.IGNORECASE,
 )
 
 NON_JOB_PATTERN = re.compile(
-    r"\b(merit\s*list|selected\s*(?:candidates?|list)|shortlisted|waiting\s*list|waitlist|result(?:s)?\s+(?:of|for)|admit\s*card|corrigendum|addendum|cancellation|cancelled|answer\s*key|provisional\s*list|final\s*list|joining\s*order|panel\s*for|engagement\s*order|closed|guest\s*house|attendant|non[-\s]*medical|field\s*worker|molecular\s*biologist|data\s*management|house\s*staffship\s*committee|list\s*for\s*appearing|dentistry|\bbds\b|\bmds\b)\b",
+    r"\b(merit\s*list|selected\s*(?:candidates?|list)|shortlisted|waiting\s*list|waitlist|result(?:s)?\s+(?:of|for)|admit\s*cards?|corrigendum|addendum|cancellation|cancelled|answer\s*key|provisional\s*list|final\s*list|joining\s*order|panel\s*for|engagement\s*order|closed|guest\s*house|attendant|non[-\s]*medical|field\s*worker|molecular\s*biologist|data\s*management|house\s*staffship\s*committee|list\s*for\s*appearing|dentistry|\bbds\b|\bmds\b|group[-\s]*[cd]|class[-\s]*iv|nursing\s+staff|staff\s+nurse|mining\s+sirdar|overman|surveyor)\b",
     re.IGNORECASE,
 )
 
@@ -35,8 +35,8 @@ MBBS_CORE_PATTERN = re.compile(
     re.IGNORECASE,
 )
 
-PAST_YEAR_LINK_PATTERN = re.compile(r"\b202[0-5]\b")
-_STALE_URL_DATE_RE = re.compile(r"(?:\b202[0-5]\b|(?:0[1-9]|[12]\d|3[01])(?:0[1-9]|1[0-2])202[0-5])")
+PAST_YEAR_LINK_PATTERN = re.compile(r"\b20(?:1\d|2[0-5])\b")
+_STALE_URL_DATE_RE = re.compile(r"(?:201\d|202[0-5])")
 
 _TITLE_NUM_DATE_RE = re.compile(r"\b(\d{1,2})[./-](\d{1,2})[./-](20\d{2})\b")
 _TITLE_TXT_DATE_RE = re.compile(
@@ -69,7 +69,8 @@ def _is_stale_dated_title(text: str, today) -> bool:
     if not parsed_dates:
         return False
     latest = max(parsed_dates)
-    return latest < (today - timedelta(days=45))
+    grace_days = 0 if re.search(r"\b(?:walk[-\s]?in|interview)\b", text or "", re.IGNORECASE) else 15
+    return latest < (today - timedelta(days=grace_days))
 
 WBHEALTH_HR_REG_DATE_RE = re.compile(
     r"Last Date for Registration is\s+(\d{1,2}\s+[A-Za-z]{3}\s+\d{4})",
@@ -606,7 +607,7 @@ class LiveGazetteScraper:
         seen_norm_titles = set()
         for row in active_rows:
             title_blob = row.title or ""
-            if NON_JOB_PATTERN.search(title_blob) or (not row.last_date and (_is_stale_dated_title(title_blob, today_date) or _STALE_URL_DATE_RE.search(row.notification_url or ""))):
+            if (not MEDICAL_PATTERN.search(title_blob)) or NON_JOB_PATTERN.search(title_blob) or (not row.last_date and (_is_stale_dated_title(title_blob, today_date) or _STALE_URL_DATE_RE.search(row.notification_url or ""))):
                 row.is_active = False
                 row.stage = "APPLICATION_CLOSED"
                 continue

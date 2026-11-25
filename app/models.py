@@ -55,8 +55,6 @@ class Subscription(Base):
     state_filter = Column(String(100), default="ALL")
     category_filter = Column(String(100), default="ALL")
     is_active = Column(Boolean, default=True)
-    flag_count = Column(Integer, default=0)
-    last_verified_at = Column(DateTime, default=datetime.utcnow)
     created_at = Column(DateTime, default=datetime.utcnow)
 
 class NotificationLog(Base):

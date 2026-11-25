@@ -1,9 +1,10 @@
 import json
 import logging
 import re
+import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timedelta
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, Tuple
 from urllib.parse import urljoin
 import requests
 from bs4 import BeautifulSoup

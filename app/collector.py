@@ -39,7 +39,7 @@ SAMPLE_VACANCIES: List[Dict[str, Any]] = [
         "pay_scale": "₹60,000/month (Consolidated)",
         "last_date": datetime(2026, 12, 4, 15, 0),
         "exam_date": datetime(2026, 11, 30, 11, 0),
-        "notification_url": "https://esiwb.gov.in/home/employment_notice",
+        "notification_url": "https://esiwb.gov.in/home/download/NzNhZWY3NWFiMDBhNTU4MjM3MDI5MTAxMjAwMTlkMjQ4ZmUyMmI1ODEwYTlhZTQwZDc1OGVhMTQxNzRjMmU2NmI3Y2I4ZDg5ZmVmOTYyNTQ4MDk4YjVjZDEzM2U4Y2NiNzdiMDQwNjQyY2VkY2FmM2RjZTNkNzQ3Y2JiMjYxY2Rrdk5Ya0xra2JYeEdqRFZPZFp3cEZxZGlNUVd6WWNsODNlMVlZdlN5NGZ0TlY3cVdJbjlWUDA5V2Rnd00razlTYk5CRjFiNkJ3bHVFVUlGMmhNMzgwWlV2WWdBamI3Um1BU0ZZd0xoQXh3Zz0=",
         "apply_url": "https://esiwb.gov.in/home/employment_notice",
         "summary": "Memo No. DESI-13011(14)/1/2019-MEDADMN/2372 (Dated 18.11.2026). Walk-in interview at Directorate of ESI (MB) Scheme, Wing B, Plot VI, GB Block, Sector III, Salt Lake, Kolkata-700097 from 30.11.2026 to 04.12.2026 (11:00 AM – 3:00 PM). Requires MBBS recognized by MCI & updated WBMC registration. Age below 64 yrs as on 01.11.2026 (renewable up to 65 yrs or regular PSC WB joining).",
         "min_age": 21,

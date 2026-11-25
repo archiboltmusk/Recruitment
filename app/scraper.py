@@ -36,6 +36,7 @@ MBBS_CORE_PATTERN = re.compile(
 )
 
 PAST_YEAR_LINK_PATTERN = re.compile(r"\b202[0-5]\b")
+_STALE_URL_DATE_RE = re.compile(r"(?:\b202[0-5]\b|(?:0[1-9]|[12]\d|3[01])(?:0[1-9]|1[0-2])202[0-5])")
 
 _TITLE_NUM_DATE_RE = re.compile(r"\b(\d{1,2})[./-](\d{1,2})[./-](20\d{2})\b")
 _TITLE_TXT_DATE_RE = re.compile(
@@ -571,7 +572,7 @@ class LiveGazetteScraper:
                     continue
                 if not entry.get("last_date") and entry.get("exam_date") and entry["exam_date"].date() < today:
                     continue
-                if not entry.get("last_date") and _is_stale_dated_title(text, today):
+                if not entry.get("last_date") and (_is_stale_dated_title(text, today) or _STALE_URL_DATE_RE.search(full_url)):
                     continue
 
                 discovered.append(entry)
@@ -605,7 +606,7 @@ class LiveGazetteScraper:
         seen_norm_titles = set()
         for row in active_rows:
             title_blob = row.title or ""
-            if NON_JOB_PATTERN.search(title_blob) or (not row.last_date and _is_stale_dated_title(title_blob, today_date)):
+            if NON_JOB_PATTERN.search(title_blob) or (not row.last_date and (_is_stale_dated_title(title_blob, today_date) or _STALE_URL_DATE_RE.search(row.notification_url or ""))):
                 row.is_active = False
                 row.stage = "APPLICATION_CLOSED"
                 continue

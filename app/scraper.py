@@ -392,6 +392,11 @@ class LiveGazetteScraper:
         # Non-Specialist (GDMO) is explicitly MBBS, even if title says "Non-Specialist consultant(GDMO)"
         if re.search(r"\bnon[-\s]*specialist\b", low):
             return {"qualification": "MBBS", "designation": "Medical Officer / GDMO (Non-Specialist)"}
+        # Academic Junior Resident = PG student (MD/MS seat), whereas Non-Academic JR / House Staff = MBBS job
+        is_non_acad_jr = bool(re.search(r"\bnon[-\s]*academic\b", low))
+        is_acad_jr = bool(re.search(r"\b(?:academic\s+(?:jr\.?|junior\s+resident)|(?:jr\.?|junior\s+resident)\s*\(?\s*academic\s*\)?)\b", low)) and not is_non_acad_jr
+        if is_acad_jr:
+            return {"qualification": "MD/MS", "designation": "Junior Resident (Academic — PG Seat)"}
         has_pg = bool(PG_ROLE_PATTERN.search(text))
         has_mbbs = bool(MBBS_CORE_PATTERN.search(text))
         if has_pg:
@@ -401,7 +406,7 @@ class LiveGazetteScraper:
         if re.search(r"\b(?:rmo|clinical\s+tutor|tutor|demonstrator)\b", low):
             return {"qualification": "MBBS", "designation": "RMO / Clinical Tutor"}
         if re.search(r"\b(?:non[-\s]*academic\s+(?:jr\.?|junior\s+resident)|junior\s+resident|jr\.?\s*resident|\bjr\b|house[-\s]?staff)\b", low):
-            return {"qualification": "MBBS", "designation": "Junior Resident / House Staff"}
+            return {"qualification": "MBBS", "designation": "Junior Resident (Non-Academic) / House Staff"}
         if has_mbbs:
             return {"qualification": "MBBS", "designation": "Medical Officer / GDMO"}
         return {"qualification": "MBBS", "designation": "Medical Officer / GDMO"}

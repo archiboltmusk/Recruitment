@@ -188,6 +188,10 @@ class PDFAnalyzeURLRequest(BaseModel):
 class PDFAnalyzeTextRequest(BaseModel):
     text: str
 
+class PDFAnalyzeFileRequest(BaseModel):
+    filename: str = "notice.pdf"
+    content_base64: str
+
 class ExamSubmissionRequest(BaseModel):
     candidate_name: str = "Dr. Candidate"
     answers: Dict[str, Optional[int]] = {}
@@ -837,6 +841,34 @@ def analyze_gazette_text(payload: PDFAnalyzeTextRequest):
     extracted = GovtNotificationPDFParser.parse_notice_text(payload.text)
     return {"success": True, "extracted": extracted, "data": extracted}
 
+@app.post("/api/parser/analyze-file")
+def analyze_pdf_file(payload: PDFAnalyzeFileRequest, request: Request):
+    import base64
+    check_rate_limit(request, "pdf_file", max_calls=15, window_sec=300)
+    raw_b64 = (payload.content_base64 or "").strip()
+    if "," in raw_b64 and raw_b64.lower().startswith("data:"):
+        raw_b64 = raw_b64.split(",", 1)[1]
+    try:
+        pdf_bytes = base64.b64decode(raw_b64, validate=True)
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid base64 PDF payload")
+    if not pdf_bytes:
+        raise HTTPException(status_code=400, detail="Uploaded PDF is empty")
+    if len(pdf_bytes) > 15 * 1024 * 1024:
+        raise HTTPException(status_code=413, detail="PDF file exceeds 15 MB limit")
+    try:
+        text = GovtNotificationPDFParser.extract_text_from_bytes(pdf_bytes)
+        extracted = GovtNotificationPDFParser.parse_notice_text(text)
+        return {
+            "success": True,
+            "filename": payload.filename,
+            "extracted": extracted,
+            "data": extracted,
+            "raw_preview": text[:500],
+        }
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Failed to analyze uploaded PDF: {str(e)}")
+
 @app.post("/api/check-eligibility")
 def check_eligibility(profile: DoctorProfile, db: Session = Depends(get_db)):
     vacancies = db.query(Vacancy).filter(Vacancy.is_active == True).all()
@@ -1404,3 +1436,29 @@ self.addEventListener('fetch', e => {
   }).catch(() => caches.match(e.request)));
 });"""
     return Response(content=sw_code, media_type="application/javascript")
+
+@app.get("/feed.xml")
+def rss_feed(db: Session = Depends(get_db)):
+    from html import escape
+    rows = db.query(Vacancy).filter(Vacancy.is_active == True).order_by(Vacancy.created_at.desc()).limit(30).all()
+    items = []
+    for v in rows:
+        link = f"{APP_BASE_URL}/?job={escape(str(v.id), quote=True)}"
+        pub_str = (v.created_at or datetime.utcnow()).strftime("%a, %d %b %Y %H:%M:%S +0000")
+        desc = escape(f"{v.organization} • {v.qualification} • {v.total_posts} Posts • {v.state}", quote=True)
+        items.append(f"<item><title>{escape(v.title or '', quote=True)}</title><link>{link}</link><guid>{link}</guid><pubDate>{pub_str}</pubDate><description>{desc}</description></item>")
+    xml_body = '<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"><channel><title>MedAlerts Vacancies</title>' + f'<link>{escape(APP_BASE_URL, quote=True)}/</link><description>Medical Officer recruitment circulars</description>' + "".join(items) + "</channel></rss>"
+    return Response(content=xml_body, media_type="application/rss+xml")
+
+@app.get("/sitemap.xml")
+def sitemap_xml(db: Session = Depends(get_db)):
+    from html import escape
+    static_paths = ["", "/onboarding", "/exam", "/bonds", "/toolkit"]
+    urls = [f"<url><loc>{escape(APP_BASE_URL + p, quote=True)}</loc><changefreq>daily</changefreq></url>" for p in static_paths]
+    rows = db.query(Vacancy.id, Vacancy.created_at).filter(Vacancy.is_active == True).order_by(Vacancy.created_at.desc()).limit(200).all()
+    for v_id, created_at in rows:
+        lastmod = f"<lastmod>{created_at.strftime('%Y-%m-%d')}</lastmod>" if created_at else ""
+        urls.append(f"<url><loc>{escape(f'{APP_BASE_URL}/?job={v_id}', quote=True)}</loc>{lastmod}<changefreq>daily</changefreq></url>")
+    ns = "http://" + "www.sitemaps.org/schemas/sitemap/0.9"
+    xml_body = f'<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="{ns}">' + "".join(urls) + "</urlset>"
+    return Response(content=xml_body, media_type="application/xml")

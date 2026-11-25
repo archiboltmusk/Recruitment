@@ -3,500 +3,318 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MedAlerts — Medical Officer Recruitment &amp; Career Hub</title>
+    <title>MedAlerts — Medical Officer Jobs &amp; Exam Prep</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
-                        mono: ['"JetBrains Mono"', 'monospace'],
-                    },
-                    colors: {
-                        tealmed: {
-                            50: '#F0FDFA',
-                            100: '#CCFBF1',
-                            200: '#99F6E4',
-                            600: '#0D9488',
-                            700: '#0F766E',
-                            800: '#115E59',
-                            900: '#0F4C4C',
-                        }
-                    }
-                }
-            }
-        }
-    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         body {
-            background: linear-gradient(180deg, #F0FDFA 0%, #F8FAFC 260px, #F8FAFC 100%);
-            color: #0F172A;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            overflow-x: hidden;
+            background-color: #F5F5F7;
+            color: #1D1D1F;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            -webkit-font-smoothing: antialiased;
         }
-        .med-card {
+        .apple-card {
             background: #FFFFFF;
-            border: 1px solid #E2E8F0;
-            box-shadow: 0 2px 10px -2px rgba(15, 76, 76, 0.05);
-            transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease, border-color 0.2s ease;
+            border-radius: 22px;
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.03);
+            transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.22s ease;
         }
-        .med-card:hover {
+        .apple-card:hover {
             transform: translateY(-2px);
-            border-color: #99F6E4;
-            box-shadow: 0 12px 28px -8px rgba(13, 148, 136, 0.14);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.06);
         }
-        @keyframes marquee {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
+        .pill-btn {
+            transition: transform 0.14s ease, background-color 0.15s ease, opacity 0.15s ease;
         }
-        .animate-marquee {
-            display: flex;
-            width: max-content;
-            animation: marquee 38s linear infinite;
-        }
-        .animate-marquee:hover { animation-play-state: paused; }
+        .pill-btn:active { transform: scale(0.97); }
     </style>
 </head>
-<body class="min-h-screen flex flex-col selection:bg-tealmed-600 selection:text-white">
+<body class="min-h-screen flex flex-col">
 
-    <!-- Live Gazette Status Strip -->
-    <div class="bg-tealmed-900 text-tealmed-50 py-1.5 overflow-hidden text-[11px] font-mono tracking-wide">
-        <div class="animate-marquee gap-10">
-            <span class="flex items-center gap-2 font-semibold"><span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> LIVE GAZETTE MONITOR</span>
-            <span class="text-tealmed-200/40">•</span>
-            <span>UPSC CMS 2026</span>
-            <span class="text-tealmed-200/40">•</span>
-            <span>ESIC IMO GRADE-II</span>
-            <span class="text-tealmed-200/40">•</span>
-            <span>AIIMS MEDICAL OFFICER</span>
-            <span class="text-tealmed-200/40">•</span>
-            <span>UPPSC &amp; STATE PSC</span>
-            <span class="text-tealmed-200/40">•</span>
-            <span>NHM &amp; RAILWAYS IRHS</span>
-            <span class="text-tealmed-200/40">•</span>
-            <span class="flex items-center gap-2 font-semibold"><span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> LIVE GAZETTE MONITOR</span>
-            <span class="text-tealmed-200/40">•</span>
-            <span>UPSC CMS 2026</span>
-            <span class="text-tealmed-200/40">•</span>
-            <span>ESIC IMO GRADE-II</span>
-            <span class="text-tealmed-200/40">•</span>
-            <span>AIIMS MEDICAL OFFICER</span>
-            <span class="text-tealmed-200/40">•</span>
-            <span>UPPSC &amp; STATE PSC</span>
-            <span class="text-tealmed-200/40">•</span>
-            <span>NHM &amp; RAILWAYS IRHS</span>
-            <span class="text-tealmed-200/40">•</span>
-        </div>
-    </div>
-
-    <!-- Clean Clinical Daylight Header -->
-    <header class="sticky top-0 z-30 bg-white/90 backdrop-blur-lg border-b border-slate-200/80">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between gap-3">
-            <a href="/" class="flex items-center gap-3 group">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-tealmed-600 to-tealmed-800 flex items-center justify-center text-white shadow-md shadow-tealmed-600/20 group-hover:scale-105 transition">
-                    <i class="fa-solid fa-staff-snake text-lg"></i>
+    <!-- Apple-Clean Minimal Navbar (Max 4 items) -->
+    <header class="sticky top-0 z-30 bg-[#F5F5F7]/85 backdrop-blur-xl border-b border-black/[0.06]">
+        <div class="max-w-6xl mx-auto px-5 sm:px-8 h-16 flex items-center justify-between gap-4">
+            <a href="/" class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-xl bg-[#0F766E] flex items-center justify-center text-white">
+                    <i class="fa-solid fa-staff-snake text-sm"></i>
                 </div>
-                <div>
-                    <div class="flex items-center gap-2">
-                        <span class="text-xl font-extrabold tracking-tight text-slate-900">MedAlerts</span>
-                        <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-tealmed-50 text-tealmed-700 border border-tealmed-200">
-                            v2.0 Pro
-                        </span>
-                    </div>
-                    <p class="text-[11px] text-slate-500 hidden sm:block">All-India Medical Officer &amp; GDMO Career Hub</p>
-                </div>
+                <span class="text-base font-bold tracking-tight text-[#1D1D1F]">MedAlerts</span>
             </a>
 
-            <div class="flex items-center gap-2">
-                <a href="/exam" class="px-3.5 py-2 text-xs font-bold text-amber-900 bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-xl transition flex items-center gap-1.5 shadow-sm">
-                    <i class="fa-solid fa-graduation-cap text-amber-600"></i>
-                    <span>UPSC CMS CBT</span>
-                </a>
-                <a href="/onboarding" class="px-3.5 py-2 text-xs font-semibold text-tealmed-800 bg-tealmed-50 hover:bg-tealmed-100 border border-tealmed-200 rounded-xl transition flex items-center gap-1.5">
-                    <i class="fa-solid fa-clipboard-check text-tealmed-600"></i>
-                    <span class="hidden md:inline">Eligibility</span>
-                </a>
-                <a href="/bonds" class="px-3.5 py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-200 rounded-xl transition hidden md:flex items-center gap-1.5">
-                    <i class="fa-solid fa-scale-balanced text-tealmed-700"></i>
-                    <span>Bonds &amp; Pay</span>
-                </a>
-                <a href="/toolkit" class="px-3.5 py-2 text-xs font-semibold text-tealmed-900 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-xl transition hidden lg:flex items-center gap-1.5">
-                    <i class="fa-solid fa-kit-medical text-emerald-600"></i>
-                    <span>MBBS Toolkit</span>
-                </a>
-                <button onclick="openModal('walkinKitModal')" class="px-3.5 py-2 text-xs font-semibold text-purple-800 bg-purple-50 hover:bg-purple-100 border border-purple-200 rounded-xl transition hidden lg:flex items-center gap-1.5">
-                    <i class="fa-solid fa-briefcase-medical text-purple-600"></i>
-                    <span>Walk-in Kit</span>
+            <nav class="hidden md:flex items-center gap-7 text-[13px] font-medium text-[#6E6E73]">
+                <a href="/onboarding" class="hover:text-[#1D1D1F] transition">Eligibility</a>
+                <a href="/exam" class="hover:text-[#1D1D1F] transition">Mock CBT</a>
+                <a href="/bonds" class="hover:text-[#1D1D1F] transition">Pay &amp; Bonds</a>
+                <a href="/toolkit" class="hover:text-[#1D1D1F] transition">Post-MBBS Kit</a>
+            </nav>
+
+            <div class="flex items-center gap-2.5">
+                <button onclick="openTrackerModal()" class="pill-btn px-3.5 py-1.5 rounded-full bg-white border border-black/10 text-xs font-semibold text-[#1D1D1F] flex items-center gap-1.5">
+                    <span>Saved</span>
+                    <span id="trackerCountBadge" class="px-1.5 py-0.5 text-[10px] font-bold rounded-full bg-[#F5F5F7] text-[#0F766E]">0</span>
                 </button>
-                <button onclick="openTrackerModal()" class="px-3 py-2 text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 rounded-xl transition flex items-center gap-1.5">
-                    <i class="fa-solid fa-bookmark text-tealmed-700"></i>
-                    <span class="hidden sm:inline">Tracker</span>
-                    <span id="trackerCountBadge" class="px-1.5 py-0.5 text-[10px] font-bold rounded-full bg-tealmed-100 text-tealmed-800">0</span>
-                </button>
-                <button onclick="openModal('pdfModal')" class="px-3.5 py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-200 rounded-xl transition hidden lg:flex items-center gap-1.5">
-                    <i class="fa-solid fa-file-pdf text-rose-500"></i>
-                    <span>Analyze PDF</span>
-                </button>
-                <button onclick="refreshData()" id="refreshBtn" title="Sync official feeds" class="px-2.5 py-2 text-xs font-semibold text-slate-600 bg-white hover:bg-slate-50 border border-slate-200 rounded-xl transition">
-                    <i class="fa-solid fa-arrows-rotate" id="refreshIcon"></i>
-                </button>
-                <button onclick="openModal('subscribeModal')" class="px-4 py-2 text-xs font-bold text-white bg-tealmed-700 hover:bg-tealmed-800 rounded-xl shadow-md shadow-tealmed-700/20 transition flex items-center gap-1.5">
-                    <i class="fa-solid fa-bell"></i>
-                    <span>Get Alerts</span>
+                <button onclick="openModal('subscribeModal')" class="pill-btn px-4 py-1.5 rounded-full bg-[#1D1D1F] hover:bg-black text-white text-xs font-semibold">
+                    Get Alerts
                 </button>
             </div>
         </div>
     </header>
 
     <!-- Main Container -->
-    <main class="flex-grow max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 space-y-7">
+    <main class="flex-grow max-w-6xl mx-auto w-full px-5 sm:px-8 py-10 sm:py-14 space-y-12">
 
-        <!-- Hero Banner (Surgical Teal & Daylight Clarity) -->
-        <section class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-tealmed-900 via-tealmed-800 to-emerald-800 text-white p-6 sm:p-8 lg:p-10 shadow-xl shadow-tealmed-900/15">
-            <div class="absolute -right-16 -top-16 w-72 h-72 rounded-full bg-white/10 blur-3xl pointer-events-none"></div>
-            <div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-                <div class="space-y-3 max-w-2xl">
-                    <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 border border-white/20 text-[11px] font-semibold tracking-wide text-tealmed-50">
-                        <i class="fa-solid fa-stethoscope text-emerald-300"></i> Built for Indian MBBS, MD/MS &amp; AYUSH Doctors
-                    </span>
-                    <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight leading-tight">
-                        Every verified Medical Officer circular — <span class="text-tealmed-200">in one calm place.</span>
-                    </h1>
-                    <p class="text-sm text-tealmed-100/90 leading-relaxed max-w-xl">
-                        Instantly verify your eligibility for UPSC CMS, ESIC IMO, AIIMS, and State PSC posts based on your passing year, category age relaxation, and service bond clauses.
-                    </p>
-                </div>
-
-                <div class="flex flex-col sm:flex-row lg:flex-col gap-3 shrink-0">
-                    <a href="/onboarding" class="px-6 py-3.5 bg-white hover:bg-tealmed-50 text-tealmed-900 font-extrabold text-sm rounded-xl shadow-lg transition flex items-center justify-center gap-2">
-                        <span>Check My Eligibility</span>
-                        <i class="fa-solid fa-arrow-right text-xs"></i>
-                    </a>
-                    <a href="/exam" class="px-6 py-3 bg-tealmed-950/40 hover:bg-tealmed-950/60 border border-white/25 text-white font-semibold text-xs rounded-xl transition flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-graduation-cap text-amber-300"></i>
-                        <span>Practice UPSC CMS Mock CBT</span>
-                    </a>
-                </div>
+        <!-- Apple-Simple Hero -->
+        <section class="text-center max-w-2xl mx-auto space-y-5">
+            <p class="text-xs font-semibold uppercase tracking-[0.14em] text-[#0F766E]">
+                For Indian MBBS, MD/MS &amp; AYUSH Doctors
+            </p>
+            <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight text-[#1D1D1F] leading-[1.08]">
+                Every Medical Officer job.<br>
+                <span class="text-[#6E6E73]">Zero confusion.</span>
+            </h1>
+            <p class="text-base text-[#6E6E73] leading-relaxed">
+                Permanent UPSC &amp; State PSC posts, zero-exam Walk-in interviews, real bond checks, and free CMS mock tests in one calm place.
+            </p>
+            <div class="pt-2 flex flex-wrap items-center justify-center gap-3">
+                <a href="/onboarding" class="pill-btn px-6 py-3 rounded-full bg-[#0F766E] hover:bg-[#115E59] text-white text-sm font-semibold shadow-sm">
+                    Check My Eligibility
+                </a>
+                <a href="/exam" class="pill-btn px-6 py-3 rounded-full bg-white hover:bg-gray-50 border border-black/10 text-[#1D1D1F] text-sm font-semibold">
+                    Practice Mock CBT
+                </a>
+            </div>
+            <!-- Mobile quick links -->
+            <div class="flex md:hidden flex-wrap justify-center gap-4 pt-2 text-xs font-medium text-[#0F766E]">
+                <a href="/bonds">Pay &amp; Bonds</a>
+                <span>•</span>
+                <a href="/toolkit">Post-MBBS Kit</a>
+                <span>•</span>
+                <button onclick="openModal('pdfModal')">Scan PDF</button>
             </div>
         </section>
 
-        <!-- Stats Strip -->
-        <section class="grid grid-cols-2 lg:grid-cols-4 gap-4" id="statsGrid">
-            <div class="med-card rounded-2xl p-5 flex items-center justify-between">
-                <div>
-                    <p class="text-xs font-semibold text-slate-500">Active Circulars</p>
-                    <p class="text-3xl font-extrabold text-slate-900 mt-1 font-mono tabular-nums" id="statActive">-</p>
-                </div>
-                <div class="w-11 h-11 rounded-xl bg-tealmed-50 border border-tealmed-100 flex items-center justify-center text-tealmed-700">
-                    <i class="fa-solid fa-bullhorn"></i>
-                </div>
+        <!-- Clean 3-Stat Strip -->
+        <section class="grid grid-cols-3 gap-4 sm:gap-6 max-w-3xl mx-auto" id="statsGrid">
+            <div class="apple-card p-5 text-center">
+                <p class="text-2xl sm:text-4xl font-extrabold text-[#1D1D1F] tracking-tight" id="statActive">-</p>
+                <p class="text-xs font-medium text-[#6E6E73] mt-1">Active Notices</p>
             </div>
-
-            <div class="med-card rounded-2xl p-5 flex items-center justify-between">
-                <div>
-                    <p class="text-xs font-semibold text-slate-500">Total Posts Open</p>
-                    <p class="text-3xl font-extrabold text-tealmed-700 mt-1 font-mono tabular-nums" id="statPosts">-</p>
-                </div>
-                <div class="w-11 h-11 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600">
-                    <i class="fa-solid fa-user-doctor"></i>
-                </div>
+            <div class="apple-card p-5 text-center">
+                <p class="text-2xl sm:text-4xl font-extrabold text-[#0F766E] tracking-tight" id="statPosts">-</p>
+                <p class="text-xs font-medium text-[#6E6E73] mt-1">Open Seats</p>
             </div>
-
-            <div class="med-card rounded-2xl p-5 flex items-center justify-between">
-                <div>
-                    <p class="text-xs font-semibold text-slate-500">Closing in 7 Days</p>
-                    <p class="text-3xl font-extrabold text-rose-600 mt-1 font-mono tabular-nums" id="statClosing">-</p>
-                </div>
-                <div class="w-11 h-11 rounded-xl bg-rose-50 border border-rose-100 flex items-center justify-center text-rose-600">
-                    <i class="fa-solid fa-hourglass-half"></i>
-                </div>
-            </div>
-
-            <div class="med-card rounded-2xl p-5 flex items-center justify-between">
-                <div>
-                    <p class="text-xs font-semibold text-slate-500">Background Poller</p>
-                    <p class="text-sm font-bold text-emerald-700 mt-2 flex items-center gap-2">
-                        <span class="relative flex h-2.5 w-2.5">
-                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                            <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
-                        </span>
-                        Active (Auto 6h)
-                    </p>
-                </div>
-                <div class="w-11 h-11 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-600">
-                    <i class="fa-solid fa-robot"></i>
-                </div>
+            <div class="apple-card p-5 text-center">
+                <p class="text-2xl sm:text-4xl font-extrabold text-[#DC2626] tracking-tight" id="statClosing">-</p>
+                <p class="text-xs font-medium text-[#6E6E73] mt-1">Closing Soon</p>
             </div>
         </section>
 
-        <!-- Search & Filter Bar -->
-        <section class="med-card rounded-2xl p-4 sm:p-5 space-y-3.5">
-            <div class="flex flex-col lg:flex-row gap-3">
+        <!-- Simple Search & 3 Clean Filters -->
+        <section class="space-y-4">
+            <div class="apple-card p-3 sm:p-4 flex flex-col md:flex-row items-stretch md:items-center gap-3">
                 <div class="relative flex-grow">
-                    <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                    <input type="text" id="searchInput" placeholder="Search by commission (UPSC, AIIMS, ESIC, UPPSC), designation, or state..." 
-                        class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:bg-white focus:border-tealmed-600 focus:ring-2 focus:ring-tealmed-600/15 outline-none transition">
+                    <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-[#86868B] text-xs"></i>
+                    <input type="text" id="searchInput" placeholder="Search UPSC, WBHRB, ESIC, AIIMS, Walk-in, or State..." 
+                        class="w-full pl-10 pr-4 py-2.5 bg-[#F5F5F7] rounded-xl text-sm text-[#1D1D1F] placeholder-[#86868B] outline-none focus:ring-2 focus:ring-[#0F766E]/25">
                 </div>
 
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-                    <select id="qualificationFilter" onchange="applyFilters()" class="px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-700 focus:border-tealmed-600 outline-none">
-                        <option value="">All Qualifications</option>
-                        <option value="MBBS">MBBS / GDMO</option>
-                        <option value="MD/MS">MD / MS / DNB</option>
-                        <option value="AYUSH">AYUSH (BAMS/BHMS)</option>
+                <div class="flex flex-wrap sm:flex-nowrap items-center gap-2">
+                    <select id="qualificationFilter" onchange="applyFilters()" class="px-3.5 py-2.5 bg-[#F5F5F7] rounded-xl text-xs font-medium text-[#1D1D1F] outline-none">
+                        <option value="">All Degrees</option>
+                        <option value="MBBS">MBBS</option>
+                        <option value="MD/MS">MD / MS</option>
+                        <option value="AYUSH">AYUSH</option>
                     </select>
 
-                    <select id="categoryFilter" onchange="applyFilters()" class="px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-700 focus:border-tealmed-600 outline-none">
-                        <option value="">All Cadres &amp; Types</option>
-                        <option value="West Bengal">West Bengal (WBHRB/KMC/NHM)</option>
-                        <option value="Walk-in">Contractual / Walk-in</option>
-                        <option value="Central Govt">Central Govt (UPSC/CGHS)</option>
-                        <option value="ESIC">ESIC (IMO / SR Walk-in)</option>
-                        <option value="AIIMS">AIIMS / Central Hospitals</option>
-                        <option value="State PSC">State PSC (Permanent)</option>
-                        <option value="NHM">NHM / District Health</option>
-                        <option value="Armed Forces">Armed Forces (AFMS)</option>
+                    <select id="categoryFilter" onchange="applyFilters()" class="px-3.5 py-2.5 bg-[#F5F5F7] rounded-xl text-xs font-medium text-[#1D1D1F] outline-none">
+                        <option value="">All Job Types</option>
+                        <option value="Walk-in">Walk-in (No Exam)</option>
+                        <option value="West Bengal">West Bengal</option>
+                        <option value="Central Govt">Central Govt</option>
+                        <option value="State PSC">State PSC</option>
+                        <option value="ESIC">ESIC</option>
+                        <option value="AIIMS">AIIMS</option>
                     </select>
 
-                    <select id="stageFilter" onchange="applyFilters()" class="px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-700 focus:border-tealmed-600 outline-none">
-                        <option value="">All Stages</option>
-                        <option value="APPLICATION_OPEN">Application Open</option>
-                        <option value="CLOSING_SOON">Closing Soon</option>
+                    <select id="bondFilter" onchange="applyFilters()" class="px-3.5 py-2.5 bg-[#F5F5F7] rounded-xl text-xs font-medium text-[#1D1D1F] outline-none">
+                        <option value="">Any Bond</option>
+                        <option value="no_bond">Zero Bond Only</option>
                     </select>
 
-                    <select id="bondFilter" onchange="applyFilters()" class="px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-700 focus:border-tealmed-600 outline-none">
-                        <option value="">Any Bond Status</option>
-                        <option value="no_bond">Zero Service Bond</option>
-                    </select>
+                    <!-- Hidden stageFilter kept for compatibility -->
+                    <select id="stageFilter" onchange="applyFilters()" class="hidden"><option value=""></option></select>
+
+                    <button onclick="openModal('pdfModal')" title="Scan any Govt PDF" class="hidden sm:flex px-3.5 py-2.5 bg-[#F5F5F7] hover:bg-gray-200 rounded-xl text-xs font-semibold text-[#1D1D1F] items-center gap-1.5">
+                        <i class="fa-regular fa-file-pdf text-[#DC2626]"></i>
+                        <span>Scan PDF</span>
+                    </button>
+
+                    <button onclick="refreshData()" id="refreshBtn" title="Refresh feeds" class="px-3 py-2.5 bg-[#F5F5F7] hover:bg-gray-200 rounded-xl text-xs text-[#1D1D1F]">
+                        <i class="fa-solid fa-arrows-rotate" id="refreshIcon"></i>
+                    </button>
                 </div>
             </div>
 
-            <div class="flex items-center justify-between text-xs text-slate-500 pt-1">
-                <span id="filteredCount" class="font-medium">Showing 0 vacancies</span>
-                <span class="hidden sm:flex items-center gap-1.5 text-tealmed-700 font-medium">
-                    <i class="fa-solid fa-shield-halved"></i> Verified Official Gazette Links
-                </span>
+            <div class="flex items-center justify-between px-1 text-xs text-[#6E6E73]">
+                <span id="filteredCount" class="font-medium">Loading circulars...</span>
+                <button onclick="openModal('walkinKitModal')" class="text-[#0F766E] font-semibold hover:underline">
+                    Walk-in Document Checklist &rarr;
+                </button>
             </div>
         </section>
 
-        <!-- Vacancies Grid -->
+        <!-- Clean Vacancies Grid -->
         <section id="vacanciesList" class="grid grid-cols-1 md:grid-cols-2 gap-5"></section>
 
         <!-- Empty State -->
-        <div id="emptyState" class="hidden med-card text-center py-16 rounded-2xl p-8">
-            <div class="w-14 h-14 mx-auto rounded-2xl bg-tealmed-50 border border-tealmed-100 flex items-center justify-center text-tealmed-700 mb-4">
-                <i class="fa-solid fa-folder-open text-2xl"></i>
-            </div>
-            <h3 class="text-lg font-bold text-slate-900">No matching circulars found</h3>
-            <p class="text-xs text-slate-500 mt-1">Try adjusting your search keywords or clearing active filters.</p>
-            <button onclick="resetFilters()" class="mt-4 px-5 py-2 text-xs font-bold text-white bg-tealmed-700 hover:bg-tealmed-800 rounded-xl transition">
-                Reset All Filters
+        <div id="emptyState" class="hidden apple-card text-center py-16 p-8">
+            <h3 class="text-lg font-bold text-[#1D1D1F]">No matching jobs</h3>
+            <p class="text-sm text-[#6E6E73] mt-1">Try clearing your search or filters.</p>
+            <button onclick="resetFilters()" class="pill-btn mt-5 px-5 py-2.5 rounded-full bg-[#1D1D1F] text-white text-xs font-semibold">
+                Show All Jobs
             </button>
         </div>
 
-        <!-- Statutory Legal & Regulatory Disclaimer -->
-        <footer class="border-t border-slate-200 pt-6 pb-8 text-center space-y-2 text-[11px] text-slate-500">
-            <p class="font-semibold text-slate-700">
-                <i class="fa-solid fa-scale-balanced mr-1 text-tealmed-700"></i> Statutory Legal &amp; Regulatory Disclaimer
+        <!-- Quiet Footer -->
+        <footer class="border-t border-black/[0.06] pt-8 pb-6 text-center space-y-2 text-[11px] text-[#86868B]">
+            <p class="max-w-3xl mx-auto leading-relaxed">
+                <strong>MedAlerts</strong> is an independent recruitment platform, not affiliated with UPSC, WBHRB, NHM, ESIC, AIIMS, or any State PSC. Always verify official gazette notifications before applying.
             </p>
-            <p class="max-w-4xl mx-auto leading-relaxed">
-                <strong>MedAlerts</strong> is an independent non-governmental recruitment information aggregator. It is <strong>not affiliated with, endorsed by, or connected with</strong> UPSC, NHM, ESIC, AIIMS, or any State PSC. Candidates must verify official gazette notifications before applying.
-            </p>
-            <p class="max-w-3xl mx-auto">
-                <strong>Data Privacy (DPDP Act 2023):</strong> Candidate contact details are used strictly for requested recruitment notifications and never shared with third parties.
-            </p>
-            <p class="text-[10px] text-slate-400 pt-1">
-                © 2026 MedAlerts • Built for Indian Medical Officers &amp; Healthcare Professionals
-            </p>
+            <p>DPDP Act 2023 Compliant • Built for Indian Doctors</p>
         </footer>
     </main>
 
-    <!-- PDF Circular Analyzer Modal -->
-    <div id="pdfModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 space-y-4">
-            <div class="flex items-center justify-between border-b border-slate-100 pb-3.5">
-                <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
-                    <i class="fa-solid fa-file-pdf text-rose-500"></i>
-                    Official Circular PDF Analyzer
-                </h3>
-                <button onclick="closeModal('pdfModal')" class="text-slate-400 hover:text-slate-600">
-                    <i class="fa-solid fa-xmark text-lg"></i>
+    <!-- PDF Analyzer Modal -->
+    <div id="pdfModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-4">
+            <div class="flex items-center justify-between">
+                <h3 class="text-lg font-bold text-[#1D1D1F]">Scan Official Circular PDF</h3>
+                <button onclick="closeModal('pdfModal')" class="w-8 h-8 rounded-full bg-[#F5F5F7] text-[#6E6E73] hover:text-black flex items-center justify-center">
+                    <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
-            
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">Government Circular PDF URL</label>
-                    <div class="flex gap-2">
-                        <input type="url" id="pdfUrlInput" placeholder="https://upsc.gov.in/notices/exam-2026.pdf" 
-                            class="flex-grow px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:border-tealmed-600 outline-none">
-                        <button onclick="analyzePdfUrl()" id="analyzeBtn" class="px-4 py-2.5 bg-tealmed-800 hover:bg-tealmed-900 text-white font-bold text-xs rounded-xl transition whitespace-nowrap">
-                            Scan PDF
-                        </button>
-                    </div>
+            <div class="space-y-3">
+                <div class="flex gap-2">
+                    <input type="url" id="pdfUrlInput" placeholder="Paste official .pdf URL..." class="flex-grow px-4 py-2.5 bg-[#F5F5F7] rounded-xl text-xs outline-none">
+                    <button onclick="analyzePdfUrl()" id="analyzeBtn" class="pill-btn px-4 py-2.5 bg-[#1D1D1F] text-white font-semibold text-xs rounded-xl">Scan</button>
                 </div>
-
-                <div class="relative flex py-1 items-center">
-                    <div class="flex-grow border-t border-slate-200"></div>
-                    <span class="flex-shrink mx-3 text-[11px] font-semibold uppercase text-slate-400">Or paste circular text</span>
-                    <div class="flex-grow border-t border-slate-200"></div>
-                </div>
-
-                <div>
-                    <textarea id="pdfTextInput" rows="4" placeholder="Paste circular paragraphs containing eligibility, age limit, bond clauses, or vacancies..." 
-                        class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:border-tealmed-600 outline-none"></textarea>
-                    <button onclick="analyzePdfText()" class="mt-2 w-full py-2.5 bg-tealmed-700 hover:bg-tealmed-800 text-white font-bold text-xs rounded-xl transition">
-                        Parse Requirements &amp; Bond
-                    </button>
-                </div>
-
-                <div id="pdfResultBox" class="hidden p-4 bg-tealmed-50 rounded-xl border border-tealmed-200 space-y-2 text-xs">
-                    <h4 class="font-bold text-tealmed-900 flex items-center gap-1.5">
-                        <i class="fa-solid fa-wand-magic-sparkles text-tealmed-600"></i> Extracted Eligibility &amp; Metadata
-                    </h4>
-                    <div class="grid grid-cols-2 gap-2 text-slate-700" id="pdfResultGrid"></div>
+                <textarea id="pdfTextInput" rows="4" placeholder="Or paste circular text to extract age limit, posts &amp; bond..." class="w-full px-4 py-2.5 bg-[#F5F5F7] rounded-xl text-xs outline-none"></textarea>
+                <button onclick="analyzePdfText()" class="pill-btn w-full py-2.5 bg-[#0F766E] text-white font-semibold text-xs rounded-xl">Extract Details</button>
+                <div id="pdfResultBox" class="hidden p-4 bg-[#F5F5F7] rounded-2xl space-y-2 text-xs">
+                    <div class="grid grid-cols-2 gap-2 text-[#1D1D1F]" id="pdfResultGrid"></div>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Subscribe Modal -->
-    <div id="subscribeModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 space-y-4">
-            <div class="flex items-center justify-between border-b border-slate-100 pb-3.5">
+    <div id="subscribeModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4">
+            <div class="flex items-center justify-between">
                 <div>
-                    <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
-                        <i class="fa-solid fa-bell text-tealmed-700"></i> Get Instant Vacancy Alerts
-                    </h3>
-                    <p class="text-xs text-slate-500 mt-0.5">Never miss an application deadline again.</p>
+                    <h3 class="text-lg font-bold text-[#1D1D1F]">Instant Job Alerts</h3>
+                    <p class="text-xs text-[#6E6E73]">Get notified the moment a new circular opens.</p>
                 </div>
-                <button onclick="closeModal('subscribeModal')" class="text-slate-400 hover:text-slate-600">
-                    <i class="fa-solid fa-xmark text-lg"></i>
+                <button onclick="closeModal('subscribeModal')" class="w-8 h-8 rounded-full bg-[#F5F5F7] text-[#6E6E73] hover:text-black flex items-center justify-center">
+                    <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
 
             <form id="subscribeForm" onsubmit="handleSubscribe(event)" class="space-y-3.5">
-                <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">Notification Channel</label>
-                    <div class="grid grid-cols-2 gap-2.5">
-                        <label class="flex items-center gap-2 p-3 border border-slate-200 bg-slate-50 rounded-xl cursor-pointer hover:border-tealmed-500 transition">
-                            <input type="radio" name="channel" value="telegram" checked onchange="updateChannelPlaceholder()" class="accent-teal-700">
-                            <i class="fa-brands fa-telegram text-sky-500"></i>
-                            <span class="text-xs font-semibold text-slate-800">Telegram</span>
-                        </label>
-                        <label class="flex items-center gap-2 p-3 border border-slate-200 bg-slate-50 rounded-xl cursor-pointer hover:border-tealmed-500 transition">
-                            <input type="radio" name="channel" value="email" onchange="updateChannelPlaceholder()" class="accent-teal-700">
-                            <i class="fa-solid fa-envelope text-amber-500"></i>
-                            <span class="text-xs font-semibold text-slate-800">Email Digest</span>
-                        </label>
-                    </div>
+                <div class="grid grid-cols-2 gap-2.5">
+                    <label class="flex items-center gap-2 p-3 bg-[#F5F5F7] rounded-2xl cursor-pointer">
+                        <input type="radio" name="channel" value="telegram" checked onchange="updateChannelPlaceholder()" class="accent-[#0F766E]">
+                        <span class="text-xs font-semibold">Telegram</span>
+                    </label>
+                    <label class="flex items-center gap-2 p-3 bg-[#F5F5F7] rounded-2xl cursor-pointer">
+                        <input type="radio" name="channel" value="email" onchange="updateChannelPlaceholder()" class="accent-[#0F766E]">
+                        <span class="text-xs font-semibold">Email</span>
+                    </label>
                 </div>
 
                 <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-1" id="targetLabel">Telegram Chat ID / Username</label>
-                    <input type="text" id="targetInput" required placeholder="@MedAlerts_Official or chat_id" 
-                        class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:border-tealmed-600 outline-none">
-                    <p class="text-[11px] text-slate-400 mt-1" id="targetHelp">For Telegram, enter your Chat ID or @channel_name.</p>
+                    <label class="block text-xs font-semibold text-[#1D1D1F] mb-1" id="targetLabel">Telegram Numeric Chat ID or @Channel</label>
+                    <input type="text" id="targetInput" required placeholder="e.g. 123456789 or @MedAlerts_Official" class="w-full px-4 py-2.5 bg-[#F5F5F7] rounded-xl text-sm outline-none">
+                    <p class="text-[11px] text-[#86868B] mt-1" id="targetHelp">Personal accounts: send /start to @MedAlertsRecruitmentBot and paste your numeric Chat ID.</p>
                 </div>
 
                 <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-1">Only Alert Me For</label>
-                    <select id="subQualification" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:border-tealmed-600 outline-none">
-                        <option value="ALL">All Qualifications (MBBS, Specialists, AYUSH)</option>
-                        <option value="MBBS">MBBS / GDMO Only</option>
-                        <option value="MD/MS">MD / MS / Specialists Only</option>
+                    <label class="block text-xs font-semibold text-[#1D1D1F] mb-1">Degree Filter</label>
+                    <select id="subQualification" class="w-full px-4 py-2.5 bg-[#F5F5F7] rounded-xl text-xs outline-none">
+                        <option value="ALL">All Degrees (MBBS, MD/MS, AYUSH)</option>
+                        <option value="MBBS">MBBS Only</option>
+                        <option value="MD/MS">MD / MS Only</option>
                         <option value="AYUSH">AYUSH Only</option>
                     </select>
                 </div>
 
-                <div class="pt-1">
-                    <label class="flex items-start gap-2 text-[11px] text-slate-500 cursor-pointer">
-                        <input type="checkbox" id="dpdpConsent" required checked class="mt-0.5 accent-teal-700 rounded">
-                        <span>I agree to receive recruitment notifications under <strong>DPDP Act 2023</strong> privacy terms. Contact data is never shared with third parties.</span>
-                    </label>
-                </div>
+                <label class="flex items-start gap-2 text-[11px] text-[#6E6E73] cursor-pointer">
+                    <input type="checkbox" id="dpdpConsent" required checked class="mt-0.5 accent-[#0F766E]">
+                    <span>I consent to receive alerts under DPDP Act 2023. Zero third-party sharing.</span>
+                </label>
 
-                <div class="pt-1 flex flex-col gap-2">
-                    <button type="submit" id="subBtn" class="w-full py-2.5 bg-tealmed-700 hover:bg-tealmed-800 text-white font-bold rounded-xl text-xs shadow transition flex items-center justify-center gap-2">
-                        <span>Subscribe for Notifications</span>
-                    </button>
-                    <button type="button" onclick="testTelegramLive()" id="tgTestBtn" class="w-full py-2.5 bg-sky-50 hover:bg-sky-100 text-sky-800 border border-sky-200 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5">
-                        <i class="fa-brands fa-telegram text-sky-500"></i>
-                        <span>Send Test Dispatch to Telegram</span>
-                    </button>
-                </div>
-                <div id="tgTestResult" class="hidden p-3 rounded-xl text-xs space-y-1"></div>
+                <button type="submit" id="subBtn" class="pill-btn w-full py-3 bg-[#0F766E] text-white font-semibold rounded-full text-xs">
+                    Subscribe
+                </button>
+                <button type="button" onclick="testTelegramLive()" id="tgTestBtn" class="pill-btn w-full py-2.5 bg-[#F5F5F7] text-[#1D1D1F] rounded-full text-xs font-semibold">
+                    Send Test Telegram Message
+                </button>
+                <div id="tgTestResult" class="hidden p-3 rounded-2xl text-xs space-y-1"></div>
             </form>
         </div>
     </div>
 
-    <!-- Walk-in Document Kit & Viva Prep Modal -->
-    <div id="walkinKitModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 space-y-4 max-h-[90vh] overflow-y-auto">
-            <div class="flex items-center justify-between border-b border-slate-100 pb-3.5">
+    <!-- Walk-in Document Kit Modal -->
+    <div id="walkinKitModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-4 max-h-[88vh] overflow-y-auto">
+            <div class="flex items-center justify-between">
                 <div>
-                    <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
-                        <i class="fa-solid fa-briefcase-medical text-purple-600"></i> Walk-in Document Kit &amp; Viva Prep
-                    </h3>
-                    <p class="text-xs text-slate-500 mt-0.5">Carry originals + 2 self-attested photocopy sets to every Walk-in Interview.</p>
+                    <h3 class="text-lg font-bold text-[#1D1D1F]">Walk-in Document Checklist</h3>
+                    <p class="text-xs text-[#6E6E73]">Carry originals + 2 self-attested photocopy sets.</p>
                 </div>
-                <button onclick="closeModal('walkinKitModal')" class="text-slate-400 hover:text-slate-600">
-                    <i class="fa-solid fa-xmark text-lg"></i>
+                <button onclick="closeModal('walkinKitModal')" class="w-8 h-8 rounded-full bg-[#F5F5F7] text-[#6E6E73] hover:text-black flex items-center justify-center">
+                    <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
-
             <div class="space-y-2 text-xs" id="walkinChecklist">
-                <label class="flex items-center gap-2.5 p-2.5 rounded-xl bg-slate-50 border border-slate-200 cursor-pointer">
-                    <input type="checkbox" data-kit="reg" onchange="saveKitState()" class="w-4 h-4 accent-teal-700 rounded">
-                    <span><strong>Permanent NMC / State Medical Council Registration</strong> Certificate</span>
+                <label class="flex items-center gap-3 p-3 rounded-2xl bg-[#F5F5F7] cursor-pointer">
+                    <input type="checkbox" data-kit="reg" onchange="saveKitState()" class="w-4 h-4 accent-[#0F766E]">
+                    <span><strong>Permanent NMC / State Medical Council Registration</strong></span>
                 </label>
-                <label class="flex items-center gap-2.5 p-2.5 rounded-xl bg-slate-50 border border-slate-200 cursor-pointer">
-                    <input type="checkbox" data-kit="crri" onchange="saveKitState()" class="w-4 h-4 accent-teal-700 rounded">
-                    <span><strong>CRRI Internship Completion</strong> Certificate &amp; MBBS Degree / Provisional</span>
+                <label class="flex items-center gap-3 p-3 rounded-2xl bg-[#F5F5F7] cursor-pointer">
+                    <input type="checkbox" data-kit="crri" onchange="saveKitState()" class="w-4 h-4 accent-[#0F766E]">
+                    <span><strong>CRRI Internship Completion</strong> &amp; MBBS Degree</span>
                 </label>
-                <label class="flex items-center gap-2.5 p-2.5 rounded-xl bg-slate-50 border border-slate-200 cursor-pointer">
-                    <input type="checkbox" data-kit="marks" onchange="saveKitState()" class="w-4 h-4 accent-teal-700 rounded">
-                    <span><strong>All Prof Marksheets + Attempt Certificate</strong> (required by AIIMS / ESIC)</span>
+                <label class="flex items-center gap-3 p-3 rounded-2xl bg-[#F5F5F7] cursor-pointer">
+                    <input type="checkbox" data-kit="marks" onchange="saveKitState()" class="w-4 h-4 accent-[#0F766E]">
+                    <span><strong>All Prof Marksheets + Attempt Certificate</strong></span>
                 </label>
-                <label class="flex items-center gap-2.5 p-2.5 rounded-xl bg-slate-50 border border-slate-200 cursor-pointer">
-                    <input type="checkbox" data-kit="cat" onchange="saveKitState()" class="w-4 h-4 accent-teal-700 rounded">
-                    <span><strong>OBC-NCL / EWS / SC-ST Certificate</strong> (current Financial Year validity)</span>
+                <label class="flex items-center gap-3 p-3 rounded-2xl bg-[#F5F5F7] cursor-pointer">
+                    <input type="checkbox" data-kit="cat" onchange="saveKitState()" class="w-4 h-4 accent-[#0F766E]">
+                    <span><strong>OBC-NCL / EWS / SC-ST Certificate</strong> (Current FY)</span>
                 </label>
-                <label class="flex items-center gap-2.5 p-2.5 rounded-xl bg-slate-50 border border-slate-200 cursor-pointer">
-                    <input type="checkbox" data-kit="id" onchange="saveKitState()" class="w-4 h-4 accent-teal-700 rounded">
-                    <span><strong>Aadhaar / PAN + 6 Passport Photos + Updated 1-Page CV</strong></span>
+                <label class="flex items-center gap-3 p-3 rounded-2xl bg-[#F5F5F7] cursor-pointer">
+                    <input type="checkbox" data-kit="id" onchange="saveKitState()" class="w-4 h-4 accent-[#0F766E]">
+                    <span><strong>Aadhaar / PAN + 6 Passport Photos + 1-Page CV</strong></span>
                 </label>
-            </div>
-
-            <div class="p-4 bg-tealmed-50 border border-tealmed-200 rounded-xl space-y-1.5 text-xs">
-                <p class="font-bold text-tealmed-900"><i class="fa-solid fa-microphone-lines mr-1.5"></i> Top 4 Walk-in Viva Questions Asked to MBBS MOs</p>
-                <ul class="list-disc pl-4 space-y-1 text-slate-700">
-                    <li>Acute Anaphylaxis, STEMI &amp; Organophosphate Poisoning emergency doses.</li>
-                    <li>NTEP (TB) 4-drug regimen &amp; UIP National Immunization Schedule.</li>
-                    <li>Bio-Medical Waste (BMW) 4-bin segregation rules (Yellow, Red, White, Blue).</li>
-                    <li>Medico-Legal Case (MLC) &amp; Brought-Dead documentation protocol.</li>
-                </ul>
             </div>
         </div>
     </div>
 
-    <!-- Personal Application Tracker Modal -->
-    <div id="trackerModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-2xl w-full p-6 shadow-2xl border border-slate-200 space-y-4 max-h-[85vh] overflow-y-auto">
-            <div class="flex items-center justify-between border-b border-slate-100 pb-3.5">
+    <!-- Saved Application Tracker Modal -->
+    <div id="trackerModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-2xl w-full p-6 shadow-2xl space-y-4 max-h-[85vh] overflow-y-auto">
+            <div class="flex items-center justify-between">
                 <div>
-                    <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
-                        <i class="fa-solid fa-bookmark text-tealmed-700"></i> My Application Tracker
-                    </h3>
-                    <p class="text-xs text-slate-500 mt-0.5">Saved locally in your browser — zero login required.</p>
+                    <h3 class="text-lg font-bold text-[#1D1D1F]">Saved Applications</h3>
+                    <p class="text-xs text-[#6E6E73]">Saved privately in your browser.</p>
                 </div>
-                <button onclick="closeModal('trackerModal')" class="text-slate-400 hover:text-slate-600">
-                    <i class="fa-solid fa-xmark text-lg"></i>
+                <button onclick="closeModal('trackerModal')" class="w-8 h-8 rounded-full bg-[#F5F5F7] text-[#6E6E73] hover:text-black flex items-center justify-center">
+                    <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
             <div id="trackerListContainer" class="space-y-3 text-xs"></div>
@@ -504,16 +322,16 @@
     </div>
 
     <!-- Toast -->
-    <div id="toast" class="fixed bottom-6 right-6 bg-tealmed-900 text-white px-4 py-3 rounded-xl shadow-xl text-xs z-50 hidden flex items-center gap-2">
-        <i class="fa-solid fa-circle-check text-emerald-300"></i>
-        <span id="toastMsg">Action completed successfully</span>
+    <div id="toast" class="fixed bottom-6 right-6 bg-[#1D1D1F] text-white px-5 py-3 rounded-full shadow-xl text-xs font-medium z-50 hidden flex items-center gap-2">
+        <i class="fa-solid fa-circle-check text-emerald-400"></i>
+        <span id="toastMsg">Done</span>
     </div>
 
     <script>
         let allVacancies = [];
 
         async function init() {
-            await Promise.all([fetchStats(), fetchVacancies(), fetchLogs()]);
+            await Promise.all([fetchStats(), fetchVacancies()]);
         }
 
         async function fetchStats() {
@@ -523,9 +341,7 @@
                 document.getElementById('statActive').textContent = data.active_notices ?? '-';
                 document.getElementById('statPosts').textContent = (data.total_vacancies_seats ?? 0).toLocaleString();
                 document.getElementById('statClosing').textContent = data.closing_in_7_days ?? '-';
-            } catch (err) {
-                console.error('Error fetching stats:', err);
-            }
+            } catch (err) { console.error(err); }
         }
 
         async function fetchVacancies() {
@@ -533,47 +349,13 @@
                 const res = await fetch('/api/vacancies');
                 allVacancies = await res.json();
                 applyFilters();
-            } catch (err) {
-                console.error('Error fetching vacancies:', err);
-            }
-        }
-
-        async function fetchLogs() {
-            const tbody = document.getElementById('notificationLogsBody');
-            if (!tbody) return;
-            try {
-                const res = await fetch('/api/notifications/recent');
-                if (!res.ok) return;
-                const logs = await res.json();
-                if (!Array.isArray(logs) || logs.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="5" class="py-5 text-center text-slate-400">No notifications dispatched yet.</td></tr>';
-                    return;
-                }
-                tbody.innerHTML = logs.map(l => `
-                    <tr class="hover:bg-slate-50 transition">
-                        <td class="py-2.5 px-3 text-slate-500 font-mono text-[11px]">${new Date(l.sent_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</td>
-                        <td class="py-2.5 px-3 font-semibold capitalize flex items-center gap-1.5 text-slate-800">
-                            ${l.channel === 'telegram' ? '<i class="fa-brands fa-telegram text-sky-500"></i> Telegram' : '<i class="fa-solid fa-envelope text-amber-500"></i> Email'}
-                        </td>
-                        <td class="py-2.5 px-3 text-slate-700 font-mono text-[11px]">${l.target}</td>
-                        <td class="py-2.5 px-3">
-                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${l.status === 'SUCCESS' ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}">
-                                ${l.status}
-                            </span>
-                        </td>
-                        <td class="py-2.5 px-3 text-slate-500 truncate max-w-xs">${l.details || '-'}</td>
-                    </tr>
-                `).join('');
-            } catch (err) {
-                console.error('Error fetching logs:', err);
-            }
+            } catch (err) { console.error(err); }
         }
 
         function applyFilters() {
             const q = document.getElementById('searchInput').value.toLowerCase();
             const qual = document.getElementById('qualificationFilter').value;
             const cat = document.getElementById('categoryFilter').value;
-            const stage = document.getElementById('stageFilter').value;
             const bond = document.getElementById('bondFilter').value;
 
             const filtered = allVacancies.filter(v => {
@@ -581,9 +363,7 @@
                     v.title.toLowerCase().includes(q) || 
                     v.organization.toLowerCase().includes(q) || 
                     v.designation.toLowerCase().includes(q) ||
-                    v.state.toLowerCase().includes(q) ||
-                    (v.summary && v.summary.toLowerCase().includes(q));
-                
+                    v.state.toLowerCase().includes(q);
                 const matchQual = !qual || v.qualification.includes(qual);
                 const matchCat = !cat || (
                     v.category.toLowerCase().includes(cat.toLowerCase()) ||
@@ -591,14 +371,16 @@
                     v.state.toLowerCase().includes(cat.toLowerCase()) ||
                     (v.selection_mode && v.selection_mode.toLowerCase().includes(cat.toLowerCase()))
                 );
-                const matchStage = !stage || v.stage === stage;
                 const matchBond = !bond || (bond === 'no_bond' && v.bond_years === 0);
-
-                return matchSearch && matchQual && matchCat && matchStage && matchBond;
+                return matchSearch && matchQual && matchCat && matchBond;
             });
 
-            document.getElementById('filteredCount').textContent = `Showing ${filtered.length} of ${allVacancies.length} verified circulars`;
+            document.getElementById('filteredCount').textContent = `${filtered.length} active opportunities`;
             renderCards(filtered);
+        }
+
+        function escapeHtml(str) {
+            return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
         }
 
         function renderCards(list) {
@@ -613,116 +395,54 @@
             empty.classList.add('hidden');
 
             container.innerHTML = list.map(v => {
-                let deadlineBadge = 'bg-slate-100 text-slate-700 border-slate-200';
-                if (v.days_left !== null) {
-                    if (v.days_left <= 7) deadlineBadge = 'bg-rose-50 text-rose-700 border-rose-200 font-bold';
-                    else if (v.days_left <= 14) deadlineBadge = 'bg-amber-50 text-amber-800 border-amber-200 font-semibold';
-                    else deadlineBadge = 'bg-emerald-50 text-emerald-700 border-emerald-200 font-semibold';
-                }
-
-                let stagePill = `<span class="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-sky-50 text-sky-700 border border-sky-200">Application Open</span>`;
-                if (v.stage === 'CLOSING_SOON') {
-                    stagePill = `<span class="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-rose-50 text-rose-700 border border-rose-200">Closing Soon</span>`;
-                }
-
-                const isNoBond = v.bond_years === 0;
-                const bondPill = isNoBond ? 
-                    `<span class="text-[10px] font-semibold px-2.5 py-0.5 rounded-full bg-tealmed-50 text-tealmed-800 border border-tealmed-200"><i class="fa-solid fa-shield-halved mr-1"></i> Zero Bond</span>` :
-                    `<span class="text-[10px] font-semibold px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200"><i class="fa-solid fa-file-contract mr-1"></i> ${v.bond_penalty_amount}</span>`;
-
                 const isWalkIn = v.selection_mode && v.selection_mode.toLowerCase().includes('walk-in');
-                const walkInPill = isWalkIn ?
-                    `<span class="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-purple-50 text-purple-800 border border-purple-200"><i class="fa-solid fa-person-walking mr-1"></i> Walk-in</span>` : '';
-
-                let seatsHTML = '';
-                if (v.category_seats && Object.keys(v.category_seats).length > 0) {
-                    seatsHTML = Object.entries(v.category_seats).map(([k, count]) => `
-                        <span class="text-[10px] px-2 py-0.5 bg-slate-50 border border-slate-200 rounded-md text-slate-600 font-mono">
-                            ${k}: <strong class="text-slate-900">${count}</strong>
-                        </span>
-                    `).join('');
-                }
+                const isUrgent = v.days_left !== null && v.days_left <= 7;
+                const badgeText = isUrgent ? `${v.days_left}d left` : (isWalkIn ? 'Walk-in' : v.qualification);
+                const badgeClass = isUrgent ? 'bg-rose-50 text-[#DC2626]' : (isWalkIn ? 'bg-purple-50 text-purple-700' : 'bg-[#F5F5F7] text-[#1D1D1F]');
 
                 return `
-                <div class="med-card rounded-2xl p-5 sm:p-6 flex flex-col justify-between space-y-4">
-                    <div>
-                        <div class="flex items-center justify-between gap-2 mb-3 flex-wrap">
-                            <div class="flex items-center gap-1.5 flex-wrap">
-                                <span class="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700">
-                                    ${v.category}
-                                </span>
-                                ${stagePill}
-                                ${walkInPill}
-                                ${bondPill}
-                            </div>
-                            <span class="font-mono text-[11px] px-2.5 py-0.5 rounded-full border ${deadlineBadge}">
-                                <i class="fa-solid fa-hourglass-half mr-1"></i> ${v.days_left !== null ? v.days_left + 'd left' : 'Check Notice'}
+                <div class="apple-card p-6 flex flex-col justify-between space-y-5">
+                    <div class="space-y-2.5">
+                        <div class="flex items-center justify-between gap-2">
+                            <span class="text-xs font-semibold text-[#0F766E] truncate">${escapeHtml(v.organization)} • ${escapeHtml(v.state)}</span>
+                            <span class="text-[11px] font-semibold px-2.5 py-0.5 rounded-full shrink-0 ${badgeClass}">
+                                ${escapeHtml(badgeText)}
                             </span>
                         </div>
 
-                        <h3 class="text-base sm:text-lg font-bold text-slate-900 leading-snug">
-                            ${v.title}
+                        <h3 class="text-lg font-bold text-[#1D1D1F] leading-snug">
+                            ${escapeHtml(v.title)}
                         </h3>
-                        <p class="text-xs font-semibold text-tealmed-700 mt-1 flex items-center gap-1.5">
-                            <i class="fa-solid fa-hospital"></i> ${v.organization} (${v.state})
-                        </p>
 
-                        <div class="grid grid-cols-2 gap-3 mt-4 p-3.5 bg-slate-50/90 border border-slate-200/70 rounded-xl text-xs">
-                            <div>
-                                <span class="text-slate-400 block text-[10px] uppercase font-bold">Designation</span>
-                                <span class="font-semibold text-slate-800 truncate block mt-0.5">${v.designation}</span>
-                            </div>
-                            <div>
-                                <span class="text-slate-400 block text-[10px] uppercase font-bold">Qualification</span>
-                                <span class="font-bold text-tealmed-800 mt-0.5 block">${v.qualification}</span>
-                            </div>
-                            <div>
-                                <span class="text-slate-400 block text-[10px] uppercase font-bold">Total Posts</span>
-                                <span class="font-mono font-bold text-emerald-700 mt-0.5 block">${v.total_posts} Seats</span>
-                            </div>
-                            <div>
-                                <span class="text-slate-400 block text-[10px] uppercase font-bold">Selection Mode</span>
-                                <span class="font-medium text-slate-700 truncate block mt-0.5">${v.selection_mode || 'Exam + Viva'}</span>
-                            </div>
+                        <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-[#6E6E73] pt-1">
+                            <span class="font-semibold text-[#1D1D1F]">${v.total_posts} Seats</span>
+                            <span>•</span>
+                            <span>${escapeHtml(v.pay_scale || 'Govt Pay Matrix')}</span>
+                            <span>•</span>
+                            <span>${v.bond_years === 0 ? 'Zero Bond' : escapeHtml(v.bond_penalty_amount)}</span>
                         </div>
-
-                        ${seatsHTML ? `
-                        <div class="mt-3 flex items-center gap-1.5 flex-wrap">
-                            <span class="text-[10px] font-bold uppercase text-slate-400">Seats:</span>
-                            ${seatsHTML}
-                        </div>
-                        ` : ''}
-
-                        <p class="text-xs text-slate-500 mt-3 line-clamp-2 leading-relaxed">
-                            ${v.summary || 'Click below to read full official notification and qualifications required.'}
-                        </p>
                     </div>
 
-                    <div class="pt-3.5 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2 text-xs">
-                        <div class="flex items-center gap-2 text-[11px] text-slate-500 font-mono">
-                            <span>Due: <strong class="text-slate-800">${v.last_date || 'N/A'}</strong></span>
-                            <span class="text-slate-300">•</span>
-                            <span class="text-[10px] text-emerald-700 font-sans font-semibold"><i class="fa-solid fa-circle-check mr-0.5"></i> Verified ${v.last_verified_at || 'Today'}</span>
-                        </div>
+                    <div class="pt-4 border-t border-black/[0.05] flex items-center justify-between gap-2">
+                        <span class="text-[11px] text-[#86868B]">
+                            Due ${escapeHtml(v.last_date || 'Soon')}
+                        </span>
+
                         <div class="flex items-center gap-1.5">
-                            <button onclick="toggleTrackVacancy('${v.id}')" title="Save to My Tracker" class="px-2 py-1.5 ${isTracked(v.id) ? 'bg-tealmed-50 text-tealmed-700 border-tealmed-300' : 'bg-slate-100 text-slate-600 border-slate-200'} hover:bg-tealmed-50 border rounded-lg font-semibold transition flex items-center text-[11px]">
+                            <button onclick="toggleTrackVacancy('${v.id}')" title="Save" class="w-8 h-8 rounded-full ${isTracked(v.id) ? 'bg-[#0F766E] text-white' : 'bg-[#F5F5F7] text-[#6E6E73] hover:text-black'} flex items-center justify-center text-xs transition">
                                 <i class="${isTracked(v.id) ? 'fa-solid' : 'fa-regular'} fa-bookmark"></i>
                             </button>
-                            <button onclick="flagVacancy('${v.id}')" title="Flag expired or broken link" class="px-2 py-1.5 bg-slate-100 hover:bg-rose-50 text-slate-500 hover:text-rose-600 rounded-lg transition text-[11px]">
-                                <i class="fa-regular fa-flag"></i>
-                            </button>
-                            <a href="/api/vacancies/${v.id}/calendar.ics" title="Add Deadline to Calendar (.ics)" class="px-2 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg font-semibold transition flex items-center gap-1 text-[11px]">
-                                <i class="fa-regular fa-calendar-plus text-tealmed-700"></i>
+                            <a href="/api/vacancies/${v.id}/calendar.ics" title="Add to Calendar" class="w-8 h-8 rounded-full bg-[#F5F5F7] text-[#6E6E73] hover:text-black flex items-center justify-center text-xs transition">
+                                <i class="fa-regular fa-calendar-plus"></i>
                             </a>
-                            ${isWalkIn ? `<button onclick="openModal('walkinKitModal')" title="Walk-in Document Checklist" class="px-2 py-1.5 bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 rounded-lg font-semibold transition flex items-center gap-1 text-[11px]"><i class="fa-solid fa-briefcase-medical"></i></button>` : ''}
-                            <button onclick="shareVacancyToWhatsApp('${v.id}')" title="Share with MBBS batch group" class="px-2.5 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-lg font-semibold transition flex items-center gap-1 text-[11px] border border-emerald-200">
-                                <i class="fa-brands fa-whatsapp text-emerald-600"></i>
+                            <button onclick="shareVacancyToWhatsApp('${v.id}')" title="Share on WhatsApp" class="w-8 h-8 rounded-full bg-[#F5F5F7] text-[#0F766E] hover:bg-emerald-50 flex items-center justify-center text-xs transition">
+                                <i class="fa-brands fa-whatsapp"></i>
                             </button>
-                            <a href="${v.notification_url || '#'}" target="_blank" class="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg font-semibold transition flex items-center gap-1 text-[11px]">
-                                <i class="fa-regular fa-file-pdf text-rose-500"></i> PDF
+                            <a href="${v.notification_url || '#'}" target="_blank" class="px-3 py-1.5 rounded-full bg-[#F5F5F7] hover:bg-gray-200 text-[#1D1D1F] text-xs font-semibold transition">
+                                PDF
                             </a>
-                            <a href="${v.apply_url || '#'}" target="_blank" class="px-3.5 py-1.5 bg-tealmed-700 hover:bg-tealmed-800 text-white rounded-lg font-bold transition flex items-center gap-1 text-[11px] shadow-sm">
-                                Apply <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
+                            <a href="${v.apply_url || '#'}" target="_blank" class="pill-btn px-4 py-1.5 rounded-full bg-[#1D1D1F] hover:bg-black text-white text-xs font-semibold">
+                                Apply
                             </a>
                         </div>
                     </div>
@@ -735,54 +455,33 @@
             const url = document.getElementById('pdfUrlInput').value;
             if (!url) return alert('Enter a PDF URL');
             const btn = document.getElementById('analyzeBtn');
-            btn.disabled = true;
-            btn.textContent = 'Scanning...';
-
+            btn.disabled = true; btn.textContent = '...';
             try {
-                const res = await fetch('/api/parser/analyze-url', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({url})
-                });
+                const res = await fetch('/api/parser/analyze-url', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({url}) });
                 const data = await res.json();
                 if (!res.ok) throw new Error(data.detail || 'Analysis failed');
                 showExtracted(data.extracted);
-            } catch (err) {
-                alert('Error: ' + err.message);
-            } finally {
-                btn.disabled = false;
-                btn.textContent = 'Scan PDF';
-            }
+            } catch (err) { alert('Error: ' + err.message); }
+            finally { btn.disabled = false; btn.textContent = 'Scan'; }
         }
 
         async function analyzePdfText() {
             const text = document.getElementById('pdfTextInput').value;
-            if (!text) return alert('Paste some circular text first');
-
+            if (!text) return alert('Paste circular text first');
             try {
-                const res = await fetch('/api/parser/analyze-text', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({text})
-                });
+                const res = await fetch('/api/parser/analyze-text', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({text}) });
                 const data = await res.json();
                 showExtracted(data.extracted);
-            } catch (err) {
-                alert('Error: ' + err.message);
-            }
+            } catch (err) { alert('Error: ' + err.message); }
         }
 
         function showExtracted(data) {
-            const box = document.getElementById('pdfResultBox');
-            const grid = document.getElementById('pdfResultGrid');
-            box.classList.remove('hidden');
-            grid.innerHTML = `
-                <div><span class="text-slate-500">Qual:</span> <strong>${data.qualification}</strong></div>
-                <div><span class="text-slate-500">Posts:</span> <strong>${data.total_posts || 'Check text'}</strong></div>
-                <div><span class="text-slate-500">Max Age:</span> <strong>${data.max_age} yrs</strong></div>
-                <div><span class="text-slate-500">Pay Level:</span> <strong>${data.pay_scale || 'As per norms'}</strong></div>
-                <div class="col-span-2"><span class="text-slate-500">Service Bond:</span> <strong>${data.bond_years > 0 ? data.bond_penalty_amount : 'Zero Bond'}</strong></div>
-                <div class="col-span-2"><span class="text-slate-500">Last Date:</span> <strong class="text-rose-600">${data.last_date || 'Not detected'}</strong></div>
+            document.getElementById('pdfResultBox').classList.remove('hidden');
+            document.getElementById('pdfResultGrid').innerHTML = `
+                <div><span class="text-[#6E6E73]">Degree:</span> <strong>${escapeHtml(data.qualification)}</strong></div>
+                <div><span class="text-[#6E6E73]">Posts:</span> <strong>${escapeHtml(data.total_posts || 'Check text')}</strong></div>
+                <div><span class="text-[#6E6E73]">Max Age:</span> <strong>${escapeHtml(data.max_age)} yrs</strong></div>
+                <div><span class="text-[#6E6E73]">Bond:</span> <strong>${data.bond_years > 0 ? escapeHtml(data.bond_penalty_amount) : 'Zero Bond'}</strong></div>
             `;
         }
 
@@ -792,19 +491,15 @@
             try {
                 await fetch('/api/sync', { method: 'POST' });
                 await init();
-                showToast('Synced latest official medical officer circulars.');
-            } catch (err) {
-                console.error(err);
-            } finally {
-                setTimeout(() => icon.classList.remove('animate-spin'), 500);
-            }
+                showToast('Feeds refreshed.');
+            } catch (err) { console.error(err); }
+            finally { setTimeout(() => icon.classList.remove('animate-spin'), 500); }
         }
 
         function resetFilters() {
             document.getElementById('searchInput').value = '';
             document.getElementById('qualificationFilter').value = '';
             document.getElementById('categoryFilter').value = '';
-            document.getElementById('stageFilter').value = '';
             document.getElementById('bondFilter').value = '';
             applyFilters();
         }
@@ -814,17 +509,16 @@
             const label = document.getElementById('targetLabel');
             const input = document.getElementById('targetInput');
             const help = document.getElementById('targetHelp');
-
             if (channel === 'telegram') {
                 label.textContent = 'Telegram Numeric Chat ID or @Channel';
                 input.placeholder = 'e.g. 123456789 or @MedAlerts_Official';
                 input.type = 'text';
-                help.textContent = 'Personal accounts: send /start to @MedAlertsRecruitmentBot and paste your numeric Chat ID (from @userinfobot).';
+                help.textContent = 'Personal accounts: send /start to @MedAlertsRecruitmentBot and paste your numeric Chat ID.';
             } else {
                 label.textContent = 'Email Address';
                 input.placeholder = 'doctor@hospital.org';
                 input.type = 'email';
-                help.textContent = 'We will send daily digests when matching Medical Officer posts open.';
+                help.textContent = 'Receive digests when matching Medical Officer posts open.';
             }
         }
 
@@ -834,128 +528,63 @@
             const channel = document.querySelector('input[name="channel"]:checked').value;
             const target = document.getElementById('targetInput').value.trim();
             const qual = document.getElementById('subQualification').value;
-
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i> Registering...';
-
+            btn.disabled = true; btn.textContent = 'Saving...';
             try {
                 const res = await fetch('/api/subscribe', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        channel: channel,
-                        target: target,
-                        qualification_filter: qual
-                    })
+                    body: JSON.stringify({ channel, target, qualification_filter: qual })
                 });
                 const data = await res.json();
-                if (!res.ok) {
-                    alert(data.detail || 'Invalid subscription details.');
-                    return;
-                }
+                if (!res.ok) { alert(data.detail || 'Invalid details.'); return; }
                 closeModal('subscribeModal');
-                showToast(data.message || 'Subscribed successfully!');
-                await fetchLogs();
+                showToast(data.message || 'Subscribed!');
                 await fetchStats();
-            } catch (err) {
-                alert('Failed to register subscription.');
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = '<span>Subscribe for Notifications</span>';
-            }
+            } catch (err) { alert('Failed to subscribe.'); }
+            finally { btn.disabled = false; btn.textContent = 'Subscribe'; }
         }
 
         async function testTelegramLive() {
             const target = document.getElementById('targetInput').value.trim();
             const resBox = document.getElementById('tgTestResult');
             const btn = document.getElementById('tgTestBtn');
-
-            if (!target) {
-                alert('Please enter your Telegram chat ID or @channel_name in the input above first.');
-                return;
-            }
-
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i> Testing Connection...';
-            resBox.classList.add('hidden');
-
+            if (!target) return alert('Enter a Telegram Chat ID or @channel first.');
+            btn.disabled = true; btn.textContent = 'Sending...';
             try {
-                const res = await fetch('/api/telegram/test', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ chat_id: target })
-                });
+                const res = await fetch('/api/telegram/test', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ chat_id: target }) });
                 const data = await res.json();
                 resBox.classList.remove('hidden');
-
-                if (data.success) {
-                    resBox.className = 'p-3 rounded-xl text-xs bg-emerald-50 border border-emerald-200 text-emerald-900 space-y-1';
-                    resBox.innerHTML = `
-                        <p class="font-bold"><i class="fa-solid fa-circle-check text-emerald-600 mr-1"></i> Success!</p>
-                        <p>${data.message}</p>
-                    `;
-                } else if (data.status === 'TOKEN_MISSING') {
-                    resBox.className = 'p-3 rounded-xl text-xs bg-amber-50 border border-amber-200 text-amber-900 space-y-1.5';
-                    resBox.innerHTML = `
-                        <p class="font-bold"><i class="fa-solid fa-triangle-exclamation text-amber-600 mr-1"></i> Bot Token Not Set</p>
-                        <p>${data.message}</p>
-                    `;
-                } else {
-                    resBox.className = 'p-3 rounded-xl text-xs bg-rose-50 border border-rose-200 text-rose-900 space-y-1.5';
-                    resBox.innerHTML = `
-                        <p class="font-bold"><i class="fa-solid fa-circle-xmark text-rose-600 mr-1"></i> Telegram Delivery Error</p>
-                        <p>${data.message || (data.error_from_telegram && data.error_from_telegram.description) || 'Failed'}</p>
-                        ${data.troubleshooting ? `<p class="text-[10px] text-slate-600 italic">${data.troubleshooting}</p>` : ''}
-                    `;
-                }
-            } catch(e) {
-                resBox.classList.remove('hidden');
-                resBox.className = 'p-3 rounded-xl text-xs bg-rose-50 border border-rose-200 text-rose-900';
-                resBox.innerHTML = `<p class="font-bold">Error:</p><p>${e.message}</p>`;
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = '<i class="fa-brands fa-telegram text-sky-500"></i> <span>Send Test Dispatch to Telegram</span>';
-            }
+                resBox.className = data.success ? 'p-3 rounded-2xl text-xs bg-emerald-50 text-emerald-900' : 'p-3 rounded-2xl text-xs bg-rose-50 text-rose-900';
+                resBox.textContent = data.message || (data.error_from_telegram && data.error_from_telegram.description) || 'Failed';
+            } catch(e) { resBox.classList.remove('hidden'); resBox.textContent = e.message; }
+            finally { btn.disabled = false; btn.textContent = 'Send Test Telegram Message'; }
         }
 
         function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
         function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
-
         function showToast(msg) {
             const t = document.getElementById('toast');
             document.getElementById('toastMsg').textContent = msg;
             t.classList.remove('hidden');
-            setTimeout(() => t.classList.add('hidden'), 3500);
+            setTimeout(() => t.classList.add('hidden'), 3000);
         }
 
         function shareVacancyToWhatsApp(id) {
             const v = allVacancies.find(item => String(item.id) === String(id));
             if (!v) return;
-            const bondStatus = v.bond_years === 0 ? 'No Service Bond' : v.bond_penalty_amount;
-            const message = `🩺 *MedAlerts Opportunity*\n\n` +
-                `📌 *${v.title}*\n` +
-                `🏢 ${v.organization} (${v.state})\n` +
-                `🎓 Qual: *${v.qualification}* | Seats: *${v.total_posts}*\n` +
-                `⚖️ Bond: *${bondStatus}*\n` +
-                `⏰ Last Date: *${v.last_date || 'Check Notice'}*\n\n` +
-                `🔗 Verify eligibility & apply: ${window.location.origin}/onboarding`;
+            const message = `🩺 *${v.title}*\n🏢 ${v.organization} (${v.state})\n👥 ${v.total_posts} Seats | Due: ${v.last_date || 'Check Notice'}\n🔗 ${window.location.origin}/onboarding`;
             window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');
         }
 
         function saveKitState() {
             const state = {};
-            document.querySelectorAll('#walkinChecklist input[type="checkbox"]').forEach(cb => {
-                state[cb.dataset.kit] = cb.checked;
-            });
+            document.querySelectorAll('#walkinChecklist input[type="checkbox"]').forEach(cb => { state[cb.dataset.kit] = cb.checked; });
             localStorage.setItem('med_walkin_kit', JSON.stringify(state));
         }
-
         function loadKitState() {
             try {
                 const state = JSON.parse(localStorage.getItem('med_walkin_kit') || '{}');
-                document.querySelectorAll('#walkinChecklist input[type="checkbox"]').forEach(cb => {
-                    if (typeof state[cb.dataset.kit] === 'boolean') cb.checked = state[cb.dataset.kit];
-                });
+                document.querySelectorAll('#walkinChecklist input[type="checkbox"]').forEach(cb => { if (typeof state[cb.dataset.kit] === 'boolean') cb.checked = state[cb.dataset.kit]; });
             } catch (e) {}
         }
 
@@ -965,45 +594,36 @@
         }
         function isTracked(id) { return Boolean(getTrackedMap()[id]); }
         function updateTrackerBadge() {
-            const count = Object.keys(getTrackedMap()).length;
             const badge = document.getElementById('trackerCountBadge');
-            if (badge) badge.textContent = count;
+            if (badge) badge.textContent = Object.keys(getTrackedMap()).length;
         }
         function toggleTrackVacancy(id) {
             const map = getTrackedMap();
             const v = allVacancies.find(x => String(x.id) === String(id));
-            if (map[id]) {
-                delete map[id];
-                showToast('Removed from Application Tracker');
-            } else if (v) {
-                map[id] = { title: v.title, org: v.organization, last_date: v.last_date, apply_url: v.apply_url, status: 'Saved' };
-                showToast('Saved to Application Tracker');
-            }
+            if (map[id]) { delete map[id]; showToast('Removed from Saved'); }
+            else if (v) { map[id] = { title: v.title, org: v.organization, last_date: v.last_date, status: 'Saved' }; showToast('Saved'); }
             localStorage.setItem('med_app_tracker', JSON.stringify(map));
             updateTrackerBadge();
             applyFilters();
-        }
-        function escapeHtml(str) {
-            return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
         }
         function openTrackerModal() {
             const map = getTrackedMap();
             const container = document.getElementById('trackerListContainer');
             const entries = Object.entries(map);
             if (entries.length === 0) {
-                container.innerHTML = '<p class="text-center text-slate-400 py-8">No circulars saved yet. Click the bookmark icon on any vacancy card to track it here.</p>';
+                container.innerHTML = '<p class="text-center text-[#86868B] py-8">No saved jobs yet. Tap the bookmark icon on any card.</p>';
             } else {
                 container.innerHTML = entries.map(([id, item]) => `
-                    <div class="p-3.5 bg-slate-50 border border-slate-200 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div class="p-3.5 bg-[#F5F5F7] rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                         <div>
-                            <p class="font-bold text-slate-900">${escapeHtml(item.title)}</p>
-                            <p class="text-[11px] text-slate-500">${escapeHtml(item.org)} • Due: ${escapeHtml(item.last_date || 'N/A')}</p>
+                            <p class="font-bold text-[#1D1D1F]">${escapeHtml(item.title)}</p>
+                            <p class="text-[11px] text-[#6E6E73]">${escapeHtml(item.org)} • Due ${escapeHtml(item.last_date || 'Soon')}</p>
                         </div>
                         <div class="flex items-center gap-2 shrink-0">
-                            <select onchange="updateTrackStatus('${escapeHtml(id)}', this.value)" class="px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg text-[11px] font-semibold">
-                                ${['Saved', 'Form Submitted', 'Admit Card / Docs Ready', 'Interview Done'].map(st => `<option value="${st}" ${item.status === st ? 'selected' : ''}>${st}</option>`).join('')}
+                            <select onchange="updateTrackStatus('${escapeHtml(id)}', this.value)" class="px-2.5 py-1.5 bg-white rounded-xl text-[11px] font-semibold outline-none">
+                                ${['Saved', 'Form Submitted', 'Admit Card Ready', 'Interview Done'].map(st => `<option value="${st}" ${item.status === st ? 'selected' : ''}>${st}</option>`).join('')}
                             </select>
-                            <button onclick="removeTracked('${escapeHtml(id)}')" class="px-2 py-1.5 text-rose-600 hover:bg-rose-50 rounded-lg"><i class="fa-solid fa-trash-can"></i></button>
+                            <button onclick="removeTracked('${escapeHtml(id)}')" class="w-7 h-7 rounded-full bg-white text-rose-600 flex items-center justify-center"><i class="fa-solid fa-trash-can text-[10px]"></i></button>
                         </div>
                     </div>
                 `).join('');
@@ -1012,7 +632,7 @@
         }
         function updateTrackStatus(id, status) {
             const map = getTrackedMap();
-            if (map[id]) { map[id].status = status; localStorage.setItem('med_app_tracker', JSON.stringify(map)); showToast('Status updated: ' + status); }
+            if (map[id]) { map[id].status = status; localStorage.setItem('med_app_tracker', JSON.stringify(map)); showToast('Updated: ' + status); }
         }
         function removeTracked(id) {
             const map = getTrackedMap();
@@ -1021,15 +641,6 @@
             updateTrackerBadge();
             openTrackerModal();
             applyFilters();
-        }
-        async function flagVacancy(id) {
-            try {
-                const res = await fetch(`/api/vacancies/${id}/flag`, { method: 'POST' });
-                const data = await res.json();
-                showToast(data.message || 'Flagged for verification.');
-            } catch (e) {
-                showToast('Could not submit flag.');
-            }
         }
 
         document.getElementById('searchInput').addEventListener('input', applyFilters);

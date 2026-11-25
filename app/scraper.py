@@ -1,3 +1,4 @@
+import json
 import logging
 import re
 from datetime import datetime, timedelta
@@ -9,6 +10,7 @@ from sqlalchemy.orm import Session
 
 from .models import Vacancy
 from .notifier import Notifier
+from .pdf_parser import GovtNotificationPDFParser
 
 logger = logging.getLogger("medalerts.scraper")
 
@@ -282,6 +284,7 @@ class LiveGazetteScraper:
                 return cls._parse_wbhealth_hr_table(soup, source)
 
             seen_titles = set()
+            pdf_parsed_count = 0
             for a in soup.find_all("a", href=True):
                 text = " ".join(a.get_text(" ", strip=True).split())
                 if len(text) < 12:
@@ -300,24 +303,62 @@ class LiveGazetteScraper:
                 full_url = urljoin(source["url"], a["href"])
                 is_walkin = "walk-in" in low or "walk in" in low or "contract" in low
                 role_info = cls._infer_role_and_qual(text)
-                discovered.append({
+
+                entry: Dict[str, Any] = {
                     "title": text[:250],
                     "organization": source["organization"],
                     "category": "Contractual / Walk-in" if is_walkin else source["category"],
                     "state": source["state"],
                     "designation": role_info["designation"],
                     "qualification": role_info["qualification"],
-                    "total_posts": 10,
+                    "total_posts": 0,
                     "pay_scale": source["pay_scale"],
-                    "last_date": datetime.utcnow() + timedelta(days=14),
+                    "last_date": None,
+                    "exam_date": None,
                     "notification_url": full_url,
                     "apply_url": source["url"],
-                    "summary": f"Live circular discovered from {source['organization']}. Verify official PDF for exact vacancy count and deadline.",
+                    "summary": f"Live circular discovered from {source['organization']}. Open the official PDF to verify exact seat count and deadline.",
                     "selection_mode": "Walk-in Interview" if is_walkin else "Written Exam / Interview",
                     "bond_years": 0,
                     "bond_penalty_amount": "Check Official Notice",
                     "verification_status": "NEEDS_PDF_CHECK",
-                })
+                }
+
+                if ".pdf" in full_url.lower() and pdf_parsed_count < 3:
+                    pdf_parsed_count += 1
+                    try:
+                        pdf_text = GovtNotificationPDFParser.extract_from_url(full_url)
+                        parsed = GovtNotificationPDFParser.parse_notice_text(pdf_text)
+                        if parsed.get("total_posts"):
+                            entry["total_posts"] = parsed["total_posts"]
+                        if parsed.get("pay_scale"):
+                            entry["pay_scale"] = parsed["pay_scale"]
+                        if parsed.get("min_age"):
+                            entry["min_age"] = parsed["min_age"]
+                        if parsed.get("max_age"):
+                            entry["max_age"] = parsed["max_age"]
+                        if parsed.get("last_date"):
+                            entry["last_date"] = datetime.strptime(parsed["last_date"], "%Y-%m-%d")
+                        if parsed.get("exam_date"):
+                            entry["exam_date"] = datetime.strptime(parsed["exam_date"], "%Y-%m-%d")
+                        if parsed.get("selection_mode"):
+                            entry["selection_mode"] = parsed["selection_mode"]
+                        if parsed.get("bond_years"):
+                            entry["bond_years"] = parsed["bond_years"]
+                            entry["bond_penalty_amount"] = parsed["bond_penalty_amount"]
+                        if parsed.get("category_seats"):
+                            entry["category_seats_json"] = json.dumps(parsed["category_seats"])
+                        if parsed.get("application_fee"):
+                            entry["application_fee"] = parsed["application_fee"]
+                        if parsed.get("memo_number"):
+                            entry["memo_number"] = parsed["memo_number"]
+                        if parsed.get("parsed_confident"):
+                            entry["verification_status"] = "VERIFIED_PDF"
+                            entry["summary"] = f"Auto-parsed from official PDF ({parsed.get('memo_number') or source['name']}). Verify annexures before applying."
+                    except Exception as pdf_err:
+                        logger.debug(f"PDF auto-parse skipped for {full_url}: {pdf_err}")
+
+                discovered.append(entry)
                 if len(discovered) >= 5:
                     break
         except Exception as e:

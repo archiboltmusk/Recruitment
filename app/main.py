@@ -758,9 +758,20 @@ def refresh_collector(request: Request, db: Session = Depends(get_db)):
 @app.post("/api/subscribe", status_code=status.HTTP_201_CREATED)
 def subscribe(payload: SubscriptionCreate, request: Request, db: Session = Depends(get_db)):
     check_rate_limit(request, "subscribe", max_calls=10, window_sec=300)
+    channel = payload.channel.strip().lower()
+    target = payload.target.strip()
+    if channel == "telegram":
+        is_numeric = target.lstrip("-").isdigit()
+        is_channel = target.startswith("@") and len(target) >= 5
+        if not (is_numeric or is_channel):
+            raise HTTPException(
+                status_code=400,
+                detail="For Telegram alerts, enter either a numeric Chat ID (get from @userinfobot after sending /start to @MedAlertsRecruitmentBot) or a @channel_username."
+            )
+
     existing = db.query(Subscription).filter(
-        Subscription.channel == payload.channel,
-        Subscription.target == payload.target
+        Subscription.channel == channel,
+        Subscription.target == target
     ).first()
 
     if existing:
@@ -772,8 +783,8 @@ def subscribe(payload: SubscriptionCreate, request: Request, db: Session = Depen
         return {"message": "Subscription updated successfully", "id": existing.id}
 
     sub = Subscription(
-        channel=payload.channel.lower(),
-        target=payload.target,
+        channel=channel,
+        target=target,
         qualification_filter=payload.qualification_filter,
         state_filter=payload.state_filter,
         category_filter=payload.category_filter,
@@ -788,7 +799,7 @@ def subscribe(payload: SubscriptionCreate, request: Request, db: Session = Depen
 def list_subscriptions(db: Session = Depends(get_db)):
     return db.query(Subscription).all()
 
-@app.get("/api/notifications/recent")
+@app.get("/api/notifications/recent", dependencies=[Depends(verify_admin_key)])
 def list_notifications(limit: int = 15, db: Session = Depends(get_db)):
     logs = db.query(NotificationLog).order_by(NotificationLog.sent_at.desc()).limit(min(limit, 50)).all()
     return [

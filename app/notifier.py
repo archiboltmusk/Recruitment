@@ -63,6 +63,8 @@ class Notifier:
                     if not res.ok:
                         status = "FAILED"
                         details = f"Telegram API error: {res.text}"
+                        if res.status_code in (400, 403) and ("chat not found" in res.text.lower() or "blocked" in res.text.lower()):
+                            sub.is_active = False
                     else:
                         details = "Sent via Telegram Bot API"
                 except Exception as e:

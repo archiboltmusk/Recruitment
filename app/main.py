@@ -26,10 +26,12 @@ from .exam_data import EXAMS_CATALOG, EXAM_QUESTIONS
 # Thread-safe rate limiter (DB-backed with in-memory fallback) & security helpers
 _RATE_LOCK = threading.Lock()
 _RATE_BUCKETS: Dict[str, List[float]] = {}
+_EPHEMERAL_SECRET = os.urandom(32)
 APP_BASE_URL = os.getenv("APP_BASE_URL", "https://medalerts.onrender.com").rstrip("/")
 
 def check_rate_limit(request: Request, bucket: str, max_calls: int = 5, window_sec: int = 300):
-    client_ip = request.headers.get("x-forwarded-for", request.client.host if request.client else "unknown").split(",")[0].strip()
+    xff = request.headers.get("x-forwarded-for", "").strip()
+    client_ip = xff.split(",")[-1].strip() if xff else (request.client.host if request.client else "unknown")
     key = f"{bucket}:{client_ip}"
     now = time.time()
     try:
@@ -475,7 +477,8 @@ def get_exam_questions(exam_id: str):
     return {"exam": exam_meta, "questions": safe_questions}
 
 @app.post("/api/exams/check-question")
-def check_single_question(payload: CheckQuestionRequest):
+def check_single_question(payload: CheckQuestionRequest, request: Request):
+    check_rate_limit(request, "exam_check", max_calls=60, window_sec=300)
     for qs in EXAM_QUESTIONS.values():
         for q in qs:
             if q["id"] == payload.question_id:
@@ -491,7 +494,8 @@ def check_single_question(payload: CheckQuestionRequest):
     raise HTTPException(status_code=404, detail="Question not found")
 
 @app.post("/api/exams/{exam_id}/submit")
-def submit_exam(exam_id: str, payload: ExamSubmissionRequest, db: Session = Depends(get_db)):
+def submit_exam(exam_id: str, payload: ExamSubmissionRequest, request: Request, db: Session = Depends(get_db)):
+    check_rate_limit(request, "exam_submit", max_calls=10, window_sec=300)
     exam_meta, questions = _resolve_exam_and_questions(exam_id)
     if not exam_meta:
         raise HTTPException(status_code=404, detail="Exam not found")
@@ -594,8 +598,11 @@ def submit_exam(exam_id: str, payload: ExamSubmissionRequest, db: Session = Depe
     }
 
 @app.get("/api/exams-history")
-def list_exam_attempts(limit: int = 10, db: Session = Depends(get_db)):
-    rows = db.query(ExamAttempt).order_by(ExamAttempt.created_at.desc()).limit(min(limit, 50)).all()
+def list_exam_attempts(limit: int = 10, candidate_name: Optional[str] = None, db: Session = Depends(get_db)):
+    q = db.query(ExamAttempt)
+    if candidate_name and candidate_name.strip():
+        q = q.filter(ExamAttempt.candidate_name == candidate_name.strip()[:120])
+    rows = q.order_by(ExamAttempt.created_at.desc()).limit(min(limit, 50)).all()
     return [
         {
             "id": r.id,
@@ -1309,7 +1316,10 @@ async def telegram_webhook(
     x_telegram_bot_api_secret_token: Optional[str] = Header(default=None),
     db: Session = Depends(get_db),
 ):
+    token = os.getenv("TELEGRAM_BOT_TOKEN", "").strip()
     secret = os.getenv("TELEGRAM_WEBHOOK_SECRET", "").strip()
+    if token and not secret:
+        raise HTTPException(status_code=503, detail="Webhook secret not configured")
     if secret and (not x_telegram_bot_api_secret_token or not hmac.compare_digest(x_telegram_bot_api_secret_token, secret)):
         raise HTTPException(status_code=403, detail="Invalid webhook secret")
     update = await request.json()
@@ -1319,7 +1329,6 @@ async def telegram_webhook(
     if not chat_id:
         return {"ok": True, "ignored": True}
     reply = Notifier.handle_telegram_command(db, str(chat_id), text)
-    token = os.getenv("TELEGRAM_BOT_TOKEN", "").strip()
     if token:
         try:
             requests.post(
@@ -1332,15 +1341,17 @@ async def telegram_webhook(
     return {"ok": True, "reply": reply}
 
 class ProfileSyncPayload(BaseModel):
-    sync_key: str = Field(..., min_length=6, max_length=64)
+    sync_key: str = Field(..., min_length=8, max_length=64)
     payload: Dict[str, Any]
 
 def _hash_sync_key(raw_key: str) -> str:
-    return hashlib.sha256(raw_key.strip().encode("utf-8")).hexdigest()
+    env_salt = (os.getenv("SYNC_KEY_SECRET") or os.getenv("ADMIN_API_KEY") or os.getenv("TELEGRAM_BOT_TOKEN") or "").strip()
+    salt = env_salt.encode("utf-8") if env_salt else _EPHEMERAL_SECRET
+    return hmac.new(salt, raw_key.strip().encode("utf-8"), hashlib.sha256).hexdigest()
 
 @app.post("/api/profile/sync")
 def save_cloud_profile(body: ProfileSyncPayload, request: Request, db: Session = Depends(get_db)):
-    check_rate_limit(request, "profile_sync", max_calls=20, window_sec=300)
+    check_rate_limit(request, "profile_sync", max_calls=12, window_sec=300)
     hashed = _hash_sync_key(body.sync_key)
     raw_json = json.dumps(body.payload)[:100000]
     row = db.query(DoctorSyncBlob).filter(DoctorSyncBlob.sync_key == hashed).first()
@@ -1354,9 +1365,9 @@ def save_cloud_profile(body: ProfileSyncPayload, request: Request, db: Session =
 
 @app.get("/api/profile/sync/{sync_key}")
 def load_cloud_profile(sync_key: str, request: Request, db: Session = Depends(get_db)):
-    check_rate_limit(request, "profile_sync_read", max_calls=20, window_sec=300)
-    if len(sync_key.strip()) < 6:
-        raise HTTPException(status_code=400, detail="Sync key must be at least 6 characters")
+    check_rate_limit(request, "profile_sync_read", max_calls=8, window_sec=300)
+    if len(sync_key.strip()) < 8:
+        raise HTTPException(status_code=400, detail="Sync key must be at least 8 characters")
     hashed = _hash_sync_key(sync_key)
     row = db.query(DoctorSyncBlob).filter(DoctorSyncBlob.sync_key == hashed).first()
     if not row:
@@ -1383,7 +1394,8 @@ def pwa_manifest():
     return Response(content=json.dumps(manifest), media_type="application/manifest+json")
 
 def _unsub_token(sub_id: int, target: str) -> str:
-    sec = (os.getenv("ADMIN_API_KEY") or os.getenv("TELEGRAM_BOT_TOKEN") or "medalerts-unsub").encode("utf-8")
+    env_sec = (os.getenv("ADMIN_API_KEY") or os.getenv("TELEGRAM_BOT_TOKEN") or "").strip()
+    sec = env_sec.encode("utf-8") if env_sec else _EPHEMERAL_SECRET
     return hmac.new(sec, f"{sub_id}:{target}".encode("utf-8"), hashlib.sha256).hexdigest()[:24]
 
 @app.get("/api/unsubscribe")

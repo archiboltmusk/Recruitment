@@ -1,4 +1,6 @@
 import os
+import hmac
+import hashlib
 import html
 import smtplib
 from email.mime.text import MIMEText
@@ -103,7 +105,8 @@ class Notifier:
                                 "apply_url": vacancy.apply_url
                             }
                         },
-                        timeout=5
+                        timeout=5,
+                        allow_redirects=False
                     )
                     if not res.ok:
                         status = "FAILED"
@@ -116,6 +119,12 @@ class Notifier:
 
         elif sub.channel == "email":
             esc = lambda s: html.escape(str(s or ""))
+            sec = (os.getenv("ADMIN_API_KEY") or os.getenv("TELEGRAM_BOT_TOKEN") or "").encode("utf-8")
+            unsub_html = ""
+            if sec:
+                tok = hmac.new(sec, f"{sub.id}:{sub.target}".encode("utf-8"), hashlib.sha256).hexdigest()[:24]
+                unsub_url = f"{APP_BASE_URL}/api/unsubscribe?id={sub.id}&token={tok}"
+                unsub_html = f"<p style='font-size:11px;color:#666'><a href='{esc(unsub_url)}'>Unsubscribe</a></p>"
             ok, info = cls.send_email_alert(
                 to_email=sub.target,
                 subject=f"MedAlerts: {vacancy.title} ({vacancy.total_posts} Seats)",
@@ -126,6 +135,7 @@ class Notifier:
                 <p><strong>Bond:</strong> {esc(vacancy.bond_penalty_amount or 'No Bond')}</p>
                 <p><strong>Deadline:</strong> {vacancy.last_date.strftime('%d-%b-%Y') if vacancy.last_date else 'Check Notice'}</p>
                 <p><a href="{esc(vacancy.apply_url or APP_BASE_URL)}">Apply on Official Portal</a></p>
+                {unsub_html}
                 """
             )
             if not ok:
@@ -152,6 +162,52 @@ class Notifier:
             if cls.send_to_subscription(db, sub, vacancy):
                 sent_count += 1
         return sent_count
+
+    @classmethod
+    def broadcast_corrigendum(cls, db: Session, vacancy: Vacancy, changes: list) -> int:
+        if not changes:
+            return 0
+        bot_token = os.getenv("TELEGRAM_BOT_TOKEN", "").strip()
+        subs = db.query(Subscription).filter(Subscription.is_active == True, Subscription.channel == "telegram").all()
+        esc = lambda s: html.escape(str(s or ""))
+        change_lines = "\n".join(f"• <b>{esc(c['field'])}:</b> {esc(c['old'])} → {esc(c['new'])}" for c in changes)
+        msg = (
+            f"📢 <b>CORRIGENDUM / DEADLINE UPDATE</b>\n\n"
+            f"📌 <b>{esc(vacancy.title)}</b>\n"
+            f"🏥 {esc(vacancy.organization)}\n"
+            f"{change_lines}\n\n"
+            f"🔗 <a href='{esc(vacancy.apply_url or APP_BASE_URL)}'>View Circular</a>"
+        )
+        sent = 0
+        for sub in subs:
+            status = "SUCCESS"
+            details = "Corrigendum logged"
+            if bot_token:
+                try:
+                    res = requests.post(
+                        f"https://api.telegram.org/bot{bot_token}/sendMessage",
+                        json={"chat_id": sub.target, "text": msg, "parse_mode": "HTML"},
+                        timeout=6,
+                    )
+                    if res.ok:
+                        details = "Corrigendum Telegram alert sent"
+                        sent += 1
+                    else:
+                        status = "FAILED"
+                        details = f"Corrigendum HTTP {res.status_code}"
+                except Exception as e:
+                    status = "FAILED"
+                    details = f"Corrigendum err: {e}"
+            db.add(NotificationLog(
+                vacancy_id=vacancy.id,
+                channel="telegram",
+                target=sub.target,
+                sent_at=datetime.utcnow(),
+                status=status,
+                details=details,
+            ))
+            db.commit()
+        return sent
 
     @classmethod
     def broadcast_closing_reminder(cls, db: Session, vacancy: Vacancy) -> int:

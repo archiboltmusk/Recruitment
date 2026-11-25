@@ -347,7 +347,9 @@
         }
         async function loadExamHistory() {
             try {
-                const res = await fetch('/api/exams-history?limit=5');
+                const cand = (document.getElementById('candidateNameInput')?.value || '').trim();
+                const qs = cand ? `?limit=5&candidate_name=${encodeURIComponent(cand)}` : '?limit=5';
+                const res = await fetch(`/api/exams-history${qs}`);
                 if (!res.ok) return;
                 const rows = await res.json();
                 const mistakes = getMistakeNotebook();

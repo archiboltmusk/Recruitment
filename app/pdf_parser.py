@@ -119,22 +119,33 @@ class GovtNotificationPDFParser:
             raise ValueError("Invalid or restricted URL. Access to local, private, or non-HTTP addresses is blocked.")
 
         headers = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko)"}
-        with requests.get(url, headers=headers, stream=True, timeout=12) as resp:
-            resp.raise_for_status()
-            cl = resp.headers.get("Content-Length")
-            if cl and int(cl) > MAX_PDF_SIZE_BYTES:
-                raise ValueError("PDF file size exceeds maximum permitted limit (15 MB).")
+        current_url = url
+        for _ in range(4):
+            with requests.get(current_url, headers=headers, stream=True, timeout=12, allow_redirects=False) as resp:
+                if resp.is_redirect or resp.status_code in (301, 302, 303, 307, 308):
+                    loc = resp.headers.get("Location", "")
+                    from urllib.parse import urljoin
+                    next_url = urljoin(current_url, loc)
+                    if not cls.is_safe_url(next_url):
+                        raise ValueError("Redirect target blocked by SSRF policy.")
+                    current_url = next_url
+                    continue
+                resp.raise_for_status()
+                cl = resp.headers.get("Content-Length")
+                if cl and int(cl) > MAX_PDF_SIZE_BYTES:
+                    raise ValueError("PDF file size exceeds maximum permitted limit (15 MB).")
 
-            pdf_bytes = io.BytesIO()
-            downloaded = 0
-            for chunk in resp.iter_content(chunk_size=65536):
-                if chunk:
-                    downloaded += len(chunk)
-                    if downloaded > MAX_PDF_SIZE_BYTES:
-                        raise ValueError("PDF stream exceeded 15 MB limit.")
-                    pdf_bytes.write(chunk)
+                pdf_bytes = io.BytesIO()
+                downloaded = 0
+                for chunk in resp.iter_content(chunk_size=65536):
+                    if chunk:
+                        downloaded += len(chunk)
+                        if downloaded > MAX_PDF_SIZE_BYTES:
+                            raise ValueError("PDF stream exceeded 15 MB limit.")
+                        pdf_bytes.write(chunk)
 
-            return cls.extract_text_from_bytes(pdf_bytes.getvalue())
+                return cls.extract_text_from_bytes(pdf_bytes.getvalue())
+        raise ValueError("Too many redirects while fetching PDF URL.")
 
     @classmethod
     def parse_notice_text(cls, text: str) -> Dict[str, Any]:

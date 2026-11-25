@@ -757,31 +757,36 @@ class LiveGazetteScraper:
             if not existing and nt and nt in seen_norm_titles:
                 continue
             if existing:
-                changed = False
+                changes = []
                 if item.get("last_date") and item["last_date"] != existing.last_date:
+                    old_v = existing.last_date.strftime("%Y-%m-%d") if existing.last_date else "None"
+                    new_v = item["last_date"].strftime("%Y-%m-%d")
                     db.add(CorrigendumLog(
                         vacancy_id=existing.id,
                         title=existing.title,
                         field_changed="last_date",
-                        old_value=existing.last_date.strftime("%Y-%m-%d") if existing.last_date else "None",
-                        new_value=item["last_date"].strftime("%Y-%m-%d"),
+                        old_value=old_v,
+                        new_value=new_v,
                     ))
+                    changes.append({"field": "last_date", "old": old_v, "new": new_v})
                     existing.last_date = item["last_date"]
                     existing.is_active = True
-                    changed = True
                 if item.get("total_posts") and item["total_posts"] > 0 and existing.total_posts != item["total_posts"]:
+                    old_v = str(existing.total_posts or 0)
+                    new_v = str(item["total_posts"])
                     db.add(CorrigendumLog(
                         vacancy_id=existing.id,
                         title=existing.title,
                         field_changed="total_posts",
-                        old_value=str(existing.total_posts or 0),
-                        new_value=str(item["total_posts"]),
+                        old_value=old_v,
+                        new_value=new_v,
                     ))
+                    changes.append({"field": "total_posts", "old": old_v, "new": new_v})
                     existing.total_posts = item["total_posts"]
-                    changed = True
-                if changed:
+                if changes:
                     existing.last_verified_at = now
                     db.commit()
+                    Notifier.broadcast_corrigendum(db, existing, changes)
                     corrigenda_detected += 1
                 continue
             if nt:

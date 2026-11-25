@@ -118,5 +118,37 @@ class MedAlertsSmokeTests(unittest.TestCase):
             GovtNotificationPDFParser.extract_text_from_bytes = orig
 
 
+    def test_ssrf_redirect_blocked(self):
+        import requests
+        from unittest.mock import patch, MagicMock
+        fake_resp = MagicMock()
+        fake_resp.is_redirect = True
+        fake_resp.status_code = 302
+        fake_resp.headers = {"Location": "http://localhost/admin"}
+        fake_resp.__enter__ = lambda s: s
+        fake_resp.__exit__ = lambda s, *a: False
+        with patch.object(GovtNotificationPDFParser, "is_safe_url", side_effect=[True, False]):
+            with patch.object(requests, "get", return_value=fake_resp):
+                with self.assertRaises(ValueError):
+                    GovtNotificationPDFParser.extract_from_url("https://example.com/redirect.pdf")
+
+    def test_exam_history_candidate_filter_and_corrigendum_broadcast(self):
+        from app.models import ExamAttempt, Subscription, NotificationLog
+        from app.main import list_exam_attempts
+        from app.notifier import Notifier
+        self.db.add(ExamAttempt(exam_id="e1", exam_title="CMS", candidate_name="Dr. Alice", final_score=80.0, accuracy_pct=80.0))
+        self.db.add(ExamAttempt(exam_id="e1", exam_title="CMS", candidate_name="Dr. Bob", final_score=60.0, accuracy_pct=60.0))
+        self.db.add(Subscription(channel="telegram", target="123456789", is_active=True))
+        self.db.commit()
+
+        alice_rows = list_exam_attempts(limit=5, candidate_name="Dr. Alice", db=self.db)
+        self.assertEqual(len(alice_rows), 1)
+        self.assertEqual(alice_rows[0]["candidate_name"], "Dr. Alice")
+
+        vac = self.db.query(Vacancy).first()
+        Notifier.broadcast_corrigendum(self.db, vac, [{"field": "last_date", "old": "2026-11-30", "new": "2026-12-15"}])
+        self.assertEqual(self.db.query(NotificationLog).count(), 1)
+
+
 if __name__ == "__main__":
     unittest.main()

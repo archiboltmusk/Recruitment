@@ -281,6 +281,46 @@ PORTAL_SOURCES = [
         "state": "Delhi",
         "pay_scale": "Level 10 (Non-PG JR ₹56,100+NPA) / Level 11 (SR)",
     },
+    {
+        "name": "Delhi_Health_HFW",
+        "organization": "Delhi Health & Family Welfare (GIPMER / LNH / JPCH / GGSGH)",
+        "url": "https://health.delhi.gov.in/vacancy",
+        "category": "State Govt / JR Walk-in",
+        "state": "Delhi",
+        "pay_scale": "Level 10 (₹56,100 - ₹1,77,500) + NPA & Allowances",
+    },
+    {
+        "name": "BHEL_Careers",
+        "organization": "Bharat Heavy Electricals Limited (BHEL — GDMO & PTMC)",
+        "url": "https://careers.bhel.in/",
+        "category": "Central Govt / PSU",
+        "state": "All India",
+        "pay_scale": "E-1 / E-2 Medical Executive Scale or ₹500/hr PTMC",
+    },
+    {
+        "name": "BEL_Careers",
+        "organization": "Bharat Electronics Limited (BEL — Medical Officer E-II)",
+        "url": "https://bel-india.in/job-notifications/",
+        "category": "Central Govt / PSU",
+        "state": "All India",
+        "pay_scale": "E-II Grade (₹40,000 - ₹1,40,000) + DA/Perks",
+    },
+    {
+        "name": "Tata_Memorial_TMC",
+        "organization": "Tata Memorial Centre (TMC — Mumbai / Homi Bhabha)",
+        "url": "https://tmc.gov.in/postmaster/Careers",
+        "category": "Autonomous Institute",
+        "state": "Maharashtra",
+        "pay_scale": "Level 10 / Level 11 (MO / SR) + Allowances",
+    },
+    {
+        "name": "ISRO_Careers",
+        "organization": "Indian Space Research Organisation (ISRO — Medical Officer SD)",
+        "url": "https://www.isro.gov.in/Careers.html",
+        "category": "Central Govt",
+        "state": "All India",
+        "pay_scale": "Level 11 (Medical Officer 'SD') + NPA & Perks",
+    },
 ]
 
 

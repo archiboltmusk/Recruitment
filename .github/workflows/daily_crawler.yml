@@ -33,9 +33,11 @@ jobs:
           from app.database import engine, Base, SessionLocal
           from app.collector import VacancyCollector
           from app.scraper import LiveGazetteScraper
+          from app.notifier import Notifier
           Base.metadata.create_all(bind=engine)
           db = SessionLocal()
           res = VacancyCollector.sync_sample_feed(db)
           live = LiveGazetteScraper.sync_live_portals(db)
-          print('Sync completed:', res, 'Live portals:', live)
+          digest = Notifier.broadcast_daily_digest(db)
+          print('Sync completed:', res, 'Live portals:', live, 'Digest:', digest)
           "

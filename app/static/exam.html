@@ -86,6 +86,18 @@
                 </div>
             </div>
 
+            <div id="mistakeBanner" class="hidden med-card rounded-2xl p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-l-4 border-l-rose-500">
+                <div>
+                    <h3 class="text-sm font-extrabold text-slate-900 flex items-center gap-2">
+                        <i class="fa-solid fa-book-medical text-rose-600"></i> Mistake Notebook (<span id="mistakeCountLabel">0</span> Questions)
+                    </h3>
+                    <p class="text-xs text-slate-500 mt-0.5">Questions you missed in previous mocks are saved here for rapid high-yield revision.</p>
+                </div>
+                <button onclick="startMistakeDrill()" class="px-5 py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs rounded-xl shadow transition shrink-0">
+                    Re-Practice Mistakes
+                </button>
+            </div>
+
             <div class="space-y-3.5" id="examsListContainer"></div>
         </div>
 
@@ -253,7 +265,44 @@
                 } catch(e){}
             }
             loadExams();
+            refreshMistakeBanner();
         });
+
+        function getMistakeNotebook() {
+            try { return JSON.parse(localStorage.getItem('med_mistake_notebook') || '[]'); }
+            catch (e) { return []; }
+        }
+        function refreshMistakeBanner() {
+            const list = getMistakeNotebook();
+            const banner = document.getElementById('mistakeBanner');
+            if (!banner) return;
+            if (list.length > 0) {
+                document.getElementById('mistakeCountLabel').innerText = list.length;
+                banner.classList.remove('hidden');
+            } else {
+                banner.classList.add('hidden');
+            }
+        }
+        function startMistakeDrill() {
+            const list = getMistakeNotebook();
+            if (list.length === 0) return;
+            currentExam = { id: 'mistake-notebook', title: 'Mistake Notebook Revision Drill', duration_minutes: Math.max(10, list.length * 2), total_marks: list.length, negative_marking: 0.33, cutoff_reference: Math.ceil(list.length * 0.6) };
+            questions = list;
+            currentIndex = 0;
+            userResponses = {};
+            questionStatus = {};
+            questions.forEach(q => questionStatus[q.id] = 'NOT_VISITED');
+            questionStatus[questions[0].id] = 'NOT_ANSWERED';
+            document.getElementById('lobbyView').classList.add('hidden');
+            document.getElementById('resultsView').classList.add('hidden');
+            document.getElementById('cbtView').classList.remove('hidden');
+            document.getElementById('testTimerBar').classList.remove('hidden');
+            document.getElementById('lobbyNavBtns').classList.add('hidden');
+            timeRemainingSeconds = currentExam.duration_minutes * 60;
+            startTimer();
+            renderQuestion();
+            renderPalette();
+        }
 
         async function loadExams() {
             try {
@@ -471,6 +520,39 @@
             clearInterval(timerInterval);
             const candidate = document.getElementById('candidateNameInput').value.trim() || 'Dr. Candidate';
 
+            if (currentExam.id === 'mistake-notebook') {
+                let correct = 0, wrong = 0, unattempted = 0;
+                const subject_breakdown = {};
+                const review = questions.map(q => {
+                    if (!subject_breakdown[q.subject]) subject_breakdown[q.subject] = { total: 0, correct: 0, wrong: 0, unattempted: 0 };
+                    subject_breakdown[q.subject].total++;
+                    const user_choice = userResponses[q.id];
+                    const is_attempted = user_choice !== undefined;
+                    const is_correct = is_attempted && user_choice === q.correct_option;
+                    if (!is_attempted) { unattempted++; subject_breakdown[q.subject].unattempted++; }
+                    else if (is_correct) { correct++; subject_breakdown[q.subject].correct++; }
+                    else { wrong++; subject_breakdown[q.subject].wrong++; }
+                    return { ...q, user_choice, is_attempted, is_correct };
+                });
+                const final_score = Math.max(0, +(correct - wrong * 0.33).toFixed(2));
+                const accuracy_pct = (correct + wrong) > 0 ? +((correct / (correct + wrong)) * 100).toFixed(1) : 0;
+                const qualified = final_score >= currentExam.cutoff_reference;
+                renderResultsView({
+                    candidate_name: candidate,
+                    exam_title: currentExam.title,
+                    final_score,
+                    correct,
+                    wrong,
+                    unattempted,
+                    accuracy_pct,
+                    qualified,
+                    status_label: qualified ? 'MASTERED MISTAKES' : 'KEEP REVISING',
+                    subject_breakdown,
+                    review
+                });
+                return;
+            }
+
             try {
                 const res = await fetch(`/api/exams/${currentExam.id}/submit`, {
                     method: 'POST',
@@ -485,6 +567,21 @@
             } catch (err) {
                 alert('Submission failed: ' + err.message);
             }
+        }
+
+        function saveMistakesFromReview(review) {
+            let notebook = getMistakeNotebook();
+            const map = {};
+            notebook.forEach(q => map[q.id] = q);
+            (review || []).forEach(q => {
+                if (q.is_attempted && !q.is_correct) {
+                    map[q.id] = { id: q.id, subject: q.subject, text: q.text, options: q.options, correct_option: q.correct_option, explanation: q.explanation, citation: q.citation };
+                } else if (q.is_correct && map[q.id]) {
+                    delete map[q.id];
+                }
+            });
+            localStorage.setItem('med_mistake_notebook', JSON.stringify(Object.values(map)));
+            refreshMistakeBanner();
         }
 
         function renderResultsView(res) {
@@ -509,6 +606,7 @@
             document.getElementById('resWrong').innerText = res.wrong;
             document.getElementById('resUnattempted').innerText = res.unattempted;
             document.getElementById('resAccuracy').innerText = `${res.accuracy_pct}%`;
+            saveMistakesFromReview(res.review);
 
             // Subject Breakdown Bars
             const subjBox = document.getElementById('subjectBreakdownBox');

@@ -61,10 +61,23 @@ def mask_target(target: str) -> str:
     return f"{target[:4]}***{target[-2:]}"
 
 # Initialize database schema safely
-try:
+def ensure_schema():
+    from sqlalchemy import text
     Base.metadata.create_all(bind=engine)
+    with engine.begin() as conn:
+        for col_sql in (
+            "ALTER TABLE vacancies ADD COLUMN flag_count INTEGER DEFAULT 0",
+            "ALTER TABLE vacancies ADD COLUMN last_verified_at TIMESTAMP",
+        ):
+            try:
+                conn.execute(text(col_sql))
+            except Exception:
+                pass
+
+try:
+    ensure_schema()
 except Exception as e:
-    print(f"Warning: Initial Base.metadata.create_all failed: {e}")
+    print(f"Warning: Initial schema check failed: {e}")
 
 app = FastAPI(
     title="MedAlerts - Medical Officer Vacancies Aggregator",
@@ -141,6 +154,21 @@ app.mount("/static", StaticFiles(directory=static_dir), name="static")
 @app.on_event("startup")
 def on_startup():
     from .database import SessionLocal
+    from sqlalchemy import text
+    try:
+        # Ensure new columns exist on already-provisioned tables
+        with engine.begin() as conn:
+            for col_sql in (
+                "ALTER TABLE vacancies ADD COLUMN flag_count INTEGER DEFAULT 0",
+                "ALTER TABLE vacancies ADD COLUMN last_verified_at TIMESTAMP",
+            ):
+                try:
+                    conn.execute(text(col_sql))
+                except Exception:
+                    pass
+    except Exception as e:
+        print(f"Schema migration check: {e}")
+
     try:
         db = SessionLocal()
         try:
@@ -564,6 +592,8 @@ def list_vacancies(
             "notification_url": v.notification_url,
             "apply_url": v.apply_url,
             "summary": v.summary,
+            "flag_count": v.flag_count or 0,
+            "last_verified_at": v.last_verified_at.strftime("%d %b %Y") if v.last_verified_at else (v.created_at.strftime("%d %b %Y") if v.created_at else "Today"),
             "created_at": v.created_at.strftime("%Y-%m-%d") if v.created_at else None
         })
 
@@ -902,3 +932,17 @@ def test_telegram_broadcast(payload: TelegramTestRequest, request: Request):
             }
     except Exception as e:
         return {"success": False, "status": "SEND_ERROR", "message": str(e)}
+
+@app.post("/api/vacancies/{vacancy_id}/flag")
+def flag_vacancy_issue(vacancy_id: str, request: Request, db: Session = Depends(get_db)):
+    check_rate_limit(request, "flag_vacancy", max_calls=10, window_sec=300)
+    v = db.query(Vacancy).filter(Vacancy.id == vacancy_id).first()
+    if not v:
+        raise HTTPException(status_code=404, detail="Vacancy not found")
+    v.flag_count = (v.flag_count or 0) + 1
+    db.commit()
+    return {"message": "Circular flagged for verification review", "flag_count": v.flag_count}
+
+@app.post("/api/telegram/broadcast-digest", dependencies=[Depends(verify_admin_key)])
+def trigger_telegram_digest(db: Session = Depends(get_db)):
+    return Notifier.broadcast_daily_digest(db)

@@ -196,7 +196,7 @@ class GovtNotificationPDFParser:
         qual_sec_m = re.search(r"(?:essential\s+)?qualifications?\s*[:\-].{0,350}", text, re.IGNORECASE | re.DOTALL)
         qual_scope = f"{header_text}\n{qual_sec_m.group(0) if qual_sec_m else ''}"
         is_acad_jr = bool(re.search(r"\b(?:academic\s+(?:jr\.?|junior\s+resident)|(?:jr\.?|junior\s+resident)\s*\(?\s*academic\s*\)?)\b", qual_scope, re.IGNORECASE)) and not re.search(r"\bnon[-\s]*academic\b", qual_scope, re.IGNORECASE)
-        has_pg_header = is_acad_jr or bool(re.search(r"\b(?:MD/MS|M\.?D\.?|M\.?S\.?|DNB|D\.?M\.?|M\.?Ch\.?|PG\s+Degree|PG\s+Diploma|Specialist|Senior\s+Resident|Sr\.?\s*Resident|Consultant)\b", qual_scope, re.IGNORECASE))
+        has_pg_header = is_acad_jr or bool(re.search(r"\b(?:MD/MS|M\.?D\.?|M\.?S\.?|DNB|DrNB|D\.?M\.?|M\.?Ch\.?|PG\s+Degree|PG\s+Diploma|DGO|DCH|DMRD|Specialist|Senior\s+Resident|Sr\.?\s*Resident|Consultant)\b", qual_scope, re.IGNORECASE))
         has_mbbs_header = (not is_acad_jr) and bool(re.search(r"\b(?:MBBS|GDMO|CGDMO|Junior\s+Resident|Jr\.?\s*Resident|\bJR\b|Non[-\s]*Academic|House\s*Staff|RMO|Clinical\s+Tutor|Tutor|Demonstrator)\b", qual_scope, re.IGNORECASE))
         if has_pg_header and not has_mbbs_header:
             extracted["qualification"] = "MD/MS"
@@ -204,13 +204,13 @@ class GovtNotificationPDFParser:
             extracted["qualification"] = "MBBS"
         elif has_pg_header and has_mbbs_header:
             # If Essential Qualification mentions "MBBS with MD/MS/DNB", it requires PG
-            if qual_sec_m and re.search(r"\b(?:with\s+(?:MD|MS|DNB|PG)|MD/MS|DNB)\b", qual_sec_m.group(0), re.IGNORECASE) and not re.search(r"\b(?:or\s+MBBS|GDMO|Junior\s+Resident)\b", qual_sec_m.group(0), re.IGNORECASE):
+            if qual_sec_m and re.search(r"\b(?:with\s+(?:MD|MS|DNB|DrNB|PG)|MD/MS|DNB|DrNB)\b", qual_sec_m.group(0), re.IGNORECASE) and not re.search(r"\b(?:or\s+MBBS|GDMO|Junior\s+Resident)\b", qual_sec_m.group(0), re.IGNORECASE):
                 extracted["qualification"] = "MD/MS"
             else:
                 extracted["qualification"] = "MBBS / MD/MS" if re.search(r"\b(?:GDMO|CGDMO|Junior\s+Resident|Medical\s+Officer)\b", qual_scope, re.IGNORECASE) else "MD/MS"
-        elif re.search(r"\b(?:MD|MS|DNB|Specialist|Senior\s+Resident|Sr\.?\s*Resident|Consultant)\b", text, re.IGNORECASE):
+        elif re.search(r"\b(?:MD|MS|DNB|DrNB|DGO|DCH|DMRD|Specialist|Senior\s+Resident|Sr\.?\s*Resident|Consultant)\b", text, re.IGNORECASE):
             extracted["qualification"] = "MD/MS"
-        elif re.search(r"\b(?:BAMS|BHMS|BUMS|AYUSH)\b", text, re.IGNORECASE):
+        elif re.search(r"\b(?:BAMS|BHMS|BUMS|BSMS|BNYS|AYUSH)\b", text, re.IGNORECASE):
             extracted["qualification"] = "AYUSH"
         elif re.search(r"\b(?:BDS|MDS|Dental)\b", text, re.IGNORECASE):
             extracted["qualification"] = "BDS"

@@ -16,7 +16,7 @@ from .pdf_parser import GovtNotificationPDFParser
 logger = logging.getLogger("medalerts.scraper")
 
 MEDICAL_PATTERN = re.compile(
-    r"\b(medical officer|gdmo|cms|combined medical|imo|insurance medical|senior resident|sr\.?\s*resident|junior resident|jr\.?\s*resident|\bjr\b|rmo|rmo-cum-tutor|clinical tutor|tutor|demonstrator|specialist|part-time specialist|super specialist|house staff|house staffship|house-staff|ptmo|health officer|doctor|ayush|bams|bhms|bums|bsms|homeopath(?:y|ic)?|ayurved(?:a|ic)?|nuhm|uhwc|walk-in|contract medical|cmp)\b",
+    r"\b(medical officer|gdmo|cms|combined medical|imo|insurance medical|senior resident|sr\.?\s*resident|junior resident|jr\.?\s*resident|\bjr\b|rmo|rmo-cum-tutor|clinical tutor|tutor|demonstrator|specialist|part-time specialist|super specialist|associate consultant|consultant|house staff|house staffship|house-staff|ptmo|health officer|doctor|ayush|bams|bhms|bums|bsms|bnys|homeopath(?:y|ic)?|ayurved(?:a|ic)?|naturopath(?:y|ic)?|nuhm|uhwc|walk-in|contract medical|cmp)\b",
     re.IGNORECASE,
 )
 
@@ -26,7 +26,7 @@ NON_JOB_PATTERN = re.compile(
 )
 
 PG_ROLE_PATTERN = re.compile(
-    r"\b(?:md\s*/\s*ms|m\.?\s*d\.?|m\.?\s*s\.?|dnb|d\.?\s*m\.?|m\.?\s*ch\.?|pg\s+degree|pg\s+diploma|post\s*graduate|post[-\s]*doctoral|fellowships?|icog|senior\s+residents?|sr\.?\s*residents?|specialists?|super\s*specialists?|consultants?|assistant\s+professors?|associate\s+professors?|professors?|faculty|gyna?ecologists?|obstetricians?|surgeons?|physicians?|pa?ediatricians?|radiologists?|pathologists?|ana?esthetists?|ana?esthesiologists?|ophthalmologists?|dermatologists?|psychiatrists?|orthopaed(?:ic|ician)s?|cardiologists?|neurologists?|oncologists?|nephrologists?|urologists?|microbiologists?|biochemists?)\b",
+    r"\b(?:md\s*/\s*ms|m\.?\s*d\.?|m\.?\s*s\.?|dnb|drnb|d\.?\s*m\.?|m\.?\s*ch\.?|pg\s+degree|pg\s+diploma|dgo|dch|dmrd|dlo|doms|dpm|dvd|dtcd|post\s*graduate|post[-\s]*doctoral|fellowships?|icog|senior\s+residents?|sr\.?\s*residents?|specialists?|super\s*specialists?|associate\s+consultants?|consultants?|assistant\s+professors?|associate\s+professors?|professors?|head\s+of\s+department|\bhod\b|faculty|gyna?ecologists?|obstetricians?|surgeons?|physicians?|pa?ediatricians?|radiologists?|pathologists?|ana?esthetists?|ana?esthesiologists?|ophthalmologists?|dermatologists?|psychiatrists?|orthopaed(?:ic|ician)s?|cardiologists?|neurologists?|oncologists?|nephrologists?|urologists?|microbiologists?|biochemists?)\b",
     re.IGNORECASE,
 )
 
@@ -385,7 +385,7 @@ class LiveGazetteScraper:
     @staticmethod
     def _infer_role_and_qual(text: str) -> Dict[str, str]:
         low = text.lower()
-        if "ayush" in low or "ayurved" in low or "homeopath" in low or "unani" in low or "siddha" in low or re.search(r"\b(?:bams|bhms|bums|bsms)\b", low):
+        if "ayush" in low or "ayurved" in low or "homeopath" in low or "unani" in low or "siddha" in low or "naturopath" in low or re.search(r"\b(?:bams|bhms|bums|bsms|bnys)\b", low):
             return {"qualification": "AYUSH", "designation": "AYUSH / BHMS / BAMS Medical Officer"}
         if re.search(r"\b(?:bds|mds|dental|dentistry)\b", low):
             return {"qualification": "BDS", "designation": "Dental Surgeon"}

@@ -128,10 +128,18 @@
 
                 <div class="flex flex-wrap sm:flex-nowrap items-center gap-2">
                     <select id="qualificationFilter" onchange="applyFilters()" class="px-3.5 py-2.5 bg-[#F5F5F7] rounded-xl text-xs font-medium text-[#1D1D1F] outline-none">
-                        <option value="MBBS" selected>MBBS</option>
-                        <option value="MD/MS">MD / MS / DNB</option>
-                        <option value="AYUSH">AYUSH / BHMS / BAMS</option>
+                        <option value="MBBS" selected>MBBS / General Practice</option>
+                        <option value="MD/MS">PG / Super-Specialty (MD, MS, DNB, Diploma)</option>
+                        <option value="AYUSH">AYUSH (BAMS, BHMS, BUMS, BSMS)</option>
                         <option value="">All 3 Groups</option>
+                    </select>
+                    <select id="roleFilter" onchange="applyFilters()" class="px-3.5 py-2.5 bg-[#F5F5F7] rounded-xl text-xs font-medium text-[#1D1D1F] outline-none">
+                        <option value="">All Roles</option>
+                        <option value="gdmo_mo">GDMO / Medical Officer</option>
+                        <option value="jr_housestaff">JR / House Staff</option>
+                        <option value="rmo_tutor">RMO / Tutor / Demonstrator</option>
+                        <option value="sr_specialist">SR / Specialist / Consultant</option>
+                        <option value="faculty">Professor / Faculty</option>
                     </select>
 
                     <select id="categoryFilter" onchange="applyFilters()" class="px-3.5 py-2.5 bg-[#F5F5F7] rounded-xl text-xs font-medium text-[#1D1D1F] outline-none">
@@ -429,20 +437,37 @@
             } catch (err) { console.error(err); }
         }
 
+        const SEARCH_ALIASES = {
+            'jr': 'junior resident',
+            'sr': 'senior resident',
+            'mo': 'medical officer',
+            'gdmo': 'general duty medical officer',
+            'rmo': 'resident medical officer',
+            'ptmo': 'part-time medical officer'
+        };
+
         function applyFilters() {
-            const q = document.getElementById('searchInput').value.toLowerCase();
+            const rawQ = document.getElementById('searchInput').value.trim().toLowerCase();
+            const qAlias = SEARCH_ALIASES[rawQ] || '';
             const qual = document.getElementById('qualificationFilter').value;
+            const role = document.getElementById('roleFilter') ? document.getElementById('roleFilter').value : '';
             const cat = document.getElementById('categoryFilter').value;
             const bond = document.getElementById('bondFilter').value;
             const sortBy = document.getElementById('sortFilter') ? document.getElementById('sortFilter').value : 'closing';
 
             const filtered = allVacancies.filter(v => {
-                const matchSearch = !q || 
-                    v.title.toLowerCase().includes(q) || 
-                    v.organization.toLowerCase().includes(q) || 
-                    v.designation.toLowerCase().includes(q) ||
-                    v.state.toLowerCase().includes(q);
+                const hay = `${v.title} ${v.organization} ${v.designation} ${v.state}`.toLowerCase();
+                const matchSearch = !rawQ || hay.includes(rawQ) || (qAlias && hay.includes(qAlias));
                 const matchQual = !qual || (qual === 'MBBS_ONLY' ? v.qualification === 'MBBS' : v.qualification.includes(qual));
+                let matchRole = true;
+                if (role) {
+                    const rText = `${v.title} ${v.designation}`.toLowerCase();
+                    if (role === 'gdmo_mo') matchRole = /\b(gdmo|cgdmo|medical officer|health officer|ptmo|non-specialist)\b/.test(rText);
+                    else if (role === 'jr_housestaff') matchRole = /\b(junior resident|jr\.?\s*resident|jr|house[-\s]?staff)\b/.test(rText);
+                    else if (role === 'rmo_tutor') matchRole = /\b(rmo|tutor|demonstrator)\b/.test(rText);
+                    else if (role === 'sr_specialist') matchRole = /\b(senior resident|sr\.?\s*resident|specialist|consultant)\b/.test(rText) && !/\bnon[-\s]*specialist\b/.test(rText);
+                    else if (role === 'faculty') matchRole = /\b(professor|faculty|hod|head of department)\b/.test(rText);
+                }
                 const matchCat = !cat || (
                     v.category.toLowerCase().includes(cat.toLowerCase()) ||
                     v.organization.toLowerCase().includes(cat.toLowerCase()) ||
@@ -450,7 +475,7 @@
                     (v.selection_mode && v.selection_mode.toLowerCase().includes(cat.toLowerCase()))
                 );
                 const matchBond = !bond || (bond === 'no_bond' && v.bond_years === 0);
-                return matchSearch && matchQual && matchCat && matchBond;
+                return matchSearch && matchQual && matchRole && matchCat && matchBond;
             });
 
             filtered.sort((a, b) => {
@@ -621,6 +646,7 @@
         function resetFilters() {
             document.getElementById('searchInput').value = '';
             document.getElementById('qualificationFilter').value = 'MBBS';
+            if (document.getElementById('roleFilter')) document.getElementById('roleFilter').value = '';
             document.getElementById('categoryFilter').value = '';
             document.getElementById('bondFilter').value = '';
             if (document.getElementById('sortFilter')) document.getElementById('sortFilter').value = 'closing';

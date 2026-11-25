@@ -3,6 +3,32 @@ from typing import List, Dict, Any
 
 EXAMS_CATALOG: List[Dict[str, Any]] = [
     {
+        "id": "upsc-cms-2026-paper-1-authentic",
+        "title": "UPSC CMS 2026 Official Paper-I (Authentic PYQ Set)",
+        "subtitle": "From Official Booklet T.B.C. NTDC-O-KPMS (General Medicine & Pediatrics)",
+        "total_questions": 17,
+        "total_marks": 250,
+        "duration_minutes": 45,
+        "negative_marking": 0.33,
+        "subjects": ["General Medicine", "Pediatrics"],
+        "year": "2026 Official UPSC Paper",
+        "difficulty": "Authentic UPSC Standard",
+        "cutoff_reference": 130
+    },
+    {
+        "id": "upsc-cms-2026-paper-2-authentic",
+        "title": "UPSC CMS 2026 Official Paper-II (Authentic PYQ Set)",
+        "subtitle": "From Official Booklet T.B.C. NTDC-T-GSPO (Surgery, OBG & PSM)",
+        "total_questions": 10,
+        "total_marks": 250,
+        "duration_minutes": 30,
+        "negative_marking": 0.33,
+        "subjects": ["General Surgery", "Obstetrics & Gynaecology", "Preventive & Social Medicine"],
+        "year": "2026 Official UPSC Paper",
+        "difficulty": "Authentic UPSC Standard",
+        "cutoff_reference": 132
+    },
+    {
         "id": "upsc-cms-paper-1",
         "title": "UPSC Combined Medical Services (CMS) — Paper 1",
         "subtitle": "General Medicine (96 Qs) & Pediatrics (24 Qs)",
@@ -670,6 +696,390 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
             "correct_option": 0,
             "explanation": "According to the National Snakebite Management Protocol of India, in patients with systemic envenomation (hemotoxicity or neurotoxicity), the initial dose is 10 vials of Lyophilized Polyvalent Anti-Snake Venom (ASV) reconstituted in 500 mL of normal saline and infused intravenously over 1 hour.",
             "citation": "National Protocol for Management of Snakebites, MoHFW India"
+        }
+    ],
+
+    "upsc-cms-2026-paper-1-authentic": [
+        {
+            "id": "cms26-p1-01",
+            "subject": "General Medicine",
+            "text": "A 35-year-old man presented with serial blood pressure recordings of above 140/90 mmHg. Which one of the following signs is NOT a clue for an underlying cause of secondary hypertension?",
+            "options": [
+                "Radio-femoral delay",
+                "Enlarged kidneys",
+                "Bull neck and buffalo hump",
+                "Vitiligo"
+            ],
+            "correct_option": 3,
+            "explanation": "Radio-femoral delay suggests Coarctation of Aorta; enlarged kidneys suggest Polycystic Kidney Disease; bull neck & buffalo hump suggest Cushing's syndrome. Vitiligo is an autoimmune skin depigmentation disorder, not a clue for secondary hypertension.",
+            "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Q.1) | Harrison's Principles of Internal Medicine"
+        },
+        {
+            "id": "cms26-p1-02",
+            "subject": "General Medicine",
+            "text": "A 71-year-old male presents with headache, dizziness, nausea with palpitations. He is already on treatment for diabetes and hypertension, and BP is 220/140 mmHg. Consider: 1. This is a hypertensive emergency manageable with IV sodium nitroprusside. 2. Immediate normalization of BP should be the target. 3. Secondary causes like renovascular disease are uncommon here. Which is/are correct?",
+            "options": [
+                "1 only",
+                "1, 2 and 3",
+                "2 and 3 only",
+                "1 and 3 only"
+            ],
+            "correct_option": 0,
+            "explanation": "BP >180/120 with acute symptoms/end-organ signs is a hypertensive emergency treated with IV vasodilators like sodium nitroprusside/labetalol. Rapid complete normalization risks cerebral/renal ischemia (target 20-25% reduction in hour 1), and secondary renovascular causes are actually common.",
+            "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Q.2) | Harrison's Chapter on Hypertensive Vascular Disease"
+        },
+        {
+            "id": "cms26-p1-03",
+            "subject": "General Medicine",
+            "text": "Consider the following statements regarding Takotsubo cardiomyopathy: 1. There is acute right ventricular apical dilatation. 2. It can be precipitated by acute emotional stress and is frequently associated with a neuro-psychiatric disorder. 3. Symptoms and ECG findings often mimic acute STEMI. 4. Ventriculography shows normal LV and RV apical ballooning. Which statements are correct?",
+            "options": [
+                "1 and 2",
+                "2 and 3",
+                "1 and 4",
+                "3 and 4"
+            ],
+            "correct_option": 1,
+            "explanation": "Takotsubo ('broken heart') cardiomyopathy causes transient LEFT ventricular apical ballooning (not RV), is triggered by intense emotional/physical stress, and classically mimics acute anterior STEMI on ECG and presentation.",
+            "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Q.4) | Harrison's Cardiology"
+        },
+        {
+            "id": "cms26-p1-04",
+            "subject": "General Medicine",
+            "text": "'Tumour Plop' is a characteristic auscultatory finding seen in which one of the following conditions?",
+            "options": [
+                "Atrial myxoma",
+                "Arrhythmogenic ventricular cardiomyopathy",
+                "Constrictive pericarditis",
+                "Dilated cardiomyopathy"
+            ],
+            "correct_option": 0,
+            "explanation": "An early diastolic 'tumour plop' occurs when a pedunculated left atrial myxoma prolapses across the mitral valve orifice into the left ventricle during diastole.",
+            "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Q.6) | Braunwald's Heart Disease"
+        },
+        {
+            "id": "cms26-p1-05",
+            "subject": "General Medicine",
+            "text": "Retinal ischaemia, flame-shaped haemorrhages and cotton-wool exudates are fundoscopy findings in which of the following grades of hypertensive retinopathy? (1. Grade 1, 2. Grade 2, 3. Grade 3, 4. Grade 4)",
+            "options": [
+                "1 and 2 only",
+                "3 and 4 only",
+                "2, 3 and 4 only",
+                "1, 2, 3 and 4"
+            ],
+            "correct_option": 1,
+            "explanation": "Under the Keith-Wagener-Barker classification, Grade 3 features retinal hemorrhages, cotton-wool spots (ischemia), and hard exudates; Grade 4 adds papilledema on top of Grade 3 findings.",
+            "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Q.7)"
+        },
+        {
+            "id": "cms26-p1-06",
+            "subject": "General Medicine",
+            "text": "Aschoff Nodules are a pathognomonic cardiac finding in which one of the following conditions?",
+            "options": [
+                "Rheumatic carditis",
+                "Infective endocarditis",
+                "Rheumatoid arthritis",
+                "Takayasu's arteritis"
+            ],
+            "correct_option": 0,
+            "explanation": "Aschoff bodies (perivascular granulomas with Anitschkow caterpillar cells) in the myocardium are pathognomonic of acute rheumatic carditis.",
+            "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Q.8) | Robbins Basic Pathology"
+        },
+        {
+            "id": "cms26-p1-07",
+            "subject": "General Medicine",
+            "text": "A 50-year-old male working in a stone industry presents with breathlessness and cough. CT Chest shows calcified mediastinal lymph nodes and pulmonary nodules (silicosis). Which statements are correct? 1. Silicosis typically involves lower lobes. 2. Higher risk of pulmonary tuberculosis. 3. Pulmonary fibrosis is dose-dependent.",
+            "options": [
+                "1 and 2 only",
+                "1, 2 and 3",
+                "1 and 3 only",
+                "2 and 3 only"
+            ],
+            "correct_option": 3,
+            "explanation": "Silicosis classically affects the UPPER lobes (eggshell calcification of hilar nodes), markedly increases susceptibility to pulmonary TB (silicotuberculosis), and exhibits a dose-dependent fibrotic response.",
+            "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Q.15) | Harrison's Occupational Lung Diseases"
+        },
+        {
+            "id": "cms26-p1-08",
+            "subject": "General Medicine",
+            "text": "A 70-year-old male smoker presents with progressive dyspnea and dry cough, clubbing, fine basal crackles, low FVC and low DLCO. CT Chest shows extensive bilateral subpleural reticular shadows and honeycombing. What is the most likely diagnosis?",
+            "options": [
+                "Idiopathic pulmonary fibrosis",
+                "Sarcoidosis",
+                "Chronic obstructive pulmonary disease",
+                "Bronchiectasis"
+            ],
+            "correct_option": 0,
+            "explanation": "Subpleural basal reticular opacities with honeycombing (UIP pattern), velcro crackles, clubbing, and restrictive spirometry with reduced DLCO in an older smoker are classic for Idiopathic Pulmonary Fibrosis (IPF).",
+            "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Q.16)"
+        },
+        {
+            "id": "cms26-p1-09",
+            "subject": "General Medicine",
+            "text": "Sodium zirconium cyclosilicate and patiromer are commonly prescribed to chronic kidney disease patients because of their property of binding to which one of the following electrolytes?",
+            "options": [
+                "Calcium",
+                "Sodium",
+                "Potassium",
+                "Phosphate"
+            ],
+            "correct_option": 2,
+            "explanation": "Both Sodium Zirconium Cyclosilicate (SZC) and Patiromer are newer oral potassium binders used in chronic hyperkalemia management in CKD without the colonic necrosis risk of Kayexalate.",
+            "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Q.31) | KDIGO CKD Guidelines"
+        },
+        {
+            "id": "cms26-p1-10",
+            "subject": "General Medicine",
+            "text": "Calcium resonium (polystyrene sulfonate), used to treat hyperkalaemia over a short term in CKD, is associated with the development of which one of the following conditions?",
+            "options": [
+                "Prostatomegaly",
+                "Myocarditis",
+                "Renal Artery Stenosis",
+                "Bowel Necrosis"
+            ],
+            "correct_option": 3,
+            "explanation": "Sodium/calcium polystyrene sulfonate (especially when co-administered with sorbitol) carries a well-known risk of colonic/intestinal ischemia and bowel necrosis.",
+            "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Q.32)"
+        },
+        {
+            "id": "cms26-p1-11",
+            "subject": "General Medicine",
+            "text": "In multiple myeloma, monoclonal immunoglobulin light chains combine with Tamm-Horsfall protein to precipitate in the renal tubules, leading to which one of the following conditions?",
+            "options": [
+                "IgA Nephropathy",
+                "Cast Nephropathy",
+                "Membranous Glomerulonephritis",
+                "Interstitial Nephritis"
+            ],
+            "correct_option": 1,
+            "explanation": "Filtered Bence Jones light chains bind Tamm-Horsfall mucoprotein (uromodulin) in distal tubules to form obstructing eosinophilic casts, causing Myeloma Cast Nephropathy ('myeloma kidney').",
+            "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Q.33)"
+        },
+        {
+            "id": "cms26-p1-12",
+            "subject": "General Medicine",
+            "text": "Deficiency of which of the following mineral(s) can lead to hypocalcemia by impairing the ability of the parathyroid gland to secrete parathyroid hormone? (1. Phosphate, 2. Magnesium, 3. Sodium, 4. Potassium)",
+            "options": [
+                "1 and 2",
+                "2 only",
+                "3 and 4",
+                "3 only"
+            ],
+            "correct_option": 1,
+            "explanation": "Severe hypomagnesemia impairs both PTH secretion from the parathyroid gland and end-organ PTH responsiveness, causing refractory hypocalcemia until magnesium is repleted.",
+            "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Q.53)"
+        },
+        {
+            "id": "cms26-p1-13",
+            "subject": "General Medicine",
+            "text": "Which of the following are long-acting insulin analogues? (1. Lispro, 2. Glargine, 3. Detemir, 4. Degludec)",
+            "options": [
+                "2 only",
+                "2 and 4",
+                "1, 3 and 4",
+                "2, 3 and 4"
+            ],
+            "correct_option": 3,
+            "explanation": "Insulin Glargine, Detemir, and Degludec are long/ultra-long-acting basal insulin analogues; Lispro is a rapid-acting prandial insulin analogue.",
+            "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Q.54)"
+        },
+        {
+            "id": "cms26-p1-14",
+            "subject": "General Medicine",
+            "text": "Liquorice misuse, by inhibiting 11 beta-hydroxysteroid dehydrogenase type 2 enzyme, can cause a condition which resembles the clinical features of:",
+            "options": [
+                "Gonadotropin excess",
+                "Thyrotropin excess",
+                "Mineralocorticoid excess",
+                "Parathyroid hormone excess"
+            ],
+            "correct_option": 2,
+            "explanation": "Glycyrrhizic acid in liquorice inhibits renal 11-beta-HSD2, preventing conversion of active cortisol to inactive cortisone. Cortisol then activates mineralocorticoid receptors, causing Apparent Mineralocorticoid Excess (hypertension + hypokalemia).",
+            "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Q.56)"
+        },
+        {
+            "id": "cms26-p1-15",
+            "subject": "General Medicine",
+            "text": "'Latrodectism', characterized by local pain and sweating, is caused by the bite of which one of the following animals?",
+            "options": [
+                "Widow spider",
+                "King cobra",
+                "Lonomia caterpillar",
+                "Solenopsis ants"
+            ],
+            "correct_option": 0,
+            "explanation": "Latrodectism is envenomation by Latrodectus (Black Widow spider), whose alpha-latrotoxin causes massive presynaptic neurotransmitter release, severe muscle cramps, pain, and diaphoresis.",
+            "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Q.87)"
+        },
+        {
+            "id": "cms26-p1-16",
+            "subject": "General Medicine",
+            "text": "A farmer presents with bronchorrhoea, sweating, excessive salivation, bradycardia and bilateral miosis. Consider: 1. Symptoms represent Cholinergic Syndrome. 2. Activation of Acetylcholinesterase (AChE) is the underlying mechanism. 3. IV Atropine should be given for treatment. Which are correct?",
+            "options": [
+                "1 and 2",
+                "2 and 3",
+                "1 and 3",
+                "3 only"
+            ],
+            "correct_option": 2,
+            "explanation": "Organophosphate poisoning INHIBITS (not activates) AChE, causing acetylcholine accumulation and a classic Cholinergic Syndrome (DUMBELS/SLUDGE + miosis + bradycardia), treated with IV Atropine + Pralidoxime.",
+            "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Q.88)"
+        },
+        {
+            "id": "cms26-p1-17",
+            "subject": "Pediatrics",
+            "text": "Administration of immunoglobulins interferes with the response to live vaccines, EXCEPT:",
+            "options": [
+                "Measles vaccine",
+                "Rubella vaccine",
+                "Oral typhoid vaccine",
+                "Mumps vaccine"
+            ],
+            "correct_option": 2,
+            "explanation": "Parenteral live viral vaccines (MMR, Varicella) are neutralized by circulating immunoglobulins; Oral live typhoid vaccine (Ty21a), Oral Polio, Yellow Fever, and BCG are not inhibited by immunoglobulins.",
+            "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Q.115) | IAP Immunization Guidebook"
+        }
+    ],
+
+    "upsc-cms-2026-paper-2-authentic": [
+        {
+            "id": "cms26-p2-01",
+            "subject": "General Surgery",
+            "text": "The classical presentation of an acute embolic occlusion in a limb includes all of the following, EXCEPT:",
+            "options": [
+                "Pain",
+                "Purple discoloration",
+                "Paralysis",
+                "Pulselessness"
+            ],
+            "correct_option": 1,
+            "explanation": "The classical 6 Ps of acute limb ischemia are Pain, Pallor (pale/white, not purple), Pulselessness, Paresthesia, Paralysis, and Poikilothermia (perishingly cold).",
+            "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Q.7) | Bailey & Love's Short Practice of Surgery"
+        },
+        {
+            "id": "cms26-p2-02",
+            "subject": "General Surgery",
+            "text": "A patient is undergoing a surgery for removal of a benign tumour from the parotid gland. Which one of the following structures should be preserved during this surgery?",
+            "options": [
+                "Facial artery",
+                "Auriculotemporal nerve",
+                "Zygomatic artery",
+                "Facial nerve"
+            ],
+            "correct_option": 3,
+            "explanation": "The Facial Nerve (CN VII) courses through the parotid gland (dividing it into superficial and deep lobes) and must be meticulously identified and preserved during superficial parotidectomy for benign tumors like pleomorphic adenoma.",
+            "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Q.9) | Bailey & Love's Surgery"
+        },
+        {
+            "id": "cms26-p2-03",
+            "subject": "General Surgery",
+            "text": "A 52-year-old carpenter presents with a persistent non-healing ulcer on his lower alveolus. He has smoked for 30 years and also chews tobacco. What is the next most appropriate step in management?",
+            "options": [
+                "X-ray mandible",
+                "Edge biopsy of ulcer",
+                "Local gum paint (astringent + analgesic)",
+                "Systemic antibiotics"
+            ],
+            "correct_option": 1,
+            "explanation": "Any persistent non-healing oral ulcer (>2-3 weeks) in a chronic tobacco user is suspicious for oral squamous cell carcinoma; an incisional/wedge biopsy from the edge of the ulcer is mandatory for tissue diagnosis.",
+            "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Q.10)"
+        },
+        {
+            "id": "cms26-p2-04",
+            "subject": "General Surgery",
+            "text": "A 25-year-old motorcycle rider is brought to emergency with pulse 110/min, BP 90 systolic, and an open thigh wound with an estimated blood loss of 1000 mL. What is the severity of haemorrhagic shock?",
+            "options": [
+                "Class 1",
+                "Class 2",
+                "Class 3",
+                "Class 4"
+            ],
+            "correct_option": 1,
+            "explanation": "Per ATLS classification, Class II hemorrhagic shock corresponds to 750-1500 mL blood loss (15-30% blood volume) with heart rate 100-120/min.",
+            "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Q.40) | ATLS 10th Edition"
+        },
+        {
+            "id": "cms26-p2-05",
+            "subject": "Obstetrics & Gynaecology",
+            "text": "Which one of the following sets of vaccines is contraindicated in pregnancy?",
+            "options": [
+                "Pneumococcal, Hepatitis B, HPV",
+                "Rabies, Influenza, Hepatitis A",
+                "Varicella, Measles, Rubella",
+                "Diphtheria, Influenza, Pneumococcal"
+            ],
+            "correct_option": 2,
+            "explanation": "Live-attenuated vaccines (Varicella, Measles, Mumps, Rubella) are contraindicated during pregnancy due to theoretical risk of fetal viremia/congenital infection.",
+            "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Q.41) | Williams Obstetrics"
+        },
+        {
+            "id": "cms26-p2-06",
+            "subject": "Preventive & Social Medicine",
+            "text": "After undergoing vasectomy, how many ejaculations and months are required for a man to become sterile?",
+            "options": [
+                "30 ejaculations and 2 months",
+                "20 ejaculations and 2 months",
+                "20 ejaculations and 3 months",
+                "30 ejaculations and 3 months"
+            ],
+            "correct_option": 2,
+            "explanation": "A man is not sterile immediately after vasectomy; backup contraception is advised until 20 ejaculations AND 3 months have passed (confirmed by semen analysis showing azoospermia).",
+            "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Q.76) | Park's Textbook of PSM"
+        },
+        {
+            "id": "cms26-p2-07",
+            "subject": "Preventive & Social Medicine",
+            "text": "Regarding Lactational Amenorrhea Method (LAM): 1. Equally effective in menstruating and amenorrheic women if exclusively breastfeeding. 2. Risk of pregnancy in amenorrheic exclusively breastfeeding woman is <2% in first 6 months. 3. Requires exclusive breastfeeding for 6 months. Which statements are correct?",
+            "options": [
+                "2 and 4",
+                "2 and 3",
+                "3 and 4",
+                "1 and 4"
+            ],
+            "correct_option": 1,
+            "explanation": "LAM requires all 3 criteria: amenorrhea, exclusive breastfeeding, and infant <6 months old — yielding >98% efficacy (<2% failure). Once menstruation resumes, protection drops.",
+            "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Q.77) | Park's Contraception Chapter"
+        },
+        {
+            "id": "cms26-p2-08",
+            "subject": "Obstetrics & Gynaecology",
+            "text": "Laparoscopic tubal sterilization can be done after:",
+            "options": [
+                "48 hours of delivery",
+                "7 days of delivery",
+                "2 weeks of delivery",
+                "6 weeks of delivery"
+            ],
+            "correct_option": 3,
+            "explanation": "Interval laparoscopic tubal ligation is performed 6 weeks after delivery (once the uterus has involuted); immediate postpartum sterilization (within 48 hours to 7 days) is performed via minilaparotomy.",
+            "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Q.78) | MoHFW Sterilization Guidelines"
+        },
+        {
+            "id": "cms26-p2-09",
+            "subject": "Preventive & Social Medicine",
+            "text": "Arrange the following international health organizations in chronological order (oldest to newest): 1. Health Organization of League of Nations, 2. Pan American Sanitary Bureau, 3. UNRRA, 4. World Health Organization.",
+            "options": [
+                "1 -> 2 -> 4 -> 3",
+                "1 -> 3 -> 4 -> 2",
+                "2 -> 4 -> 1 -> 3",
+                "2 -> 1 -> 3 -> 4"
+            ],
+            "correct_option": 3,
+            "explanation": "Pan American Sanitary Bureau (1902) -> Health Organization of League of Nations (1923) -> UNRRA (1943) -> World Health Organization (1948).",
+            "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Q.105) | Park's International Health"
+        },
+        {
+            "id": "cms26-p2-10",
+            "subject": "Preventive & Social Medicine",
+            "text": "Which term best fits the description: 'the entire gamut of preventive, therapeutic and rehabilitative services for the protection of society from antisocial, criminal or deviant conduct of man'?",
+            "options": [
+                "Social delinquency",
+                "Social defence",
+                "Social pathology",
+                "Social survey"
+            ],
+            "correct_option": 1,
+            "explanation": "Social defence encompasses preventive, therapeutic, and rehabilitative measures to protect society from antisocial or criminal conduct (e.g., Juvenile Justice, anti-trafficking, de-addiction).",
+            "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Q.106) | Park's Medicine & Social Sciences"
         }
     ]
 }

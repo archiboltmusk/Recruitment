@@ -184,6 +184,7 @@
                 <button onclick="setQuickFilter('West Bengal', this)" class="quick-pill px-4 py-1.5 rounded-full text-xs font-semibold bg-white border border-black/10 text-[#1D1D1F] hover:bg-gray-50 shrink-0 transition">West Bengal</button>
                 <button onclick="setQuickFilter('Delhi', this)" class="quick-pill px-4 py-1.5 rounded-full text-xs font-semibold bg-white border border-black/10 text-[#1D1D1F] hover:bg-gray-50 shrink-0 transition">Delhi NCR</button>
                 <button onclick="setQuickFilter('ZERO_BOND', this)" class="quick-pill px-4 py-1.5 rounded-full text-xs font-semibold bg-white border border-black/10 text-[#1D1D1F] hover:bg-gray-50 shrink-0 transition">Zero Bond Only</button>
+                <button onclick="setQuickFilter('UR_ONLY', this)" class="quick-pill px-4 py-1.5 rounded-full text-xs font-semibold bg-white border border-black/10 text-[#1D1D1F] hover:bg-gray-50 shrink-0 transition">UR (Non-EWS) Available</button>
             </div>
 
             <div class="flex items-center justify-between px-1 text-xs text-[#6E6E73]">
@@ -475,7 +476,8 @@
                     (v.selection_mode && v.selection_mode.toLowerCase().includes(cat.toLowerCase()))
                 );
                 const matchBond = !bond || (bond === 'no_bond' && v.bond_years === 0);
-                return matchSearch && matchQual && matchRole && matchCat && matchBond;
+                const matchUR = activeQuickFilter !== 'UR_ONLY' || !(v.category_seats && v.category_seats.UR === 0);
+                return matchSearch && matchQual && matchRole && matchCat && matchBond && matchUR;
             });
 
             filtered.sort((a, b) => {
@@ -540,7 +542,7 @@
                         </h3>
 
                         <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-[#6E6E73] pt-1">
-                            <span class="font-semibold text-[#1D1D1F]">${v.total_posts > 0 ? `${v.total_posts} Seats` : 'Seats: Check PDF'}</span>
+                            <span class="font-semibold text-[#1D1D1F]">${(v.category_seats && v.category_seats.UR !== undefined) ? (v.category_seats.UR > 0 ? `${v.category_seats.UR} UR Seats (${v.total_posts} Total)` : `<span class="text-[#DC2626]">0 UR Seats (${v.total_posts} Reserved)</span>`) : (v.total_posts > 0 ? `${v.total_posts} Seats` : 'Seats: Check PDF')}</span>
                             <span>•</span>
                             <span>${escapeHtml(v.pay_scale || 'Govt Pay Matrix')}</span>
                             <span>•</span>
@@ -623,7 +625,10 @@
             finally { setTimeout(() => icon.classList.remove('animate-spin'), 500); }
         }
 
+        let activeQuickFilter = 'ALL';
+
         function setQuickFilter(val, btnEl) {
+            activeQuickFilter = val;
             document.querySelectorAll('.quick-pill').forEach(b => {
                 b.className = 'quick-pill px-4 py-1.5 rounded-full text-xs font-semibold bg-white border border-black/10 text-[#1D1D1F] hover:bg-gray-50 shrink-0 transition';
             });
@@ -637,13 +642,14 @@
                 document.getElementById('bondFilter').value = 'no_bond';
             } else if (val === 'Delhi') {
                 document.getElementById('searchInput').value = 'Delhi';
-            } else if (val !== 'ALL') {
+            } else if (val !== 'ALL' && val !== 'UR_ONLY') {
                 document.getElementById('categoryFilter').value = val;
             }
             applyFilters();
         }
 
         function resetFilters() {
+            activeQuickFilter = 'ALL';
             document.getElementById('searchInput').value = '';
             document.getElementById('qualificationFilter').value = 'MBBS';
             if (document.getElementById('roleFilter')) document.getElementById('roleFilter').value = '';

@@ -400,7 +400,7 @@ class LiveGazetteScraper:
         has_pg = bool(PG_ROLE_PATTERN.search(text))
         has_mbbs = bool(MBBS_CORE_PATTERN.search(text))
         if has_pg:
-            if re.search(r"\b(?:gdmo|cgdmo|junior\s+resident|jr\.?\s*resident|\bjr\b|non[-\s]*pg|non[-\s]*academic|rmo|tutor|demonstrator)\b", low) and "gynecologist" not in low and "gynaecologist" not in low:
+            if re.search(r"\b(?:gdmo|cgdmo|junior\s+resident|jr\.?\s*resident|\bjr\b|non[-\s]*pg|non[-\s]*academic\s+(?:jr\.?|junior\s+resident)|rmo|tutor|demonstrator)\b", low) and "gynecologist" not in low and "gynaecologist" not in low:
                 return {"qualification": "MBBS / MD/MS", "designation": "GDMO / Junior Resident & Specialist"}
             return {"qualification": "MD/MS", "designation": "Senior Resident / Specialist / Consultant"}
         if re.search(r"\b(?:rmo|clinical\s+tutor|tutor|demonstrator)\b", low):

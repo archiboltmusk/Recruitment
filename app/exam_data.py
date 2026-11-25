@@ -5,8 +5,8 @@ EXAMS_CATALOG: List[Dict[str, Any]] = [
     {
         "id": "upsc-cms-2026-paper-1-authentic",
         "title": "UPSC CMS 2026 Official Paper-I (Authentic PYQ Set)",
-        "subtitle": "From Official Booklet T.B.C. NTDC-O-KPMS (General Medicine & Pediatrics)",
-        "total_questions": 17,
+        "subtitle": "From Official Booklet T.B.C. NTDC-O-KPMS (General Medicine & Pediatrics + X-Ray)",
+        "total_questions": 18,
         "total_marks": 250,
         "duration_minutes": 45,
         "negative_marking": 0.33,
@@ -18,10 +18,10 @@ EXAMS_CATALOG: List[Dict[str, Any]] = [
     {
         "id": "upsc-cms-2026-paper-2-authentic",
         "title": "UPSC CMS 2026 Official Paper-II (Authentic PYQ Set)",
-        "subtitle": "From Official Booklet T.B.C. NTDC-T-GSPO (Surgery, OBG & PSM)",
-        "total_questions": 10,
+        "subtitle": "From Official Booklet T.B.C. NTDC-T-GSPO (Surgery, OBG & PSM + 8 Image Questions)",
+        "total_questions": 18,
         "total_marks": 250,
-        "duration_minutes": 30,
+        "duration_minutes": 45,
         "negative_marking": 0.33,
         "subjects": ["General Surgery", "Obstetrics & Gynaecology", "Preventive & Social Medicine"],
         "year": "2026 Official UPSC Paper",
@@ -937,6 +937,21 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
             "correct_option": 2,
             "explanation": "Parenteral live viral vaccines (MMR, Varicella) are neutralized by circulating immunoglobulins; Oral live typhoid vaccine (Ty21a), Oral Polio, Yellow Fever, and BCG are not inhibited by immunoglobulins.",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Q.115) | IAP Immunization Guidebook"
+        },
+        {
+            "id": "cms26-p1-18",
+            "subject": "Pediatrics",
+            "image_url": "/static/exam_images/cms26_p1_q110_xray.png",
+            "text": "A neonate is noted to have bilious vomiting at 6 hours of life with abdominal distention. An X-ray is ordered (see image). The most likely diagnosis is:",
+            "options": [
+                "Pyloric stenosis",
+                "Esophageal atresia",
+                "Duodenal atresia",
+                "Hirschsprung's disease"
+            ],
+            "correct_option": 2,
+            "explanation": "The radiograph demonstrates the classic 'Double-Bubble Sign' (dilated air-filled stomach and proximal duodenum with absent distal bowel gas), pathognomonic of Duodenal Atresia (strongly associated with Trisomy 21).",
+            "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Q.110) | Nelson Textbook of Pediatrics"
         }
     ],
 
@@ -1080,6 +1095,126 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
             "correct_option": 1,
             "explanation": "Social defence encompasses preventive, therapeutic, and rehabilitative measures to protect society from antisocial or criminal conduct (e.g., Juvenile Justice, anti-trafficking, de-addiction).",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Q.106) | Park's Medicine & Social Sciences"
+        },
+        {
+            "id": "cms26-p2-11",
+            "subject": "General Surgery",
+            "image_url": "/static/exam_images/cms26_p2_q8_ulcer.png",
+            "text": "The typical ulcer as shown in the following diagram is seen in:",
+            "options": [
+                "Syphilis",
+                "Squamous cell carcinoma",
+                "Tuberculosis",
+                "Basal cell carcinoma"
+            ],
+            "correct_option": 2,
+            "explanation": "The diagram shows an ulcer with UNDERMINED edges (classic for Tuberculous ulcer). Punched-out edges = Syphilis/Trophic; Everted/rolled-out = Squamous cell carcinoma; Rolled/beaded = Basal cell carcinoma.",
+            "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Q.8) | Bailey & Love's Surgery"
+        },
+        {
+            "id": "cms26-p2-12",
+            "subject": "General Surgery",
+            "image_url": "/static/exam_images/cms26_p2_q11_scan.png",
+            "text": "A 40-year-old female presents with heat intolerance, excessive sweating and weight loss since 10-12 months. The surgeon orders the investigation shown below. This scan is a/an:",
+            "options": [
+                "MRI scan",
+                "Non-contrast CT scan",
+                "Radionuclide scan",
+                "PET scan"
+            ],
+            "correct_option": 2,
+            "explanation": "This is a Technetium-99m / Radioiodine (I-123/I-131) thyroid radionuclide scintigraphy scan demonstrating diffuse increased uptake in Graves' disease.",
+            "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Q.11)"
+        },
+        {
+            "id": "cms26-p2-13",
+            "subject": "General Surgery",
+            "image_url": "/static/exam_images/cms26_p2_q19_pringle.png",
+            "text": "The manoeuvre (marked with an asterisk *) shown in the following image is:",
+            "options": [
+                "Mattox",
+                "Kocher",
+                "Shoe-shine",
+                "Pringle"
+            ],
+            "correct_option": 3,
+            "explanation": "Clamping the hepatoduodenal ligament (containing hepatic artery, portal vein, and common bile duct) at the foramen of Winslow to control hepatic hemorrhage is the Pringle manoeuvre.",
+            "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Q.19) | Sabiston Textbook of Surgery"
+        },
+        {
+            "id": "cms26-p2-14",
+            "subject": "General Surgery",
+            "image_url": "/static/exam_images/cms26_p2_q22_hernia.png",
+            "text": "A 40-year-old male patient has undergone a surgical procedure for a swelling in his left groin. The image of the procedure is as shown. What procedure has been performed?",
+            "options": [
+                "Shouldice repair",
+                "Lichtenstein's repair",
+                "Bassini's repair",
+                "Desarda's repair"
+            ],
+            "correct_option": 1,
+            "explanation": "The diagram shows a prosthetic mesh sutured over the posterior wall of the inguinal canal (to the inguinal ligament and conjoint tendon) around the spermatic cord — classic Lichtenstein tension-free hernioplasty.",
+            "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Q.22) | Bailey & Love's Surgery"
+        },
+        {
+            "id": "cms26-p2-15",
+            "subject": "General Surgery",
+            "image_url": "/static/exam_images/cms26_p2_q24_kidney.png",
+            "text": "The clinical condition shown in the image is:",
+            "options": [
+                "Malrotated kidney",
+                "Malascended kidney",
+                "Doughnut kidney",
+                "Horseshoe kidney"
+            ],
+            "correct_option": 3,
+            "explanation": "Fusion of the lower poles of both kidneys across the midline by an isthmus (trapped below the inferior mesenteric artery during ascent) is a Horseshoe kidney.",
+            "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Q.24) | Bailey & Love's Urology"
+        },
+        {
+            "id": "cms26-p2-16",
+            "subject": "General Surgery",
+            "image_url": "/static/exam_images/cms26_p2_q25_monro.png",
+            "text": "The principle of adaptation shown in the following diagram is explained by:",
+            "options": [
+                "Moynihan's aphorism",
+                "Goodsall's rule",
+                "Monro-Kellie doctrine",
+                "Cushing's law"
+            ],
+            "correct_option": 2,
+            "explanation": "The Monro-Kellie doctrine states that total intracranial volume (Brain + Blood + CSF) inside a rigid skull is constant; any expanding mass must be compensated by displacement of CSF and venous blood before ICP rises sharply.",
+            "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Q.25)"
+        },
+        {
+            "id": "cms26-p2-17",
+            "subject": "General Surgery",
+            "image_url": "/static/exam_images/cms26_p2_q27_crico.png",
+            "text": "The procedure shown in the following images is:",
+            "options": [
+                "Elective tracheostomy",
+                "Emergency tracheostomy",
+                "Emergency cricothyroidotomy",
+                "Percutaneous tracheostomy"
+            ],
+            "correct_option": 2,
+            "explanation": "The incision and airway tube are placed directly through the cricothyroid membrane (between the thyroid cartilage above and cricoid cartilage below), which is Emergency Cricothyroidotomy.",
+            "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Q.27) | ATLS Airway Management"
+        },
+        {
+            "id": "cms26-p2-18",
+            "subject": "General Surgery",
+            "image_url": "/static/exam_images/cms26_p2_q34_lefort.png",
+            "text": "The type of fracture marked with arrow heads in the following figure is:",
+            "options": [
+                "Le Fort IV",
+                "Le Fort III",
+                "Le Fort II",
+                "Le Fort I"
+            ],
+            "correct_option": 3,
+            "explanation": "A horizontal fracture line running through the maxilla just above the nasal floor and tooth apices (floating palate) is a Le Fort I (Guerin) fracture.",
+            "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Q.34) | Bailey & Love's Maxillofacial Trauma"
         }
     ]
 }

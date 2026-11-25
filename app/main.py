@@ -330,7 +330,7 @@ def get_exam_questions(exam_id: str):
         raise HTTPException(status_code=404, detail="Exam not found")
     
     safe_questions = [
-        {"id": q["id"], "subject": q["subject"], "text": q["text"], "options": q["options"]}
+        {"id": q["id"], "subject": q["subject"], "text": q["text"], "options": q["options"], "image_url": q.get("image_url")}
         for q in questions
     ]
     return {"exam": exam_meta, "questions": safe_questions}
@@ -379,6 +379,7 @@ def submit_exam(exam_id: str, payload: ExamSubmissionRequest, db: Session = Depe
             "id": q["id"],
             "subject": q["subject"],
             "text": q["text"],
+            "image_url": q.get("image_url"),
             "options": q["options"],
             "user_choice": user_choice,
             "correct_option": q["correct_option"],

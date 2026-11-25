@@ -3,294 +3,207 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UPSC CMS &amp; MO CBT Simulator — MedAlerts</title>
+    <title>Mock CBT — MedAlerts</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: { sans: ['"Plus Jakarta Sans"', 'sans-serif'], mono: ['"JetBrains Mono"', 'monospace'] },
-                    colors: {
-                        tealmed: { 50: '#F0FDFA', 100: '#CCFBF1', 200: '#99F6E4', 600: '#0D9488', 700: '#0F766E', 800: '#115E59', 900: '#0F4C4C' }
-                    }
-                }
-            }
-        }
-    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body { background: linear-gradient(180deg, #F0FDFA 0%, #F8FAFC 260px, #F8FAFC 100%); color: #0F172A; font-family: 'Plus Jakarta Sans', sans-serif; }
-        .med-card { background: #FFFFFF; border: 1px solid #E2E8F0; box-shadow: 0 2px 10px -2px rgba(15, 76, 76, 0.05); }
+        body { background-color: #F5F5F7; color: #1D1D1F; font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; -webkit-font-smoothing: antialiased; }
+        .apple-card { background: #FFFFFF; border-radius: 22px; border: 1px solid rgba(0,0,0,0.06); box-shadow: 0 2px 12px rgba(0,0,0,0.03); }
+        .pill-btn { transition: transform 0.14s ease, background-color 0.15s ease; }
+        .pill-btn:active { transform: scale(0.97); }
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
-    <!-- Clinical Top Bar -->
-    <header class="bg-tealmed-900 text-white border-b border-tealmed-800 sticky top-0 z-30 shadow-md">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
-            <a href="/" class="flex items-center space-x-3">
-                <div class="w-9 h-9 rounded-xl bg-white/15 border border-white/20 flex items-center justify-center text-white">
-                    <i class="fa-solid fa-graduation-cap text-base"></i>
+    <header class="sticky top-0 z-30 bg-[#F5F5F7]/85 backdrop-blur-xl border-b border-black/[0.06]">
+        <div class="max-w-6xl mx-auto px-5 sm:px-8 h-16 flex items-center justify-between">
+            <a href="/" class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-xl bg-[#0F766E] flex items-center justify-center text-white">
+                    <i class="fa-solid fa-staff-snake text-sm"></i>
                 </div>
-                <div>
-                    <h1 class="text-sm sm:text-base font-extrabold leading-tight flex items-center gap-2">
-                        MedAlerts CBT Simulator
-                        <span class="text-[10px] px-2 py-0.5 rounded-full bg-amber-400 text-slate-900 font-extrabold uppercase">UPSC CMS / MO</span>
-                    </h1>
-                    <p class="text-[10px] text-tealmed-200 hidden sm:block">Authentic CBT Interface • -0.33 Negative Marking</p>
-                </div>
+                <span class="text-base font-bold tracking-tight text-[#1D1D1F]">MedAlerts</span>
             </a>
 
-            <div id="testTimerBar" class="hidden flex items-center space-x-3">
-                <div class="px-3.5 py-1.5 rounded-xl bg-tealmed-950/60 border border-white/20 flex items-center gap-2">
-                    <i class="fa-regular fa-clock text-amber-300 text-xs"></i>
-                    <span class="text-xs font-mono font-bold text-white tabular-nums" id="timerDisplay">120:00</span>
-                </div>
-                <button onclick="confirmSubmitTest()" class="px-4 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs rounded-xl shadow transition">
-                    Finish &amp; Submit
-                </button>
+            <div id="testTimerBar" class="hidden flex items-center gap-3">
+                <span class="px-3.5 py-1.5 rounded-full bg-white border border-black/10 text-xs font-mono font-bold text-[#1D1D1F]" id="timerDisplay">120:00</span>
+                <button onclick="confirmSubmitTest()" class="pill-btn px-4 py-1.5 bg-[#0F766E] text-white font-semibold text-xs rounded-full">Submit</button>
             </div>
 
-            <div id="lobbyNavBtns" class="flex items-center space-x-2">
-                <a href="/onboarding" class="px-3 py-1.5 bg-white/10 hover:bg-white/20 text-white rounded-xl text-xs font-semibold transition flex items-center gap-1.5">
-                    <i class="fa-solid fa-clipboard-check"></i>
-                    <span class="hidden sm:inline">Eligibility</span>
-                </a>
-                <a href="/" class="px-3 py-1.5 bg-white text-tealmed-900 hover:bg-tealmed-50 rounded-xl text-xs font-bold transition flex items-center gap-1.5">
-                    <i class="fa-solid fa-arrow-left"></i>
-                    <span>Dashboard</span>
-                </a>
-            </div>
+            <nav id="lobbyNavBtns" class="hidden md:flex items-center gap-7 text-[13px] font-medium text-[#6E6E73]">
+                <a href="/" class="hover:text-[#1D1D1F] transition">Jobs</a>
+                <a href="/onboarding" class="hover:text-[#1D1D1F] transition">Eligibility</a>
+                <a href="/exam" class="text-[#1D1D1F] font-semibold">Mock CBT</a>
+                <a href="/bonds" class="hover:text-[#1D1D1F] transition">Pay &amp; Bonds</a>
+                <a href="/toolkit" class="hover:text-[#1D1D1F] transition">Post-MBBS Kit</a>
+            </nav>
+
+            <a href="/" id="mobileBackBtn" class="md:hidden px-4 py-1.5 rounded-full bg-white border border-black/10 text-xs font-semibold text-[#1D1D1F]">Jobs</a>
         </div>
     </header>
 
-    <main class="flex-grow max-w-7xl mx-auto w-full p-4 sm:p-6 flex flex-col">
-
-        <!-- VIEW 1: EXAM LOBBY -->
-        <div id="lobbyView" class="max-w-4xl mx-auto w-full space-y-6">
-            <div class="rounded-2xl bg-gradient-to-r from-tealmed-900 via-tealmed-800 to-emerald-800 p-6 sm:p-8 text-white shadow-lg">
-                <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 border border-white/20 text-[11px] font-semibold mb-3">
-                    <i class="fa-solid fa-stethoscope text-emerald-300"></i> High-Yield Clinical &amp; PYQ Mock Vault
-                </span>
-                <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight">UPSC CMS &amp; Medical Officer Practice Arena</h2>
-                <p class="text-sm text-tealmed-100 mt-1.5 max-w-2xl">
-                    Timed CBT simulation for Paper 1, Paper 2, Clinical Pharmacology, PSM National Programs, and ESIC IMO with -1/3 negative marking and Harrison's / Park's textbook pearls.
-                </p>
-
-                <div class="mt-5 flex flex-col sm:flex-row sm:items-center gap-3">
-                    <input type="text" id="candidateNameInput" placeholder="Dr. Candidate Name" value="Dr. Candidate" 
-                        class="max-w-sm w-full px-4 py-2.5 bg-white text-slate-900 rounded-xl text-sm font-semibold focus:outline-none">
-                    <span class="text-xs text-tealmed-100">Displayed on final scorecard</span>
+    <main class="flex-grow max-w-6xl mx-auto w-full px-5 sm:px-8 py-10 flex flex-col">
+        <!-- VIEW 1: LOBBY -->
+        <div id="lobbyView" class="max-w-4xl mx-auto w-full space-y-8">
+            <div class="text-center max-w-2xl mx-auto space-y-3">
+                <p class="text-xs font-semibold uppercase tracking-[0.14em] text-[#0F766E]">UPSC CMS &amp; ESIC Practice</p>
+                <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-[#1D1D1F]">Free Mock CBT. Real -0.33 Marking.</h1>
+                <p class="text-sm text-[#6E6E73]">Full mocks, 10-minute subject drills, Mistake Notebook revision, and Harrison's / Park's explanations.</p>
+                <div class="pt-2 flex justify-center">
+                    <input type="text" id="candidateNameInput" placeholder="Dr. Candidate Name" value="Dr. Candidate" class="max-w-xs w-full px-4 py-2.5 bg-white border border-black/10 rounded-full text-sm text-center font-semibold outline-none focus:ring-2 focus:ring-[#0F766E]/25">
                 </div>
             </div>
 
-            <div id="mistakeBanner" class="hidden med-card rounded-2xl p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-l-4 border-l-rose-500">
+            <!-- Subject-Wise Quick Practice Pills -->
+            <div class="apple-card p-5 space-y-3">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-xs font-bold uppercase tracking-wider text-[#6E6E73]">Quick Subject Drills</h2>
+                    <span class="text-[11px] text-[#86868B]">Tap any subject to start</span>
+                </div>
+                <div id="subjectPillsContainer" class="flex flex-wrap gap-2"></div>
+            </div>
+
+            <!-- Mistake Notebook -->
+            <div id="mistakeBanner" class="hidden apple-card p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-l-4 border-l-rose-500">
                 <div>
-                    <h3 class="text-sm font-extrabold text-slate-900 flex items-center gap-2">
-                        <i class="fa-solid fa-book-medical text-rose-600"></i> Mistake Notebook (<span id="mistakeCountLabel">0</span> Questions)
-                    </h3>
-                    <p class="text-xs text-slate-500 mt-0.5">Questions you missed in previous mocks are saved here for rapid high-yield revision.</p>
+                    <h3 class="text-sm font-bold text-[#1D1D1F]">Mistake Notebook (<span id="mistakeCountLabel">0</span> Questions)</h3>
+                    <p class="text-xs text-[#6E6E73] mt-0.5">Questions you missed earlier are saved here for rapid revision.</p>
                 </div>
-                <button onclick="startMistakeDrill()" class="px-5 py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs rounded-xl shadow transition shrink-0">
-                    Re-Practice Mistakes
-                </button>
+                <button onclick="startMistakeDrill()" class="pill-btn px-5 py-2.5 bg-rose-600 text-white font-semibold text-xs rounded-full shrink-0">Re-Practice Mistakes</button>
             </div>
 
-            <div class="space-y-3.5" id="examsListContainer"></div>
+            <div class="space-y-4" id="examsListContainer"></div>
         </div>
 
-        <!-- VIEW 2: ACTIVE CBT INTERFACE -->
-        <div id="cbtView" class="hidden flex-1 grid grid-cols-1 lg:grid-cols-4 gap-5 min-h-[calc(100vh-110px)]">
-            <div class="lg:col-span-3 med-card rounded-2xl flex flex-col overflow-hidden">
-                <div class="px-6 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+        <!-- VIEW 2: ACTIVE CBT -->
+        <div id="cbtView" class="hidden flex-1 grid grid-cols-1 lg:grid-cols-4 gap-5">
+            <div class="lg:col-span-3 apple-card flex flex-col overflow-hidden">
+                <div class="px-6 py-4 border-b border-black/[0.06] flex items-center justify-between">
                     <div class="flex items-center gap-3">
-                        <span class="text-xs font-bold px-3 py-1 rounded-full bg-tealmed-50 text-tealmed-800 border border-tealmed-200" id="qSubjectBadge">Subject</span>
-                        <span class="text-xs text-slate-500 font-mono" id="qNumberText">Question 1 of 12</span>
+                        <span class="text-xs font-semibold px-3 py-1 rounded-full bg-[#E6F4F1] text-[#0F766E]" id="qSubjectBadge">Subject</span>
+                        <span class="text-xs text-[#6E6E73]" id="qNumberText">Question 1</span>
                     </div>
-                    <div class="flex items-center gap-2 font-mono text-[11px]">
-                        <span class="px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 font-bold border border-emerald-200">+1.0</span>
-                        <span class="px-2 py-0.5 rounded bg-rose-50 text-rose-700 font-bold border border-rose-200">-0.33</span>
+                    <div class="flex items-center gap-2 text-xs font-semibold">
+                        <span class="text-emerald-700">+1.0</span>
+                        <span class="text-rose-600">-0.33</span>
                     </div>
                 </div>
-
-                <div class="p-6 sm:p-8 flex-grow overflow-y-auto space-y-6">
-                    <p class="text-base sm:text-lg font-semibold text-slate-900 leading-relaxed" id="qText">
-                        Question text loads here...
-                    </p>
-
-                    <div class="space-y-3" id="qOptionsContainer"></div>
+                <div class="p-6 sm:p-8 flex-grow space-y-6">
+                    <p class="text-base sm:text-lg font-semibold text-[#1D1D1F] leading-relaxed" id="qText"></p>
+                    <div class="space-y-2.5" id="qOptionsContainer"></div>
                 </div>
-
-                <div class="px-6 py-4 bg-slate-50 border-t border-slate-200 flex flex-wrap items-center justify-between gap-3">
+                <div class="px-6 py-4 bg-[#F5F5F7]/60 border-t border-black/[0.06] flex flex-wrap items-center justify-between gap-3">
                     <div class="flex items-center gap-2">
-                        <button onclick="clearResponse()" class="px-3.5 py-2 text-xs font-semibold text-slate-600 bg-white border border-slate-200 rounded-xl hover:bg-slate-100 transition">
-                            Clear Response
-                        </button>
-                        <button onclick="markForReviewAndNext()" class="px-3.5 py-2 text-xs font-semibold text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-xl transition flex items-center gap-1.5">
-                            <i class="fa-solid fa-bookmark"></i> Mark Review &amp; Next
-                        </button>
+                        <button onclick="clearResponse()" class="px-3.5 py-2 text-xs font-semibold bg-white border border-black/10 rounded-full">Clear</button>
+                        <button onclick="markForReviewAndNext()" class="px-3.5 py-2 text-xs font-semibold bg-amber-50 text-amber-800 rounded-full">Review &amp; Next</button>
                     </div>
-
-                    <div class="flex items-center gap-2.5">
-                        <button onclick="prevQuestion()" id="prevBtn" class="px-4 py-2 text-xs font-semibold text-slate-700 bg-white border border-slate-200 rounded-xl hover:bg-slate-100 transition">
-                            <i class="fa-solid fa-chevron-left mr-1"></i> Previous
-                        </button>
-                        <button onclick="saveAndNext()" id="nextBtn" class="px-5 py-2 text-xs font-bold text-white bg-tealmed-700 hover:bg-tealmed-800 rounded-xl shadow transition flex items-center gap-1.5">
-                            Save &amp; Next <i class="fa-solid fa-chevron-right"></i>
-                        </button>
+                    <div class="flex items-center gap-2">
+                        <button onclick="prevQuestion()" id="prevBtn" class="px-4 py-2 text-xs font-semibold bg-white border border-black/10 rounded-full">Previous</button>
+                        <button onclick="saveAndNext()" id="nextBtn" class="pill-btn px-5 py-2 text-xs font-semibold text-white bg-[#1D1D1F] rounded-full">Save &amp; Next</button>
                     </div>
                 </div>
             </div>
 
-            <div class="med-card rounded-2xl flex flex-col overflow-hidden">
-                <div class="px-5 py-4 bg-slate-50 border-b border-slate-200">
-                    <h3 class="text-xs font-bold uppercase tracking-wider text-slate-600">Question Palette</h3>
-                </div>
-
-                <div class="p-5 space-y-4 flex-grow overflow-y-auto">
-                    <div class="grid grid-cols-2 gap-2 text-[11px] font-semibold text-slate-600">
-                        <div class="flex items-center gap-2">
-                            <span class="w-5 h-5 rounded bg-emerald-500 text-white flex items-center justify-center font-bold text-[10px]" id="countAnswered">0</span> Answered
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <span class="w-5 h-5 rounded bg-rose-500 text-white flex items-center justify-center font-bold text-[10px]" id="countNotAnswered">0</span> Unanswered
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <span class="w-5 h-5 rounded bg-amber-500 text-white flex items-center justify-center font-bold text-[10px]" id="countMarked">0</span> Review
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <span class="w-5 h-5 rounded bg-slate-200 text-slate-700 flex items-center justify-center font-bold text-[10px]" id="countNotVisited">0</span> Unvisited
-                        </div>
+            <div class="apple-card flex flex-col overflow-hidden">
+                <div class="px-5 py-4 border-b border-black/[0.06]"><h3 class="text-xs font-bold uppercase tracking-wider text-[#6E6E73]">Questions</h3></div>
+                <div class="p-5 space-y-4 flex-grow">
+                    <div class="grid grid-cols-2 gap-2 text-[11px] font-medium text-[#6E6E73]">
+                        <div class="flex items-center gap-1.5"><span class="w-4 h-4 rounded-full bg-emerald-500 text-white flex items-center justify-center text-[9px]" id="countAnswered">0</span> Answered</div>
+                        <div class="flex items-center gap-1.5"><span class="w-4 h-4 rounded-full bg-rose-500 text-white flex items-center justify-center text-[9px]" id="countNotAnswered">0</span> Missed</div>
+                        <div class="flex items-center gap-1.5"><span class="w-4 h-4 rounded-full bg-amber-500 text-white flex items-center justify-center text-[9px]" id="countMarked">0</span> Review</div>
+                        <div class="flex items-center gap-1.5"><span class="w-4 h-4 rounded-full bg-[#F5F5F7] text-[#1D1D1F] flex items-center justify-center text-[9px]" id="countNotVisited">0</span> Unseen</div>
                     </div>
-
-                    <div class="grid grid-cols-4 gap-2 pt-3 border-t border-slate-100 max-h-[320px] overflow-y-auto" id="paletteGrid"></div>
+                    <div class="grid grid-cols-4 gap-2 pt-3 border-t border-black/[0.06]" id="paletteGrid"></div>
                 </div>
-
-                <div class="p-4 bg-slate-50 border-t border-slate-200">
-                    <button onclick="confirmSubmitTest()" class="w-full py-2.5 bg-tealmed-700 hover:bg-tealmed-800 text-white font-bold rounded-xl text-xs shadow transition">
-                        Submit Final Exam
-                    </button>
+                <div class="p-4 border-t border-black/[0.06]">
+                    <button onclick="confirmSubmitTest()" class="pill-btn w-full py-2.5 bg-[#0F766E] text-white font-semibold rounded-full text-xs">Submit Exam</button>
                 </div>
             </div>
         </div>
 
-        <!-- VIEW 3: DETAILED SCORECARD -->
+        <!-- VIEW 3: RESULTS -->
         <div id="resultsView" class="hidden max-w-4xl mx-auto w-full space-y-6">
-            <div class="med-card rounded-2xl p-6 sm:p-8 space-y-6 border-t-4 border-t-tealmed-600">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-5">
+            <div class="apple-card p-6 sm:p-8 space-y-6">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-black/[0.06] pb-5">
                     <div>
-                        <span class="text-xs font-bold uppercase tracking-wider text-tealmed-700" id="resExamTitle">UPSC CMS Paper 1</span>
-                        <h2 class="text-2xl font-extrabold text-slate-900 mt-0.5" id="resCandidate">Dr. Candidate</h2>
-                        <span class="inline-block mt-1.5 px-3 py-1 rounded-full text-xs font-extrabold" id="resStatusBadge">
-                            EVALUATION COMPLETE
-                        </span>
+                        <span class="text-xs font-semibold text-[#0F766E]" id="resExamTitle"></span>
+                        <h2 class="text-2xl font-extrabold text-[#1D1D1F] mt-0.5" id="resCandidate"></h2>
+                        <span class="inline-block mt-1.5 px-3 py-0.5 rounded-full text-xs font-semibold" id="resStatusBadge"></span>
                     </div>
-
                     <div class="text-left sm:text-right">
-                        <span class="text-xs font-bold text-slate-400 uppercase block">Final Score</span>
-                        <div class="flex items-baseline sm:justify-end gap-1">
-                            <span class="text-4xl font-extrabold text-slate-900 font-mono" id="resScore">0.0</span>
-                            <span class="text-xs text-slate-400 font-semibold">pts</span>
-                        </div>
+                        <span class="text-xs text-[#6E6E73] block">Score</span>
+                        <span class="text-4xl font-extrabold text-[#1D1D1F]" id="resScore">0.0</span>
                     </div>
                 </div>
-
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
-                    <div class="p-3.5 bg-emerald-50 rounded-xl border border-emerald-200">
-                        <span class="text-2xl font-extrabold text-emerald-700 font-mono" id="resCorrect">0</span>
-                        <p class="text-[10px] font-bold uppercase text-emerald-800 mt-0.5">Correct (+1)</p>
-                    </div>
-                    <div class="p-3.5 bg-rose-50 rounded-xl border border-rose-200">
-                        <span class="text-2xl font-extrabold text-rose-700 font-mono" id="resWrong">0</span>
-                        <p class="text-[10px] font-bold uppercase text-rose-800 mt-0.5">Wrong (-0.33)</p>
-                    </div>
-                    <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200">
-                        <span class="text-2xl font-extrabold text-slate-700 font-mono" id="resUnattempted">0</span>
-                        <p class="text-[10px] font-bold uppercase text-slate-500 mt-0.5">Unattempted</p>
-                    </div>
-                    <div class="p-3.5 bg-tealmed-50 rounded-xl border border-tealmed-200">
-                        <span class="text-2xl font-extrabold text-tealmed-800 font-mono" id="resAccuracy">0%</span>
-                        <p class="text-[10px] font-bold uppercase text-tealmed-700 mt-0.5">Accuracy</p>
-                    </div>
+                    <div class="p-3.5 bg-emerald-50 rounded-2xl"><span class="text-2xl font-extrabold text-emerald-700" id="resCorrect">0</span><p class="text-[10px] font-semibold text-emerald-800 mt-0.5">Correct</p></div>
+                    <div class="p-3.5 bg-rose-50 rounded-2xl"><span class="text-2xl font-extrabold text-rose-700" id="resWrong">0</span><p class="text-[10px] font-semibold text-rose-800 mt-0.5">Wrong (-0.33)</p></div>
+                    <div class="p-3.5 bg-[#F5F5F7] rounded-2xl"><span class="text-2xl font-extrabold text-[#1D1D1F]" id="resUnattempted">0</span><p class="text-[10px] font-semibold text-[#6E6E73] mt-0.5">Skipped</p></div>
+                    <div class="p-3.5 bg-[#E6F4F1] rounded-2xl"><span class="text-2xl font-extrabold text-[#0F766E]" id="resAccuracy">0%</span><p class="text-[10px] font-semibold text-[#0F766E] mt-0.5">Accuracy</p></div>
                 </div>
-
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2.5">
-                        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-600">Subject-Wise Accuracy</h4>
-                        <div id="subjectBreakdownBox" class="space-y-2 text-xs"></div>
-                    </div>
-                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2.5">
-                        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-600 flex items-center justify-between">
-                            <span>Peer Leaderboard</span>
-                            <span id="peerAvgLabel" class="font-mono text-tealmed-700">Avg: -</span>
-                        </h4>
-                        <div id="peerLeaderboardBox" class="space-y-1.5 text-xs"></div>
-                    </div>
+                    <div class="p-4 bg-[#F5F5F7] rounded-2xl space-y-2"><h4 class="text-xs font-bold text-[#6E6E73]">Subject Accuracy</h4><div id="subjectBreakdownBox" class="space-y-2 text-xs"></div></div>
+                    <div class="p-4 bg-[#F5F5F7] rounded-2xl space-y-2"><h4 class="text-xs font-bold text-[#6E6E73] flex justify-between"><span>Leaderboard</span><span id="peerAvgLabel" class="text-[#0F766E]"></span></h4><div id="peerLeaderboardBox" class="space-y-1.5 text-xs"></div></div>
                 </div>
-
-                <div class="flex items-center justify-between p-4 bg-tealmed-50/70 rounded-xl border border-tealmed-200 text-xs">
-                    <span class="font-semibold text-tealmed-900"><i class="fa-solid fa-book-medical mr-1.5"></i> Detailed Explanations &amp; Textbook Citations below</span>
-                    <button onclick="returnToLobby()" class="px-4 py-1.5 bg-tealmed-700 hover:bg-tealmed-800 text-white font-bold rounded-lg transition">
-                        Back to Mock Lobby
-                    </button>
+                <div class="flex justify-end">
+                    <button onclick="returnToLobby()" class="pill-btn px-5 py-2.5 bg-[#1D1D1F] text-white font-semibold rounded-full text-xs">Back to Tests</button>
                 </div>
             </div>
-
-            <div class="space-y-4">
-                <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
-                    <i class="fa-solid fa-microscope text-tealmed-700"></i> Question-by-Question Review &amp; Clinical Pearls
-                </h3>
-                <div id="reviewContainer" class="space-y-4"></div>
-            </div>
+            <div id="reviewContainer" class="space-y-4"></div>
         </div>
     </main>
 
     <script>
-        let currentExam = null;
-        let questions = [];
-        let currentIndex = 0;
-        let userResponses = {};
-        let questionStatus = {};
-        let timerInterval = null;
-        let timeRemainingSeconds = 0;
+        let currentExam = null, questions = [], currentIndex = 0, userResponses = {}, questionStatus = {}, timerInterval = null, timeRemainingSeconds = 0;
 
         document.addEventListener('DOMContentLoaded', () => {
-            const savedProfile = localStorage.getItem('med_doctor_profile');
-            if (savedProfile) {
-                try {
-                    const p = JSON.parse(savedProfile);
-                    if (p.name) document.getElementById('candidateNameInput').value = p.name;
-                } catch(e){}
-            }
-            loadExams();
-            refreshMistakeBanner();
+            try { const p = JSON.parse(localStorage.getItem('med_doctor_profile') || '{}'); if (p.name) document.getElementById('candidateNameInput').value = p.name; } catch(e){}
+            loadExams(); loadSubjectPills(); refreshMistakeBanner();
         });
 
-        function getMistakeNotebook() {
-            try { return JSON.parse(localStorage.getItem('med_mistake_notebook') || '[]'); }
-            catch (e) { return []; }
+        async function loadSubjectPills() {
+            try {
+                const res = await fetch('/api/exam-subjects');
+                const subjects = await res.json();
+                document.getElementById('subjectPillsContainer').innerHTML = subjects.map(s => `
+                    <button onclick="startTest('${s.id}')" class="pill-btn px-3.5 py-2 rounded-full bg-[#F5F5F7] hover:bg-[#1D1D1F] hover:text-white text-xs font-semibold text-[#1D1D1F] transition">
+                        ${s.subject} <span class="opacity-60 ml-1">(${s.count})</span>
+                    </button>
+                `).join('');
+            } catch (e) {}
         }
+
+        function getMistakeNotebook() { try { return JSON.parse(localStorage.getItem('med_mistake_notebook') || '[]'); } catch (e) { return []; } }
         function refreshMistakeBanner() {
-            const list = getMistakeNotebook();
-            const banner = document.getElementById('mistakeBanner');
-            if (!banner) return;
-            if (list.length > 0) {
-                document.getElementById('mistakeCountLabel').innerText = list.length;
-                banner.classList.remove('hidden');
-            } else {
-                banner.classList.add('hidden');
-            }
+            const list = getMistakeNotebook(), banner = document.getElementById('mistakeBanner');
+            if (list.length > 0) { document.getElementById('mistakeCountLabel').innerText = list.length; banner.classList.remove('hidden'); }
+            else banner.classList.add('hidden');
         }
         function startMistakeDrill() {
-            const list = getMistakeNotebook();
-            if (list.length === 0) return;
-            currentExam = { id: 'mistake-notebook', title: 'Mistake Notebook Revision Drill', duration_minutes: Math.max(10, list.length * 2), total_marks: list.length, negative_marking: 0.33, cutoff_reference: Math.ceil(list.length * 0.6) };
-            questions = list;
-            currentIndex = 0;
-            userResponses = {};
-            questionStatus = {};
+            const list = getMistakeNotebook(); if (!list.length) return;
+            currentExam = { id: 'mistake-notebook', title: 'Mistake Notebook Revision', duration_minutes: Math.max(10, list.length * 2), total_marks: list.length, cutoff_reference: Math.ceil(list.length * 0.6) };
+            questions = list; beginSession();
+        }
+        async function loadExams() {
+            const res = await fetch('/api/exams'), exams = await res.json();
+            document.getElementById('examsListContainer').innerHTML = exams.map(e => `
+                <div class="apple-card p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div class="space-y-1">
+                        <span class="text-[11px] font-semibold text-[#0F766E]">${e.year} • ${e.duration_minutes} Mins</span>
+                        <h3 class="text-base font-bold text-[#1D1D1F]">${e.title}</h3>
+                        <p class="text-xs text-[#6E6E73]">${e.subtitle} • ${e.total_questions} Qs • -1/3 Negative</p>
+                    </div>
+                    <button onclick="startTest('${e.id}')" class="pill-btn px-5 py-2.5 bg-[#1D1D1F] text-white font-semibold text-xs rounded-full shrink-0">Start</button>
+                </div>
+            `).join('');
+        }
+        async function startTest(examId) {
+            const res = await fetch(`/api/exams/${examId}`), data = await res.json();
+            currentExam = data.exam; questions = data.questions; beginSession();
+        }
+        function beginSession() {
+            currentIndex = 0; userResponses = {}; questionStatus = {};
             questions.forEach(q => questionStatus[q.id] = 'NOT_VISITED');
             questionStatus[questions[0].id] = 'NOT_ANSWERED';
             document.getElementById('lobbyView').classList.add('hidden');
@@ -298,405 +211,119 @@
             document.getElementById('cbtView').classList.remove('hidden');
             document.getElementById('testTimerBar').classList.remove('hidden');
             document.getElementById('lobbyNavBtns').classList.add('hidden');
+            document.getElementById('mobileBackBtn').classList.add('hidden');
             timeRemainingSeconds = currentExam.duration_minutes * 60;
-            startTimer();
-            renderQuestion();
-            renderPalette();
+            startTimer(); renderQuestion(); renderPalette();
         }
-
-        async function loadExams() {
-            try {
-                const res = await fetch('/api/exams');
-                const exams = await res.json();
-                const container = document.getElementById('examsListContainer');
-
-                container.innerHTML = exams.map(e => `
-                    <div class="med-card rounded-2xl p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                        <div class="space-y-1">
-                            <div class="flex items-center gap-2">
-                                <span class="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-tealmed-50 text-tealmed-800 border border-tealmed-200">${e.year}</span>
-                                <span class="text-[11px] font-semibold text-slate-400 font-mono">${e.duration_minutes} Mins</span>
-                            </div>
-                            <h3 class="text-base sm:text-lg font-bold text-slate-900">${e.title}</h3>
-                            <p class="text-xs text-slate-500">${e.subtitle}</p>
-                            <div class="flex items-center gap-4 pt-1.5 text-xs text-slate-600 font-medium">
-                                <span><i class="fa-solid fa-list-ol text-slate-400 mr-1"></i> ${e.total_questions} Questions</span>
-                                <span><i class="fa-solid fa-award text-amber-500 mr-1"></i> ${e.total_marks} Marks</span>
-                                <span><i class="fa-solid fa-circle-minus text-rose-500 mr-1"></i> -1/3 Negative</span>
-                            </div>
-                        </div>
-
-                        <div>
-                            <button onclick="startTest('${e.id}')" class="w-full sm:w-auto px-5 py-2.5 bg-tealmed-700 hover:bg-tealmed-800 text-white font-bold text-xs rounded-xl shadow transition flex items-center justify-center gap-2 whitespace-nowrap">
-                                <i class="fa-solid fa-play text-[10px]"></i>
-                                <span>Start Live Mock</span>
-                            </button>
-                        </div>
-                    </div>
-                `).join('');
-            } catch (err) {
-                console.error(err);
-            }
-        }
-
-        async function startTest(examId) {
-            try {
-                const res = await fetch(`/api/exams/${examId}`);
-                const data = await res.json();
-                currentExam = data.exam;
-                questions = data.questions;
-
-                currentIndex = 0;
-                userResponses = {};
-                questionStatus = {};
-                questions.forEach(q => questionStatus[q.id] = 'NOT_VISITED');
-                questionStatus[questions[0].id] = 'NOT_ANSWERED';
-
-                document.getElementById('lobbyView').classList.add('hidden');
-                document.getElementById('resultsView').classList.add('hidden');
-                document.getElementById('cbtView').classList.remove('hidden');
-                document.getElementById('testTimerBar').classList.remove('hidden');
-                document.getElementById('lobbyNavBtns').classList.add('hidden');
-
-                timeRemainingSeconds = currentExam.duration_minutes * 60;
-                startTimer();
-
-                renderQuestion();
-                renderPalette();
-            } catch (err) {
-                alert('Error starting test: ' + err.message);
-            }
-        }
-
         function startTimer() {
             clearInterval(timerInterval);
             timerInterval = setInterval(() => {
                 timeRemainingSeconds--;
-                if (timeRemainingSeconds <= 0) {
-                    clearInterval(timerInterval);
-                    alert('Time is up! Submitting your test automatically.');
-                    submitTest();
-                    return;
-                }
-                const mins = Math.floor(timeRemainingSeconds / 60);
-                const secs = timeRemainingSeconds % 60;
-                const display = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-                document.getElementById('timerDisplay').innerText = display;
-                if (mins < 10) {
-                    document.getElementById('timerDisplay').classList.add('text-rose-300');
-                }
+                if (timeRemainingSeconds <= 0) { clearInterval(timerInterval); submitTest(); return; }
+                const m = Math.floor(timeRemainingSeconds / 60), s = timeRemainingSeconds % 60;
+                document.getElementById('timerDisplay').innerText = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
             }, 1000);
         }
-
         function renderQuestion() {
-            const q = questions[currentIndex];
+            const q = questions[currentIndex], selected = userResponses[q.id], letters = ['A','B','C','D'];
             document.getElementById('qSubjectBadge').innerText = q.subject;
-            document.getElementById('qNumberText').innerText = `Question ${currentIndex + 1} of ${questions.length}`;
+            document.getElementById('qNumberText').innerText = `${currentIndex + 1} / ${questions.length}`;
             document.getElementById('qText').innerText = q.text;
-
-            const selected = userResponses[q.id];
-            const optionsContainer = document.getElementById('qOptionsContainer');
-            const letters = ['A', 'B', 'C', 'D'];
-
-            optionsContainer.innerHTML = q.options.map((opt, idx) => `
-                <label class="flex items-start gap-3 p-4 rounded-xl border ${selected === idx ? 'bg-tealmed-50 border-tealmed-600 ring-1 ring-tealmed-600' : 'bg-slate-50 border-slate-200 hover:bg-slate-100'} cursor-pointer transition">
-                    <input type="radio" name="optRadio" value="${idx}" ${selected === idx ? 'checked' : ''} onchange="selectOption(${idx})" class="mt-1 accent-teal-700">
-                    <span class="text-xs sm:text-sm text-slate-800">
-                        <strong class="font-bold text-tealmed-800 mr-1.5">${letters[idx]}.</strong> ${opt}
-                    </span>
+            document.getElementById('qOptionsContainer').innerHTML = q.options.map((opt, idx) => `
+                <label class="flex items-start gap-3 p-4 rounded-2xl border ${selected === idx ? 'bg-[#E6F4F1] border-[#0F766E]' : 'bg-[#F5F5F7] border-transparent hover:bg-gray-200/70'} cursor-pointer transition">
+                    <input type="radio" name="optRadio" value="${idx}" ${selected === idx ? 'checked' : ''} onchange="selectOption(${idx})" class="mt-1 accent-[#0F766E]">
+                    <span class="text-sm text-[#1D1D1F]"><strong class="mr-1.5">${letters[idx]}.</strong> ${opt}</span>
                 </label>
             `).join('');
-
             document.getElementById('prevBtn').disabled = (currentIndex === 0);
             updateStatusCounts();
         }
-
-        function selectOption(idx) {
-            const qId = questions[currentIndex].id;
-            userResponses[qId] = idx;
-            questionStatus[qId] = 'ANSWERED';
-            renderQuestion();
-            renderPalette();
-            updateStatusCounts();
-        }
-
-        function clearResponse() {
-            const qId = questions[currentIndex].id;
-            delete userResponses[qId];
-            questionStatus[qId] = 'NOT_ANSWERED';
-            renderQuestion();
-            renderPalette();
-        }
-
-        function markForReviewAndNext() {
-            const qId = questions[currentIndex].id;
-            questionStatus[qId] = 'MARKED';
-            renderPalette();
-            nextQuestion();
-        }
-
-        function saveAndNext() {
-            const qId = questions[currentIndex].id;
-            if (userResponses[qId] === undefined) {
-                questionStatus[qId] = 'NOT_ANSWERED';
-            } else {
-                questionStatus[qId] = 'ANSWERED';
-            }
-            renderPalette();
-            nextQuestion();
-        }
-
-        function nextQuestion() {
-            if (currentIndex < questions.length - 1) {
-                currentIndex++;
-                const nextQId = questions[currentIndex].id;
-                if (questionStatus[nextQId] === 'NOT_VISITED') {
-                    questionStatus[nextQId] = 'NOT_ANSWERED';
-                }
-                renderQuestion();
-                renderPalette();
-            }
-        }
-
-        function prevQuestion() {
-            if (currentIndex > 0) {
-                currentIndex--;
-                renderQuestion();
-                renderPalette();
-            }
-        }
-
-        function jumpToQuestion(index) {
-            currentIndex = index;
-            const qId = questions[currentIndex].id;
-            if (questionStatus[qId] === 'NOT_VISITED') {
-                questionStatus[qId] = 'NOT_ANSWERED';
-            }
-            renderQuestion();
-            renderPalette();
-        }
-
+        function selectOption(idx) { const qId = questions[currentIndex].id; userResponses[qId] = idx; questionStatus[qId] = 'ANSWERED'; renderQuestion(); renderPalette(); }
+        function clearResponse() { const qId = questions[currentIndex].id; delete userResponses[qId]; questionStatus[qId] = 'NOT_ANSWERED'; renderQuestion(); renderPalette(); }
+        function markForReviewAndNext() { questionStatus[questions[currentIndex].id] = 'MARKED'; renderPalette(); nextQuestion(); }
+        function saveAndNext() { const qId = questions[currentIndex].id; questionStatus[qId] = userResponses[qId] === undefined ? 'NOT_ANSWERED' : 'ANSWERED'; renderPalette(); nextQuestion(); }
+        function nextQuestion() { if (currentIndex < questions.length - 1) { currentIndex++; if (questionStatus[questions[currentIndex].id] === 'NOT_VISITED') questionStatus[questions[currentIndex].id] = 'NOT_ANSWERED'; renderQuestion(); renderPalette(); } }
+        function prevQuestion() { if (currentIndex > 0) { currentIndex--; renderQuestion(); renderPalette(); } }
+        function jumpToQuestion(i) { currentIndex = i; if (questionStatus[questions[i].id] === 'NOT_VISITED') questionStatus[questions[i].id] = 'NOT_ANSWERED'; renderQuestion(); renderPalette(); }
         function renderPalette() {
-            const grid = document.getElementById('paletteGrid');
-            grid.innerHTML = questions.map((q, idx) => {
+            document.getElementById('paletteGrid').innerHTML = questions.map((q, idx) => {
                 const st = questionStatus[q.id];
-                let bg = 'bg-slate-200 text-slate-700';
-                if (st === 'ANSWERED') bg = 'bg-emerald-500 text-white font-bold';
-                else if (st === 'NOT_ANSWERED') bg = 'bg-rose-500 text-white font-bold';
-                else if (st === 'MARKED') bg = 'bg-amber-500 text-white font-bold';
-
-                const isCurrent = (idx === currentIndex) ? 'ring-2 ring-tealmed-900 ring-offset-1' : '';
-
-                return `
-                    <button onclick="jumpToQuestion(${idx})" class="w-8 h-8 rounded-lg flex items-center justify-center font-mono text-xs transition ${bg} ${isCurrent}">
-                        ${idx + 1}
-                    </button>
-                `;
+                let bg = 'bg-[#F5F5F7] text-[#1D1D1F]';
+                if (st === 'ANSWERED') bg = 'bg-emerald-500 text-white';
+                else if (st === 'NOT_ANSWERED') bg = 'bg-rose-500 text-white';
+                else if (st === 'MARKED') bg = 'bg-amber-500 text-white';
+                return `<button onclick="jumpToQuestion(${idx})" class="w-8 h-8 rounded-full text-xs font-semibold ${bg} ${idx === currentIndex ? 'ring-2 ring-black' : ''}">${idx + 1}</button>`;
             }).join('');
         }
-
         function updateStatusCounts() {
-            let ans = 0, notAns = 0, marked = 0, notVis = 0;
-            questions.forEach(q => {
-                const st = questionStatus[q.id];
-                if (st === 'ANSWERED') ans++;
-                else if (st === 'NOT_ANSWERED') notAns++;
-                else if (st === 'MARKED') marked++;
-                else notVis++;
-            });
-            document.getElementById('countAnswered').innerText = ans;
-            document.getElementById('countNotAnswered').innerText = notAns;
-            document.getElementById('countMarked').innerText = marked;
-            document.getElementById('countNotVisited').innerText = notVis;
+            let a=0,n=0,m=0,v=0;
+            questions.forEach(q => { const s = questionStatus[q.id]; if(s==='ANSWERED')a++; else if(s==='NOT_ANSWERED')n++; else if(s==='MARKED')m++; else v++; });
+            document.getElementById('countAnswered').innerText=a; document.getElementById('countNotAnswered').innerText=n;
+            document.getElementById('countMarked').innerText=m; document.getElementById('countNotVisited').innerText=v;
         }
-
-        function confirmSubmitTest() {
-            if (confirm('Are you sure you want to finish and submit your exam?')) {
-                submitTest();
-            }
-        }
-
+        function confirmSubmitTest() { if (confirm('Submit exam?')) submitTest(); }
         async function submitTest() {
             clearInterval(timerInterval);
             const candidate = document.getElementById('candidateNameInput').value.trim() || 'Dr. Candidate';
-
             if (currentExam.id === 'mistake-notebook') {
-                let correct = 0, wrong = 0, unattempted = 0;
-                const subject_breakdown = {};
-                const review = questions.map(q => {
-                    if (!subject_breakdown[q.subject]) subject_breakdown[q.subject] = { total: 0, correct: 0, wrong: 0, unattempted: 0 };
-                    subject_breakdown[q.subject].total++;
-                    const user_choice = userResponses[q.id];
-                    const is_attempted = user_choice !== undefined;
-                    const is_correct = is_attempted && user_choice === q.correct_option;
-                    if (!is_attempted) { unattempted++; subject_breakdown[q.subject].unattempted++; }
-                    else if (is_correct) { correct++; subject_breakdown[q.subject].correct++; }
-                    else { wrong++; subject_breakdown[q.subject].wrong++; }
-                    return { ...q, user_choice, is_attempted, is_correct };
+                let c=0,w=0,u=0; const sb={};
+                const rev = questions.map(q => {
+                    if(!sb[q.subject]) sb[q.subject]={total:0,correct:0,wrong:0,unattempted:0};
+                    sb[q.subject].total++; const uc=userResponses[q.id], ia=uc!==undefined, ic=ia&&uc===q.correct_option;
+                    if(!ia){u++;sb[q.subject].unattempted++;} else if(ic){c++;sb[q.subject].correct++;} else{w++;sb[q.subject].wrong++;}
+                    return {...q, user_choice:uc, is_attempted:ia, is_correct:ic};
                 });
-                const final_score = Math.max(0, +(correct - wrong * 0.33).toFixed(2));
-                const accuracy_pct = (correct + wrong) > 0 ? +((correct / (correct + wrong)) * 100).toFixed(1) : 0;
-                const qualified = final_score >= currentExam.cutoff_reference;
-                renderResultsView({
-                    candidate_name: candidate,
-                    exam_title: currentExam.title,
-                    final_score,
-                    correct,
-                    wrong,
-                    unattempted,
-                    accuracy_pct,
-                    qualified,
-                    status_label: qualified ? 'MASTERED MISTAKES' : 'KEEP REVISING',
-                    subject_breakdown,
-                    review
-                });
+                const fs = Math.max(0, +(c - w*0.33).toFixed(2)), acc = (c+w)>0 ? +((c/(c+w))*100).toFixed(1) : 0;
+                renderResultsView({ candidate_name: candidate, exam_title: currentExam.title, final_score: fs, correct: c, wrong: w, unattempted: u, accuracy_pct: acc, qualified: fs >= currentExam.cutoff_reference, status_label: fs >= currentExam.cutoff_reference ? 'MASTERED' : 'KEEP REVISING', subject_breakdown: sb, review: rev });
                 return;
             }
-
-            try {
-                const res = await fetch(`/api/exams/${currentExam.id}/submit`, {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({
-                        candidate_name: candidate,
-                        answers: userResponses
-                    })
-                });
-                const result = await res.json();
-                renderResultsView(result);
-            } catch (err) {
-                alert('Submission failed: ' + err.message);
-            }
+            const res = await fetch(`/api/exams/${currentExam.id}/submit`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({candidate_name:candidate, answers:userResponses}) });
+            renderResultsView(await res.json());
         }
-
         function saveMistakesFromReview(review) {
-            let notebook = getMistakeNotebook();
-            const map = {};
-            notebook.forEach(q => map[q.id] = q);
+            const map = {}; getMistakeNotebook().forEach(q => map[q.id] = q);
             (review || []).forEach(q => {
-                if (q.is_attempted && !q.is_correct) {
-                    map[q.id] = { id: q.id, subject: q.subject, text: q.text, options: q.options, correct_option: q.correct_option, explanation: q.explanation, citation: q.citation };
-                } else if (q.is_correct && map[q.id]) {
-                    delete map[q.id];
-                }
+                if (q.is_attempted && !q.is_correct) map[q.id] = { id:q.id, subject:q.subject, text:q.text, options:q.options, correct_option:q.correct_option, explanation:q.explanation, citation:q.citation };
+                else if (q.is_correct && map[q.id]) delete map[q.id];
             });
             localStorage.setItem('med_mistake_notebook', JSON.stringify(Object.values(map)));
             refreshMistakeBanner();
         }
-
         function renderResultsView(res) {
-            document.getElementById('cbtView').classList.add('hidden');
-            document.getElementById('testTimerBar').classList.add('hidden');
-            document.getElementById('lobbyNavBtns').classList.remove('hidden');
+            document.getElementById('cbtView').classList.add('hidden'); document.getElementById('testTimerBar').classList.add('hidden');
+            document.getElementById('lobbyNavBtns').classList.remove('hidden'); document.getElementById('mobileBackBtn').classList.remove('hidden');
             document.getElementById('resultsView').classList.remove('hidden');
-
-            document.getElementById('resExamTitle').innerText = res.exam_title;
-            document.getElementById('resCandidate').innerText = res.candidate_name;
+            document.getElementById('resExamTitle').innerText = res.exam_title; document.getElementById('resCandidate').innerText = res.candidate_name;
             document.getElementById('resScore').innerText = res.final_score.toFixed(1);
-
-            const badge = document.getElementById('resStatusBadge');
-            badge.innerText = res.status_label;
-            if (res.qualified) {
-                badge.className = 'inline-block mt-1.5 px-3 py-1 rounded-full text-xs font-extrabold bg-emerald-100 text-emerald-800 border border-emerald-200';
-            } else {
-                badge.className = 'inline-block mt-1.5 px-3 py-1 rounded-full text-xs font-extrabold bg-amber-100 text-amber-800 border border-amber-200';
-            }
-
-            document.getElementById('resCorrect').innerText = res.correct;
-            document.getElementById('resWrong').innerText = res.wrong;
-            document.getElementById('resUnattempted').innerText = res.unattempted;
-            document.getElementById('resAccuracy').innerText = `${res.accuracy_pct}%`;
+            const badge = document.getElementById('resStatusBadge'); badge.innerText = res.status_label;
+            badge.className = `inline-block mt-1.5 px-3 py-0.5 rounded-full text-xs font-semibold ${res.qualified ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-800'}`;
+            document.getElementById('resCorrect').innerText = res.correct; document.getElementById('resWrong').innerText = res.wrong;
+            document.getElementById('resUnattempted').innerText = res.unattempted; document.getElementById('resAccuracy').innerText = `${res.accuracy_pct}%`;
             saveMistakesFromReview(res.review);
 
-            // Subject Breakdown Bars
-            const subjBox = document.getElementById('subjectBreakdownBox');
-            subjBox.innerHTML = Object.entries(res.subject_breakdown || {}).map(([subj, st]) => {
+            document.getElementById('subjectBreakdownBox').innerHTML = Object.entries(res.subject_breakdown || {}).map(([s, st]) => {
                 const pct = st.total > 0 ? Math.round((st.correct / st.total) * 100) : 0;
-                return `
-                    <div>
-                        <div class="flex justify-between font-medium text-slate-700 mb-1">
-                            <span>${subj}</span>
-                            <span class="font-mono">${st.correct}/${st.total} (${pct}%)</span>
-                        </div>
-                        <div class="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
-                            <div class="h-full bg-tealmed-600 rounded-full" style="width: ${pct}%"></div>
-                        </div>
-                    </div>
-                `;
+                return `<div><div class="flex justify-between font-medium mb-1"><span>${s}</span><span>${st.correct}/${st.total} (${pct}%)</span></div><div class="w-full h-1.5 bg-white rounded-full overflow-hidden"><div class="h-full bg-[#0F766E]" style="width:${pct}%"></div></div></div>`;
             }).join('');
 
-            // Peer Leaderboard
-            fetch(`/api/exams/${currentExam.id}/leaderboard`)
-                .then(r => r.json())
-                .then(lb => {
-                    document.getElementById('peerAvgLabel').innerText = `Peer Avg: ${lb.peer_average} (${lb.total_attempts} runs)`;
-                    document.getElementById('peerLeaderboardBox').innerHTML = (lb.top_scores || []).slice(0, 5).map((s, i) => `
-                        <div class="flex items-center justify-between py-1 border-b border-slate-200/70 last:border-0">
-                            <span class="font-medium text-slate-700">#${i + 1} ${s.candidate_name}</span>
-                            <span class="font-mono font-bold text-tealmed-800">${s.final_score.toFixed(1)} pts (${s.accuracy_pct}%)</span>
-                        </div>
-                    `).join('') || '<p class="text-slate-400">First attempt recorded!</p>';
-                }).catch(() => {});
+            fetch(`/api/exams/${currentExam.id}/leaderboard`).then(r=>r.json()).then(lb => {
+                document.getElementById('peerAvgLabel').innerText = `Avg: ${lb.peer_average}`;
+                document.getElementById('peerLeaderboardBox').innerHTML = (lb.top_scores || []).slice(0,5).map((s,i) => `<div class="flex justify-between"><span>#${i+1} ${s.candidate_name}</span><span class="font-semibold">${s.final_score.toFixed(1)}</span></div>`).join('') || '<span class="text-[#86868B]">First run recorded!</span>';
+            }).catch(()=>{});
 
-            const container = document.getElementById('reviewContainer');
-            const letters = ['A', 'B', 'C', 'D'];
-
-            container.innerHTML = res.review.map((q, idx) => {
-                let statusBadge = '';
-                if (!q.is_attempted) {
-                    statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-600">Unattempted</span>';
-                } else if (q.is_correct) {
-                    statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800"><i class="fa-solid fa-check mr-1"></i> Correct</span>';
-                } else {
-                    statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-100 text-rose-800"><i class="fa-solid fa-xmark mr-1"></i> Incorrect (-0.33)</span>';
-                }
-
-                return `
-                <div class="med-card rounded-2xl p-5 sm:p-6 space-y-3">
-                    <div class="flex items-center justify-between border-b border-slate-100 pb-2.5">
-                        <span class="text-xs font-bold text-tealmed-800">Q${idx + 1}. ${q.subject}</span>
-                        ${statusBadge}
-                    </div>
-
-                    <p class="text-sm font-semibold text-slate-900 leading-relaxed">${q.text}</p>
-
+            const letters = ['A','B','C','D'];
+            document.getElementById('reviewContainer').innerHTML = res.review.map((q, idx) => `
+                <div class="apple-card p-6 space-y-3">
+                    <div class="flex justify-between text-xs font-semibold"><span class="text-[#0F766E]">Q${idx+1} • ${q.subject}</span><span class="${q.is_correct ? 'text-emerald-700' : (q.is_attempted ? 'text-rose-600' : 'text-[#86868B]')}">${q.is_correct ? 'Correct' : (q.is_attempted ? 'Wrong (-0.33)' : 'Skipped')}</span></div>
+                    <p class="text-sm font-semibold text-[#1D1D1F]">${q.text}</p>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-                        ${q.options.map((opt, oIdx) => {
-                            let optClass = 'bg-slate-50 border-slate-200 text-slate-700';
-                            if (oIdx === q.correct_option) {
-                                optClass = 'bg-emerald-50 border-emerald-300 text-emerald-900 font-bold ring-1 ring-emerald-400';
-                            } else if (q.user_choice === oIdx && !q.is_correct) {
-                                optClass = 'bg-rose-50 border-rose-300 text-rose-900 font-bold ring-1 ring-rose-400';
-                            }
-                            return `
-                                <div class="p-2.5 rounded-xl border text-xs ${optClass}">
-                                    <strong>${letters[oIdx]}.</strong> ${opt}
-                                    ${oIdx === q.correct_option ? ' <i class="fa-solid fa-circle-check text-emerald-600 ml-1"></i>' : ''}
-                                    ${q.user_choice === oIdx && !q.is_correct ? ' <i class="fa-solid fa-circle-xmark text-rose-600 ml-1"></i> (Your Choice)' : ''}
-                                </div>
-                            `;
-                        }).join('')}
+                        ${q.options.map((opt, oIdx) => `<div class="p-3 rounded-xl ${oIdx === q.correct_option ? 'bg-emerald-50 text-emerald-900 font-semibold' : (q.user_choice === oIdx ? 'bg-rose-50 text-rose-900' : 'bg-[#F5F5F7] text-[#6E6E73]')}">${letters[oIdx]}. ${opt}</div>`).join('')}
                     </div>
-
-                    <div class="p-3.5 bg-amber-50/70 border border-amber-200/70 rounded-xl space-y-1.5 text-xs text-amber-950">
-                        <span class="font-bold flex items-center gap-1.5 text-amber-900 text-[11px] uppercase tracking-wide">
-                            <i class="fa-solid fa-lightbulb text-amber-600"></i> High-Yield Clinical Pearl
-                        </span>
-                        <p class="leading-relaxed text-slate-700">${q.explanation}</p>
-                        <p class="text-[10px] text-slate-400 italic font-mono pt-1 border-t border-amber-100">
-                            Reference: ${q.citation}
-                        </p>
-                    </div>
+                    <div class="p-3.5 bg-[#F5F5F7] rounded-2xl text-xs text-[#6E6E73] space-y-1"><strong class="text-[#1D1D1F] block">Clinical Pearl</strong><p>${q.explanation}</p><p class="text-[10px] italic">${q.citation}</p></div>
                 </div>
-                `;
-            }).join('');
+            `).join('');
         }
-
-        function returnToLobby() {
-            document.getElementById('resultsView').classList.add('hidden');
-            document.getElementById('lobbyView').classList.remove('hidden');
-            loadExams();
-        }
+        function returnToLobby() { document.getElementById('resultsView').classList.add('hidden'); document.getElementById('lobbyView').classList.remove('hidden'); loadExams(); }
     </script>
 </body>
 </html>

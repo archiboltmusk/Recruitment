@@ -3,110 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Post-MBBS Career &amp; First-Duty Toolkit — MedAlerts</title>
+    <title>Post-MBBS Kit — MedAlerts</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: { sans: ['"Plus Jakarta Sans"', 'sans-serif'], mono: ['"JetBrains Mono"', 'monospace'] },
-                    colors: { tealmed: { 50: '#F0FDFA', 100: '#CCFBF1', 200: '#99F6E4', 600: '#0D9488', 700: '#0F766E', 800: '#115E59', 900: '#0F4C4C' } }
-                }
-            }
-        }
-    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body { background: linear-gradient(180deg, #F0FDFA 0%, #F8FAFC 260px, #F8FAFC 100%); color: #0F172A; font-family: 'Plus Jakarta Sans', sans-serif; }
-        .med-card { background: #FFFFFF; border: 1px solid #E2E8F0; box-shadow: 0 2px 10px -2px rgba(15, 76, 76, 0.05); }
+        body { background-color: #F5F5F7; color: #1D1D1F; font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; -webkit-font-smoothing: antialiased; }
+        .apple-card { background: #FFFFFF; border-radius: 22px; border: 1px solid rgba(0,0,0,0.06); box-shadow: 0 2px 12px rgba(0,0,0,0.03); }
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
-    <header class="bg-white/90 backdrop-blur-lg border-b border-slate-200 sticky top-0 z-30">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between">
-            <a href="/" class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-tealmed-600 to-tealmed-800 flex items-center justify-center text-white shadow-md">
-                    <i class="fa-solid fa-staff-snake text-lg"></i>
+    <header class="sticky top-0 z-30 bg-[#F5F5F7]/85 backdrop-blur-xl border-b border-black/[0.06]">
+        <div class="max-w-6xl mx-auto px-5 sm:px-8 h-16 flex items-center justify-between">
+            <a href="/" class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-xl bg-[#0F766E] flex items-center justify-center text-white">
+                    <i class="fa-solid fa-staff-snake text-sm"></i>
                 </div>
-                <div>
-                    <h1 class="text-lg font-extrabold text-slate-900 leading-tight">MedAlerts</h1>
-                    <p class="text-[11px] text-tealmed-700 font-semibold">Post-MBBS Doctor Survival &amp; Career Hub</p>
-                </div>
+                <span class="text-base font-bold tracking-tight text-[#1D1D1F]">MedAlerts</span>
             </a>
-            <div class="flex items-center gap-2">
-                <a href="/onboarding" class="px-3 py-2 text-xs font-semibold text-tealmed-800 bg-tealmed-50 hover:bg-tealmed-100 border border-tealmed-200 rounded-xl transition">Eligibility</a>
-                <a href="/bonds" class="px-3 py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition hidden sm:inline-block">Bonds &amp; Pay</a>
-                <a href="/exam" class="px-3 py-2 text-xs font-bold text-amber-900 bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-xl transition">CMS CBT</a>
-                <a href="/" class="px-3 py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition">Dashboard</a>
-            </div>
+            <nav class="hidden md:flex items-center gap-7 text-[13px] font-medium text-[#6E6E73]">
+                <a href="/" class="hover:text-[#1D1D1F] transition">Jobs</a>
+                <a href="/onboarding" class="hover:text-[#1D1D1F] transition">Eligibility</a>
+                <a href="/exam" class="hover:text-[#1D1D1F] transition">Mock CBT</a>
+                <a href="/bonds" class="hover:text-[#1D1D1F] transition">Pay &amp; Bonds</a>
+                <a href="/toolkit" class="text-[#1D1D1F] font-semibold">Post-MBBS Kit</a>
+            </nav>
+            <a href="/" class="px-4 py-1.5 rounded-full bg-white border border-black/10 text-xs font-semibold text-[#1D1D1F]">All Jobs</a>
         </div>
     </header>
 
-    <main class="flex-grow max-w-6xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-        <!-- Hero -->
-        <div class="rounded-2xl bg-gradient-to-r from-tealmed-900 via-tealmed-800 to-emerald-800 p-6 sm:p-8 text-white shadow-lg">
-            <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 border border-white/20 text-[11px] font-semibold mb-3">
-                <i class="fa-solid fa-kit-medical text-emerald-300"></i> Everything Needed After Passing Final MBBS
-            </span>
-            <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight">Post-MBBS Career, Registration &amp; First-Duty Toolkit</h2>
-            <p class="text-sm text-tealmed-100 mt-1.5 max-w-2xl">
-                Solve the 4 biggest post-MBBS headaches in one place: NMC/SMC Registration steps, 7th CPC In-Hand Salary math, JR vs. NEET PG study-hour tradeoffs, and Casualty / MLC emergency protocols.
-            </p>
+    <main class="flex-grow max-w-6xl mx-auto w-full px-5 sm:px-8 py-10 space-y-8">
+        <div class="text-center max-w-2xl mx-auto space-y-3">
+            <p class="text-xs font-semibold uppercase tracking-[0.14em] text-[#0F766E]">After Passing Final MBBS</p>
+            <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-[#1D1D1F]">Registration, Salary &amp; First Duty.</h1>
+            <p class="text-sm text-[#6E6E73]">Everything an MBBS graduate needs: NMC/SMC steps, real in-hand salary math, and casualty emergency doses.</p>
         </div>
 
-        <!-- Grid: 1. Registration Pipeline + 2. 7th CPC Salary & Study-Hour Calculator -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <!-- 1. NMC / SMC Registration & NOC Roadmap -->
-            <section class="med-card rounded-2xl p-6 space-y-4">
-                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-                    <div>
-                        <h3 class="text-base font-extrabold text-slate-900"><i class="fa-solid fa-id-card-clip text-tealmed-700 mr-2"></i>NMC / State Council Registration Pipeline</h3>
-                        <p class="text-xs text-slate-500">Track every paperwork milestone after passing Final Prof.</p>
-                    </div>
-                    <span id="regProgressBadge" class="font-mono text-xs font-bold px-2.5 py-1 rounded-full bg-tealmed-50 text-tealmed-800 border border-tealmed-200">0/6</span>
+            <section class="apple-card p-6 space-y-4">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-base font-bold text-[#1D1D1F]">NMC / State Council Steps</h2>
+                    <span id="regProgressBadge" class="text-xs font-bold px-2.5 py-1 rounded-full bg-[#E6F4F1] text-[#0F766E]">0/6</span>
                 </div>
-                <div class="space-y-2.5 text-xs" id="regChecklist">
-                    <label class="flex items-start gap-3 p-3 rounded-xl bg-slate-50 border border-slate-200 cursor-pointer">
-                        <input type="checkbox" data-reg="prov" onchange="saveRegState()" class="mt-0.5 w-4 h-4 accent-teal-700 rounded">
-                        <div><strong class="text-slate-900 block">1. Provisional SMC Registration</strong><span class="text-slate-500">Required before starting 12-month CRRI Internship.</span></div>
-                    </label>
-                    <label class="flex items-start gap-3 p-3 rounded-xl bg-slate-50 border border-slate-200 cursor-pointer">
-                        <input type="checkbox" data-reg="crri" onchange="saveRegState()" class="mt-0.5 w-4 h-4 accent-teal-700 rounded">
-                        <div><strong class="text-slate-900 block">2. CRRI Internship Completion Certificate</strong><span class="text-slate-500">Signed by Dean/Principal with exact start &amp; end dates (no gaps).</span></div>
-                    </label>
-                    <label class="flex items-start gap-3 p-3 rounded-xl bg-slate-50 border border-slate-200 cursor-pointer">
-                        <input type="checkbox" data-reg="attempt" onchange="saveRegState()" class="mt-0.5 w-4 h-4 accent-teal-700 rounded">
-                        <div><strong class="text-slate-900 block">3. Attempt Certificate + All Prof Marksheets</strong><span class="text-slate-500">Mandatory for AIIMS/ESIC JR &amp; WBHRB/UPPSC interviews.</span></div>
-                    </label>
-                    <label class="flex items-start gap-3 p-3 rounded-xl bg-slate-50 border border-slate-200 cursor-pointer">
-                        <input type="checkbox" data-reg="perm" onchange="saveRegState()" class="mt-0.5 w-4 h-4 accent-teal-700 rounded">
-                        <div><strong class="text-slate-900 block">4. Permanent State Medical Council (SMC / WBMC / DMC)</strong><span class="text-slate-500">Gives you your permanent registration number for prescriptions &amp; MO jobs.</span></div>
-                    </label>
-                    <label class="flex items-start gap-3 p-3 rounded-xl bg-slate-50 border border-slate-200 cursor-pointer">
-                        <input type="checkbox" data-reg="noc" onchange="saveRegState()" class="mt-0.5 w-4 h-4 accent-teal-700 rounded">
-                        <div><strong class="text-slate-900 block">5. Inter-State NOC / Reciprocal Transfer (If moving states)</strong><span class="text-slate-500">Needed for State PSC/NHM outside your MBBS state (Central Govt accepts any SMC).</span></div>
-                    </label>
-                    <label class="flex items-start gap-3 p-3 rounded-xl bg-slate-50 border border-slate-200 cursor-pointer">
-                        <input type="checkbox" data-reg="ews" onchange="saveRegState()" class="mt-0.5 w-4 h-4 accent-teal-700 rounded">
-                        <div><strong class="text-slate-900 block">6. Current FY OBC-NCL / EWS Certificate (If applicable)</strong><span class="text-slate-500">Must be issued in the current Financial Year (post-April 1) for UPSC/AIIMS/ESIC.</span></div>
-                    </label>
+                <div class="space-y-2 text-xs" id="regChecklist">
+                    <label class="flex items-start gap-3 p-3 rounded-2xl bg-[#F5F5F7] cursor-pointer"><input type="checkbox" data-reg="prov" onchange="saveRegState()" class="mt-0.5 w-4 h-4 accent-[#0F766E]"><div><strong class="block">1. Provisional SMC Registration</strong><span class="text-[#6E6E73]">Before starting 12-month CRRI Internship.</span></div></label>
+                    <label class="flex items-start gap-3 p-3 rounded-2xl bg-[#F5F5F7] cursor-pointer"><input type="checkbox" data-reg="crri" onchange="saveRegState()" class="mt-0.5 w-4 h-4 accent-[#0F766E]"><div><strong class="block">2. CRRI Completion Certificate</strong><span class="text-[#6E6E73]">Signed by Dean/Principal with exact dates.</span></div></label>
+                    <label class="flex items-start gap-3 p-3 rounded-2xl bg-[#F5F5F7] cursor-pointer"><input type="checkbox" data-reg="attempt" onchange="saveRegState()" class="mt-0.5 w-4 h-4 accent-[#0F766E]"><div><strong class="block">3. Attempt Certificate + Marksheets</strong><span class="text-[#6E6E73]">Required for AIIMS/ESIC/WBHRB interviews.</span></div></label>
+                    <label class="flex items-start gap-3 p-3 rounded-2xl bg-[#F5F5F7] cursor-pointer"><input type="checkbox" data-reg="perm" onchange="saveRegState()" class="mt-0.5 w-4 h-4 accent-[#0F766E]"><div><strong class="block">4. Permanent SMC / WBMC / DMC</strong><span class="text-[#6E6E73]">Permanent registration number for MO posts.</span></div></label>
+                    <label class="flex items-start gap-3 p-3 rounded-2xl bg-[#F5F5F7] cursor-pointer"><input type="checkbox" data-reg="noc" onchange="saveRegState()" class="mt-0.5 w-4 h-4 accent-[#0F766E]"><div><strong class="block">5. Inter-State NOC (If moving states)</strong><span class="text-[#6E6E73]">Needed for outside-state PSC/NHM jobs.</span></div></label>
+                    <label class="flex items-start gap-3 p-3 rounded-2xl bg-[#F5F5F7] cursor-pointer"><input type="checkbox" data-reg="ews" onchange="saveRegState()" class="mt-0.5 w-4 h-4 accent-[#0F766E]"><div><strong class="block">6. Current FY OBC-NCL / EWS</strong><span class="text-[#6E6E73]">Issued post-April 1 for central reservations.</span></div></label>
                 </div>
             </section>
 
-            <!-- 2. In-Hand Salary & NEET PG Study-Hours Calculator -->
-            <section class="med-card rounded-2xl p-6 space-y-5">
-                <div class="border-b border-slate-100 pb-3">
-                    <h3 class="text-base font-extrabold text-slate-900"><i class="fa-solid fa-calculator text-tealmed-700 mr-2"></i>7th CPC In-Hand Pay &amp; PG Study-Hour Planner</h3>
-                    <p class="text-xs text-slate-500">Compare actual take-home pay and daily study hours before accepting an offer.</p>
-                </div>
-
+            <section class="apple-card p-6 space-y-5">
+                <h2 class="text-base font-bold text-[#1D1D1F]">In-Hand Salary &amp; Study-Hour Planner</h2>
                 <div class="grid grid-cols-2 gap-3 text-xs">
                     <div>
-                        <label class="block font-bold text-slate-600 mb-1">Cadre Type</label>
-                        <select id="calcCadre" onchange="calculateCareer()" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-semibold">
+                        <label class="block font-semibold text-[#6E6E73] mb-1">Cadre</label>
+                        <select id="calcCadre" onchange="calculateCareer()" class="w-full px-3 py-2.5 bg-[#F5F5F7] rounded-xl font-semibold outline-none">
                             <option value="central_l10">Central Level 10 (CMS/ESIC/JR)</option>
                             <option value="rail_cmp">Railways CMP / ECHS (₹75k)</option>
                             <option value="nhm_kmc">NHM / KMC Walk-in (₹60k)</option>
@@ -114,142 +70,96 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block font-bold text-slate-600 mb-1">City Tier (HRA)</label>
-                        <select id="calcCity" onchange="calculateCareer()" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-semibold">
-                            <option value="0.30">Tier-1 Metro (30% HRA)</option>
-                            <option value="0.20">Tier-2 City (20% HRA)</option>
-                            <option value="0.10">Tier-3 / Rural (10% HRA)</option>
+                        <label class="block font-semibold text-[#6E6E73] mb-1">City HRA</label>
+                        <select id="calcCity" onchange="calculateCareer()" class="w-full px-3 py-2.5 bg-[#F5F5F7] rounded-xl font-semibold outline-none">
+                            <option value="0.30">Metro (30% HRA)</option>
+                            <option value="0.20">Tier-2 (20% HRA)</option>
+                            <option value="0.10">Rural (10% HRA)</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block font-bold text-slate-600 mb-1">Monthly Living + EMI (₹)</label>
-                        <input type="number" id="calcExpense" value="25000" oninput="calculateCareer()" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-mono font-semibold">
+                        <label class="block font-semibold text-[#6E6E73] mb-1">Monthly Expense (₹)</label>
+                        <input type="number" id="calcExpense" value="25000" oninput="calculateCareer()" class="w-full px-3 py-2.5 bg-[#F5F5F7] rounded-xl font-semibold outline-none">
                     </div>
                     <div>
-                        <label class="block font-bold text-slate-600 mb-1">DA Rate (%)</label>
-                        <input type="number" id="calcDA" value="53" oninput="calculateCareer()" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-mono font-semibold">
+                        <label class="block font-semibold text-[#6E6E73] mb-1">DA (%)</label>
+                        <input type="number" id="calcDA" value="53" oninput="calculateCareer()" class="w-full px-3 py-2.5 bg-[#F5F5F7] rounded-xl font-semibold outline-none">
                     </div>
                 </div>
-
                 <div class="grid grid-cols-3 gap-3 text-center">
-                    <div class="p-3 bg-tealmed-50 rounded-xl border border-tealmed-200">
-                        <p class="text-[10px] font-bold uppercase text-tealmed-800">Est. In-Hand/Mo</p>
-                        <p class="text-lg font-extrabold text-tealmed-900 font-mono mt-0.5" id="resInHand">₹0</p>
-                    </div>
-                    <div class="p-3 bg-emerald-50 rounded-xl border border-emerald-200">
-                        <p class="text-[10px] font-bold uppercase text-emerald-800">Monthly Savings</p>
-                        <p class="text-lg font-extrabold text-emerald-700 font-mono mt-0.5" id="resSavings">₹0</p>
-                    </div>
-                    <div class="p-3 bg-amber-50 rounded-xl border border-amber-200">
-                        <p class="text-[10px] font-bold uppercase text-amber-800">PG Study Hrs/Day</p>
-                        <p class="text-lg font-extrabold text-amber-800 font-mono mt-0.5" id="resStudyHrs">0h</p>
-                    </div>
+                    <div class="p-3 bg-[#E6F4F1] rounded-2xl"><p class="text-[10px] font-semibold text-[#0F766E]">In-Hand/Mo</p><p class="text-lg font-extrabold text-[#1D1D1F] mt-0.5" id="resInHand">₹0</p></div>
+                    <div class="p-3 bg-emerald-50 rounded-2xl"><p class="text-[10px] font-semibold text-emerald-800">Savings</p><p class="text-lg font-extrabold text-emerald-700 mt-0.5" id="resSavings">₹0</p></div>
+                    <div class="p-3 bg-amber-50 rounded-2xl"><p class="text-[10px] font-semibold text-amber-800">Study/Day</p><p class="text-lg font-extrabold text-amber-800 mt-0.5" id="resStudyHrs">0h</p></div>
                 </div>
-
-                <p id="calcAdvice" class="text-xs text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-200 leading-relaxed"></p>
+                <p id="calcAdvice" class="text-xs text-[#6E6E73] bg-[#F5F5F7] p-3.5 rounded-2xl leading-relaxed"></p>
             </section>
         </div>
 
-        <!-- 3. First-Duty Casualty & MLC Emergency Pocket Guide -->
-        <section class="med-card rounded-2xl p-6 space-y-4">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
-                <div>
-                    <h3 class="text-base font-extrabold text-slate-900"><i class="fa-solid fa-heart-pulse text-rose-600 mr-2"></i>First-Duty Casualty, Emergency Doses &amp; MLC Protocol</h3>
-                    <p class="text-xs text-slate-500">Quick-reference protocols for your first night duty as a Junior Resident or PHC Medical Officer.</p>
-                </div>
-                <input type="text" id="protocolSearch" oninput="filterProtocols()" placeholder="Search protocol (Anaphylaxis, STEMI, MLC, BMW)..." class="px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs w-full sm:w-72 outline-none focus:border-tealmed-600">
+        <section class="apple-card p-6 space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <h2 class="text-base font-bold text-[#1D1D1F]">First-Duty Casualty &amp; MLC Pocket Guide</h2>
+                <input type="text" id="protocolSearch" oninput="filterProtocols()" placeholder="Search Anaphylaxis, STEMI, MLC..." class="px-4 py-2 bg-[#F5F5F7] rounded-xl text-xs w-full sm:w-64 outline-none">
             </div>
-
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="protocolsGrid"></div>
         </section>
     </main>
 
     <script>
         function saveRegState() {
-            const state = {};
-            const boxes = document.querySelectorAll('#regChecklist input[type="checkbox"]');
+            const state = {}, boxes = document.querySelectorAll('#regChecklist input[type="checkbox"]');
             let done = 0;
-            boxes.forEach(cb => {
-                state[cb.dataset.reg] = cb.checked;
-                if (cb.checked) done++;
-            });
+            boxes.forEach(cb => { state[cb.dataset.reg] = cb.checked; if (cb.checked) done++; });
             localStorage.setItem('med_postmbbs_reg', JSON.stringify(state));
             document.getElementById('regProgressBadge').textContent = `${done}/${boxes.length}`;
         }
         function loadRegState() {
             try {
                 const state = JSON.parse(localStorage.getItem('med_postmbbs_reg') || '{}');
-                document.querySelectorAll('#regChecklist input[type="checkbox"]').forEach(cb => {
-                    if (typeof state[cb.dataset.reg] === 'boolean') cb.checked = state[cb.dataset.reg];
-                });
+                document.querySelectorAll('#regChecklist input[type="checkbox"]').forEach(cb => { if (typeof state[cb.dataset.reg] === 'boolean') cb.checked = state[cb.dataset.reg]; });
             } catch (e) {}
             saveRegState();
         }
-
         function calculateCareer() {
             const cadre = document.getElementById('calcCadre').value;
             const hraRate = parseFloat(document.getElementById('calcCity').value);
             const expense = parseFloat(document.getElementById('calcExpense').value) || 0;
             const daRate = (parseFloat(document.getElementById('calcDA').value) || 53) / 100;
-
             let inHand = 0, studyHrs = '4-5h', advice = '';
             if (cadre === 'central_l10') {
-                const basic = 56100;
-                const npa = basic * 0.20;
-                const da = (basic + npa) * daRate;
-                const hra = basic * hraRate;
-                const gross = basic + npa + da + hra;
-                const npsAndTax = (basic + npa + da) * 0.10 + 9000;
-                inHand = Math.round(gross - npsAndTax);
-                studyHrs = '2.5-3.5h';
-                advice = 'Highest pay (~₹1L+ in-hand), great clinical exposure, but hectic shifts. Best if you want strong savings + clinical confidence before PG.';
+                const basic = 56100, npa = basic * 0.20, da = (basic + npa) * daRate, hra = basic * hraRate;
+                inHand = Math.round(basic + npa + da + hra - ((basic + npa + da) * 0.10 + 9000));
+                studyHrs = '2.5-3.5h'; advice = 'Highest pay (~₹1L+ in-hand), hectic shifts. Great for savings + clinical confidence.';
             } else if (cadre === 'rail_cmp') {
-                inHand = 72000;
-                studyHrs = '5-6h';
-                advice = 'Fixed daytime OPD / divisional hospital duty with zero bond. Ideal balance for NEET PG / UPSC CMS prep while earning ₹72k+ net.';
+                inHand = 72000; studyHrs = '5-6h'; advice = 'Fixed daytime OPD duty with zero bond. Strong balance for NEET PG / UPSC CMS prep.';
             } else if (cadre === 'nhm_kmc') {
-                inHand = 58000;
-                studyHrs = '6-7h';
-                advice = 'Lowest stress, daytime UPHC/Polyclinic hours (usually 9 AM–4 PM), zero night duty. Best "paid drop" option for cracking NEET PG.';
+                inHand = 58000; studyHrs = '6-7h'; advice = 'Lowest stress, daytime UPHC/Polyclinic hours, zero night duty. Best paid-drop option.';
             } else {
-                inHand = 82000;
-                studyHrs = '4-5h';
-                advice = 'Strong fixed consolidated pay in metro dispensaries with zero bond and predictable duty hours.';
+                inHand = 82000; studyHrs = '4-5h'; advice = 'Strong fixed consolidated pay in metro dispensaries with zero bond.';
             }
-
-            const savings = inHand - expense;
             document.getElementById('resInHand').textContent = `₹${inHand.toLocaleString()}`;
-            document.getElementById('resSavings').textContent = `₹${savings.toLocaleString()}`;
+            document.getElementById('resSavings').textContent = `₹${(inHand - expense).toLocaleString()}`;
             document.getElementById('resStudyHrs').textContent = studyHrs;
             document.getElementById('calcAdvice').textContent = advice;
         }
-
         const PROTOCOLS = [
-            { title: "Anaphylaxis (Emergency)", tag: "Casualty", body: "Inj. Adrenaline (1:1000) 0.5 mg (0.5 mL) IM anterolateral thigh IMMEDIATELY. Repeat q5–15 min. Add IV Hydrocortisone 200 mg + Chlorpheniramine 10 mg + O2 + NS bolus." },
-            { title: "Acute STEMI Loading", tag: "Cardiology", body: "Tab. Aspirin 325 mg (chew) + Tab. Clopidogrel 300 mg (or Ticagrelor 180 mg) + Tab. Atorvastatin 80 mg. ECG within 10 mins; thrombolyse or refer for Primary PCI." },
-            { title: "OP Poisoning (Organophosphate)", tag: "Toxicology", body: "Decontaminate + Atropine 2 mg IV bolus, double dose q5 min until atropinization (clear lungs, dry axilla, HR > 80) + Inj. Pralidoxime (PAM) 1–2 g IV infusion." },
-            { title: "MLC (Medico-Legal Case) Protocol", tag: "Forensic", body: "Never refuse emergency stabilization. Record exact time, vitals, 2 identification marks, weapon/injury dimensions, and send Police Intimation (PI) immediately." },
-            { title: "Brought-Dead Protocol", tag: "Casualty", body: "Confirm absent pulse, respiration, fixed dilated pupils, flat ECG strip. DO NOT issue normal Death Certificate in unnatural/unknown deaths — mark MLC & inform Police for PM." },
-            { title: "BMW 4-Bin Segregation", tag: "PHC / Ward", body: "Yellow: Anatomical/soiled cotton/expired meds. Red: Plastic tubing/catheters/gloves. White (puncture-proof): Needles/scalpels. Blue: Broken glass vials/ampoules." }
+            { title: "Anaphylaxis", tag: "Casualty", body: "Inj. Adrenaline (1:1000) 0.5 mg IM anterolateral thigh IMMEDIATELY. Repeat q5–15 min + Hydrocortisone 200 mg IV + CPM 10 mg + O2." },
+            { title: "Acute STEMI", tag: "Cardiology", body: "Aspirin 325 mg (chew) + Clopidogrel 300 mg + Atorvastatin 80 mg. ECG within 10 mins; thrombolyse or refer for Primary PCI." },
+            { title: "OP Poisoning", tag: "Toxicology", body: "Atropine 2 mg IV bolus, double dose q5 min until dry axilla & clear lungs + Pralidoxime (PAM) 1–2 g IV infusion." },
+            { title: "MLC Protocol", tag: "Forensic", body: "Stabilize first. Record exact time, vitals, 2 ID marks, injury dimensions, and send Police Intimation immediately." },
+            { title: "Brought-Dead", tag: "Casualty", body: "Confirm absent pulse/breathing, fixed dilated pupils, flat ECG. Never issue normal Death Certificate in unnatural deaths — mark MLC." },
+            { title: "BMW 4-Bin Rules", tag: "PHC / Ward", body: "Yellow: Anatomical/soiled. Red: Plastics/IV sets. White: Needles/scalpels. Blue: Broken glass vials." }
         ];
-
         function filterProtocols() {
             const q = document.getElementById('protocolSearch').value.toLowerCase();
             const list = PROTOCOLS.filter(p => p.title.toLowerCase().includes(q) || p.body.toLowerCase().includes(q) || p.tag.toLowerCase().includes(q));
             document.getElementById('protocolsGrid').innerHTML = list.map(p => `
-                <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
-                    <div class="flex items-center justify-between">
-                        <h4 class="text-xs font-extrabold text-slate-900">${p.title}</h4>
-                        <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-tealmed-50 text-tealmed-800 border border-tealmed-200">${p.tag}</span>
-                    </div>
-                    <p class="text-xs text-slate-600 leading-relaxed">${p.body}</p>
+                <div class="p-4 rounded-2xl bg-[#F5F5F7] space-y-1.5">
+                    <div class="flex items-center justify-between"><h3 class="text-xs font-bold text-[#1D1D1F]">${p.title}</h3><span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-white text-[#0F766E]">${p.tag}</span></div>
+                    <p class="text-xs text-[#6E6E73] leading-relaxed">${p.body}</p>
                 </div>
             `).join('');
         }
-
-        loadRegState();
-        calculateCareer();
-        filterProtocols();
+        loadRegState(); calculateCareer(); filterProtocols();
     </script>
 </body>
 </html>

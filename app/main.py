@@ -279,38 +279,67 @@ def health_check_db():
             "hint": hint
         }
 
+def _resolve_exam_and_questions(exam_id: str):
+    if exam_id.startswith("subject-"):
+        slug = exam_id[len("subject-"):].lower()
+        all_qs = [q for qs in EXAM_QUESTIONS.values() for q in qs]
+        matched = [q for q in all_qs if q["subject"].lower().replace(" ", "-").replace("&", "and") == slug]
+        if not matched:
+            return None, []
+        subj_name = matched[0]["subject"]
+        meta = {
+            "id": exam_id,
+            "title": f"{subj_name} — Focused Drill",
+            "subtitle": f"Subject-wise high-yield revision ({len(matched)} Questions)",
+            "total_questions": len(matched),
+            "total_marks": len(matched),
+            "duration_minutes": max(10, len(matched) * 2),
+            "negative_marking": 0.33,
+            "cutoff_reference": max(1, int(len(matched) * 0.6))
+        }
+        return meta, matched
+
+    exam_meta = next((e for e in EXAMS_CATALOG if e["id"] == exam_id), None)
+    if not exam_meta:
+        return None, []
+    return exam_meta, EXAM_QUESTIONS.get(exam_id, [])
+
 @app.get("/api/exams")
 def list_exams():
     return EXAMS_CATALOG
 
+@app.get("/api/exam-subjects")
+def list_exam_subjects():
+    counts: Dict[str, int] = {}
+    for qs in EXAM_QUESTIONS.values():
+        for q in qs:
+            counts[q["subject"]] = counts.get(q["subject"], 0) + 1
+    return [
+        {
+            "id": "subject-" + subj.lower().replace(" ", "-").replace("&", "and"),
+            "subject": subj,
+            "count": cnt
+        }
+        for subj, cnt in sorted(counts.items(), key=lambda x: -x[1])
+    ]
+
 @app.get("/api/exams/{exam_id}")
 def get_exam_questions(exam_id: str):
-    exam_meta = next((e for e in EXAMS_CATALOG if e["id"] == exam_id), None)
+    exam_meta, questions = _resolve_exam_and_questions(exam_id)
     if not exam_meta:
         raise HTTPException(status_code=404, detail="Exam not found")
     
-    questions = EXAM_QUESTIONS.get(exam_id, [])
-    safe_questions = []
-    for q in questions:
-        safe_questions.append({
-            "id": q["id"],
-            "subject": q["subject"],
-            "text": q["text"],
-            "options": q["options"]
-        })
-    
-    return {
-        "exam": exam_meta,
-        "questions": safe_questions
-    }
+    safe_questions = [
+        {"id": q["id"], "subject": q["subject"], "text": q["text"], "options": q["options"]}
+        for q in questions
+    ]
+    return {"exam": exam_meta, "questions": safe_questions}
 
 @app.post("/api/exams/{exam_id}/submit")
 def submit_exam(exam_id: str, payload: ExamSubmissionRequest, db: Session = Depends(get_db)):
-    exam_meta = next((e for e in EXAMS_CATALOG if e["id"] == exam_id), None)
+    exam_meta, questions = _resolve_exam_and_questions(exam_id)
     if not exam_meta:
         raise HTTPException(status_code=404, detail="Exam not found")
-        
-    questions = EXAM_QUESTIONS.get(exam_id, [])
     if not questions:
         raise HTTPException(status_code=404, detail="No questions found for this exam")
         

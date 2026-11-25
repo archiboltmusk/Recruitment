@@ -3,150 +3,96 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>All-India Bond &amp; Pay Matrix — MedAlerts</title>
+    <title>Pay &amp; Bonds — MedAlerts</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: { sans: ['"Plus Jakarta Sans"', 'sans-serif'], mono: ['"JetBrains Mono"', 'monospace'] },
-                    colors: { tealmed: { 50: '#F0FDFA', 100: '#CCFBF1', 200: '#99F6E4', 600: '#0D9488', 700: '#0F766E', 800: '#115E59', 900: '#0F4C4C' } }
-                }
-            }
-        }
-    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body { background: linear-gradient(180deg, #F0FDFA 0%, #F8FAFC 260px, #F8FAFC 100%); color: #0F172A; font-family: 'Plus Jakarta Sans', sans-serif; }
-        .med-card { background: #FFFFFF; border: 1px solid #E2E8F0; box-shadow: 0 2px 10px -2px rgba(15, 76, 76, 0.05); }
+        body { background-color: #F5F5F7; color: #1D1D1F; font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; -webkit-font-smoothing: antialiased; }
+        .apple-card { background: #FFFFFF; border-radius: 22px; border: 1px solid rgba(0,0,0,0.06); box-shadow: 0 2px 12px rgba(0,0,0,0.03); }
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
-    <header class="bg-white/90 backdrop-blur-lg border-b border-slate-200 sticky top-0 z-30">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between">
-            <a href="/" class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-tealmed-600 to-tealmed-800 flex items-center justify-center text-white shadow-md">
-                    <i class="fa-solid fa-staff-snake text-lg"></i>
+    <header class="sticky top-0 z-30 bg-[#F5F5F7]/85 backdrop-blur-xl border-b border-black/[0.06]">
+        <div class="max-w-6xl mx-auto px-5 sm:px-8 h-16 flex items-center justify-between">
+            <a href="/" class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-xl bg-[#0F766E] flex items-center justify-center text-white">
+                    <i class="fa-solid fa-staff-snake text-sm"></i>
                 </div>
-                <div>
-                    <h1 class="text-lg font-extrabold text-slate-900 leading-tight">MedAlerts</h1>
-                    <p class="text-[11px] text-tealmed-700 font-semibold">All-India Bond &amp; Pay Matrix</p>
-                </div>
+                <span class="text-base font-bold tracking-tight text-[#1D1D1F]">MedAlerts</span>
             </a>
-            <div class="flex items-center gap-2">
-                <a href="/onboarding" class="px-3.5 py-2 text-xs font-semibold text-tealmed-800 bg-tealmed-50 hover:bg-tealmed-100 border border-tealmed-200 rounded-xl transition">Eligibility</a>
-                <a href="/exam" class="px-3.5 py-2 text-xs font-bold text-amber-900 bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-xl transition">CMS CBT</a>
-                <a href="/" class="px-3.5 py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition">Dashboard</a>
-            </div>
+            <nav class="hidden md:flex items-center gap-7 text-[13px] font-medium text-[#6E6E73]">
+                <a href="/" class="hover:text-[#1D1D1F] transition">Jobs</a>
+                <a href="/onboarding" class="hover:text-[#1D1D1F] transition">Eligibility</a>
+                <a href="/exam" class="hover:text-[#1D1D1F] transition">Mock CBT</a>
+                <a href="/bonds" class="text-[#1D1D1F] font-semibold">Pay &amp; Bonds</a>
+                <a href="/toolkit" class="hover:text-[#1D1D1F] transition">Post-MBBS Kit</a>
+            </nav>
+            <a href="/" class="px-4 py-1.5 rounded-full bg-white border border-black/10 text-xs font-semibold text-[#1D1D1F]">All Jobs</a>
         </div>
     </header>
 
-    <main class="flex-grow max-w-6xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-        <div class="rounded-2xl bg-gradient-to-r from-tealmed-900 via-tealmed-800 to-emerald-800 p-6 sm:p-8 text-white shadow-lg">
-            <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 border border-white/20 text-[11px] font-semibold mb-3">
-                <i class="fa-solid fa-scale-balanced text-emerald-300"></i> Cadre Compensation &amp; Bond Intelligence
-            </span>
-            <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight">Medical Officer Pay, NPA &amp; Service Bond Comparison</h2>
-            <p class="text-sm text-tealmed-100 mt-1.5 max-w-2xl">
-                Compare actual gross/in-hand pay (Basic + 20% NPA + DA + HRA), rural bond durations, and penalty clauses before accepting any permanent or walk-in Medical Officer offer.
-            </p>
+    <main class="flex-grow max-w-6xl mx-auto w-full px-5 sm:px-8 py-10 space-y-8">
+        <div class="text-center max-w-2xl mx-auto space-y-3">
+            <p class="text-xs font-semibold uppercase tracking-[0.14em] text-[#0F766E]">Cadre Comparison</p>
+            <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-[#1D1D1F]">Pay, 20% NPA &amp; Service Bonds.</h1>
+            <p class="text-sm text-[#6E6E73]">Compare actual monthly pay and rural bond penalties before accepting any Medical Officer offer.</p>
         </div>
 
-        <!-- Comparison Table -->
-        <section class="med-card rounded-2xl overflow-hidden">
-            <div class="p-5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <h3 class="text-sm font-bold text-slate-900">National &amp; State Cadre Matrix</h3>
-                <select id="bondFilterSelect" onchange="renderMatrix()" class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 outline-none">
+        <section class="apple-card overflow-hidden">
+            <div class="p-5 border-b border-black/[0.06] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <h2 class="text-sm font-bold text-[#1D1D1F]">All-India &amp; West Bengal Matrix</h2>
+                <select id="bondFilterSelect" onchange="renderMatrix()" class="px-3.5 py-2 bg-[#F5F5F7] rounded-xl text-xs font-semibold text-[#1D1D1F] outline-none">
                     <option value="ALL">All Cadres</option>
-                    <option value="ZERO_BOND">Zero Service Bond Only</option>
-                    <option value="PERMANENT">Permanent Gazetted Cadres</option>
-                    <option value="WALKIN">Contractual / Walk-in Cadres</option>
+                    <option value="ZERO_BOND">Zero Bond Only</option>
+                    <option value="PERMANENT">Permanent Gazetted</option>
+                    <option value="WALKIN">Walk-in / Contractual</option>
                 </select>
             </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse text-xs">
                     <thead>
-                        <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase text-[10px] font-bold tracking-wider">
-                            <th class="py-3.5 px-4">Cadre / Commission</th>
-                            <th class="py-3.5 px-4">Nature</th>
-                            <th class="py-3.5 px-4">Pay Matrix / Stipend</th>
+                        <tr class="bg-[#F5F5F7] text-[#6E6E73] uppercase text-[10px] font-bold tracking-wider">
+                            <th class="py-3.5 px-5">Cadre / Commission</th>
+                            <th class="py-3.5 px-4">Type</th>
+                            <th class="py-3.5 px-4">Pay Matrix</th>
                             <th class="py-3.5 px-4">Approx Gross / Mo</th>
                             <th class="py-3.5 px-4">Bond &amp; Penalty</th>
                             <th class="py-3.5 px-4">PG Study Leave</th>
                         </tr>
                     </thead>
-                    <tbody id="matrixBody" class="divide-y divide-slate-100"></tbody>
+                    <tbody id="matrixBody" class="divide-y divide-black/[0.05]"></tbody>
                 </table>
-            </div>
-        </section>
-
-        <!-- Key Notes for Doctors -->
-        <section class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div class="med-card rounded-2xl p-5 space-y-2">
-                <h4 class="text-xs font-bold uppercase tracking-wider text-tealmed-800"><i class="fa-solid fa-percent mr-1.5"></i> What is 20% NPA?</h4>
-                <p class="text-xs text-slate-600 leading-relaxed">
-                    Non-Practicing Allowance (20% of Basic Pay) is paid in Central Govt (CHS, Railways, ESIC, AIIMS) in exchange for zero private practice. DA is also calculated on Basic + NPA.
-                </p>
-            </div>
-            <div class="med-card rounded-2xl p-5 space-y-2">
-                <h4 class="text-xs font-bold uppercase tracking-wider text-amber-700"><i class="fa-solid fa-graduation-cap mr-1.5"></i> PG Bond &amp; NEET PG</h4>
-                <p class="text-xs text-slate-600 leading-relaxed">
-                    Contractual walk-in roles (Railways CMP, MCD, Non-Acad JR, ECHS) have <strong>zero bond</strong>, allowing you to resign with 15–30 days notice when you crack NEET PG or UPSC CMS.
-                </p>
-            </div>
-            <div class="med-card rounded-2xl p-5 space-y-2">
-                <h4 class="text-xs font-bold uppercase tracking-wider text-rose-700"><i class="fa-solid fa-id-card mr-1.5"></i> State SMC NOC Rule</h4>
-                <p class="text-xs text-slate-600 leading-relaxed">
-                    Central Govt (UPSC CMS / AIIMS / Railways) accepts any State Medical Council or NMC registration. State PSCs &amp; state NHMs generally require local State Council registration/NOC at joining.
-                </p>
             </div>
         </section>
     </main>
 
     <script>
         const MATRIX = [
-            { cadre: "UPSC CMS (CHS / Railways ADMO / NDMC)", type: "PERMANENT", pay: "Level 10 (₹56,100) + 20% NPA", gross: "₹1,05,000 - ₹1,22,000", bond: "Zero Bond", zeroBond: true, pg: "Study leave after 5 yrs (or extra-ordinary leave)" },
-            { cadre: "ESIC IMO Grade-II", type: "PERMANENT", pay: "Level 10 (₹56,100) + 20% NPA", gross: "₹1,05,000 - ₹1,20,000", bond: "Zero Bond", zeroBond: true, pg: "Eligible for ESIC In-Service PG Quota" },
-            { cadre: "AIIMS / Safdarjung Non-Acad JR (MBBS)", type: "WALKIN", pay: "Level 10 (₹56,100) + NPA + DA", gross: "₹98,000 - ₹1,08,000", bond: "Zero Bond (6-12m tenure)", zeroBond: true, pg: "Exit anytime for NEET PG" },
-            { cadre: "ESIC Senior Resident (MD/MS Walk-in)", type: "WALKIN", pay: "Level 11 (₹67,700) + NPA + DA", gross: "₹1,21,000 - ₹1,35,000", bond: "Zero Bond (1-3 yr contract)", zeroBond: true, pg: "Counts as SR teaching/clinical exp" },
-            { cadre: "Municipal Corp (MCD / BMC) Ad-hoc MO", type: "WALKIN", pay: "Consolidated Fixed Pay", gross: "₹85,000", bond: "Zero Bond (6m renewable)", zeroBond: true, pg: "Exit anytime with notice" },
-            { cadre: "Indian Railways CMP (Walk-in)", type: "WALKIN", pay: "Fixed Consolidated", gross: "₹75,000 (MBBS) / ₹95,000 (PG)", bond: "Zero Bond (1-yr renewable)", zeroBond: true, pg: "Exit anytime with 15-day notice" },
-            { cadre: "ECHS Polyclinic MO (Walk-in)", type: "WALKIN", pay: "Fixed Consolidated", gross: "₹75,000", bond: "Zero Bond (12m contract)", zeroBond: true, pg: "Daytime OPD only" },
-            { cadre: "UPPSC Allopathic MO (State PSC)", type: "PERMANENT", pay: "Level 10 (GP ₹5400)", gross: "₹85,000 - ₹98,000", bond: "2 Years Rural (₹5,00,000 Penalty)", zeroBond: false, pg: "UP In-Service PG Quota (10-30% marks weightage)" },
-            { cadre: "WBHRB GDMO (West Bengal Health Service)", type: "PERMANENT", pay: "WB ROPA Level 16 (₹56,100) + NPA", gross: "₹90,000 - ₹1,05,000", bond: "Trainee Reserve (TR) 3-Yr Service Rule", zeroBond: false, pg: "WB In-Service Trainee Reserve (TR) Quota for PG" },
-            { cadre: "WBSHFWS / KMC NUHM Medical Officer (WB)", type: "WALKIN", pay: "NHM / KMC Consolidated", gross: "₹60,000 (Full-Time)", bond: "Zero Bond (Annual Contract)", zeroBond: true, pg: "Exit anytime with notice" },
-            { cadre: "NHM Maharashtra / UP RBSK MO", type: "WALKIN", pay: "NHM Consolidated", gross: "₹60,000 - ₹75,000", bond: "0-1 Year Service Agreement", zeroBond: false, pg: "Rural incentive marks in select states" },
-            { cadre: "AFMS Short Service Commission", type: "PERMANENT", pay: "Level 10B + MSP ₹15,500 + NPA", gross: "₹1,25,000+", bond: "5 Years Initial Commission", zeroBond: false, pg: "AFMS PG quota after 4 yrs service" }
+            { cadre: "UPSC CMS (CHS / Railways ADMO / NDMC)", type: "PERMANENT", pay: "Level 10 (₹56,100) + 20% NPA", gross: "₹1,05,000 - ₹1,22,000", bond: "Zero Bond", zeroBond: true, pg: "Study leave after 5 yrs" },
+            { cadre: "ESIC IMO Grade-II", type: "PERMANENT", pay: "Level 10 (₹56,100) + 20% NPA", gross: "₹1,05,000 - ₹1,20,000", bond: "Zero Bond", zeroBond: true, pg: "ESIC In-Service PG Quota" },
+            { cadre: "WBHRB GDMO (West Bengal Health Service)", type: "PERMANENT", pay: "WB ROPA Level 16 (₹56,100) + NPA", gross: "₹90,000 - ₹1,05,000", bond: "Trainee Reserve 3-Yr Rule", zeroBond: false, pg: "WB In-Service TR Quota for PG" },
+            { cadre: "AIIMS / Safdarjung Non-Acad JR (MBBS)", type: "WALKIN", pay: "Level 10 (₹56,100) + NPA + DA", gross: "₹98,000 - ₹1,08,000", bond: "Zero Bond (6-12m)", zeroBond: true, pg: "Exit anytime for NEET PG" },
+            { cadre: "ESIC Senior Resident (MD/MS Walk-in)", type: "WALKIN", pay: "Level 11 (₹67,700) + NPA + DA", gross: "₹1,21,000 - ₹1,35,000", bond: "Zero Bond (1-3 yr)", zeroBond: true, pg: "Counts as SR experience" },
+            { cadre: "Municipal Corp (MCD / BMC) Ad-hoc MO", type: "WALKIN", pay: "Consolidated Fixed Pay", gross: "₹85,000", bond: "Zero Bond", zeroBond: true, pg: "Exit anytime with notice" },
+            { cadre: "Indian Railways CMP (Walk-in)", type: "WALKIN", pay: "Fixed Consolidated", gross: "₹75,000 (MBBS) / ₹95,000 (PG)", bond: "Zero Bond", zeroBond: true, pg: "15-day exit notice" },
+            { cadre: "WBSHFWS / KMC NUHM Medical Officer (WB)", type: "WALKIN", pay: "NHM / KMC Consolidated", gross: "₹60,000 (Full-Time)", bond: "Zero Bond", zeroBond: true, pg: "Daytime OPD hours" },
+            { cadre: "UPPSC Allopathic MO (State PSC)", type: "PERMANENT", pay: "Level 10 (GP ₹5400)", gross: "₹85,000 - ₹98,000", bond: "2 Yrs Rural (₹5L Penalty)", zeroBond: false, pg: "UP In-Service PG Quota" },
+            { cadre: "AFMS Short Service Commission", type: "PERMANENT", pay: "Level 10B + MSP ₹15,500 + NPA", gross: "₹1,25,000+", bond: "5 Years Tenure", zeroBond: false, pg: "AFMS PG quota after 4 yrs" }
         ];
-
         function renderMatrix() {
             const filter = document.getElementById('bondFilterSelect').value;
-            const rows = MATRIX.filter(r => {
-                if (filter === 'ZERO_BOND') return r.zeroBond;
-                if (filter === 'PERMANENT') return r.type === 'PERMANENT';
-                if (filter === 'WALKIN') return r.type === 'WALKIN';
-                return true;
-            });
-
+            const rows = MATRIX.filter(r => filter === 'ZERO_BOND' ? r.zeroBond : (filter === 'PERMANENT' ? r.type === 'PERMANENT' : (filter === 'WALKIN' ? r.type === 'WALKIN' : true)));
             document.getElementById('matrixBody').innerHTML = rows.map(r => `
-                <tr class="hover:bg-slate-50 transition">
-                    <td class="py-3.5 px-4 font-bold text-slate-900">${r.cadre}</td>
-                    <td class="py-3.5 px-4">
-                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${r.type === 'PERMANENT' ? 'bg-tealmed-50 text-tealmed-800 border border-tealmed-200' : 'bg-purple-50 text-purple-800 border border-purple-200'}">
-                            ${r.type === 'PERMANENT' ? 'Permanent' : 'Walk-in / Contract'}
-                        </span>
-                    </td>
-                    <td class="py-3.5 px-4 text-slate-600 font-mono text-[11px]">${r.pay}</td>
-                    <td class="py-3.5 px-4 font-mono font-bold text-emerald-700">${r.gross}</td>
-                    <td class="py-3.5 px-4">
-                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${r.zeroBond ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-amber-50 text-amber-800 border border-amber-200'}">
-                            ${r.bond}
-                        </span>
-                    </td>
-                    <td class="py-3.5 px-4 text-slate-500">${r.pg}</td>
+                <tr class="hover:bg-[#F5F5F7]/60 transition">
+                    <td class="py-3.5 px-5 font-semibold text-[#1D1D1F]">${r.cadre}</td>
+                    <td class="py-3.5 px-4"><span class="px-2.5 py-0.5 rounded-full text-[10px] font-semibold ${r.type === 'PERMANENT' ? 'bg-[#E6F4F1] text-[#0F766E]' : 'bg-purple-50 text-purple-700'}">${r.type === 'PERMANENT' ? 'Permanent' : 'Walk-in'}</span></td>
+                    <td class="py-3.5 px-4 text-[#6E6E73]">${r.pay}</td>
+                    <td class="py-3.5 px-4 font-bold text-[#0F766E]">${r.gross}</td>
+                    <td class="py-3.5 px-4"><span class="px-2.5 py-0.5 rounded-full text-[10px] font-semibold ${r.zeroBond ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-800'}">${r.bond}</span></td>
+                    <td class="py-3.5 px-4 text-[#6E6E73]">${r.pg}</td>
                 </tr>
             `).join('');
         }

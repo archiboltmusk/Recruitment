@@ -3,128 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Doctor Onboarding &amp; Eligibility Matcher — MedAlerts</title>
+    <title>Eligibility Checker — MedAlerts</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: { sans: ['"Plus Jakarta Sans"', 'sans-serif'], mono: ['"JetBrains Mono"', 'monospace'] },
-                    colors: {
-                        tealmed: { 50: '#F0FDFA', 100: '#CCFBF1', 200: '#99F6E4', 600: '#0D9488', 700: '#0F766E', 800: '#115E59', 900: '#0F4C4C' }
-                    }
-                }
-            }
-        }
-    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body { background: linear-gradient(180deg, #F0FDFA 0%, #F8FAFC 260px, #F8FAFC 100%); color: #0F172A; font-family: 'Plus Jakarta Sans', sans-serif; }
-        .med-card { background: #FFFFFF; border: 1px solid #E2E8F0; box-shadow: 0 2px 10px -2px rgba(15, 76, 76, 0.05); }
+        body { background-color: #F5F5F7; color: #1D1D1F; font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; -webkit-font-smoothing: antialiased; }
+        .apple-card { background: #FFFFFF; border-radius: 22px; border: 1px solid rgba(0,0,0,0.06); box-shadow: 0 2px 12px rgba(0,0,0,0.03); }
+        .pill-btn { transition: transform 0.14s ease, background-color 0.15s ease; }
+        .pill-btn:active { transform: scale(0.97); }
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
-    <header class="bg-white/90 backdrop-blur-lg border-b border-slate-200 sticky top-0 z-30">
-        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between">
-            <a href="/" class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-tealmed-600 to-tealmed-800 flex items-center justify-center text-white shadow-md shadow-tealmed-600/20">
-                    <i class="fa-solid fa-staff-snake text-lg"></i>
+    <header class="sticky top-0 z-30 bg-[#F5F5F7]/85 backdrop-blur-xl border-b border-black/[0.06]">
+        <div class="max-w-5xl mx-auto px-5 sm:px-8 h-16 flex items-center justify-between">
+            <a href="/" class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-xl bg-[#0F766E] flex items-center justify-center text-white">
+                    <i class="fa-solid fa-staff-snake text-sm"></i>
                 </div>
-                <div>
-                    <h1 class="text-lg font-extrabold text-slate-900 leading-tight">MedAlerts</h1>
-                    <p class="text-[11px] text-tealmed-700 font-semibold">Doctor Eligibility &amp; Quota Verifier</p>
-                </div>
+                <span class="text-base font-bold tracking-tight text-[#1D1D1F]">MedAlerts</span>
             </a>
-
-            <div class="flex items-center gap-2">
-                <a href="/exam" class="px-3.5 py-2 text-xs font-bold text-amber-900 bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-xl transition flex items-center gap-1.5">
-                    <i class="fa-solid fa-graduation-cap text-amber-600"></i>
-                    <span class="hidden sm:inline">UPSC CMS CBT</span>
-                </a>
-                <a href="/" class="px-3.5 py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition flex items-center gap-1.5">
-                    <i class="fa-solid fa-arrow-left"></i>
-                    <span>Dashboard</span>
-                </a>
-            </div>
+            <nav class="hidden md:flex items-center gap-7 text-[13px] font-medium text-[#6E6E73]">
+                <a href="/" class="hover:text-[#1D1D1F] transition">Jobs</a>
+                <a href="/onboarding" class="text-[#1D1D1F] font-semibold">Eligibility</a>
+                <a href="/exam" class="hover:text-[#1D1D1F] transition">Mock CBT</a>
+                <a href="/bonds" class="hover:text-[#1D1D1F] transition">Pay &amp; Bonds</a>
+                <a href="/toolkit" class="hover:text-[#1D1D1F] transition">Post-MBBS Kit</a>
+            </nav>
+            <a href="/" class="pill-btn px-4 py-1.5 rounded-full bg-white border border-black/10 text-xs font-semibold text-[#1D1D1F]">All Jobs</a>
         </div>
     </header>
 
-    <main class="flex-grow max-w-5xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-        <div class="rounded-2xl bg-gradient-to-r from-tealmed-900 via-tealmed-800 to-emerald-800 p-6 sm:p-8 text-white shadow-lg">
-            <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 border border-white/20 text-[11px] font-semibold mb-3">
-                <i class="fa-solid fa-user-check text-emerald-300"></i> Automated Criteria &amp; Reservation Audit
-            </span>
-            <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight">Check Your Exact Medical Officer Eligibility</h2>
-            <p class="text-sm text-tealmed-100 mt-1.5 max-w-2xl">
-                Enter your degree, passing year, age, and category to calculate DoPT age relaxations, internship cutoffs, and state quota seats across every active circular.
-            </p>
+    <main class="flex-grow max-w-5xl mx-auto w-full px-5 sm:px-8 py-10 space-y-8">
+        <div class="text-center max-w-2xl mx-auto space-y-3">
+            <p class="text-xs font-semibold uppercase tracking-[0.14em] text-[#0F766E]">Instant Criteria Audit</p>
+            <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-[#1D1D1F]">Check which jobs you qualify for.</h1>
+            <p class="text-sm text-[#6E6E73]">Enter your degree, passing year, age, and category — we calculate age relaxations and quota seats automatically.</p>
         </div>
 
-        <section class="med-card rounded-2xl p-6 sm:p-8">
-            <form id="onboardingForm" onsubmit="handleProfileSubmit(event)" class="space-y-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <section class="apple-card p-6 sm:p-8">
+            <form id="onboardingForm" onsubmit="handleProfileSubmit(event)" class="space-y-5">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div>
-                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Full Name (Dr.) *</label>
-                        <div class="relative">
-                            <i class="fa-solid fa-user-md absolute left-3.5 top-3.5 text-slate-400 text-xs"></i>
-                            <input type="text" id="docName" required placeholder="e.g. Dr. Aakash Verma" 
-                                class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:border-tealmed-600 outline-none transition">
-                        </div>
+                        <label class="block text-xs font-semibold text-[#6E6E73] mb-1.5">Full Name (Dr.) *</label>
+                        <input type="text" id="docName" required placeholder="e.g. Dr. Aakash Verma" class="w-full px-4 py-2.5 bg-[#F5F5F7] rounded-xl text-sm outline-none focus:ring-2 focus:ring-[#0F766E]/25">
                     </div>
-
                     <div>
-                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Highest Medical Qualification *</label>
-                        <div class="relative">
-                            <i class="fa-solid fa-graduation-cap absolute left-3.5 top-3.5 text-slate-400 text-xs"></i>
-                            <select id="docQual" required class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:border-tealmed-600 outline-none transition">
-                                <option value="MBBS">MBBS</option>
-                                <option value="MD/MS">MD / MS / DNB (Specialist)</option>
-                                <option value="PG Diploma">PG Diploma</option>
-                                <option value="BAMS/BHMS">AYUSH (BAMS / BHMS / BUMS)</option>
-                            </select>
-                        </div>
+                        <label class="block text-xs font-semibold text-[#6E6E73] mb-1.5">Medical Degree *</label>
+                        <select id="docQual" required class="w-full px-4 py-2.5 bg-[#F5F5F7] rounded-xl text-sm outline-none">
+                            <option value="MBBS">MBBS</option>
+                            <option value="MD/MS">MD / MS / DNB (Specialist)</option>
+                            <option value="PG Diploma">PG Diploma</option>
+                            <option value="BAMS/BHMS">AYUSH (BAMS / BHMS / BUMS)</option>
+                        </select>
                     </div>
-
                     <div>
-                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Medical College / University *</label>
-                        <div class="relative">
-                            <i class="fa-solid fa-building-columns absolute left-3.5 top-3.5 text-slate-400 text-xs"></i>
-                            <input type="text" id="docCollege" required placeholder="e.g. Maulana Azad Medical College (MAMC)" 
-                                class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:border-tealmed-600 outline-none transition">
-                        </div>
+                        <label class="block text-xs font-semibold text-[#6E6E73] mb-1.5">Medical College *</label>
+                        <input type="text" id="docCollege" required placeholder="e.g. Medical College Kolkata / MAMC" class="w-full px-4 py-2.5 bg-[#F5F5F7] rounded-xl text-sm outline-none focus:ring-2 focus:ring-[#0F766E]/25">
                     </div>
-
                     <div>
-                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Year of Passing *</label>
-                        <div class="relative">
-                            <i class="fa-solid fa-calendar-check absolute left-3.5 top-3.5 text-slate-400 text-xs"></i>
-                            <select id="docPassingYear" required class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:border-tealmed-600 outline-none transition">
-                                <option value="2026">2026 (Appearing / Final Year)</option>
-                                <option value="2025">2025</option>
-                                <option value="2024" selected>2024</option>
-                                <option value="2023">2023</option>
-                                <option value="2022">2022</option>
-                                <option value="2021">2021</option>
-                                <option value="2020">2020</option>
-                                <option value="2019">2019</option>
-                                <option value="2018">2018</option>
-                                <option value="2015">2015 or earlier</option>
-                            </select>
-                        </div>
+                        <label class="block text-xs font-semibold text-[#6E6E73] mb-1.5">Passing Year *</label>
+                        <select id="docPassingYear" required class="w-full px-4 py-2.5 bg-[#F5F5F7] rounded-xl text-sm outline-none">
+                            <option value="2026">2026 (Final Year / Appearing)</option>
+                            <option value="2025">2025</option>
+                            <option value="2024" selected>2024</option>
+                            <option value="2023">2023</option>
+                            <option value="2022">2022</option>
+                            <option value="2021">2021</option>
+                            <option value="2020">2020</option>
+                            <option value="2018">2018 or earlier</option>
+                        </select>
                     </div>
-
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Age (Years) *</label>
-                            <input type="number" id="docAge" required min="18" max="65" value="26" 
-                                class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-mono focus:bg-white focus:border-tealmed-600 outline-none transition">
+                            <label class="block text-xs font-semibold text-[#6E6E73] mb-1.5">Age (Years) *</label>
+                            <input type="number" id="docAge" required min="18" max="65" value="26" class="w-full px-4 py-2.5 bg-[#F5F5F7] rounded-xl text-sm outline-none">
                         </div>
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Category *</label>
-                            <select id="docCategory" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:border-tealmed-600 outline-none transition">
+                            <label class="block text-xs font-semibold text-[#6E6E73] mb-1.5">Category *</label>
+                            <select id="docCategory" class="w-full px-3 py-2.5 bg-[#F5F5F7] rounded-xl text-sm outline-none">
                                 <option value="UR">UR / General</option>
                                 <option value="EWS">EWS</option>
                                 <option value="OBC">OBC-NCL (+3 yrs)</option>
@@ -134,86 +93,78 @@
                             </select>
                         </div>
                     </div>
-
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">CRRI Internship *</label>
-                            <select id="docInternship" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:border-tealmed-600 outline-none transition">
+                            <label class="block text-xs font-semibold text-[#6E6E73] mb-1.5">CRRI Internship *</label>
+                            <select id="docInternship" class="w-full px-3 py-2.5 bg-[#F5F5F7] rounded-xl text-sm outline-none">
                                 <option value="completed">Completed</option>
-                                <option value="ongoing">Ongoing (Finishes soon)</option>
+                                <option value="ongoing">Ongoing</option>
                                 <option value="not_started">Not Started</option>
                             </select>
                         </div>
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Home State *</label>
-                            <select id="docHomeState" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:border-tealmed-600 outline-none transition">
+                            <label class="block text-xs font-semibold text-[#6E6E73] mb-1.5">Home State *</label>
+                            <select id="docHomeState" class="w-full px-3 py-2.5 bg-[#F5F5F7] rounded-xl text-sm outline-none">
+                                <option value="West Bengal">West Bengal</option>
                                 <option value="Delhi">Delhi</option>
                                 <option value="Uttar Pradesh">Uttar Pradesh</option>
                                 <option value="Maharashtra">Maharashtra</option>
                                 <option value="Rajasthan">Rajasthan</option>
                                 <option value="Karnataka">Karnataka</option>
                                 <option value="Tamil Nadu">Tamil Nadu</option>
-                                <option value="West Bengal">West Bengal</option>
                                 <option value="Bihar">Bihar</option>
-                                <option value="Madhya Pradesh">Madhya Pradesh</option>
                                 <option value="Other">Other State</option>
                             </select>
                         </div>
                     </div>
                 </div>
 
-                <div>
-                    <label class="flex items-start gap-3 p-4 rounded-xl bg-tealmed-50/70 border border-tealmed-200/70 cursor-pointer">
-                        <input type="checkbox" id="docRegistration" checked class="mt-1 w-4 h-4 accent-teal-700 rounded">
-                        <div class="text-xs">
-                            <span class="font-bold text-slate-800 block">Permanent NMC / State Medical Council Registration</span>
-                            <span class="text-slate-500">Required for most State PSC &amp; ESIC posts; UPSC CMS allows provisional/internship candidates.</span>
-                        </div>
-                    </label>
-                </div>
+                <label class="flex items-start gap-3 p-4 rounded-2xl bg-[#F5F5F7] cursor-pointer text-xs">
+                    <input type="checkbox" id="docRegistration" checked class="mt-0.5 w-4 h-4 accent-[#0F766E]">
+                    <div>
+                        <span class="font-semibold text-[#1D1D1F] block">Permanent NMC / State Medical Council Registration</span>
+                        <span class="text-[#6E6E73]">Required for most State PSC &amp; ESIC posts; UPSC CMS allows internship/provisional candidates.</span>
+                    </div>
+                </label>
 
                 <div class="flex justify-end">
-                    <button type="submit" id="checkBtn" class="w-full sm:w-auto px-8 py-3.5 bg-tealmed-700 hover:bg-tealmed-800 text-white font-bold rounded-xl text-sm shadow-md transition flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-magnifying-glass-chart"></i>
-                        <span>Evaluate My Eligibility</span>
+                    <button type="submit" id="checkBtn" class="pill-btn w-full sm:w-auto px-7 py-3 bg-[#0F766E] hover:bg-[#115E59] text-white font-semibold rounded-full text-sm">
+                        Check Eligibility
                     </button>
                 </div>
             </form>
         </section>
 
         <div id="resultsSection" class="hidden space-y-6">
-            <div class="med-card rounded-2xl p-6 flex flex-col md:flex-row md:items-center justify-between gap-5 border-t-4 border-t-tealmed-600">
+            <div class="apple-card p-6 flex flex-col md:flex-row md:items-center justify-between gap-5">
                 <div>
-                    <h2 class="text-xl font-extrabold text-slate-900" id="resCandidateName">Dr. Candidate</h2>
-                    <p class="text-xs text-slate-500 font-medium mt-0.5" id="resCandidateSummary">MBBS • College • Age 26</p>
-                    <span class="inline-block mt-2 text-[11px] px-2.5 py-0.5 rounded-full bg-tealmed-50 text-tealmed-800 border border-tealmed-200 font-semibold" id="resCategoryPill">
-                        Quota: UR
-                    </span>
+                    <h2 class="text-xl font-extrabold text-[#1D1D1F]" id="resCandidateName">Dr. Candidate</h2>
+                    <p class="text-xs text-[#6E6E73] mt-0.5" id="resCandidateSummary"></p>
+                    <span class="inline-block mt-2 text-[11px] px-3 py-0.5 rounded-full bg-[#F5F5F7] text-[#0F766E] font-semibold" id="resCategoryPill"></span>
                 </div>
-
                 <div class="grid grid-cols-3 gap-3 text-center">
-                    <div class="px-4 py-2.5 bg-emerald-50 rounded-xl border border-emerald-200">
-                        <p class="text-2xl font-extrabold text-emerald-700 font-mono" id="resEligibleCount">0</p>
-                        <p class="text-[10px] font-bold uppercase text-emerald-800">Eligible</p>
+                    <div class="px-4 py-2.5 bg-emerald-50 rounded-2xl">
+                        <p class="text-2xl font-extrabold text-emerald-700" id="resEligibleCount">0</p>
+                        <p class="text-[10px] font-semibold uppercase text-emerald-800">Eligible</p>
                     </div>
-                    <div class="px-4 py-2.5 bg-amber-50 rounded-xl border border-amber-200">
-                        <p class="text-2xl font-extrabold text-amber-700 font-mono" id="resConditionalCount">0</p>
-                        <p class="text-[10px] font-bold uppercase text-amber-800">Conditional</p>
+                    <div class="px-4 py-2.5 bg-amber-50 rounded-2xl">
+                        <p class="text-2xl font-extrabold text-amber-700" id="resConditionalCount">0</p>
+                        <p class="text-[10px] font-semibold uppercase text-amber-800">Conditional</p>
                     </div>
-                    <div class="px-4 py-2.5 bg-rose-50 rounded-xl border border-rose-200">
-                        <p class="text-2xl font-extrabold text-rose-700 font-mono" id="resIneligibleCount">0</p>
-                        <p class="text-[10px] font-bold uppercase text-rose-800">Ineligible</p>
+                    <div class="px-4 py-2.5 bg-rose-50 rounded-2xl">
+                        <p class="text-2xl font-extrabold text-rose-700" id="resIneligibleCount">0</p>
+                        <p class="text-[10px] font-semibold uppercase text-rose-800">Ineligible</p>
                     </div>
                 </div>
             </div>
 
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <h3 class="text-sm font-bold text-slate-800">Matched Official Circulars</h3>
-                <div class="flex items-center gap-1.5 bg-slate-200/70 p-1 rounded-xl text-xs font-semibold">
-                    <button onclick="filterMatches('ALL')" class="match-tab active px-3.5 py-1.5 rounded-lg bg-white text-slate-900 shadow-sm" data-tab="ALL">All</button>
-                    <button onclick="filterMatches('ELIGIBLE')" class="match-tab px-3.5 py-1.5 rounded-lg text-slate-600 hover:text-slate-900" data-tab="ELIGIBLE">Eligible</button>
-                    <button onclick="filterMatches('CONDITIONALLY_ELIGIBLE')" class="match-tab px-3.5 py-1.5 rounded-lg text-slate-600 hover:text-slate-900" data-tab="CONDITIONALLY_ELIGIBLE">Conditional</button>
-                    <button onclick="filterMatches('INELIGIBLE')" class="match-tab px-3.5 py-1.5 rounded-lg text-slate-600 hover:text-slate-900" data-tab="INELIGIBLE">Ineligible</button>
+            <div class="flex items-center justify-between">
+                <h3 class="text-sm font-bold text-[#1D1D1F]">Your Matched Circulars</h3>
+                <div class="flex items-center gap-1.5 bg-white p-1 rounded-full border border-black/10 text-xs font-semibold">
+                    <button onclick="filterMatches('ALL')" class="match-tab active px-3.5 py-1.5 rounded-full bg-[#1D1D1F] text-white" data-tab="ALL">All</button>
+                    <button onclick="filterMatches('ELIGIBLE')" class="match-tab px-3.5 py-1.5 rounded-full text-[#6E6E73]" data-tab="ELIGIBLE">Eligible</button>
+                    <button onclick="filterMatches('CONDITIONALLY_ELIGIBLE')" class="match-tab px-3.5 py-1.5 rounded-full text-[#6E6E73]" data-tab="CONDITIONALLY_ELIGIBLE">Conditional</button>
+                    <button onclick="filterMatches('INELIGIBLE')" class="match-tab px-3.5 py-1.5 rounded-full text-[#6E6E73]" data-tab="INELIGIBLE">Ineligible</button>
                 </div>
             </div>
 
@@ -223,7 +174,6 @@
 
     <script>
         let currentEvaluation = null;
-
         document.addEventListener('DOMContentLoaded', () => {
             const saved = localStorage.getItem('med_doctor_profile');
             if (saved) {
@@ -241,7 +191,6 @@
                 } catch (e) {}
             }
         });
-
         async function handleProfileSubmit(e) {
             e.preventDefault();
             const profile = {
@@ -258,183 +207,70 @@
             localStorage.setItem('med_doctor_profile', JSON.stringify(profile));
             await evaluateProfile(profile);
         }
-
         async function evaluateProfile(profile) {
             const checkBtn = document.getElementById('checkBtn');
-            const originalText = checkBtn.innerHTML;
-            checkBtn.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i> Checking Criteria...';
-            checkBtn.disabled = true;
-
+            checkBtn.textContent = 'Checking...'; checkBtn.disabled = true;
             try {
-                const res = await fetch('/api/check-eligibility', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(profile)
-                });
+                const res = await fetch('/api/check-eligibility', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(profile) });
                 const data = await res.json();
                 currentEvaluation = data;
                 renderResults(data);
                 document.getElementById('resultsSection').classList.remove('hidden');
                 document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth' });
-            } catch (err) {
-                alert('Error checking eligibility: ' + err.message);
-            } finally {
-                checkBtn.innerHTML = originalText;
-                checkBtn.disabled = false;
-            }
+            } catch (err) { alert('Error: ' + err.message); }
+            finally { checkBtn.textContent = 'Check Eligibility'; checkBtn.disabled = false; }
         }
-
         function renderResults(data) {
-            const c = data.candidate;
-            const s = data.summary;
-
+            const c = data.candidate, s = data.summary;
             document.getElementById('resCandidateName').innerText = c.name;
-            document.getElementById('resCandidateSummary').innerText = `${c.qualification} • ${c.college} (Passing: ${c.passing_year}) • Age: ${c.age} yrs • Domicile: ${c.home_state}`;
+            document.getElementById('resCandidateSummary').innerText = `${c.qualification} • ${c.college} (${c.passing_year}) • Age ${c.age} • ${c.home_state}`;
             document.getElementById('resCategoryPill').innerText = `Quota: ${c.category} • Internship: ${document.getElementById('docInternship').value === 'completed' ? 'Completed' : 'Ongoing'}`;
-
             document.getElementById('resEligibleCount').innerText = s.fully_eligible;
             document.getElementById('resConditionalCount').innerText = s.conditionally_eligible;
             document.getElementById('resIneligibleCount').innerText = s.ineligible;
-
             renderMatches(data.matches);
         }
-
         function filterMatches(tab) {
             document.querySelectorAll('.match-tab').forEach(b => {
-                if (b.dataset.tab === tab) {
-                    b.className = 'match-tab active px-3.5 py-1.5 rounded-lg bg-white text-slate-900 shadow-sm font-bold';
-                } else {
-                    b.className = 'match-tab px-3.5 py-1.5 rounded-lg text-slate-600 hover:text-slate-900';
-                }
+                b.className = b.dataset.tab === tab ? 'match-tab active px-3.5 py-1.5 rounded-full bg-[#1D1D1F] text-white' : 'match-tab px-3.5 py-1.5 rounded-full text-[#6E6E73]';
             });
             if (!currentEvaluation) return;
-            let filtered = currentEvaluation.matches;
-            if (tab !== 'ALL') filtered = filtered.filter(m => m.status === tab);
-            renderMatches(filtered);
+            renderMatches(tab === 'ALL' ? currentEvaluation.matches : currentEvaluation.matches.filter(m => m.status === tab));
         }
-
         function renderMatches(list) {
             const container = document.getElementById('matchesContainer');
-            if (list.length === 0) {
-                container.innerHTML = `<div class="med-card text-center py-10 rounded-2xl text-slate-400 text-sm">No vacancies in this category.</div>`;
-                return;
-            }
-
+            if (list.length === 0) { container.innerHTML = `<div class="apple-card text-center py-10 text-[#86868B] text-sm">No jobs in this filter.</div>`; return; }
             container.innerHTML = list.map(m => {
-                let badgeClass = '';
-                let borderClass = '';
-                let statusIcon = '';
-
-                if (m.status === 'ELIGIBLE') {
-                    badgeClass = 'bg-emerald-50 text-emerald-800 border border-emerald-200';
-                    borderClass = 'border-l-4 border-l-emerald-500';
-                    statusIcon = '<i class="fa-solid fa-circle-check text-emerald-500 mr-1.5"></i>';
-                } else if (m.status === 'CONDITIONALLY_ELIGIBLE') {
-                    badgeClass = 'bg-amber-50 text-amber-800 border border-amber-200';
-                    borderClass = 'border-l-4 border-l-amber-500';
-                    statusIcon = '<i class="fa-solid fa-triangle-exclamation text-amber-500 mr-1.5"></i>';
-                } else {
-                    badgeClass = 'bg-rose-50 text-rose-800 border border-rose-200';
-                    borderClass = 'border-l-4 border-l-rose-500 opacity-80';
-                    statusIcon = '<i class="fa-solid fa-circle-xmark text-rose-500 mr-1.5"></i>';
-                }
-
+                const badgeClass = m.status === 'ELIGIBLE' ? 'bg-emerald-50 text-emerald-700' : (m.status === 'CONDITIONALLY_ELIGIBLE' ? 'bg-amber-50 text-amber-800' : 'bg-rose-50 text-rose-700');
                 return `
-                <div class="med-card rounded-2xl p-5 sm:p-6 ${borderClass} space-y-4">
-                    <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+                <div class="apple-card p-6 space-y-4">
+                    <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
                         <div>
-                            <div class="flex items-center gap-2 mb-2 flex-wrap">
-                                <span class="px-2.5 py-0.5 rounded-full text-xs font-bold ${badgeClass}">
-                                    ${statusIcon} ${m.status_label}
-                                </span>
-                                <span class="text-xs px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600 font-semibold">
-                                    ${m.category} • ${m.state}
-                                </span>
-                                <span class="text-xs text-slate-400 font-mono">
-                                    Due: ${m.last_date || 'Ongoing'}
-                                </span>
+                            <div class="flex items-center gap-2 mb-1.5 flex-wrap">
+                                <span class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold ${badgeClass}">${m.status_label}</span>
+                                <span class="text-xs text-[#6E6E73]">${m.organization} • ${m.state}</span>
                             </div>
-                            <h4 class="text-base sm:text-lg font-bold text-slate-900 leading-snug">${m.title}</h4>
-                            <p class="text-xs text-tealmed-700 font-semibold mt-0.5">
-                                <i class="fa-solid fa-hospital mr-1"></i> ${m.organization}
-                            </p>
+                            <h4 class="text-base font-bold text-[#1D1D1F]">${m.title}</h4>
                         </div>
-
-                        <div class="text-left sm:text-right sm:border-l sm:border-slate-100 sm:pl-4 min-w-[145px]">
-                            <span class="text-slate-400 block font-bold uppercase text-[10px]">Open Positions</span>
-                            <span class="text-lg font-extrabold text-slate-900 font-mono">${m.total_posts} Seats</span>
-                            ${m.user_category_seats ? `<span class="inline-block mt-1 px-2 py-0.5 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded text-[10px] font-bold">Quota: ${m.user_category_seats}</span>` : ''}
-                            <span class="text-[11px] block text-slate-500 font-mono mt-0.5">${m.pay_scale || 'Govt Pay Matrix'}</span>
+                        <div class="text-left sm:text-right shrink-0">
+                            <span class="text-base font-bold text-[#0F766E]">${m.total_posts} Seats</span>
+                            <span class="block text-[11px] text-[#6E6E73]">${m.pay_scale || 'Govt Pay'}</span>
                         </div>
                     </div>
-
-                    <div class="flex items-center gap-2 flex-wrap text-xs">
-                        <span class="px-2.5 py-1 bg-slate-100 text-slate-700 rounded-lg font-semibold text-[11px]">
-                            <i class="fa-solid fa-file-contract mr-1 text-slate-400"></i> ${m.bond_penalty_amount || 'No Bond'}
-                        </span>
-                        <span class="px-2.5 py-1 bg-slate-100 text-slate-700 rounded-lg font-semibold text-[11px]">
-                            <i class="fa-solid fa-pen-clip mr-1 text-slate-400"></i> ${m.selection_mode || 'Exam + Interview'}
-                        </span>
+                    <div class="bg-[#F5F5F7] rounded-2xl p-4 grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                        ${m.criteria_checks.map(c => `
+                            <div class="flex items-start gap-2 ${c.pass ? 'text-[#1D1D1F]' : 'text-rose-700'}">
+                                <i class="fa-solid ${c.pass ? (c.conditional ? 'fa-triangle-exclamation text-amber-500' : 'fa-check text-emerald-600') : 'fa-xmark text-rose-500'} mt-0.5"></i>
+                                <div><strong>${c.name}:</strong> ${c.detail}</div>
+                            </div>
+                        `).join('')}
                     </div>
-
-                    <div class="bg-slate-50 rounded-xl p-4 border border-slate-200/70 space-y-2">
-                        <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
-                            Official Eligibility Audit:
-                        </span>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-                            ${m.criteria_checks.map(c => `
-                                <div class="flex items-start gap-2 ${c.pass ? (c.conditional ? 'text-amber-800' : 'text-slate-700') : 'text-rose-700 font-medium'}">
-                                    <i class="fa-solid ${c.pass ? (c.conditional ? 'fa-triangle-exclamation text-amber-500' : 'fa-check text-emerald-600') : 'fa-xmark text-rose-500'} mt-0.5 text-xs"></i>
-                                    <div>
-                                        <strong class="font-semibold">${c.name}:</strong> ${c.detail}
-                                    </div>
-                                </div>
-                            `).join('')}
-                        </div>
+                    <div class="flex items-center justify-between pt-1">
+                        <a href="${m.notification_url || '#'}" target="_blank" class="text-xs font-semibold text-[#6E6E73] hover:text-black">View PDF</a>
+                        ${m.status !== 'INELIGIBLE' ? `<a href="${m.apply_url || '#'}" target="_blank" class="pill-btn px-5 py-2 bg-[#1D1D1F] text-white font-semibold rounded-full text-xs">Apply</a>` : `<span class="text-xs text-[#86868B]">Criteria Not Met</span>`}
                     </div>
-
-                    <div class="flex items-center justify-between pt-2 border-t border-slate-100">
-                        <div class="flex items-center gap-3">
-                            <a href="${m.notification_url || '#'}" target="_blank" class="text-xs text-slate-500 hover:text-slate-800 font-semibold flex items-center gap-1">
-                                <i class="fa-regular fa-file-pdf text-rose-500"></i> Official PDF
-                            </a>
-                            <button onclick="shareMatchToWhatsApp('${m.vacancy_id}')" class="text-xs text-emerald-700 hover:text-emerald-800 font-semibold flex items-center gap-1">
-                                <i class="fa-brands fa-whatsapp text-emerald-600"></i> Share with Batch
-                            </button>
-                        </div>
-                        <div>
-                            ${m.status !== 'INELIGIBLE' ? `
-                                <a href="${m.apply_url || '#'}" target="_blank" class="px-4 py-2 bg-tealmed-700 hover:bg-tealmed-800 text-white font-bold rounded-xl text-xs shadow-sm transition flex items-center gap-1.5">
-                                    <span>Apply on Official Portal</span>
-                                    <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
-                                </a>
-                            ` : `
-                                <button disabled class="px-3.5 py-2 bg-slate-100 text-slate-400 font-semibold rounded-xl text-xs cursor-not-allowed">
-                                    Criteria Not Met
-                                </button>
-                            `}
-                        </div>
-                    </div>
-                </div>
-                `;
+                </div>`;
             }).join('');
-        }
-
-        function shareMatchToWhatsApp(vacancyId) {
-            if (!currentEvaluation) return;
-            const m = currentEvaluation.matches.find(x => x.vacancy_id === vacancyId);
-            if (!m) return;
-            const text = 
-                `🩺 *CHECK THIS MEDICAL OFFICER VACANCY*\n\n` +
-                `📌 *${m.title}*\n` +
-                `🏥 *Org:* ${m.organization} (${m.state})\n` +
-                `👥 *Seats:* ${m.total_posts} Posts | 🎓 *Eligibility:* ${m.qualification}\n` +
-                `💰 *Pay:* ${m.pay_scale || 'Level 10'}\n` +
-                `📜 *Bond:* ${m.bond_penalty_amount || 'No Bond'}\n` +
-                `📅 *Last Date:* ${m.last_date || 'Check Notice'}\n\n` +
-                `👉 Check if you're eligible & where to apply:\n` +
-                `${window.location.origin}/onboarding`;
-            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
         }
     </script>
 </body>

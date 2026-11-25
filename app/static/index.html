@@ -86,6 +86,10 @@
                 <a href="/exam" class="pill-btn px-6 py-3 rounded-full bg-white hover:bg-gray-50 border border-black/10 text-[#1D1D1F] text-sm font-semibold">
                     Practice Mock CBT
                 </a>
+                <a href="https://t.me/MedAlerts_Official" target="_blank" class="pill-btn px-5 py-3 rounded-full bg-[#E6F4F1] hover:bg-[#D1ECE6] text-[#0F766E] text-sm font-semibold flex items-center gap-2">
+                    <i class="fa-brands fa-telegram text-sky-600"></i>
+                    <span>Join @MedAlerts_Official</span>
+                </a>
             </div>
             <!-- Mobile quick links -->
             <div class="flex md:hidden flex-wrap justify-center gap-4 pt-2 text-xs font-medium text-[#0F766E]">
@@ -157,6 +161,15 @@
                         <i class="fa-solid fa-arrows-rotate" id="refreshIcon"></i>
                     </button>
                 </div>
+            </div>
+
+            <!-- 1-Tap Quick Filter Pills -->
+            <div class="flex items-center gap-2 overflow-x-auto pb-1">
+                <button onclick="setQuickFilter('ALL', this)" class="quick-pill px-4 py-1.5 rounded-full text-xs font-semibold bg-[#1D1D1F] text-white shrink-0 transition">All</button>
+                <button onclick="setQuickFilter('Walk-in', this)" class="quick-pill px-4 py-1.5 rounded-full text-xs font-semibold bg-white border border-black/10 text-[#1D1D1F] hover:bg-gray-50 shrink-0 transition">Walk-in (No Exam)</button>
+                <button onclick="setQuickFilter('West Bengal', this)" class="quick-pill px-4 py-1.5 rounded-full text-xs font-semibold bg-white border border-black/10 text-[#1D1D1F] hover:bg-gray-50 shrink-0 transition">West Bengal</button>
+                <button onclick="setQuickFilter('Delhi', this)" class="quick-pill px-4 py-1.5 rounded-full text-xs font-semibold bg-white border border-black/10 text-[#1D1D1F] hover:bg-gray-50 shrink-0 transition">Delhi NCR</button>
+                <button onclick="setQuickFilter('ZERO_BOND', this)" class="quick-pill px-4 py-1.5 rounded-full text-xs font-semibold bg-white border border-black/10 text-[#1D1D1F] hover:bg-gray-50 shrink-0 transition">Zero Bond Only</button>
             </div>
 
             <div class="flex items-center justify-between px-1 text-xs text-[#6E6E73]">
@@ -494,6 +507,26 @@
                 showToast('Feeds refreshed.');
             } catch (err) { console.error(err); }
             finally { setTimeout(() => icon.classList.remove('animate-spin'), 500); }
+        }
+
+        function setQuickFilter(val, btnEl) {
+            document.querySelectorAll('.quick-pill').forEach(b => {
+                b.className = 'quick-pill px-4 py-1.5 rounded-full text-xs font-semibold bg-white border border-black/10 text-[#1D1D1F] hover:bg-gray-50 shrink-0 transition';
+            });
+            if (btnEl) {
+                btnEl.className = 'quick-pill px-4 py-1.5 rounded-full text-xs font-semibold bg-[#1D1D1F] text-white shrink-0 transition';
+            }
+            document.getElementById('searchInput').value = '';
+            document.getElementById('categoryFilter').value = '';
+            document.getElementById('bondFilter').value = '';
+            if (val === 'ZERO_BOND') {
+                document.getElementById('bondFilter').value = 'no_bond';
+            } else if (val === 'Delhi') {
+                document.getElementById('searchInput').value = 'Delhi';
+            } else if (val !== 'ALL') {
+                document.getElementById('categoryFilter').value = val;
+            }
+            applyFilters();
         }
 
         function resetFilters() {

@@ -1,4 +1,5 @@
 import os
+import html
 import smtplib
 from email.mime.text import MIMEText
 import requests
@@ -239,11 +240,21 @@ class Notifier:
         return True, f"Simulated email (configure RESEND_API_KEY or SMTP_* for live emails)"
 
     @classmethod
-    def broadcast_daily_digest(cls, db: Session, target_channel: str = None) -> dict:
-        """Dispatches a curated morning briefing of active & closing-soon circulars to Telegram."""
+    def broadcast_daily_digest(cls, db: Session, target_channel: str = None, force: bool = False) -> dict:
+        """Dispatches a curated morning briefing of active & closing-soon circulars to Telegram (once per UTC day unless forced)."""
         bot_token = os.getenv("TELEGRAM_BOT_TOKEN", "").strip()
         if not bot_token:
             return {"sent": 0, "reason": "TELEGRAM_BOT_TOKEN not set"}
+
+        today_start = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
+        if not force:
+            already_sent = db.query(NotificationLog).filter(
+                NotificationLog.vacancy_id == "DAILY_DIGEST",
+                NotificationLog.status == "SUCCESS",
+                NotificationLog.sent_at >= today_start
+            ).first()
+            if already_sent:
+                return {"sent": 0, "skipped": True, "reason": "Daily digest already sent today"}
 
         active = db.query(Vacancy).filter(Vacancy.is_active == True).all()
         total_seats = sum(v.total_posts for v in active)
@@ -259,12 +270,12 @@ class Notifier:
             lines.append("⏰ <b>Closing Within 7 Days:</b>")
             for v in closing_soon[:4]:
                 days = max(0, (v.last_date - now).days) if v.last_date else 0
-                lines.append(f"• <b>{v.title}</b> ({v.total_posts} seats) — <i>{days}d left</i>")
+                lines.append(f"• <b>{html.escape(v.title or '')}</b> ({v.total_posts} seats) — <i>{days}d left</i>")
             lines.append("")
         if walkins:
             lines.append("🚶 <b>Zero-Exam Walk-in Interviews:</b>")
             for v in walkins[:4]:
-                lines.append(f"• <b>{v.title}</b> ({v.state}) — {v.total_posts} seats")
+                lines.append(f"• <b>{html.escape(v.title or '')}</b> ({html.escape(v.state or '')}) — {v.total_posts} seats")
             lines.append("")
         lines.append("🔗 <a href='https://medalerts.onrender.com'>Open MedAlerts Dashboard</a> | <a href='https://medalerts.onrender.com/onboarding'>Check Eligibility</a>")
 
@@ -288,6 +299,15 @@ class Notifier:
                 )
                 if res.ok:
                     sent += 1
+                    db.add(NotificationLog(
+                        vacancy_id="DAILY_DIGEST",
+                        channel="telegram",
+                        target=chat_id,
+                        sent_at=datetime.utcnow(),
+                        status="SUCCESS",
+                        details="Daily morning briefing sent"
+                    ))
+                    db.commit()
             except Exception:
                 pass
         return {"sent": sent, "targets": len(set(targets))}

@@ -62,17 +62,19 @@ def mask_target(target: str) -> str:
 
 # Initialize database schema safely
 def ensure_schema():
-    from sqlalchemy import text
+    from sqlalchemy import text, inspect
     Base.metadata.create_all(bind=engine)
-    with engine.begin() as conn:
-        for col_sql in (
-            "ALTER TABLE vacancies ADD COLUMN flag_count INTEGER DEFAULT 0",
-            "ALTER TABLE vacancies ADD COLUMN last_verified_at TIMESTAMP",
-        ):
-            try:
-                conn.execute(text(col_sql))
-            except Exception:
-                pass
+    inspector = inspect(engine)
+    if "vacancies" in inspector.get_table_names():
+        existing_cols = {c["name"] for c in inspector.get_columns("vacancies")}
+        migrations = {
+            "flag_count": "ALTER TABLE vacancies ADD COLUMN flag_count INTEGER DEFAULT 0",
+            "last_verified_at": "ALTER TABLE vacancies ADD COLUMN last_verified_at TIMESTAMP",
+        }
+        for col_name, col_sql in migrations.items():
+            if col_name not in existing_cols:
+                with engine.begin() as conn:
+                    conn.execute(text(col_sql))
 
 try:
     ensure_schema()
@@ -154,18 +156,8 @@ app.mount("/static", StaticFiles(directory=static_dir), name="static")
 @app.on_event("startup")
 def on_startup():
     from .database import SessionLocal
-    from sqlalchemy import text
     try:
-        # Ensure new columns exist on already-provisioned tables
-        with engine.begin() as conn:
-            for col_sql in (
-                "ALTER TABLE vacancies ADD COLUMN flag_count INTEGER DEFAULT 0",
-                "ALTER TABLE vacancies ADD COLUMN last_verified_at TIMESTAMP",
-            ):
-                try:
-                    conn.execute(text(col_sql))
-                except Exception:
-                    pass
+        ensure_schema()
     except Exception as e:
         print(f"Schema migration check: {e}")
 
@@ -935,14 +927,16 @@ def test_telegram_broadcast(payload: TelegramTestRequest, request: Request):
 
 @app.post("/api/vacancies/{vacancy_id}/flag")
 def flag_vacancy_issue(vacancy_id: str, request: Request, db: Session = Depends(get_db)):
-    check_rate_limit(request, "flag_vacancy", max_calls=10, window_sec=300)
+    check_rate_limit(request, f"flag:{vacancy_id}", max_calls=1, window_sec=86400)
     v = db.query(Vacancy).filter(Vacancy.id == vacancy_id).first()
     if not v:
         raise HTTPException(status_code=404, detail="Vacancy not found")
     v.flag_count = (v.flag_count or 0) + 1
+    if v.flag_count >= 5 and v.stage != "APPLICATION_CLOSED":
+        v.stage = "NEEDS_VERIFICATION"
     db.commit()
     return {"message": "Circular flagged for verification review", "flag_count": v.flag_count}
 
 @app.post("/api/telegram/broadcast-digest", dependencies=[Depends(verify_admin_key)])
-def trigger_telegram_digest(db: Session = Depends(get_db)):
-    return Notifier.broadcast_daily_digest(db)
+def trigger_telegram_digest(force: bool = False, db: Session = Depends(get_db)):
+    return Notifier.broadcast_daily_digest(db, force=force)

@@ -979,6 +979,9 @@
             updateTrackerBadge();
             applyFilters();
         }
+        function escapeHtml(str) {
+            return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+        }
         function openTrackerModal() {
             const map = getTrackedMap();
             const container = document.getElementById('trackerListContainer');
@@ -989,14 +992,14 @@
                 container.innerHTML = entries.map(([id, item]) => `
                     <div class="p-3.5 bg-slate-50 border border-slate-200 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                         <div>
-                            <p class="font-bold text-slate-900">${item.title}</p>
-                            <p class="text-[11px] text-slate-500">${item.org} • Due: ${item.last_date || 'N/A'}</p>
+                            <p class="font-bold text-slate-900">${escapeHtml(item.title)}</p>
+                            <p class="text-[11px] text-slate-500">${escapeHtml(item.org)} • Due: ${escapeHtml(item.last_date || 'N/A')}</p>
                         </div>
                         <div class="flex items-center gap-2 shrink-0">
-                            <select onchange="updateTrackStatus('${id}', this.value)" class="px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg text-[11px] font-semibold">
+                            <select onchange="updateTrackStatus('${escapeHtml(id)}', this.value)" class="px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg text-[11px] font-semibold">
                                 ${['Saved', 'Form Submitted', 'Admit Card / Docs Ready', 'Interview Done'].map(st => `<option value="${st}" ${item.status === st ? 'selected' : ''}>${st}</option>`).join('')}
                             </select>
-                            <button onclick="removeTracked('${id}')" class="px-2 py-1.5 text-rose-600 hover:bg-rose-50 rounded-lg"><i class="fa-solid fa-trash-can"></i></button>
+                            <button onclick="removeTracked('${escapeHtml(id)}')" class="px-2 py-1.5 text-rose-600 hover:bg-rose-50 rounded-lg"><i class="fa-solid fa-trash-can"></i></button>
                         </div>
                     </div>
                 `).join('');

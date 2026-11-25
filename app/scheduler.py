@@ -31,6 +31,10 @@ def scheduled_recruitment_sync():
                 v.is_active = False
                 v.stage = "APPLICATION_CLOSED"
                 logger.info(f"Closed expired vacancy: {v.title}")
+            elif not v.last_date and v.verification_status == "NEEDS_PDF_CHECK" and v.created_at and v.created_at < now - timedelta(days=30):
+                v.is_active = False
+                v.stage = "APPLICATION_CLOSED"
+                logger.info(f"Closed stale undated vacancy: {v.title}")
             elif v.last_date and v.last_date <= now + timedelta(hours=48):
                 v.stage = "CLOSING_SOON"
                 Notifier.broadcast_closing_reminder(db, v)

@@ -1,6 +1,7 @@
 import json
 import logging
 import re
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timedelta
 from typing import List, Dict, Any, Optional
 from urllib.parse import urljoin
@@ -16,6 +17,11 @@ logger = logging.getLogger("medalerts.scraper")
 
 MEDICAL_PATTERN = re.compile(
     r"\b(medical officer|gdmo|cms|combined medical|imo|insurance medical|senior resident|sr\.?\s*resident|junior resident|jr\.?\s*resident|rmo|rmo-cum-tutor|clinical tutor|demonstrator|specialist|part-time specialist|super specialist|house staff|house staffship|house-staff|ptmo|health officer|doctor|ayush|nuhm|uhwc|walk-in|contract medical|cmp)\b",
+    re.IGNORECASE,
+)
+
+NON_JOB_PATTERN = re.compile(
+    r"\b(merit\s*list|selected\s*(?:candidate|list)|shortlisted|waiting\s*list|waitlist|result(?:s)?\s+(?:of|for)|admit\s*card|corrigendum|addendum|cancellation|cancelled|answer\s*key|provisional\s*list|final\s*list|joining\s*order|panel\s*for|engagement\s*order)\b",
     re.IGNORECASE,
 )
 
@@ -359,7 +365,7 @@ class LiveGazetteScraper:
             row_text = " ".join(cells)
             if "Continue For Registration" not in row_text:
                 continue
-            if not MEDICAL_PATTERN.search(post_name):
+            if not MEDICAL_PATTERN.search(post_name) or NON_JOB_PATTERN.search(row_text):
                 continue
 
             title = f"{post_name} ({programme})"[:250]
@@ -385,18 +391,18 @@ class LiveGazetteScraper:
                 "state": source["state"],
                 "designation": role_info["designation"],
                 "qualification": role_info["qualification"],
-                "total_posts": 1,
+                "total_posts": 0,
                 "pay_scale": source["pay_scale"],
-                "last_date": last_date or (now + timedelta(days=14)),
+                "last_date": last_date,
                 "notification_url": source["url"],
                 "apply_url": source["url"],
                 "summary": f"Live WB Health district online recruitment ({programme}). {schedule_text[:180]}",
                 "selection_mode": "Online Merit / Interview (hr.wbhealth.gov.in)",
                 "bond_years": 0,
                 "bond_penalty_amount": "No Bond (Contractual)",
-                "verification_status": "PORTAL_VERIFIED",
+                "verification_status": "PORTAL_VERIFIED" if last_date else "NEEDS_PDF_CHECK",
             })
-            if len(discovered) >= 10:
+            if len(discovered) >= 12:
                 break
         return discovered
 
@@ -424,7 +430,7 @@ class LiveGazetteScraper:
                 if len(text) < 12 or len(text) > 260:
                     continue
                 low = text.lower()
-                if not MEDICAL_PATTERN.search(text):
+                if not MEDICAL_PATTERN.search(text) or NON_JOB_PATTERN.search(text):
                     continue
                 if text in seen_titles:
                     continue
@@ -454,7 +460,7 @@ class LiveGazetteScraper:
                     "verification_status": "NEEDS_PDF_CHECK",
                 }
 
-                if ".pdf" in full_url.lower() and pdf_parsed_count < 3:
+                if ".pdf" in full_url.lower() and pdf_parsed_count < 6:
                     pdf_parsed_count += 1
                     try:
                         pdf_text = GovtNotificationPDFParser.extract_from_url(full_url)
@@ -488,11 +494,14 @@ class LiveGazetteScraper:
                     except Exception as pdf_err:
                         logger.debug(f"PDF auto-parse skipped for {full_url}: {pdf_err}")
 
-                if entry.get("last_date") and entry["last_date"].date() < datetime.utcnow().date():
+                today = datetime.utcnow().date()
+                if entry.get("last_date") and entry["last_date"].date() < today:
+                    continue
+                if not entry.get("last_date") and entry.get("exam_date") and entry["exam_date"].date() < today:
                     continue
 
                 discovered.append(entry)
-                if len(discovered) >= 5:
+                if len(discovered) >= 12:
                     break
         except Exception as e:
             logger.warning(f"Live scrape skipped for {source['name']}: {e}")
@@ -508,21 +517,44 @@ class LiveGazetteScraper:
             Vacancy.last_date.isnot(None),
             Vacancy.last_date < now,
         ).update({"is_active": False, "stage": "APPLICATION_CLOSED"}, synchronize_session=False)
+        db.query(Vacancy).filter(
+            Vacancy.is_active == True,
+            Vacancy.last_date.is_(None),
+            Vacancy.verification_status == "NEEDS_PDF_CHECK",
+            Vacancy.created_at < now - timedelta(days=30),
+        ).update({"is_active": False, "stage": "APPLICATION_CLOSED"}, synchronize_session=False)
         db.commit()
 
-        for source in PORTAL_SOURCES:
-            checked_portals += 1
-            items = cls.fetch_portal_links(source)
-            for item in items:
+        all_discovered: List[Dict[str, Any]] = []
+        with ThreadPoolExecutor(max_workers=8) as executor:
+            futures = {executor.submit(cls.fetch_portal_links, src): src for src in PORTAL_SOURCES}
+            for fut in as_completed(futures):
+                checked_portals += 1
+                src = futures[fut]
+                try:
+                    for item in fut.result():
+                        all_discovered.append((src["url"], item))
+                except Exception as exc:
+                    logger.warning(f"Concurrent fetch failed for {src['name']}: {exc}")
+
+        for portal_root_url, item in all_discovered:
+            existing = db.query(Vacancy).filter(
+                Vacancy.title == item["title"],
+                Vacancy.organization == item["organization"],
+            ).first()
+            if not existing and item.get("notification_url") and item["notification_url"] != portal_root_url:
                 existing = db.query(Vacancy).filter(
-                    Vacancy.title == item["title"],
-                    Vacancy.organization == item["organization"]
+                    Vacancy.notification_url == item["notification_url"]
                 ).first()
-                if not existing:
-                    v = Vacancy(**item, stage="APPLICATION_OPEN", is_active=True)
-                    db.add(v)
-                    db.commit()
-                    db.refresh(v)
-                    Notifier.broadcast_new_vacancy(db, v)
-                    added += 1
+            if not existing and item.get("memo_number"):
+                existing = db.query(Vacancy).filter(
+                    Vacancy.memo_number == item["memo_number"]
+                ).first()
+            if not existing:
+                v = Vacancy(**item, stage="APPLICATION_OPEN", is_active=True)
+                db.add(v)
+                db.commit()
+                db.refresh(v)
+                Notifier.broadcast_new_vacancy(db, v)
+                added += 1
         return {"portals_checked": checked_portals, "live_added": added}

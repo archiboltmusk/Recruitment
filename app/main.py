@@ -723,8 +723,9 @@ def check_eligibility(profile: DoctorProfile, db: Session = Depends(get_db)):
     elif profile.category == "OBC":
         age_relaxation = 3
 
-    current_year = 2026
-    approx_experience = max(0, current_year - profile.passing_year)
+    current_year = datetime.utcnow().year
+    years_since_pass = max(0, current_year - profile.passing_year)
+    approx_experience = max(0, years_since_pass - 1) if (profile.internship_status == "completed" and years_since_pass >= 1) else years_since_pass
 
     for v in vacancies:
         criteria_checks = []
@@ -735,7 +736,13 @@ def check_eligibility(profile: DoctorProfile, db: Session = Depends(get_db)):
         user_qual = profile.qualification.upper()
         req_qual = v.qualification.upper()
 
-        if req_qual == "MD/MS":
+        if "MBBS" in req_qual and "MD/MS" in req_qual:
+            if user_qual in ["MBBS", "MD/MS"]:
+                criteria_checks.append({"name": "Qualification", "pass": True, "detail": "MBBS or MD/MS qualification accepted"})
+            else:
+                is_hard_fail = True
+                criteria_checks.append({"name": "Qualification", "pass": False, "detail": "Requires MBBS or MD/MS degree"})
+        elif req_qual == "MD/MS":
             if user_qual == "MD/MS":
                 criteria_checks.append({"name": "Qualification", "pass": True, "detail": "Postgraduate Specialist (MD/MS) matched"})
             else:
@@ -760,16 +767,21 @@ def check_eligibility(profile: DoctorProfile, db: Session = Depends(get_db)):
                 is_hard_fail = True
                 criteria_checks.append({"name": "Qualification", "pass": False, "detail": "Requires basic MBBS degree"})
 
-        # 2. Age Check (with relaxation)
+        # 2. Age Check (with relaxation & unparsed-PDF guard)
         allowed_max_age = (v.max_age or 35) + age_relaxation
         min_req_age = v.min_age or 21
+        unparsed_default_age = (v.verification_status == "NEEDS_PDF_CHECK" and not v.memo_number and (v.max_age or 35) == 35)
 
         if profile.age < min_req_age:
             is_hard_fail = True
             criteria_checks.append({"name": "Age Limit", "pass": False, "detail": f"Underage: Minimum age is {min_req_age} yrs (You are {profile.age})"})
         elif profile.age > allowed_max_age:
-            is_hard_fail = True
-            criteria_checks.append({"name": "Age Limit", "pass": False, "detail": f"Overage: Max age allowed is {allowed_max_age} yrs for {profile.category} (You are {profile.age})"})
+            if unparsed_default_age:
+                is_conditional = True
+                criteria_checks.append({"name": "Age Limit", "pass": True, "conditional": True, "detail": f"Age limit not auto-parsed (default {allowed_max_age} yrs) — verify upper age in official PDF"})
+            else:
+                is_hard_fail = True
+                criteria_checks.append({"name": "Age Limit", "pass": False, "detail": f"Overage: Max age allowed is {allowed_max_age} yrs for {profile.category} (You are {profile.age})"})
         else:
             relax_msg = f" (incl. {age_relaxation} yrs {profile.category} relaxation)" if age_relaxation > 0 else ""
             criteria_checks.append({"name": "Age Limit", "pass": True, "detail": f"Eligible: Under {allowed_max_age} yrs limit{relax_msg}"})
@@ -1037,10 +1049,25 @@ def flag_vacancy_issue(vacancy_id: str, request: Request, db: Session = Depends(
     if not v:
         raise HTTPException(status_code=404, detail="Vacancy not found")
     v.flag_count = (v.flag_count or 0) + 1
-    if v.flag_count >= 5 and v.stage != "APPLICATION_CLOSED":
+    if v.flag_count >= 3 and v.stage != "APPLICATION_CLOSED":
         v.stage = "NEEDS_VERIFICATION"
     db.commit()
     return {"message": "Circular flagged for verification review", "flag_count": v.flag_count}
+
+@app.get("/api/vacancies/flagged", dependencies=[Depends(verify_admin_key)])
+def list_flagged_vacancies(db: Session = Depends(get_db)):
+    rows = db.query(Vacancy).filter(or_(Vacancy.flag_count > 0, Vacancy.stage == "NEEDS_VERIFICATION")).order_by(Vacancy.flag_count.desc()).all()
+    return [{"id": v.id, "title": v.title, "organization": v.organization, "flag_count": v.flag_count or 0, "stage": v.stage, "is_active": v.is_active} for v in rows]
+
+@app.post("/api/vacancies/{vacancy_id}/deactivate", dependencies=[Depends(verify_admin_key)])
+def deactivate_vacancy(vacancy_id: str, db: Session = Depends(get_db)):
+    v = db.query(Vacancy).filter(Vacancy.id == vacancy_id).first()
+    if not v:
+        raise HTTPException(status_code=404, detail="Vacancy not found")
+    v.is_active = False
+    v.stage = "APPLICATION_CLOSED"
+    db.commit()
+    return {"message": "Vacancy deactivated", "id": v.id}
 
 @app.post("/api/telegram/broadcast-digest", dependencies=[Depends(verify_admin_key)])
 def trigger_telegram_digest(force: bool = False, db: Session = Depends(get_db)):

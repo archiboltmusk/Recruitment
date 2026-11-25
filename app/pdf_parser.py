@@ -185,11 +185,22 @@ class GovtNotificationPDFParser:
                 re.IGNORECASE,
             )
         if posts_match:
-            extracted["total_posts"] = int(posts_match.group(1))
-            signals += 1
+            post_num = int(posts_match.group(1))
+            if 0 < post_num <= 5000:
+                extracted["total_posts"] = post_num
+                signals += 1
 
-        # 2. Qualification
-        if re.search(r"\b(?:MD|MS|DNB|Specialist|Senior\s+Resident|Sr\.?\s*Resident)\b", text, re.IGNORECASE):
+        # 2. Qualification (header-aware so footnotes don't overwrite MBBS GDMO notices)
+        header_text = text[:800]
+        has_pg_header = bool(re.search(r"\b(?:MD/MS|MD|MS|DNB|Specialist|Senior\s+Resident|Sr\.?\s*Resident)\b", header_text, re.IGNORECASE))
+        has_mbbs_header = bool(re.search(r"\b(?:MBBS|GDMO|CGDMO|Junior\s+Resident|Jr\.?\s*Resident|House\s*Staff)\b", header_text, re.IGNORECASE))
+        if has_pg_header and not has_mbbs_header:
+            extracted["qualification"] = "MD/MS"
+        elif has_mbbs_header and not has_pg_header:
+            extracted["qualification"] = "MBBS"
+        elif has_pg_header and has_mbbs_header:
+            extracted["qualification"] = "MBBS / MD/MS" if re.search(r"\b(?:GDMO|CGDMO|Junior\s+Resident|Medical\s+Officer)\b", header_text, re.IGNORECASE) else "MD/MS"
+        elif re.search(r"\b(?:MD|MS|DNB|Specialist|Senior\s+Resident|Sr\.?\s*Resident)\b", text, re.IGNORECASE):
             extracted["qualification"] = "MD/MS"
         elif re.search(r"\b(?:BAMS|BHMS|BUMS|AYUSH)\b", text, re.IGNORECASE):
             extracted["qualification"] = "AYUSH"

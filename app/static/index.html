@@ -195,9 +195,13 @@
                 <button onclick="setQuickFilter('UR_ONLY', this)" class="quick-pill px-4 py-1.5 rounded-full text-xs font-semibold bg-white border border-black/10 text-[#1D1D1F] hover:bg-gray-50 shrink-0 transition">UR (Non-EWS) Available</button>
             </div>
 
-            <div class="flex items-center justify-between px-1 text-xs text-[#6E6E73]">
+            <div class="flex flex-wrap items-center justify-between gap-2 px-1 text-xs text-[#6E6E73]">
                 <span id="filteredCount" class="font-medium">Loading circulars...</span>
-                <div class="flex items-center gap-3">
+                <div class="flex flex-wrap items-center gap-3">
+                    <button onclick="exportFilteredCsv()" class="text-[#1D1D1F] font-semibold hover:text-[#0F766E] transition">
+                        <i class="fa-solid fa-file-csv text-[#0F766E] mr-1"></i>Export CSV
+                    </button>
+                    <span class="text-[#86868B]">•</span>
                     <button onclick="openSourcesModal()" class="text-[#1D1D1F] font-semibold hover:text-[#0F766E] transition">
                         <i class="fa-solid fa-globe text-[#0F766E] mr-1"></i>Official Sources (<span id="sourcesCountBadge">36</span>)
                     </button>
@@ -247,6 +251,10 @@
                     <input type="url" id="pdfUrlInput" placeholder="Paste official .pdf URL..." class="flex-grow px-4 py-2.5 bg-[#F5F5F7] rounded-xl text-xs outline-none">
                     <button onclick="analyzePdfUrl()" id="analyzeBtn" class="pill-btn px-4 py-2.5 bg-[#1D1D1F] text-white font-semibold text-xs rounded-xl">Scan</button>
                 </div>
+                <label class="flex items-center justify-between px-4 py-2.5 bg-[#F5F5F7] hover:bg-gray-200/70 rounded-xl text-xs font-semibold text-[#1D1D1F] cursor-pointer transition">
+                    <span><i class="fa-solid fa-cloud-arrow-up mr-2 text-[#0F766E]"></i>Or upload a local .pdf file (WhatsApp / Telegram circular)</span>
+                    <input type="file" accept="application/pdf,.pdf" onchange="analyzePdfFile(event)" class="hidden">
+                </label>
                 <textarea id="pdfTextInput" rows="4" placeholder="Or paste circular text to extract age limit, posts &amp; bond..." class="w-full px-4 py-2.5 bg-[#F5F5F7] rounded-xl text-xs outline-none"></textarea>
                 <button onclick="analyzePdfText()" class="pill-btn w-full py-2.5 bg-[#0F766E] text-white font-semibold text-xs rounded-xl">Extract Details</button>
                 <div id="pdfResultBox" class="hidden p-4 bg-[#F5F5F7] rounded-2xl space-y-2 text-xs">
@@ -425,6 +433,7 @@
 
     <script>
         let allVacancies = [];
+        let lastFilteredVacancies = [];
         let currentDetailId = null;
         let deepLinkHandled = false;
 
@@ -521,6 +530,7 @@
                 return da - db;
             });
 
+            lastFilteredVacancies = filtered;
             document.getElementById('filteredCount').textContent = `${filtered.length} active opportunities`;
             renderCards(filtered);
         }
@@ -640,6 +650,46 @@
                 showExtracted(data.extracted);
             } catch (err) { alert('Error: ' + err.message); }
             finally { btn.disabled = false; btn.textContent = 'Scan'; }
+        }
+
+        async function analyzePdfFile(ev) {
+            const file = ev.target.files && ev.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = async () => {
+                try {
+                    const res = await fetch('/api/parser/analyze-file', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ filename: file.name, content_base64: reader.result })
+                    });
+                    const data = await res.json();
+                    if (!res.ok) throw new Error(data.detail || 'Upload failed');
+                    showExtracted(data.extracted);
+                    showToast('PDF extracted: ' + file.name);
+                } catch (err) { alert('Error: ' + err.message); }
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function exportFilteredCsv() {
+            const list = lastFilteredVacancies.length ? lastFilteredVacancies : allVacancies;
+            if (!list.length) return showToast('No vacancies to export.');
+            const escCsv = v => '"' + String(v ?? '').replace(/"/g, '""') + '"';
+            const headers = ['Title', 'Organization', 'State', 'Qualification', 'Seats', 'Pay Scale', 'Bond', 'Deadline', 'Apply URL'];
+            const rows = list.map(v => [
+                v.title, v.organization, v.state, v.qualification,
+                v.total_posts || 0, v.pay_scale || '', v.bond_years === 0 ? 'Zero Bond' : (v.bond_penalty_amount || ''),
+                v.last_date || 'Check PDF', v.apply_url || v.notification_url || ''
+            ].map(escCsv).join(','));
+            const csv = [headers.join(','), ...rows].join('\r\n');
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `medalerts-vacancies-${new Date().toISOString().slice(0, 10)}.csv`;
+            a.click();
+            URL.revokeObjectURL(a.href);
+            showToast(`Exported ${list.length} vacancies to CSV.`);
         }
 
         async function analyzePdfText() {
@@ -1186,6 +1236,12 @@
         }
 
         document.getElementById('searchInput').addEventListener('input', applyFilters);
+        document.addEventListener('keydown', e => {
+            if (e.key === '/' && !['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) {
+                e.preventDefault();
+                document.getElementById('searchInput').focus();
+            }
+        });
         if ('serviceWorker' in navigator) { navigator.serviceWorker.register('/sw.js').catch(() => {}); }
         loadKitState();
         updateTrackerBadge();

@@ -15,7 +15,7 @@ from sqlalchemy import func, or_
 from .database import engine, Base, get_db
 from .models import Vacancy, Subscription, NotificationLog, ExamAttempt
 from .collector import VacancyCollector
-from .scraper import LiveGazetteScraper
+from .scraper import LiveGazetteScraper, PORTAL_SOURCES
 from .notifier import Notifier
 from .scheduler import start_scheduler, shutdown_scheduler, scheduler
 from .pdf_parser import GovtNotificationPDFParser
@@ -582,6 +582,23 @@ def get_stats(db: Session = Depends(get_db)):
         "closing_in_7_days": closing_soon,
         "active_subscribers": subscribers_count,
         "scheduler_running": bool(getattr(scheduler, "running", False))
+    }
+
+@app.get("/api/sources")
+def list_monitored_sources():
+    return {
+        "total": len(PORTAL_SOURCES),
+        "sources": [
+            {
+                "name": s["name"],
+                "organization": s["organization"],
+                "url": s["url"],
+                "category": s["category"],
+                "state": s["state"],
+                "pay_scale": s["pay_scale"],
+            }
+            for s in PORTAL_SOURCES
+        ]
     }
 
 @app.get("/api/vacancies")

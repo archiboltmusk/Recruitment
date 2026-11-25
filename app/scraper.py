@@ -389,11 +389,14 @@ class LiveGazetteScraper:
             return {"qualification": "AYUSH", "designation": "AYUSH Medical Officer"}
         if re.search(r"\b(?:bds|mds|dental|dentistry)\b", low):
             return {"qualification": "BDS", "designation": "Dental Surgeon"}
+        # Non-Specialist (GDMO) is explicitly MBBS, even if title says "Non-Specialist consultant(GDMO)"
+        if re.search(r"\bnon[-\s]*specialist\b", low):
+            return {"qualification": "MBBS", "designation": "Medical Officer / GDMO (Non-Specialist)"}
         has_pg = bool(PG_ROLE_PATTERN.search(text))
         has_mbbs = bool(MBBS_CORE_PATTERN.search(text))
         if has_pg:
-            if re.search(r"\b(?:gdmo|cgdmo|junior\s+resident|jr\.?\s*resident)\b", low) and "gynecologist" not in low and "gynaecologist" not in low:
-                return {"qualification": "MBBS / MD/MS", "designation": "GDMO / Medical Officer & Specialist"}
+            if re.search(r"\b(?:gdmo|cgdmo|junior\s+resident|jr\.?\s*resident|non[-\s]*pg)\b", low) and "gynecologist" not in low and "gynaecologist" not in low:
+                return {"qualification": "MBBS / MD/MS", "designation": "GDMO / Junior Resident & Specialist"}
             return {"qualification": "MD/MS", "designation": "Senior Resident / Specialist / Consultant"}
         if "rmo" in low or "clinical tutor" in low:
             return {"qualification": "MBBS / MD/MS", "designation": "RMO-cum-Clinical Tutor"}
@@ -604,6 +607,9 @@ class LiveGazetteScraper:
                 row.stage = "APPLICATION_CLOSED"
                 continue
             elif inferred["qualification"] in ("MD/MS", "MBBS / MD/MS", "AYUSH") and row.qualification == "MBBS":
+                row.qualification = inferred["qualification"]
+                row.designation = inferred["designation"]
+            elif inferred["qualification"] in ("MBBS", "MBBS / MD/MS") and row.qualification == "MD/MS":
                 row.qualification = inferred["qualification"]
                 row.designation = inferred["designation"]
             nt = _norm_title(row.title or "")

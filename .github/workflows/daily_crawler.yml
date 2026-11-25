@@ -33,6 +33,7 @@ jobs:
           APP_BASE_URL: ${{ secrets.APP_BASE_URL }}
         run: |
           python -m py_compile app/main.py app/models.py app/scraper.py app/pdf_parser.py app/notifier.py
+          python -m unittest discover -s tests -v
           python -c "
           from app.database import engine, Base, SessionLocal
           from app.scheduler import scheduled_recruitment_sync

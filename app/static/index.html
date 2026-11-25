@@ -213,6 +213,9 @@
             </div>
         </section>
 
+        <!-- Corrigenda & Deadline Updates Strip -->
+        <section id="corrigendaStrip" class="hidden apple-card p-3.5 flex flex-wrap items-center gap-2 text-xs border-l-4 border-l-amber-500"></section>
+
         <!-- Regional Summary Strip -->
         <section id="regionalStrip" class="flex flex-wrap items-center gap-2 text-xs"></section>
 
@@ -315,6 +318,9 @@
                 </button>
                 <button type="button" onclick="testTelegramLive()" id="tgTestBtn" class="pill-btn w-full py-2.5 bg-[#F5F5F7] text-[#1D1D1F] rounded-full text-xs font-semibold">
                     Send Test Telegram Message
+                </button>
+                <button type="button" onclick="enableBrowserPush()" id="pushEnableBtn" class="pill-btn w-full py-2.5 bg-[#E6F4F1] text-[#0F766E] rounded-full text-xs font-semibold">
+                    <i class="fa-regular fa-bell mr-1.5"></i>Enable Browser Push Alerts
                 </button>
                 <div id="tgTestResult" class="hidden p-3 rounded-2xl text-xs space-y-1"></div>
             </form>
@@ -438,7 +444,19 @@
         let deepLinkHandled = false;
 
         async function init() {
-            await Promise.all([fetchStats(), fetchVacancies()]);
+            await Promise.all([fetchStats(), fetchVacancies(), fetchCorrigenda()]);
+        }
+
+        async function fetchCorrigenda() {
+            try {
+                const res = await fetch('/api/corrigenda?limit=5');
+                if (!res.ok) return;
+                const rows = await res.json();
+                const box = document.getElementById('corrigendaStrip');
+                if (!box || !rows.length) return;
+                box.classList.remove('hidden');
+                box.innerHTML = '<span class="font-bold text-amber-800 mr-1"><i class="fa-solid fa-bolt mr-1"></i>Updates:</span>' + rows.map(r => `<button onclick="openVacancyDetail('${escapeHtml(r.vacancy_id)}')" class="px-2.5 py-1 rounded-full bg-amber-50 text-amber-900 font-medium hover:bg-amber-100">${escapeHtml(r.title.slice(0, 38))}: ${escapeHtml(r.field_changed)} ${escapeHtml(r.old_value)} &rarr; ${escapeHtml(r.new_value)}</button>`).join('');
+            } catch (e) {}
         }
 
         async function fetchStats() {
@@ -1090,17 +1108,20 @@
                 container.innerHTML = '<p class="text-center text-[#86868B] py-8">No saved jobs yet. Tap the bookmark icon on any card.</p>';
             } else {
                 container.innerHTML = entries.map(([id, item]) => `
-                    <div class="p-3.5 bg-[#F5F5F7] rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                        <div>
-                            <p class="font-bold text-[#1D1D1F]">${escapeHtml(item.title)}</p>
-                            <p class="text-[11px] text-[#6E6E73]">${escapeHtml(item.org)} • Due ${escapeHtml(item.last_date || 'Soon')}</p>
+                    <div class="p-3.5 bg-[#F5F5F7] rounded-2xl space-y-2">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                            <div>
+                                <p class="font-bold text-[#1D1D1F]">${escapeHtml(item.title)}</p>
+                                <p class="text-[11px] text-[#6E6E73]">${escapeHtml(item.org)} • Due ${escapeHtml(item.last_date || 'Soon')}</p>
+                            </div>
+                            <div class="flex items-center gap-2 shrink-0">
+                                <select onchange="updateTrackStatus('${escapeHtml(id)}', this.value)" class="px-2.5 py-1.5 bg-white rounded-xl text-[11px] font-semibold outline-none">
+                                    ${['Saved', 'Form Submitted', 'Admit Card Ready', 'Interview Done', 'Joined'].map(st => `<option value="${st}" ${item.status === st ? 'selected' : ''}>${st}</option>`).join('')}
+                                </select>
+                                <button onclick="removeTracked('${escapeHtml(id)}')" class="w-7 h-7 rounded-full bg-white text-rose-600 flex items-center justify-center"><i class="fa-solid fa-trash-can text-[10px]"></i></button>
+                            </div>
                         </div>
-                        <div class="flex items-center gap-2 shrink-0">
-                            <select onchange="updateTrackStatus('${escapeHtml(id)}', this.value)" class="px-2.5 py-1.5 bg-white rounded-xl text-[11px] font-semibold outline-none">
-                                ${['Saved', 'Form Submitted', 'Admit Card Ready', 'Interview Done'].map(st => `<option value="${st}" ${item.status === st ? 'selected' : ''}>${st}</option>`).join('')}
-                            </select>
-                            <button onclick="removeTracked('${escapeHtml(id)}')" class="w-7 h-7 rounded-full bg-white text-rose-600 flex items-center justify-center"><i class="fa-solid fa-trash-can text-[10px]"></i></button>
-                        </div>
+                        <input type="text" value="${escapeHtml(item.note || '')}" onchange="updateTrackNote('${escapeHtml(id)}', this.value)" placeholder="Add App Ref No., Fee Receipt, or Interview notes..." class="w-full px-3 py-1.5 bg-white rounded-xl text-[11px] outline-none">
                     </div>
                 `).join('');
             }
@@ -1109,6 +1130,34 @@
         function updateTrackStatus(id, status) {
             const map = getTrackedMap();
             if (map[id]) { map[id].status = status; localStorage.setItem('med_app_tracker', JSON.stringify(map)); showToast('Updated: ' + status); }
+        }
+        function updateTrackNote(id, note) {
+            const map = getTrackedMap();
+            if (map[id]) { map[id].note = note; localStorage.setItem('med_app_tracker', JSON.stringify(map)); showToast('Application note saved'); }
+        }
+        async function enableBrowserPush() {
+            if (!('Notification' in window) || !('serviceWorker' in navigator)) return showToast('Browser push not supported here.');
+            const perm = await Notification.requestPermission();
+            if (perm !== 'granted') return showToast('Notification permission denied.');
+            try {
+                const reg = await navigator.serviceWorker.ready;
+                let sub = await reg.pushManager.getSubscription();
+                if (!sub) {
+                    await fetch('/api/push/subscribe', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ endpoint: 'https://push.medalerts.local/browser/' + (localStorage.getItem('med_push_id') || (localStorage.setItem('med_push_id', crypto.randomUUID()), localStorage.getItem('med_push_id'))), qualification_filter: document.getElementById('subQualification').value })
+                    });
+                } else {
+                    const j = sub.toJSON();
+                    await fetch('/api/push/subscribe', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ endpoint: j.endpoint, keys: j.keys || {}, qualification_filter: document.getElementById('subQualification').value })
+                    });
+                }
+                showToast('Browser push alerts enabled!');
+            } catch (e) { showToast('Could not enable push alerts.'); }
         }
         function removeTracked(id) {
             const map = getTrackedMap();

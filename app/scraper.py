@@ -9,7 +9,7 @@ import requests
 from bs4 import BeautifulSoup
 from sqlalchemy.orm import Session
 
-from .models import Vacancy
+from .models import Vacancy, PortalHealth, CorrigendumLog
 from .notifier import Notifier
 from .pdf_parser import GovtNotificationPDFParser
 
@@ -739,6 +739,7 @@ class LiveGazetteScraper:
                 logger.debug(f"PortalHealth update warning for {tel['name']}: {ph_err}")
         db.commit()
 
+        corrigenda_detected = 0
         for portal_root_url, item in all_discovered:
             existing = db.query(Vacancy).filter(
                 Vacancy.title == item["title"],
@@ -755,13 +756,40 @@ class LiveGazetteScraper:
             nt = _norm_title(item.get("title", ""))
             if not existing and nt and nt in seen_norm_titles:
                 continue
-            if not existing:
-                if nt:
-                    seen_norm_titles.add(nt)
-                v = Vacancy(**item, stage="APPLICATION_OPEN", is_active=True)
-                db.add(v)
-                db.commit()
-                db.refresh(v)
-                Notifier.broadcast_new_vacancy(db, v)
-                added += 1
-        return {"portals_checked": checked_portals, "live_added": added}
+            if existing:
+                changed = False
+                if item.get("last_date") and item["last_date"] != existing.last_date:
+                    db.add(CorrigendumLog(
+                        vacancy_id=existing.id,
+                        title=existing.title,
+                        field_changed="last_date",
+                        old_value=existing.last_date.strftime("%Y-%m-%d") if existing.last_date else "None",
+                        new_value=item["last_date"].strftime("%Y-%m-%d"),
+                    ))
+                    existing.last_date = item["last_date"]
+                    existing.is_active = True
+                    changed = True
+                if item.get("total_posts") and item["total_posts"] > 0 and existing.total_posts != item["total_posts"]:
+                    db.add(CorrigendumLog(
+                        vacancy_id=existing.id,
+                        title=existing.title,
+                        field_changed="total_posts",
+                        old_value=str(existing.total_posts or 0),
+                        new_value=str(item["total_posts"]),
+                    ))
+                    existing.total_posts = item["total_posts"]
+                    changed = True
+                if changed:
+                    existing.last_verified_at = now
+                    db.commit()
+                    corrigenda_detected += 1
+                continue
+            if nt:
+                seen_norm_titles.add(nt)
+            v = Vacancy(**item, stage="APPLICATION_OPEN", is_active=True)
+            db.add(v)
+            db.commit()
+            db.refresh(v)
+            Notifier.broadcast_new_vacancy(db, v)
+            added += 1
+        return {"portals_checked": checked_portals, "live_added": added, "corrigenda_detected": corrigenda_detected}

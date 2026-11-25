@@ -134,3 +134,28 @@ class DoctorSyncBlob(Base):
     sync_key = Column(String(64), primary_key=True)
     payload_json = Column(Text, default="{}")
     updated_at = Column(DateTime, default=datetime.utcnow)
+
+
+class PushSubscription(Base):
+    __tablename__ = "push_subscriptions"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    endpoint = Column(Text, nullable=False, unique=True)
+    p256dh = Column(String(255), nullable=True)
+    auth = Column(String(255), nullable=True)
+    qualification_filter = Column(String(50), default="ALL")
+    state_filter = Column(String(100), default="ALL")
+    is_active = Column(Boolean, default=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+
+class CorrigendumLog(Base):
+    __tablename__ = "corrigendum_logs"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    vacancy_id = Column(String(36), nullable=False)
+    title = Column(String(255), nullable=False)
+    field_changed = Column(String(60), nullable=False)
+    old_value = Column(String(120), nullable=True)
+    new_value = Column(String(120), nullable=True)
+    detected_at = Column(DateTime, default=datetime.utcnow)

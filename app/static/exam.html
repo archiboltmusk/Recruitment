@@ -115,9 +115,13 @@
 
             <div class="space-y-4" id="examsListContainer"></div>
 
-            <!-- Recent Exam History -->
-            <div id="examHistorySection" class="hidden apple-card p-5 space-y-3">
-                <h3 class="text-xs font-bold uppercase tracking-wider text-[#6E6E73]">Recent Mock Attempts</h3>
+            <!-- Recent Exam History & Readiness Predictor -->
+            <div id="examHistorySection" class="hidden apple-card p-5 space-y-4">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-[#6E6E73]">Exam Readiness &amp; Recent Attempts</h3>
+                    <span id="readinessBadge" class="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-[#E6F4F1] text-[#0F766E]"></span>
+                </div>
+                <div id="weakSubjectsRow" class="hidden flex flex-wrap items-center gap-2 text-xs"></div>
                 <div id="examHistoryList" class="space-y-2 text-xs"></div>
             </div>
         </div>
@@ -346,14 +350,31 @@
                 const res = await fetch('/api/exams-history?limit=5');
                 if (!res.ok) return;
                 const rows = await res.json();
-                if (!rows.length) return;
+                const mistakes = getMistakeNotebook();
+                if (!rows.length && !mistakes.length) return;
                 document.getElementById('examHistorySection').classList.remove('hidden');
-                document.getElementById('examHistoryList').innerHTML = rows.map(r => `
-                    <div class="p-3 bg-[#F5F5F7] rounded-2xl flex items-center justify-between gap-2">
-                        <div><strong class="text-[#1D1D1F]">${r.exam_title}</strong><p class="text-[11px] text-[#6E6E73]">${r.candidate_name} • Accuracy ${r.accuracy_pct}%</p></div>
-                        <span class="px-2.5 py-1 rounded-full font-bold ${r.qualified ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-800'}">${Number(r.final_score).toFixed(1)}</span>
-                    </div>
-                `).join('');
+                if (rows.length) {
+                    const avgAcc = Math.round(rows.reduce((s, r) => s + (Number(r.accuracy_pct) || 0), 0) / rows.length);
+                    const status = avgAcc >= 65 ? 'Ready (Above WBHRB/UPSC Cutoff)' : (avgAcc >= 55 ? 'Borderline (Target 65%+)' : 'Needs Revision');
+                    document.getElementById('readinessBadge').innerText = `Avg Accuracy: ${avgAcc}% • ${status}`;
+                    document.getElementById('examHistoryList').innerHTML = rows.map(r => `
+                        <div class="p-3 bg-[#F5F5F7] rounded-2xl flex items-center justify-between gap-2">
+                            <div><strong class="text-[#1D1D1F]">${r.exam_title}</strong><p class="text-[11px] text-[#6E6E73]">${r.candidate_name} • Accuracy ${r.accuracy_pct}%</p></div>
+                            <span class="px-2.5 py-1 rounded-full font-bold ${r.qualified ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-800'}">${Number(r.final_score).toFixed(1)}</span>
+                        </div>
+                    `).join('');
+                }
+                if (mistakes.length) {
+                    const subjCounts = {};
+                    mistakes.forEach(m => { const s = m.subject || 'General'; subjCounts[s] = (subjCounts[s] || 0) + 1; });
+                    const topWeak = Object.entries(subjCounts).sort((a, b) => b[1] - a[1]).slice(0, 3);
+                    const weakBox = document.getElementById('weakSubjectsRow');
+                    weakBox.classList.remove('hidden');
+                    weakBox.innerHTML = '<span class="font-bold text-rose-700">Weak Subjects:</span>' + topWeak.map(([s, c]) => {
+                        const slug = 'subject-' + s.toLowerCase().replace(/ /g, '-').replace(/&/g, 'and');
+                        return `<button onclick="startTest('${slug}')" class="px-3 py-1 rounded-full bg-rose-50 text-rose-800 font-semibold hover:bg-rose-100">${s} (${c} due)</button>`;
+                    }).join('');
+                }
             } catch (e) {}
         }
         async function loadExams() {

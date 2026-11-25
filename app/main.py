@@ -15,7 +15,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func, or_
 
 from .database import engine, Base, get_db, SessionLocal
-from .models import Vacancy, Subscription, NotificationLog, ExamAttempt, PortalHealth, SyncJob, RateLimitBucket, SchemaMigration, DoctorSyncBlob
+from .models import Vacancy, Subscription, NotificationLog, ExamAttempt, PortalHealth, SyncJob, RateLimitBucket, SchemaMigration, DoctorSyncBlob, PushSubscription, CorrigendumLog
 from .collector import VacancyCollector
 from .scraper import LiveGazetteScraper, PORTAL_SOURCES
 from .notifier import Notifier
@@ -1462,3 +1462,52 @@ def sitemap_xml(db: Session = Depends(get_db)):
     ns = "http://" + "www.sitemaps.org/schemas/sitemap/0.9"
     xml_body = f'<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="{ns}">' + "".join(urls) + "</urlset>"
     return Response(content=xml_body, media_type="application/xml")
+
+class PushSubscribeRequest(BaseModel):
+    endpoint: str
+    keys: Optional[Dict[str, str]] = None
+    qualification_filter: str = "ALL"
+    state_filter: str = "ALL"
+
+@app.post("/api/push/subscribe", status_code=status.HTTP_201_CREATED)
+def save_push_subscription(payload: PushSubscribeRequest, request: Request, db: Session = Depends(get_db)):
+    check_rate_limit(request, "push_sub", max_calls=15, window_sec=300)
+    endpoint = (payload.endpoint or "").strip()
+    if not endpoint.startswith("https://"):
+        raise HTTPException(status_code=400, detail="Invalid push subscription endpoint")
+    keys = payload.keys or {}
+    row = db.query(PushSubscription).filter(PushSubscription.endpoint == endpoint).first()
+    if not row:
+        row = PushSubscription(
+            endpoint=endpoint,
+            p256dh=keys.get("p256dh"),
+            auth=keys.get("auth"),
+            qualification_filter=payload.qualification_filter,
+            state_filter=payload.state_filter,
+            is_active=True,
+        )
+        db.add(row)
+    else:
+        row.p256dh = keys.get("p256dh") or row.p256dh
+        row.auth = keys.get("auth") or row.auth
+        row.qualification_filter = payload.qualification_filter
+        row.state_filter = payload.state_filter
+        row.is_active = True
+    db.commit()
+    return {"ok": True, "subscribed": True}
+
+@app.get("/api/corrigenda")
+def list_recent_corrigenda(limit: int = 20, db: Session = Depends(get_db)):
+    rows = db.query(CorrigendumLog).order_by(CorrigendumLog.detected_at.desc()).limit(min(limit, 50)).all()
+    return [
+        {
+            "id": r.id,
+            "vacancy_id": r.vacancy_id,
+            "title": r.title,
+            "field_changed": r.field_changed,
+            "old_value": r.old_value,
+            "new_value": r.new_value,
+            "detected_at": r.detected_at.isoformat() if r.detected_at else None,
+        }
+        for r in rows
+    ]

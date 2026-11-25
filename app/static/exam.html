@@ -81,11 +81,23 @@
             <div id="mistakeBanner" class="hidden apple-card p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-l-4 border-l-rose-500">
                 <div>
                     <h3 class="text-sm font-bold text-[#1D1D1F]">Mistake Bank (<span id="mistakeCountLabel">0</span> Questions)</h3>
-                    <p class="text-xs text-[#6E6E73] mt-0.5">Wrong answers are saved automatically and removed once you master them.</p>
+                    <p class="text-xs text-[#6E6E73] mt-0.5">Leitner spaced repetition (1d → 3d → 7d) schedules your due questions.</p>
                 </div>
                 <div class="flex items-center gap-2 shrink-0">
                     <button onclick="clearMistakeBank()" class="px-4 py-2.5 bg-[#F5F5F7] hover:bg-gray-200 text-[#6E6E73] font-semibold text-xs rounded-full transition">Clear</button>
-                    <button onclick="startMistakeDrill()" class="pill-btn px-5 py-2.5 bg-rose-600 text-white font-semibold text-xs rounded-full">Retry Mistakes</button>
+                    <button onclick="startMistakeDrill()" class="pill-btn px-5 py-2.5 bg-rose-600 text-white font-semibold text-xs rounded-full">Retry Due Mistakes</button>
+                </div>
+            </div>
+
+            <!-- Bookmarked Clinical Pearls -->
+            <div id="pearlBanner" class="hidden apple-card p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-l-4 border-l-[#0F766E]">
+                <div>
+                    <h3 class="text-sm font-bold text-[#1D1D1F]">Bookmarked Clinical Pearls (<span id="pearlCountLabel">0</span>)</h3>
+                    <p class="text-xs text-[#6E6E73] mt-0.5">High-yield questions you starred for rapid revision.</p>
+                </div>
+                <div class="flex items-center gap-2 shrink-0">
+                    <button onclick="clearPearlBookmarks()" class="px-4 py-2.5 bg-[#F5F5F7] hover:bg-gray-200 text-[#6E6E73] font-semibold text-xs rounded-full transition">Clear</button>
+                    <button onclick="startPearlDrill()" class="pill-btn px-5 py-2.5 bg-[#0F766E] text-white font-semibold text-xs rounded-full">Review Pearls</button>
                 </div>
             </div>
 
@@ -112,7 +124,8 @@
                         <span class="text-xs font-semibold px-3 py-1 rounded-full bg-[#E6F4F1] text-[#0F766E]" id="qSubjectBadge">Subject</span>
                         <span class="text-xs text-[#6E6E73]" id="qNumberText">Question 1</span>
                     </div>
-                    <div class="flex items-center gap-2 text-xs font-semibold">
+                    <div class="flex items-center gap-3 text-xs font-semibold">
+                        <button onclick="toggleCurrentPearlBookmark()" id="pearlBookmarkBtn" title="Bookmark Clinical Pearl" class="px-2.5 py-1 rounded-full bg-[#F5F5F7] text-[#6E6E73] hover:text-[#0F766E] transition"><i class="fa-regular fa-bookmark"></i></button>
                         <span class="text-emerald-700">+1.0</span>
                         <span class="text-rose-600">-0.33</span>
                     </div>
@@ -200,7 +213,7 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             try { const p = JSON.parse(localStorage.getItem('med_doctor_profile') || '{}'); if (p.name) document.getElementById('candidateNameInput').value = p.name; } catch(e){}
-            loadExams(); loadSubjectPills(); refreshMistakeBanner();
+            loadExams(); loadSubjectPills(); refreshMistakeBanner(); refreshPearlBanner();
         });
 
         function setExamMode(isTutor) {
@@ -289,6 +302,32 @@
             localStorage.setItem('med_mistake_notebook', JSON.stringify(Object.values(map)));
             refreshMistakeBanner();
         }
+        function getPearlBookmarks() { try { return JSON.parse(localStorage.getItem('med_pearl_bookmarks') || '[]'); } catch (e) { return []; } }
+        function refreshPearlBanner() {
+            const list = getPearlBookmarks(), banner = document.getElementById('pearlBanner');
+            if (!banner) return;
+            if (list.length > 0) { document.getElementById('pearlCountLabel').innerText = list.length; banner.classList.remove('hidden'); }
+            else banner.classList.add('hidden');
+        }
+        function clearPearlBookmarks() {
+            if (!confirm('Clear all bookmarked Clinical Pearls?')) return;
+            localStorage.removeItem('med_pearl_bookmarks');
+            refreshPearlBanner();
+        }
+        function toggleCurrentPearlBookmark() {
+            const q = questions[currentIndex]; if (!q) return;
+            const map = {}; getPearlBookmarks().forEach(x => map[x.id] = x);
+            if (map[q.id]) delete map[q.id];
+            else map[q.id] = { id: q.id, subject: q.subject, text: q.text, image_url: q.image_url || null, options: q.options, correct_option: q.correct_option, explanation: q.explanation || '', citation: q.citation || '' };
+            localStorage.setItem('med_pearl_bookmarks', JSON.stringify(Object.values(map)));
+            refreshPearlBanner();
+            renderQuestion();
+        }
+        function startPearlDrill() {
+            const list = getPearlBookmarks(); if (!list.length) return;
+            currentExam = { id: 'mistake-notebook', title: 'Bookmarked Clinical Pearls', duration_minutes: Math.max(10, list.length * 2), total_marks: list.length, cutoff_reference: Math.ceil(list.length * 0.6) };
+            questions = list; beginSession();
+        }
         function startMistakeDrill() {
             const list = getMistakeNotebook(); if (!list.length) return;
             const due = _dueMistakes(list);
@@ -374,6 +413,11 @@
             const q = questions[currentIndex], selected = userResponses[q.id], fb = tutorFeedback[q.id], letters = ['A','B','C','D'];
             document.getElementById('qSubjectBadge').innerText = q.subject;
             document.getElementById('qNumberText').innerText = `${currentIndex + 1} / ${questions.length}`;
+            const pbBtn = document.getElementById('pearlBookmarkBtn');
+            if (pbBtn) {
+                const isSaved = getPearlBookmarks().some(x => x.id === q.id);
+                pbBtn.innerHTML = isSaved ? '<i class="fa-solid fa-bookmark text-[#0F766E]"></i>' : '<i class="fa-regular fa-bookmark"></i>';
+            }
             document.getElementById('qText').innerText = q.text;
             const imgBox = document.getElementById('qImageContainer');
             const imgEl = document.getElementById('qImage');

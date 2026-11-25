@@ -166,8 +166,12 @@
                         <option value="newest">Sort: Newest Added</option>
                     </select>
 
-                    <!-- Hidden stageFilter kept for compatibility -->
-                    <select id="stageFilter" onchange="applyFilters()" class="hidden"><option value=""></option></select>
+                    <select id="stageFilter" onchange="applyFilters()" class="px-3.5 py-2.5 bg-[#F5F5F7] rounded-xl text-xs font-medium text-[#1D1D1F] outline-none">
+                        <option value="">All Stages</option>
+                        <option value="APPLICATION_OPEN">Open</option>
+                        <option value="CLOSING_SOON">Closing Soon</option>
+                        <option value="ADMIT_CARD_OUT">Admit Card / Exam</option>
+                    </select>
 
                     <button onclick="openModal('pdfModal')" title="Scan any Govt PDF" class="hidden sm:flex px-3.5 py-2.5 bg-[#F5F5F7] hover:bg-gray-200 rounded-xl text-xs font-semibold text-[#1D1D1F] items-center gap-1.5">
                         <i class="fa-regular fa-file-pdf text-[#DC2626]"></i>
@@ -204,6 +208,9 @@
                 </div>
             </div>
         </section>
+
+        <!-- Regional Summary Strip -->
+        <section id="regionalStrip" class="flex flex-wrap items-center gap-2 text-xs"></section>
 
         <!-- Clean Vacancies Grid -->
         <section id="vacanciesList" class="grid grid-cols-1 md:grid-cols-2 gap-5"></section>
@@ -493,11 +500,14 @@
                     v.state.toLowerCase().includes(cat.toLowerCase()) ||
                     (v.selection_mode && v.selection_mode.toLowerCase().includes(cat.toLowerCase()))
                 );
+                const stageVal = document.getElementById('stageFilter') ? document.getElementById('stageFilter').value : '';
+                const matchStage = !stageVal || v.stage === stageVal || (stageVal === 'ADMIT_CARD_OUT' && (v.stage === 'ADMIT_CARD_OUT' || v.stage === 'EXAM_SCHEDULED'));
                 const matchBond = !bond || (bond === 'no_bond' && v.bond_years === 0);
                 const matchUR = activeQuickFilter !== 'UR_ONLY' || !(v.category_seats && v.category_seats.UR === 0);
                 const matchEligible = activeQuickFilter !== 'ELIGIBLE_ME' || (eligibleIdSet && eligibleIdSet.has(String(v.id)));
-                return matchSearch && matchQual && matchRole && matchCat && matchBond && matchUR && matchEligible;
+                return matchSearch && matchQual && matchRole && matchCat && matchStage && matchBond && matchUR && matchEligible;
             });
+            renderRegionalStrip(allVacancies);
 
             filtered.sort((a, b) => {
                 if (sortBy === 'seats') {
@@ -513,6 +523,21 @@
 
             document.getElementById('filteredCount').textContent = `${filtered.length} active opportunities`;
             renderCards(filtered);
+        }
+
+        function renderRegionalStrip(list) {
+            const el = document.getElementById('regionalStrip');
+            if (!el || !Array.isArray(list)) return;
+            const wb = list.filter(v => (v.state || '').toLowerCase().includes('west bengal')).length;
+            const dl = list.filter(v => (v.state || '').toLowerCase().includes('delhi')).length;
+            const ai = list.filter(v => (v.state || '').toLowerCase() === 'all india').length;
+            const wk = list.filter(v => (v.selection_mode || '').toLowerCase().includes('walk-in')).length;
+            el.innerHTML = `
+                <button onclick="setQuickFilter('West Bengal', null)" class="px-3 py-1 rounded-full bg-white border border-black/10 text-[#1D1D1F] font-semibold hover:bg-gray-50">West Bengal (${wb})</button>
+                <button onclick="setQuickFilter('Delhi', null)" class="px-3 py-1 rounded-full bg-white border border-black/10 text-[#1D1D1F] font-semibold hover:bg-gray-50">Delhi (${dl})</button>
+                <button onclick="document.getElementById('searchInput').value='All India';applyFilters()" class="px-3 py-1 rounded-full bg-white border border-black/10 text-[#1D1D1F] font-semibold hover:bg-gray-50">All India (${ai})</button>
+                <button onclick="setQuickFilter('Walk-in', null)" class="px-3 py-1 rounded-full bg-[#E6F4F1] text-[#0F766E] font-semibold hover:bg-[#D1ECE6]">Walk-in Open (${wk})</button>
+            `;
         }
 
         function escapeHtml(str) {

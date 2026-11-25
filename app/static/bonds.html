@@ -41,6 +41,57 @@
             <p class="text-sm text-[#6E6E73]">Compare actual monthly pay and rural bond penalties before accepting any Medical Officer offer.</p>
         </div>
 
+        <!-- Interactive In-Hand Salary & Bond Break-Even Calculator -->
+        <section class="apple-card p-6 space-y-5">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div>
+                    <h2 class="text-base font-bold text-[#1D1D1F]">In-Hand Salary &amp; Bond Break-Even Calculator</h2>
+                    <p class="text-xs text-[#6E6E73]">Estimate monthly take-home pay (with 20% NPA &amp; DA/HRA) and bond buyout break-even.</p>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+                <div>
+                    <label class="block font-semibold text-[#6E6E73] mb-1">Cadre</label>
+                    <select id="calcCadre" onchange="calcSalary()" class="w-full px-3.5 py-2.5 bg-[#F5F5F7] rounded-xl font-semibold outline-none">
+                        <option value="cms">UPSC CMS / ESIC (Level 10)</option>
+                        <option value="afms">AFMS SSC (Level 10B + MSP)</option>
+                        <option value="wbhrb">WBHRB GDMO (ROPA L16)</option>
+                        <option value="nhm">NHM / ESI Consolidated</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block font-semibold text-[#6E6E73] mb-1">City HRA Class</label>
+                    <select id="calcHra" onchange="calcSalary()" class="w-full px-3.5 py-2.5 bg-[#F5F5F7] rounded-xl font-semibold outline-none">
+                        <option value="0.27">Class X Metro (27%)</option>
+                        <option value="0.18" selected>Class Y Tier-2 (18%)</option>
+                        <option value="0.09">Class Z District (9%)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block font-semibold text-[#6E6E73] mb-1">DA %</label>
+                    <input type="number" id="calcDa" value="53" min="0" max="100" oninput="calcSalary()" class="w-full px-3.5 py-2.5 bg-[#F5F5F7] rounded-xl font-semibold outline-none">
+                </div>
+                <div>
+                    <label class="block font-semibold text-[#6E6E73] mb-1">Bond Penalty (₹)</label>
+                    <input type="number" id="calcBond" value="0" min="0" step="50000" oninput="calcSalary()" class="w-full px-3.5 py-2.5 bg-[#F5F5F7] rounded-xl font-semibold outline-none">
+                </div>
+            </div>
+            <div class="grid grid-cols-3 gap-3 text-center">
+                <div class="p-4 rounded-2xl bg-[#F5F5F7]">
+                    <p class="text-[11px] font-semibold text-[#6E6E73]">Approx Gross / Mo</p>
+                    <p id="calcGrossOut" class="text-xl sm:text-2xl font-extrabold text-[#1D1D1F] mt-1">-</p>
+                </div>
+                <div class="p-4 rounded-2xl bg-[#E6F4F1]">
+                    <p class="text-[11px] font-semibold text-[#0F766E]">Est. In-Hand / Mo</p>
+                    <p id="calcNetOut" class="text-xl sm:text-2xl font-extrabold text-[#0F766E] mt-1">-</p>
+                </div>
+                <div class="p-4 rounded-2xl bg-amber-50">
+                    <p class="text-[11px] font-semibold text-amber-800">Bond Break-Even</p>
+                    <p id="calcBreakOut" class="text-xl sm:text-2xl font-extrabold text-amber-800 mt-1">0 mo</p>
+                </div>
+            </div>
+        </section>
+
         <section class="apple-card overflow-hidden">
             <div class="p-5 border-b border-black/[0.06] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <h2 class="text-sm font-bold text-[#1D1D1F]">All-India &amp; West Bengal Matrix</h2>
@@ -96,6 +147,32 @@
                 </tr>
             `).join('');
         }
+        function calcSalary() {
+            const cadre = document.getElementById('calcCadre').value;
+            const hraRate = parseFloat(document.getElementById('calcHra').value || '0.18');
+            const daRate = (parseFloat(document.getElementById('calcDa').value || '53') || 0) / 100;
+            const bond = parseFloat(document.getElementById('calcBond').value || '0') || 0;
+            let gross = 0, nps = 0;
+            if (cadre === 'nhm') {
+                gross = 60000; nps = 0;
+            } else {
+                const basic = cadre === 'afms' ? 61300 : 56100;
+                const npa = basic * 0.20;
+                const msp = cadre === 'afms' ? 15500 : 0;
+                const daBase = basic + npa;
+                const da = cadre === 'wbhrb' ? basic * 0.14 : daBase * daRate;
+                const hra = basic * hraRate;
+                gross = Math.round(basic + npa + msp + da + hra);
+                nps = cadre === 'wbhrb' ? Math.round(basic * 0.10) : Math.round((basic + npa + da) * 0.10);
+            }
+            const estTax = gross > 100000 ? Math.round((gross - 100000) * 0.15) : 0;
+            const net = Math.max(0, gross - nps - estTax);
+            const breakEven = bond > 0 && net > 0 ? (bond / net).toFixed(1) + ' mo' : 'Zero Bond';
+            document.getElementById('calcGrossOut').textContent = '₹' + gross.toLocaleString('en-IN');
+            document.getElementById('calcNetOut').textContent = '₹' + net.toLocaleString('en-IN');
+            document.getElementById('calcBreakOut').textContent = breakEven;
+        }
+        calcSalary();
         renderMatrix();
     </script>
 </body>

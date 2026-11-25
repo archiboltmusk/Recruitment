@@ -331,6 +331,10 @@ def serve_admin():
     <div id="flaggedList" class="space-y-2 text-xs text-[#6E6E73]">Unlock with X-Admin-Key to load.</div>
   </section>
   <section class="bg-white rounded-2xl p-6 space-y-3 border border-black/5">
+    <h2 class="font-bold">7-Day Discovery &amp; Delivery Metrics</h2>
+    <div id="metricsBox" class="text-xs text-[#6E6E73]">Unlock with X-Admin-Key to load analytics.</div>
+  </section>
+  <section class="bg-white rounded-2xl p-6 space-y-3 border border-black/5">
     <h2 class="font-bold">Recent Notification Logs</h2>
     <div id="logsList" class="space-y-2 text-xs text-[#6E6E73]">Unlock with X-Admin-Key to load.</div>
   </section>
@@ -338,10 +342,11 @@ def serve_admin():
 <script>
 function getKey(){return sessionStorage.getItem('med_admin_key')||'';}
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
-function saveAndLoad(){const v=document.getElementById('adminKeyInput').value.trim();if(v)sessionStorage.setItem('med_admin_key',v);loadFlagged();loadLogs();loadSources();loadSyncStatus();}
+function saveAndLoad(){const v=document.getElementById('adminKeyInput').value.trim();if(v)sessionStorage.setItem('med_admin_key',v);loadFlagged();loadLogs();loadMetrics();loadSources();loadSyncStatus();}
 async function loadSyncStatus(){try{const d=await (await fetch('/api/sync/status')).json();document.getElementById('syncStatusText').textContent=`${d.status} • Portals: ${d.portals_checked||0} • Live Added: ${d.live_added||0}`;}catch(e){}}
 async function triggerSync(){const d=await (await fetch('/api/sync',{method:'POST'})).json();document.getElementById('syncStatusText').textContent=`${d.status||'STARTED'} (${d.job_id||''})`;setTimeout(loadSyncStatus,3000);}
 async function loadSources(){try{const d=await (await fetch('/api/sources')).json();document.getElementById('portalHealthSummary').textContent=`${d.healthy_count||0} / ${d.total||0} Portals Healthy`;}catch(e){}}
+async function loadMetrics(){const k=getKey();if(!k)return;const r=await fetch('/api/metrics',{headers:{'X-Admin-Key':k}});const b=document.getElementById('metricsBox');if(!r.ok){b.textContent='Auth error ('+r.status+')';return;}const m=await r.json();b.innerHTML=`<div class='grid grid-cols-2 sm:grid-cols-4 gap-3'><div class='p-3 bg-[#F5F5F7] rounded-xl'><b>${m.active_vacancies}</b><p>Active Jobs</p></div><div class='p-3 bg-[#F5F5F7] rounded-xl'><b>${m.discovered_7d}</b><p>Added (7d)</p></div><div class='p-3 bg-[#F5F5F7] rounded-xl'><b>${m.notifications_success}/${m.notifications_total}</b><p>Alerts Delivered</p></div><div class='p-3 bg-[#F5F5F7] rounded-xl'><b>${(m.failing_portals||[]).length}</b><p>Failing Portals</p></div></div>`;}
 async function loadFlagged(){const k=getKey();if(!k)return;const r=await fetch('/api/vacancies/flagged',{headers:{'X-Admin-Key':k}});const b=document.getElementById('flaggedList');if(!r.ok){b.textContent='Auth error ('+r.status+')';return;}const rows=await r.json();b.innerHTML=rows.length?rows.map(x=>`<div class='p-3 bg-[#F5F5F7] rounded-xl flex justify-between items-center'><div><b>${esc(x.title)}</b><p>${esc(x.organization)} • Flags: ${x.flag_count}</p></div>${x.is_active?`<button onclick="deactivate('${esc(x.id)}')" class='px-3 py-1 rounded-full bg-rose-600 text-white font-semibold'>Deactivate</button>`:'Closed'}</div>`).join(''):'No flagged circulars.';}
 async function deactivate(id){const r=await fetch(`/api/vacancies/${id}/deactivate`,{method:'POST',headers:{'X-Admin-Key':getKey()}});if(r.ok)loadFlagged();}
 async function loadLogs(){const k=getKey();if(!k)return;const r=await fetch('/api/notifications/recent?limit=20',{headers:{'X-Admin-Key':k}});const b=document.getElementById('logsList');if(!r.ok){b.textContent='Auth error ('+r.status+')';return;}const rows=await r.json();b.innerHTML=rows.length?rows.map(l=>`<div class='p-3 bg-[#F5F5F7] rounded-xl flex justify-between'><span><b>${esc(l.channel)}</b> → ${esc(l.target)} • ${esc(l.status)}</span><span>${esc(l.sent_at)}</span></div>`).join(''):'No logs.';}
@@ -1345,12 +1350,50 @@ def pwa_manifest():
     }
     return Response(content=json.dumps(manifest), media_type="application/manifest+json")
 
+def _unsub_token(sub_id: int, target: str) -> str:
+    sec = (os.getenv("ADMIN_API_KEY") or os.getenv("TELEGRAM_BOT_TOKEN") or "medalerts-unsub").encode("utf-8")
+    return hmac.new(sec, f"{sub_id}:{target}".encode("utf-8"), hashlib.sha256).hexdigest()[:24]
+
+@app.get("/api/unsubscribe")
+def unsubscribe_email(id: int, token: str, db: Session = Depends(get_db)):
+    sub = db.query(Subscription).filter(Subscription.id == id).first()
+    if not sub or not hmac.compare_digest(_unsub_token(sub.id, sub.target), (token or "").strip()):
+        raise HTTPException(status_code=403, detail="Invalid or expired unsubscribe link")
+    sub.is_active = False
+    db.commit()
+    return HTMLResponse("<html><body style='font-family:sans-serif;padding:40px;text-align:center'><h2>Unsubscribed from MedAlerts</h2><p>You will no longer receive email alerts for this subscription.</p><a href='/'>Back to MedAlerts</a></body></html>")
+
+@app.get("/api/metrics", dependencies=[Depends(verify_admin_key)])
+def get_admin_metrics(db: Session = Depends(get_db)):
+    now = datetime.utcnow()
+    week_ago = now - timedelta(days=7)
+    active_vacancies = db.query(Vacancy).filter(Vacancy.is_active == True).count()
+    discovered_7d = db.query(Vacancy).filter(Vacancy.created_at >= week_ago).count()
+    notif_total = db.query(NotificationLog).count()
+    notif_ok = db.query(NotificationLog).filter(NotificationLog.status == "SUCCESS").count()
+    failing = db.query(PortalHealth).filter(PortalHealth.consecutive_failures > 0).order_by(PortalHealth.consecutive_failures.desc()).limit(10).all()
+    return {
+        "active_vacancies": active_vacancies,
+        "discovered_7d": discovered_7d,
+        "notifications_total": notif_total,
+        "notifications_success": notif_ok,
+        "failing_portals": [{"name": p.name, "failures": p.consecutive_failures, "error": p.last_error} for p in failing],
+    }
+
 @app.get("/sw.js")
 def pwa_service_worker():
-    sw_code = """const CACHE = 'medalerts-v1';
+    sw_code = """const CACHE = 'medalerts-v2';
 const SHELL = ['/', '/onboarding', '/exam', '/bonds', '/toolkit'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).catch(()=>{})); self.skipWaiting(); });
 self.addEventListener('activate', e => { e.waitUntil(self.clients.claim()); });
+self.addEventListener('push', e => {
+  const d = e.data ? e.data.json() : { title: 'MedAlerts', body: 'New Medical Officer recruitment alert', url: '/' };
+  e.waitUntil(self.registration.showNotification(d.title || 'MedAlerts', { body: d.body || '', data: { url: d.url || '/' } }));
+});
+self.addEventListener('notificationclick', e => {
+  e.notification.close();
+  e.waitUntil(clients.openWindow((e.notification.data && e.notification.data.url) || '/'));
+});
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
   e.respondWith(fetch(e.request).then(r => {

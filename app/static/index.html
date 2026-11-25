@@ -149,6 +149,12 @@
                         <option value="no_bond">Zero Bond Only</option>
                     </select>
 
+                    <select id="sortFilter" onchange="applyFilters()" title="Sort vacancies" class="px-3.5 py-2.5 bg-[#F5F5F7] rounded-xl text-xs font-medium text-[#1D1D1F] outline-none">
+                        <option value="closing">Sort: Closing Soonest</option>
+                        <option value="seats">Sort: Most Seats</option>
+                        <option value="newest">Sort: Newest Added</option>
+                    </select>
+
                     <!-- Hidden stageFilter kept for compatibility -->
                     <select id="stageFilter" onchange="applyFilters()" class="hidden"><option value=""></option></select>
 
@@ -334,6 +340,26 @@
         </div>
     </div>
 
+    <!-- Vacancy Detail Drawer -->
+    <div id="vacancyDetailModal" onclick="if (event.target === this) closeVacancyDetail()" class="fixed inset-0 bg-black/45 backdrop-blur-sm z-50 hidden flex justify-end">
+        <div class="bg-white w-full max-w-xl h-full shadow-2xl flex flex-col overflow-hidden sm:rounded-l-3xl">
+            <div class="px-6 py-4 border-b border-black/[0.06] flex items-center justify-between gap-3 shrink-0">
+                <span class="text-xs font-semibold uppercase tracking-[0.12em] text-[#0F766E]">Circular Details</span>
+                <div class="flex items-center gap-2">
+                    <button id="drawerCopyBtn" onclick="copyVacancyLink(currentDetailId)" class="pill-btn px-3 py-1.5 rounded-full bg-[#F5F5F7] hover:bg-gray-200 text-[#1D1D1F] text-xs font-semibold flex items-center gap-1.5">
+                        <i class="fa-solid fa-link text-[11px]"></i>
+                        <span>Copy Link</span>
+                    </button>
+                    <button onclick="closeVacancyDetail()" aria-label="Close details" class="w-8 h-8 rounded-full bg-[#F5F5F7] text-[#6E6E73] hover:text-black flex items-center justify-center">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            </div>
+            <div id="vacancyDetailBody" class="p-6 overflow-y-auto flex-grow space-y-6"></div>
+            <div id="vacancyDetailFooter" class="px-6 py-4 border-t border-black/[0.06] bg-[#F5F5F7]/70 flex flex-wrap items-center justify-between gap-2.5 shrink-0"></div>
+        </div>
+    </div>
+
     <!-- Toast -->
     <div id="toast" class="fixed bottom-6 right-6 bg-[#1D1D1F] text-white px-5 py-3 rounded-full shadow-xl text-xs font-medium z-50 hidden flex items-center gap-2">
         <i class="fa-solid fa-circle-check text-emerald-400"></i>
@@ -342,6 +368,8 @@
 
     <script>
         let allVacancies = [];
+        let currentDetailId = null;
+        let deepLinkHandled = false;
 
         async function init() {
             await Promise.all([fetchStats(), fetchVacancies()]);
@@ -368,6 +396,13 @@
                     document.getElementById('statClosing').textContent = allVacancies.filter(v => v.days_left !== null && v.days_left <= 7).length;
                 }
                 applyFilters();
+                if (!deepLinkHandled) {
+                    deepLinkHandled = true;
+                    const jobParam = new URLSearchParams(window.location.search).get('job');
+                    if (jobParam && allVacancies.some(v => String(v.id) === String(jobParam))) {
+                        openVacancyDetail(jobParam, false);
+                    }
+                }
             } catch (err) { console.error(err); }
         }
 
@@ -376,6 +411,7 @@
             const qual = document.getElementById('qualificationFilter').value;
             const cat = document.getElementById('categoryFilter').value;
             const bond = document.getElementById('bondFilter').value;
+            const sortBy = document.getElementById('sortFilter') ? document.getElementById('sortFilter').value : 'closing';
 
             const filtered = allVacancies.filter(v => {
                 const matchSearch = !q || 
@@ -392,6 +428,18 @@
                 );
                 const matchBond = !bond || (bond === 'no_bond' && v.bond_years === 0);
                 return matchSearch && matchQual && matchCat && matchBond;
+            });
+
+            filtered.sort((a, b) => {
+                if (sortBy === 'seats') {
+                    return (b.total_posts || 0) - (a.total_posts || 0);
+                }
+                if (sortBy === 'newest') {
+                    return String(b.created_at || '').localeCompare(String(a.created_at || ''));
+                }
+                const da = a.days_left === null || a.days_left === undefined ? 9999 : a.days_left;
+                const db = b.days_left === null || b.days_left === undefined ? 9999 : b.days_left;
+                return da - db;
             });
 
             document.getElementById('filteredCount').textContent = `${filtered.length} active opportunities`;
@@ -416,12 +464,13 @@
             container.innerHTML = list.map(v => {
                 const isWalkIn = v.selection_mode && v.selection_mode.toLowerCase().includes('walk-in');
                 const isUrgent = v.days_left !== null && v.days_left <= 7;
-                const badgeText = isUrgent ? `${v.days_left}d left` : (isWalkIn ? 'Walk-in' : v.qualification);
-                const badgeClass = isUrgent ? 'bg-rose-50 text-[#DC2626]' : (isWalkIn ? 'bg-purple-50 text-purple-700' : 'bg-[#F5F5F7] text-[#1D1D1F]');
+                const needsVerify = v.stage === 'NEEDS_VERIFICATION' || (v.flag_count || 0) >= 5;
+                const badgeText = needsVerify ? 'Verify Notice' : (isUrgent ? `${v.days_left}d left` : (isWalkIn ? 'Walk-in' : v.qualification));
+                const badgeClass = needsVerify ? 'bg-amber-50 text-amber-800' : (isUrgent ? 'bg-rose-50 text-[#DC2626]' : (isWalkIn ? 'bg-purple-50 text-purple-700' : 'bg-[#F5F5F7] text-[#1D1D1F]'));
 
                 return `
                 <div class="apple-card p-6 flex flex-col justify-between space-y-5">
-                    <div class="space-y-2.5">
+                    <div onclick="openVacancyDetail('${v.id}')" class="space-y-2.5 cursor-pointer group">
                         <div class="flex items-center justify-between gap-2">
                             <span class="text-xs font-semibold text-[#0F766E] truncate">${escapeHtml(v.organization)} • ${escapeHtml(v.state)}</span>
                             <span class="text-[11px] font-semibold px-2.5 py-0.5 rounded-full shrink-0 ${badgeClass}">
@@ -429,7 +478,7 @@
                             </span>
                         </div>
 
-                        <h3 class="text-lg font-bold text-[#1D1D1F] leading-snug">
+                        <h3 class="text-lg font-bold text-[#1D1D1F] group-hover:text-[#0F766E] transition leading-snug">
                             ${escapeHtml(v.title)}
                         </h3>
 
@@ -443,9 +492,11 @@
                     </div>
 
                     <div class="pt-4 border-t border-black/[0.05] flex items-center justify-between gap-2">
-                        <span class="text-[11px] text-[#86868B]">
-                            Due ${escapeHtml(v.last_date || 'Soon')}
-                        </span>
+                        <button onclick="openVacancyDetail('${v.id}')" class="text-[11px] font-semibold text-[#0F766E] hover:underline flex items-center gap-1">
+                            <span>Due ${escapeHtml(v.last_date || 'Soon')}</span>
+                            <span class="text-[#86868B]">•</span>
+                            <span>Details &rarr;</span>
+                        </button>
 
                         <div class="flex items-center gap-1.5">
                             <button onclick="toggleTrackVacancy('${v.id}')" title="Save" class="w-8 h-8 rounded-full ${isTracked(v.id) ? 'bg-[#0F766E] text-white' : 'bg-[#F5F5F7] text-[#6E6E73] hover:text-black'} flex items-center justify-center text-xs transition">
@@ -540,6 +591,7 @@
             document.getElementById('qualificationFilter').value = '';
             document.getElementById('categoryFilter').value = '';
             document.getElementById('bondFilter').value = '';
+            if (document.getElementById('sortFilter')) document.getElementById('sortFilter').value = 'closing';
             applyFilters();
         }
 
@@ -608,12 +660,199 @@
             setTimeout(() => t.classList.add('hidden'), 3000);
         }
 
+        function getVacancyDeepLink(id) {
+            const url = new URL(window.location.href);
+            url.searchParams.set('job', id);
+            return url.toString();
+        }
+
         function shareVacancyToWhatsApp(id) {
             const v = allVacancies.find(item => String(item.id) === String(id));
             if (!v) return;
-            const message = `🩺 *${v.title}*\n🏢 ${v.organization} (${v.state})\n👥 ${v.total_posts} Seats | Due: ${v.last_date || 'Check Notice'}\n🔗 ${window.location.origin}/onboarding`;
+            const deepLink = getVacancyDeepLink(v.id);
+            const message = `🩺 *${v.title}*\n🏢 ${v.organization} (${v.state})\n👥 ${v.total_posts} Seats | Due: ${v.last_date || 'Check Notice'}\n🔗 ${deepLink}`;
             window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');
         }
+
+        async function copyVacancyLink(id) {
+            if (!id) return;
+            const link = getVacancyDeepLink(id);
+            try {
+                await navigator.clipboard.writeText(link);
+                showToast('Direct job link copied.');
+            } catch (err) {
+                window.prompt('Copy this direct job link:', link);
+            }
+        }
+
+        function openVacancyDetail(id, updateUrl = true) {
+            const v = allVacancies.find(item => String(item.id) === String(id));
+            if (!v) return;
+            currentDetailId = v.id;
+            if (updateUrl) {
+                const url = new URL(window.location.href);
+                url.searchParams.set('job', v.id);
+                window.history.replaceState({}, '', url.toString());
+            }
+
+            const seatsObj = v.category_seats && typeof v.category_seats === 'object' ? v.category_seats : {};
+            const seatEntries = Object.entries(seatsObj);
+            const seatMatrixHtml = seatEntries.length > 0
+                ? seatEntries.map(([cat, count]) => `
+                    <div class="p-3 rounded-2xl bg-[#F5F5F7] text-center">
+                        <p class="text-[11px] font-semibold text-[#6E6E73]">${escapeHtml(cat)}</p>
+                        <p class="text-base font-extrabold text-[#1D1D1F] mt-0.5">${escapeHtml(count)}</p>
+                    </div>
+                  `).join('')
+                : `<div class="col-span-full p-3 rounded-2xl bg-[#F5F5F7] text-xs text-[#6E6E73]">Category-wise split not published separately. Check official PDF.</div>`;
+
+            const isUrgent = v.days_left !== null && v.days_left <= 7;
+            const ageText = `${v.min_age || 21} – ${v.max_age || 35} yrs`;
+            const expText = v.experience_years_required > 0 ? `${v.experience_years_required}+ yrs post-MBBS` : 'Freshers eligible (0 yrs)';
+            const crriText = v.internship_must_complete ? 'CRRI must be completed' : 'Interns / Appearing allowed';
+            const bondText = v.bond_years === 0 ? 'Zero Bond' : (v.bond_penalty_amount || `${v.bond_years} yr bond`);
+            const flagCount = v.flag_count || 0;
+
+            document.getElementById('vacancyDetailBody').innerHTML = `
+                <div class="space-y-2">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span class="text-xs font-semibold text-[#0F766E]">${escapeHtml(v.organization)}</span>
+                        <span class="text-[#86868B] text-xs">•</span>
+                        <span class="text-xs font-medium text-[#6E6E73]">${escapeHtml(v.state)}</span>
+                        <span class="ml-auto text-[11px] font-semibold px-2.5 py-0.5 rounded-full ${isUrgent ? 'bg-rose-50 text-[#DC2626]' : 'bg-[#F5F5F7] text-[#1D1D1F]'}">
+                            ${v.days_left !== null ? `${v.days_left}d left` : escapeHtml(v.qualification)}
+                        </span>
+                    </div>
+                    <h2 class="text-2xl font-extrabold text-[#1D1D1F] leading-tight">${escapeHtml(v.title)}</h2>
+                    <p class="text-xs font-medium text-[#6E6E73]">${escapeHtml(v.designation)} • ${escapeHtml(v.category)} • Verified ${escapeHtml(v.last_verified_at || 'Recently')}</p>
+                </div>
+
+                ${v.summary ? `<p class="text-sm text-[#3A3A3C] leading-relaxed bg-[#F5F5F7]/70 p-4 rounded-2xl">${escapeHtml(v.summary)}</p>` : ''}
+
+                <div class="grid grid-cols-2 gap-3 text-xs">
+                    <div class="p-3.5 rounded-2xl bg-[#F5F5F7]">
+                        <p class="text-[11px] text-[#6E6E73]">Pay Scale</p>
+                        <p class="font-bold text-[#1D1D1F] mt-1">${escapeHtml(v.pay_scale || 'Govt Pay Matrix')}</p>
+                    </div>
+                    <div class="p-3.5 rounded-2xl bg-[#F5F5F7]">
+                        <p class="text-[11px] text-[#6E6E73]">Age Limit</p>
+                        <p class="font-bold text-[#1D1D1F] mt-1">${escapeHtml(ageText)}</p>
+                    </div>
+                    <div class="p-3.5 rounded-2xl bg-[#F5F5F7]">
+                        <p class="text-[11px] text-[#6E6E73]">Application Fee</p>
+                        <p class="font-bold text-[#1D1D1F] mt-1">${escapeHtml(v.application_fee || 'As per rules')}</p>
+                    </div>
+                    <div class="p-3.5 rounded-2xl bg-[#F5F5F7]">
+                        <p class="text-[11px] text-[#6E6E73]">Bond / Tenure</p>
+                        <p class="font-bold text-[#1D1D1F] mt-1">${escapeHtml(bondText)}</p>
+                    </div>
+                    <div class="p-3.5 rounded-2xl bg-[#F5F5F7]">
+                        <p class="text-[11px] text-[#6E6E73]">Selection Mode</p>
+                        <p class="font-bold text-[#1D1D1F] mt-1">${escapeHtml(v.selection_mode || 'Check Notice')}</p>
+                    </div>
+                    <div class="p-3.5 rounded-2xl bg-[#F5F5F7]">
+                        <p class="text-[11px] text-[#6E6E73]">Experience &amp; CRRI</p>
+                        <p class="font-bold text-[#1D1D1F] mt-1">${escapeHtml(expText)}</p>
+                        <p class="text-[11px] text-[#6E6E73] mt-0.5">${escapeHtml(crriText)}</p>
+                    </div>
+                </div>
+
+                <div class="flex flex-wrap gap-3 text-xs">
+                    <div class="flex-1 min-w-[140px] p-3.5 rounded-2xl border border-black/[0.06]">
+                        <p class="text-[11px] text-[#6E6E73]">Application Deadline</p>
+                        <p class="font-bold text-[#1D1D1F] mt-0.5">${escapeHtml(v.last_date || 'Check Official PDF')}</p>
+                    </div>
+                    ${v.exam_date ? `
+                    <div class="flex-1 min-w-[140px] p-3.5 rounded-2xl border border-black/[0.06]">
+                        <p class="text-[11px] text-[#6E6E73]">Exam / Interview Date</p>
+                        <p class="font-bold text-[#1D1D1F] mt-0.5">${escapeHtml(v.exam_date)}</p>
+                    </div>` : ''}
+                </div>
+
+                <div class="space-y-2.5">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-xs font-bold uppercase tracking-[0.1em] text-[#6E6E73]">Category-Wise Seat Matrix</h3>
+                        <span class="text-xs font-bold text-[#0F766E]">${v.total_posts} Total Seats</span>
+                    </div>
+                    <div class="grid grid-cols-3 sm:grid-cols-5 gap-2">
+                        ${seatMatrixHtml}
+                    </div>
+                </div>
+
+                <div class="pt-2 border-t border-black/[0.06] flex items-center justify-between gap-3">
+                    <span class="text-[11px] text-[#86868B]">
+                        ${flagCount > 0 ? `Flagged ${flagCount}x for verification` : 'Broken link or expired circular?'}
+                    </span>
+                    <button id="drawerFlagBtn" onclick="flagVacancy('${v.id}')" class="pill-btn px-3.5 py-1.5 rounded-full bg-rose-50 hover:bg-rose-100 text-[#DC2626] text-xs font-semibold flex items-center gap-1.5">
+                        <i class="fa-regular fa-flag text-[11px]"></i>
+                        <span>Report Issue</span>
+                    </button>
+                </div>
+            `;
+
+            document.getElementById('vacancyDetailFooter').innerHTML = `
+                <div class="flex items-center gap-1.5">
+                    <button onclick="toggleTrackVacancy('${v.id}')" title="Save" class="w-9 h-9 rounded-full ${isTracked(v.id) ? 'bg-[#0F766E] text-white' : 'bg-white border border-black/10 text-[#6E6E73] hover:text-black'} flex items-center justify-center text-xs transition">
+                        <i class="${isTracked(v.id) ? 'fa-solid' : 'fa-regular'} fa-bookmark"></i>
+                    </button>
+                    <a href="/api/vacancies/${v.id}/calendar.ics" title="Add to Calendar" class="w-9 h-9 rounded-full bg-white border border-black/10 text-[#6E6E73] hover:text-black flex items-center justify-center text-xs transition">
+                        <i class="fa-regular fa-calendar-plus"></i>
+                    </a>
+                    <button onclick="shareVacancyToWhatsApp('${v.id}')" title="Share on WhatsApp" class="w-9 h-9 rounded-full bg-white border border-black/10 text-[#0F766E] hover:bg-emerald-50 flex items-center justify-center text-xs transition">
+                        <i class="fa-brands fa-whatsapp"></i>
+                    </button>
+                </div>
+                <div class="flex items-center gap-2">
+                    <a href="${v.notification_url || '#'}" target="_blank" class="pill-btn px-4 py-2 rounded-full bg-white border border-black/10 hover:bg-gray-50 text-[#1D1D1F] text-xs font-semibold">
+                        Official PDF
+                    </a>
+                    <a href="${v.apply_url || '#'}" target="_blank" class="pill-btn px-5 py-2 rounded-full bg-[#1D1D1F] hover:bg-black text-white text-xs font-semibold">
+                        Apply Now
+                    </a>
+                </div>
+            `;
+
+            openModal('vacancyDetailModal');
+        }
+
+        function closeVacancyDetail() {
+            currentDetailId = null;
+            closeModal('vacancyDetailModal');
+            const url = new URL(window.location.href);
+            if (url.searchParams.has('job')) {
+                url.searchParams.delete('job');
+                window.history.replaceState({}, '', url.toString());
+            }
+        }
+
+        async function flagVacancy(id) {
+            const btn = document.getElementById('drawerFlagBtn');
+            if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-[11px]"></i><span>Reporting...</span>'; }
+            try {
+                const res = await fetch(`/api/vacancies/${id}/flag`, { method: 'POST' });
+                const data = await res.json();
+                if (!res.ok) {
+                    showToast(res.status === 429 ? 'Already reported for review today.' : (data.detail || 'Could not report issue.'));
+                    if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-flag text-[11px]"></i><span>Reported</span>'; }
+                    return;
+                }
+                const v = allVacancies.find(item => String(item.id) === String(id));
+                if (v) {
+                    v.flag_count = data.flag_count;
+                    if (v.flag_count >= 5) v.stage = 'NEEDS_VERIFICATION';
+                }
+                showToast(data.message || 'Circular flagged for verification.');
+                applyFilters();
+                if (currentDetailId === id) openVacancyDetail(id, false);
+            } catch (err) {
+                showToast('Network error while flagging.');
+                if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fa-regular fa-flag text-[11px]"></i><span>Report Issue</span>'; }
+            }
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && currentDetailId) closeVacancyDetail();
+        });
 
         function saveKitState() {
             const state = {};
@@ -644,6 +883,7 @@
             localStorage.setItem('med_app_tracker', JSON.stringify(map));
             updateTrackerBadge();
             applyFilters();
+            if (currentDetailId === id) openVacancyDetail(id, false);
         }
         function openTrackerModal() {
             const map = getTrackedMap();

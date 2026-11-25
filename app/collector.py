@@ -448,6 +448,32 @@ SAMPLE_VACANCIES: List[Dict[str, Any]] = [
         "bond_penalty_amount": "No Bond",
         "category_seats_json": json.dumps({"UR": 40, "OBC": 25, "SC": 15, "ST": 7, "EWS": 8}),
         "application_fee": "₹1,000 (SC/ST/PwBD: Exempted)"
+    },
+    {
+        "title": "ESI (MB) Scheme West Bengal — Medical Officer & Specialist Walk-in",
+        "organization": "Directorate of ESI (MB) Scheme, West Bengal",
+        "category": "ESIC / State Govt",
+        "state": "West Bengal",
+        "designation": "Insurance Medical Officer (IMO) / Contractual GDMO & Specialist",
+        "qualification": "MBBS",
+        "total_posts": 45,
+        "pay_scale": "WB ROPA Level 16 / Walk-in Consolidated",
+        "last_date": datetime.utcnow() + timedelta(days=12),
+        "exam_date": None,
+        "notification_url": "https://esiwb.gov.in/home/employment_notice",
+        "apply_url": "https://esiwb.gov.in/home/employment_notice",
+        "summary": "Official employment notices from the Directorate of ESI (Medical Benefit) Scheme, Dept. of Labour, Govt. of West Bengal for ESI Hospitals (Manicktala, Sealdah, Kamarhati, Bandel, Asansol, Kalyani, etc.) and Service Dispensaries.",
+        "min_age": 21,
+        "max_age": 62,
+        "experience_years_required": 0,
+        "internship_must_complete": True,
+        "state_registration_mandatory": True,
+        "stage": "APPLICATION_OPEN",
+        "selection_mode": "Walk-in Interview / Direct Recruitment",
+        "bond_years": 0,
+        "bond_penalty_amount": "No Bond",
+        "category_seats_json": json.dumps({"All WB ESI Hospitals": 45}),
+        "application_fee": "Check Official Notice"
     }
 ]
 

@@ -13,7 +13,7 @@ from .notifier import Notifier
 logger = logging.getLogger("medalerts.scraper")
 
 MEDICAL_PATTERN = re.compile(
-    r"\b(medical officer|gdmo|cms|combined medical|imo|senior resident|junior resident|rmo|clinical tutor|demonstrator|specialist|doctor|ayush|nuhm|uhwc|walk-in|contract medical|cmp)\b",
+    r"\b(medical officer|gdmo|cms|combined medical|imo|insurance medical|senior resident|junior resident|rmo|clinical tutor|demonstrator|specialist|part-time specialist|super specialist|house staff|doctor|ayush|nuhm|uhwc|walk-in|contract medical|cmp)\b",
     re.IGNORECASE,
 )
 
@@ -59,6 +59,14 @@ PORTAL_SOURCES = [
         "pay_scale": "₹60,000/month (Consolidated NUHM / NHM)",
     },
     {
+        "name": "ESI_WB",
+        "organization": "Directorate of ESI (MB) Scheme, West Bengal",
+        "url": "https://esiwb.gov.in/home/employment_notice",
+        "category": "ESIC / State Govt",
+        "state": "West Bengal",
+        "pay_scale": "WB ROPA Level 16 / Walk-in Consolidated",
+    },
+    {
         "name": "AIIMS_Kalyani",
         "organization": "AIIMS Kalyani (West Bengal)",
         "url": "https://aiimskalyani.edu.in",
@@ -97,7 +105,11 @@ class LiveGazetteScraper:
             seen_titles = set()
             for a in soup.find_all("a", href=True):
                 text = " ".join(a.get_text(" ", strip=True).split())
-                if len(text) < 12 or len(text) > 220:
+                if len(text) < 12:
+                    parent_row = a.find_parent("tr")
+                    if parent_row:
+                        text = " ".join(parent_row.get_text(" ", strip=True).split())
+                if len(text) < 12 or len(text) > 260:
                     continue
                 low = text.lower()
                 if not MEDICAL_PATTERN.search(text):

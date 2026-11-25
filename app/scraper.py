@@ -485,6 +485,7 @@ class LiveGazetteScraper:
                         text = " ".join(parent_row.get_text(" ", strip=True).split())
                 if len(text) < 12 or len(text) > 260:
                     continue
+                text = re.sub(r"\s+Downlo(?:ad)?$", "", text, flags=re.IGNORECASE).strip()
                 low = text.lower()
                 if not MEDICAL_PATTERN.search(text) or NON_JOB_PATTERN.search(text):
                     continue
@@ -546,6 +547,8 @@ class LiveGazetteScraper:
                             entry["category_seats_json"] = json.dumps(parsed["category_seats"])
                         if parsed.get("application_fee"):
                             entry["application_fee"] = parsed["application_fee"]
+                        if parsed.get("experience_years_required"):
+                            entry["experience_years_required"] = parsed["experience_years_required"]
                         if parsed.get("memo_number"):
                             entry["memo_number"] = parsed["memo_number"]
                         if parsed.get("qualification") in ("MD/MS", "MBBS / MD/MS", "AYUSH", "BDS"):
@@ -596,8 +599,8 @@ class LiveGazetteScraper:
         active_rows = db.query(Vacancy).filter(Vacancy.is_active == True).all()
         seen_norm_titles = set()
         for row in active_rows:
-            title_blob = f"{row.title or ''} {row.designation or ''}"
-            if NON_JOB_PATTERN.search(title_blob) or (not row.last_date and _is_stale_dated_title(row.title or "", today_date)):
+            title_blob = row.title or ""
+            if NON_JOB_PATTERN.search(title_blob) or (not row.last_date and _is_stale_dated_title(title_blob, today_date)):
                 row.is_active = False
                 row.stage = "APPLICATION_CLOSED"
                 continue
@@ -606,10 +609,13 @@ class LiveGazetteScraper:
                 row.is_active = False
                 row.stage = "APPLICATION_CLOSED"
                 continue
-            elif inferred["qualification"] in ("MD/MS", "MBBS / MD/MS", "AYUSH") and row.qualification == "MBBS":
+            elif inferred["qualification"] in ("MD/MS", "AYUSH") and row.qualification in ("MBBS", "MBBS / MD/MS"):
                 row.qualification = inferred["qualification"]
                 row.designation = inferred["designation"]
-            elif inferred["qualification"] in ("MBBS", "MBBS / MD/MS") and row.qualification == "MD/MS":
+            elif inferred["qualification"] == "MBBS / MD/MS" and row.qualification in ("MBBS", "MD/MS"):
+                row.qualification = inferred["qualification"]
+                row.designation = inferred["designation"]
+            elif inferred["qualification"] == "MBBS" and row.qualification == "MD/MS":
                 row.qualification = inferred["qualification"]
                 row.designation = inferred["designation"]
             nt = _norm_title(row.title or "")

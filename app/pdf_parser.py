@@ -145,6 +145,7 @@ class GovtNotificationPDFParser:
             "total_posts": None,
             "min_age": 21,
             "max_age": 35,
+            "experience_years_required": 0,
             "pay_scale": None,
             "last_date": None,
             "exam_date": None,
@@ -172,9 +173,9 @@ class GovtNotificationPDFParser:
             extracted["memo_number"] = f"{memo_val} ({memo_date_m.group(1)})" if memo_date_m else memo_val
             signals += 1
 
-        # 1. Total Posts Detection (handles "Total -37", "Total Number of post :- 04", etc.)
+        # 1. Total Posts Detection (handles "Total -37", "Total Number of post :- 04", "No. of Posts: 01(One)", etc.)
         posts_match = re.search(
-            r"(?:total\s*(?:no\.?\s*of)?\s*(?:posts?|vacanc(?:y|ies)|seats?)?|total\s*[-–:=])\s*[:=-]?\s*(\d+)",
+            r"(?:total\s*(?:no\.?\s*of)?\s*(?:posts?|vacanc(?:y|ies)|seats?)?|(?:total\s*)?no\.?\s*of\s*(?:posts?|vacanc(?:y|ies)|seats?)|total\s*[-–:=])\s*[:=-]?\s*(\d+)",
             text,
             re.IGNORECASE,
         )
@@ -303,12 +304,29 @@ class GovtNotificationPDFParser:
         if seats_dict:
             extracted["category_seats"] = seats_dict
 
-        # 9. Application Fee
-        fee_match = re.search(r"(?:application\s*fees?|prescribed\s*fee)\s*(?:of|:=-)?\s*(?:Rs\.?|INR|₹)?\s*(\d{2,4})/-?", text, re.IGNORECASE)
+        # 9. Application Fee (supports Application Fee / Demand Draft / Bank Transfer)
+        fee_match = re.search(
+            r"(?:application\s*fees?|prescribed\s*fee|demand\s*draft(?:\s*of)?|dd\s*(?:of|for)|bank\s*transfer\s*(?:of)?)\s*(?:of|:=-)?\s*(?:Rs\.?|INR|₹)\s*(\d{2,5})/?-?",
+            text,
+            re.IGNORECASE,
+        )
+        if not fee_match:
+            fee_match = re.search(r"(?:application\s*fees?|prescribed\s*fee)\s*(?:of|:=-)?\s*(\d{2,4})/-?", text, re.IGNORECASE)
         if fee_match:
             extracted["application_fee"] = f"₹{fee_match.group(1)}"
         elif re.search(r"zero\s*(?:application\s*)?fee|no\s*application\s*fee", text, re.IGNORECASE):
             extracted["application_fee"] = "Zero Application Fee"
+
+        # 10. Post-qualification Experience
+        exp_m = re.search(
+            r"(\d+)\s*(?:\+\s*)?(?:years?|yrs?)\s*(?:of\s*)?(?:post[-\s]*(?:pg|qualification|mbbs)\s*)?experience",
+            text,
+            re.IGNORECASE,
+        )
+        if exp_m:
+            yrs = int(exp_m.group(1))
+            if 0 < yrs <= 25:
+                extracted["experience_years_required"] = yrs
 
         extracted["parsed_confident"] = signals >= 2
         return extracted

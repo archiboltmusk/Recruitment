@@ -21,7 +21,7 @@ MEDICAL_PATTERN = re.compile(
 )
 
 NON_JOB_PATTERN = re.compile(
-    r"\b(merit\s*list|selected\s*(?:candidate|list)|shortlisted|waiting\s*list|waitlist|result(?:s)?\s+(?:of|for)|admit\s*card|corrigendum|addendum|cancellation|cancelled|answer\s*key|provisional\s*list|final\s*list|joining\s*order|panel\s*for|engagement\s*order|closed|guest\s*house|attendant|non[-\s]*medical|field\s*worker|molecular\s*biologist|data\s*management|house\s*staffship\s*committee|list\s*for\s*appearing|dentistry|\bbds\b|\bmds\b)\b",
+    r"\b(merit\s*list|selected\s*(?:candidates?|list)|shortlisted|waiting\s*list|waitlist|result(?:s)?\s+(?:of|for)|admit\s*card|corrigendum|addendum|cancellation|cancelled|answer\s*key|provisional\s*list|final\s*list|joining\s*order|panel\s*for|engagement\s*order|closed|guest\s*house|attendant|non[-\s]*medical|field\s*worker|molecular\s*biologist|data\s*management|house\s*staffship\s*committee|list\s*for\s*appearing|dentistry|\bbds\b|\bmds\b)\b",
     re.IGNORECASE,
 )
 

@@ -728,7 +728,8 @@
             const v = allVacancies.find(item => String(item.id) === String(id));
             if (!v) return;
             const deepLink = getVacancyDeepLink(v.id);
-            const message = `🩺 *${v.title}*\n🏢 ${v.organization} (${v.state})\n👥 ${v.total_posts} Seats | Due: ${v.last_date || 'Check Notice'}\n🔗 ${deepLink}`;
+            const seatsLabel = v.total_posts > 0 ? `${v.total_posts} Seats` : 'Seats: Check Notice';
+            const message = `🩺 *${v.title}*\n🏢 ${v.organization} (${v.state})\n👥 ${seatsLabel} | Due: ${v.last_date || 'Check Notice'}\n🔗 ${deepLink}`;
             window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');
         }
 

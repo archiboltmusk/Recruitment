@@ -253,7 +253,7 @@
                             <h4 class="text-base font-bold text-[#1D1D1F]">${m.title}</h4>
                         </div>
                         <div class="text-left sm:text-right shrink-0">
-                            <span class="text-base font-bold text-[#0F766E]">${m.total_posts} Seats</span>
+                            <span class="text-base font-bold text-[#0F766E]">${m.total_posts > 0 ? `${m.total_posts} Seats` : 'Check PDF'}</span>
                             <span class="block text-[11px] text-[#6E6E73]">${m.pay_scale || 'Govt Pay'}</span>
                         </div>
                     </div>

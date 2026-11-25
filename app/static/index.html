@@ -128,9 +128,9 @@
 
                 <div class="flex flex-wrap sm:flex-nowrap items-center gap-2">
                     <select id="qualificationFilter" onchange="applyFilters()" class="px-3.5 py-2.5 bg-[#F5F5F7] rounded-xl text-xs font-medium text-[#1D1D1F] outline-none">
+                        <option value="MBBS" selected>MBBS Eligible</option>
                         <option value="">All Degrees</option>
-                        <option value="MBBS">MBBS</option>
-                        <option value="MD/MS">MD / MS</option>
+                        <option value="MD/MS">MD / MS / DNB</option>
                         <option value="AYUSH">AYUSH</option>
                     </select>
 
@@ -620,7 +620,7 @@
 
         function resetFilters() {
             document.getElementById('searchInput').value = '';
-            document.getElementById('qualificationFilter').value = '';
+            document.getElementById('qualificationFilter').value = 'MBBS';
             document.getElementById('categoryFilter').value = '';
             document.getElementById('bondFilter').value = '';
             if (document.getElementById('sortFilter')) document.getElementById('sortFilter').value = 'closing';

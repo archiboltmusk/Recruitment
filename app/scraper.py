@@ -21,9 +21,21 @@ MEDICAL_PATTERN = re.compile(
 )
 
 NON_JOB_PATTERN = re.compile(
-    r"\b(merit\s*list|selected\s*(?:candidate|list)|shortlisted|waiting\s*list|waitlist|result(?:s)?\s+(?:of|for)|admit\s*card|corrigendum|addendum|cancellation|cancelled|answer\s*key|provisional\s*list|final\s*list|joining\s*order|panel\s*for|engagement\s*order)\b",
+    r"\b(merit\s*list|selected\s*(?:candidate|list)|shortlisted|waiting\s*list|waitlist|result(?:s)?\s+(?:of|for)|admit\s*card|corrigendum|addendum|cancellation|cancelled|answer\s*key|provisional\s*list|final\s*list|joining\s*order|panel\s*for|engagement\s*order|closed|guest\s*house|attendant|non[-\s]*medical|field\s*worker|molecular\s*biologist|data\s*management|house\s*staffship\s*committee|list\s*for\s*appearing|dentistry|\bbds\b|\bmds\b)\b",
     re.IGNORECASE,
 )
+
+PG_ROLE_PATTERN = re.compile(
+    r"\b(?:md\s*/\s*ms|m\.?\s*d\.?|m\.?\s*s\.?|dnb|d\.?\s*m\.?|m\.?\s*ch\.?|pg\s+degree|pg\s+diploma|post\s*graduate|post[-\s]*doctoral|fellowships?|icog|senior\s+residents?|sr\.?\s*residents?|specialists?|super\s*specialists?|consultants?|assistant\s+professors?|associate\s+professors?|professors?|faculty|gyna?ecologists?|obstetricians?|surgeons?|physicians?|pa?ediatricians?|radiologists?|pathologists?|ana?esthetists?|ana?esthesiologists?|ophthalmologists?|dermatologists?|psychiatrists?|orthopaed(?:ic|ician)s?|cardiologists?|neurologists?|oncologists?|nephrologists?|urologists?|microbiologists?|biochemists?)\b",
+    re.IGNORECASE,
+)
+
+MBBS_CORE_PATTERN = re.compile(
+    r"\b(?:gdmo|cgdmo|junior\s+resident|jr\.?\s*resident|house[-\s]?staff|ptmo|health\s+officer|medical\s+officer)\b",
+    re.IGNORECASE,
+)
+
+PAST_YEAR_LINK_PATTERN = re.compile(r"\b202[0-4]\b")
 
 WBHEALTH_HR_REG_DATE_RE = re.compile(
     r"Last Date for Registration is\s+(\d{1,2}\s+[A-Za-z]{3}\s+\d{4})",
@@ -340,14 +352,22 @@ class LiveGazetteScraper:
     @staticmethod
     def _infer_role_and_qual(text: str) -> Dict[str, str]:
         low = text.lower()
-        if "ayush" in low or "ayurved" in low or "homeopath" in low:
+        if "ayush" in low or "ayurved" in low or "homeopath" in low or "unani" in low or "siddha" in low:
             return {"qualification": "AYUSH", "designation": "AYUSH Medical Officer"}
-        if re.search(r"\b(?:senior\s+resident|sr\.?\s*resident|specialist)\b", low):
-            return {"qualification": "MD/MS", "designation": "Senior Resident / Specialist"}
+        if re.search(r"\b(?:bds|mds|dental|dentistry)\b", low):
+            return {"qualification": "BDS", "designation": "Dental Surgeon"}
+        has_pg = bool(PG_ROLE_PATTERN.search(text))
+        has_mbbs = bool(MBBS_CORE_PATTERN.search(text))
+        if has_pg:
+            if re.search(r"\b(?:gdmo|cgdmo|junior\s+resident|jr\.?\s*resident)\b", low) and "gynecologist" not in low and "gynaecologist" not in low:
+                return {"qualification": "MBBS / MD/MS", "designation": "GDMO / Medical Officer & Specialist"}
+            return {"qualification": "MD/MS", "designation": "Senior Resident / Specialist / Consultant"}
         if "rmo" in low or "clinical tutor" in low:
             return {"qualification": "MBBS / MD/MS", "designation": "RMO-cum-Clinical Tutor"}
         if re.search(r"\b(?:junior\s+resident|jr\.?\s*resident|house[-\s]?staff)\b", low):
             return {"qualification": "MBBS", "designation": "Junior Resident / House Staff"}
+        if has_mbbs:
+            return {"qualification": "MBBS", "designation": "Medical Officer / GDMO"}
         return {"qualification": "MBBS", "designation": "Medical Officer / GDMO"}
 
     @staticmethod
@@ -432,6 +452,8 @@ class LiveGazetteScraper:
                 low = text.lower()
                 if not MEDICAL_PATTERN.search(text) or NON_JOB_PATTERN.search(text):
                     continue
+                if PAST_YEAR_LINK_PATTERN.search(text):
+                    continue
                 if text in seen_titles:
                     continue
                 seen_titles.add(text)
@@ -439,6 +461,8 @@ class LiveGazetteScraper:
                 full_url = urljoin(source["url"], a["href"])
                 is_walkin = "walk-in" in low or "walk in" in low or "contract" in low
                 role_info = cls._infer_role_and_qual(text)
+                if role_info["qualification"] == "BDS":
+                    continue
 
                 entry: Dict[str, Any] = {
                     "title": text[:250],
@@ -488,12 +512,16 @@ class LiveGazetteScraper:
                             entry["application_fee"] = parsed["application_fee"]
                         if parsed.get("memo_number"):
                             entry["memo_number"] = parsed["memo_number"]
+                        if parsed.get("qualification") in ("MD/MS", "MBBS / MD/MS", "AYUSH", "BDS"):
+                            entry["qualification"] = parsed["qualification"]
                         if parsed.get("parsed_confident"):
                             entry["verification_status"] = "VERIFIED_PDF"
                             entry["summary"] = f"Auto-parsed from official PDF ({parsed.get('memo_number') or source['name']}). Verify annexures before applying."
                     except Exception as pdf_err:
                         logger.debug(f"PDF auto-parse skipped for {full_url}: {pdf_err}")
 
+                if entry.get("qualification") == "BDS":
+                    continue
                 today = datetime.utcnow().date()
                 if entry.get("last_date") and entry["last_date"].date() < today:
                     continue
@@ -523,6 +551,23 @@ class LiveGazetteScraper:
             Vacancy.verification_status == "NEEDS_PDF_CHECK",
             Vacancy.created_at < now - timedelta(days=30),
         ).update({"is_active": False, "stage": "APPLICATION_CLOSED"}, synchronize_session=False)
+        db.commit()
+
+        # Re-classify / deactivate stale, non-medical, dental, or misclassified MD/MS rows already in DB
+        active_rows = db.query(Vacancy).filter(Vacancy.is_active == True).all()
+        for row in active_rows:
+            title_blob = f"{row.title or ''} {row.designation or ''}"
+            if NON_JOB_PATTERN.search(title_blob) or PAST_YEAR_LINK_PATTERN.search(row.title or ""):
+                row.is_active = False
+                row.stage = "APPLICATION_CLOSED"
+                continue
+            inferred = cls._infer_role_and_qual(title_blob)
+            if inferred["qualification"] == "BDS":
+                row.is_active = False
+                row.stage = "APPLICATION_CLOSED"
+            elif inferred["qualification"] in ("MD/MS", "MBBS / MD/MS", "AYUSH") and row.qualification == "MBBS":
+                row.qualification = inferred["qualification"]
+                row.designation = inferred["designation"]
         db.commit()
 
         all_discovered: List[Dict[str, Any]] = []

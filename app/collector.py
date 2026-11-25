@@ -118,7 +118,7 @@ SAMPLE_VACANCIES: List[Dict[str, Any]] = [
         "category": "Central Govt / PSU",
         "state": "All India",
         "designation": "General Duty Medical Officer (GDMO) & Specialist (E1/E2 Grade)",
-        "qualification": "MBBS",
+        "qualification": "MBBS / MD/MS",
         "total_posts": 33,
         "pay_scale": "PSU E1 / E2 Executive Scale + DA & Perks",
         "last_date": datetime(2026, 12, 31, 23, 59),

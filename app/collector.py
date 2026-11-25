@@ -450,30 +450,30 @@ SAMPLE_VACANCIES: List[Dict[str, Any]] = [
         "application_fee": "₹1,000 (SC/ST/PwBD: Exempted)"
     },
     {
-        "title": "ESI (MB) Scheme West Bengal — Medical Officer & Specialist Walk-in",
+        "title": "Contractual General Duty Medical Officer (CGDMO) — ESI (MB) Scheme WB",
         "organization": "Directorate of ESI (MB) Scheme, West Bengal",
         "category": "ESIC / State Govt",
         "state": "West Bengal",
-        "designation": "Insurance Medical Officer (IMO) / Contractual GDMO & Specialist",
+        "designation": "Contractual General Duty Medical Officer (CGDMO)",
         "qualification": "MBBS",
-        "total_posts": 45,
-        "pay_scale": "WB ROPA Level 16 / Walk-in Consolidated",
-        "last_date": datetime.utcnow() + timedelta(days=12),
-        "exam_date": None,
+        "total_posts": 37,
+        "pay_scale": "₹60,000/month (Consolidated)",
+        "last_date": datetime(2026, 12, 4, 15, 0),
+        "exam_date": datetime(2026, 11, 30, 11, 0),
         "notification_url": "https://esiwb.gov.in/home/employment_notice",
         "apply_url": "https://esiwb.gov.in/home/employment_notice",
-        "summary": "Official employment notices from the Directorate of ESI (Medical Benefit) Scheme, Dept. of Labour, Govt. of West Bengal for ESI Hospitals (Manicktala, Sealdah, Kamarhati, Bandel, Asansol, Kalyani, etc.) and Service Dispensaries.",
+        "summary": "Memo No. DESI-13011(14)/1/2019-MEDADMN/2372 (Dated 18.11.2026). Walk-in interview at Directorate of ESI (MB) Scheme, Wing B, Plot VI, GB Block, Sector III, Salt Lake, Kolkata-700097 from 30.11.2026 to 04.12.2026 (11:00 AM – 3:00 PM). Requires MBBS recognized by MCI & updated WBMC registration. Age below 64 yrs as on 01.11.2026 (renewable up to 65 yrs or regular PSC WB joining).",
         "min_age": 21,
-        "max_age": 62,
+        "max_age": 63,
         "experience_years_required": 0,
         "internship_must_complete": True,
         "state_registration_mandatory": True,
         "stage": "APPLICATION_OPEN",
-        "selection_mode": "Walk-in Interview / Direct Recruitment",
+        "selection_mode": "Walk-in Interview (30 Nov – 04 Dec 2026, 11 AM–3 PM)",
         "bond_years": 0,
-        "bond_penalty_amount": "No Bond",
-        "category_seats_json": json.dumps({"All WB ESI Hospitals": 45}),
-        "application_fee": "Check Official Notice"
+        "bond_penalty_amount": "No Bond (Contractual, 1-month termination notice)",
+        "category_seats_json": json.dumps({"UR": 20, "SC": 7, "OBC": 10}),
+        "application_fee": "Zero Fee (Prescribed Format in Notice)"
     }
 ]
 
@@ -482,6 +482,15 @@ class VacancyCollector:
     def sync_sample_feed(db: Session) -> Dict[str, int]:
         added_count = 0
         updated_count = 0
+
+        # Remove superseded placeholder entry if present in existing DB
+        stale_esi = db.query(Vacancy).filter(
+            Vacancy.title == "ESI (MB) Scheme West Bengal — Medical Officer & Specialist Walk-in",
+            Vacancy.organization == "Directorate of ESI (MB) Scheme, West Bengal"
+        ).first()
+        if stale_esi:
+            db.delete(stale_esi)
+            db.commit()
 
         for item in SAMPLE_VACANCIES:
             existing = db.query(Vacancy).filter(
@@ -523,15 +532,21 @@ class VacancyCollector:
                 Notifier.broadcast_new_vacancy(db, vacancy)
                 added_count += 1
             else:
-                if existing.last_date is None:
-                    existing.last_date = item["last_date"]
+                existing.designation = item["designation"]
+                existing.total_posts = item["total_posts"]
+                existing.pay_scale = item["pay_scale"]
+                existing.last_date = item["last_date"]
+                existing.exam_date = item.get("exam_date")
+                existing.summary = item["summary"]
                 existing.min_age = item.get("min_age", 21)
                 existing.max_age = item.get("max_age", 35)
+                existing.state_registration_mandatory = item.get("state_registration_mandatory", False)
                 existing.selection_mode = item.get("selection_mode", "Written Exam + Interview")
                 existing.bond_years = item.get("bond_years", 0)
                 existing.bond_penalty_amount = item.get("bond_penalty_amount", "No Bond")
                 existing.category_seats_json = item.get("category_seats_json")
                 existing.application_fee = item.get("application_fee", "As per rules")
+                existing.last_verified_at = datetime.utcnow()
                 if existing.last_date and existing.last_date < datetime.utcnow():
                     existing.is_active = False
                     existing.stage = "APPLICATION_CLOSED"

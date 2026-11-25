@@ -31,7 +31,7 @@ PG_ROLE_PATTERN = re.compile(
 )
 
 MBBS_CORE_PATTERN = re.compile(
-    r"\b(?:gdmo|cgdmo|junior\s+resident|jr\.?\s*resident|house[-\s]?staff|ptmo|health\s+officer|medical\s+officer)\b",
+    r"\b(?:gdmo|cgdmo|non[-\s]*academic\s+(?:jr\.?|junior\s+resident)|junior\s+resident|jr\.?\s*resident|\bjr\b|house[-\s]?staff|rmo|clinical\s+tutor|tutor|demonstrator|ptmo|health\s+officer|medical\s+officer)\b",
     re.IGNORECASE,
 )
 
@@ -395,12 +395,12 @@ class LiveGazetteScraper:
         has_pg = bool(PG_ROLE_PATTERN.search(text))
         has_mbbs = bool(MBBS_CORE_PATTERN.search(text))
         if has_pg:
-            if re.search(r"\b(?:gdmo|cgdmo|junior\s+resident|jr\.?\s*resident|non[-\s]*pg)\b", low) and "gynecologist" not in low and "gynaecologist" not in low:
+            if re.search(r"\b(?:gdmo|cgdmo|junior\s+resident|jr\.?\s*resident|\bjr\b|non[-\s]*pg|non[-\s]*academic|rmo|tutor|demonstrator)\b", low) and "gynecologist" not in low and "gynaecologist" not in low:
                 return {"qualification": "MBBS / MD/MS", "designation": "GDMO / Junior Resident & Specialist"}
             return {"qualification": "MD/MS", "designation": "Senior Resident / Specialist / Consultant"}
-        if "rmo" in low or "clinical tutor" in low:
-            return {"qualification": "MBBS / MD/MS", "designation": "RMO-cum-Clinical Tutor"}
-        if re.search(r"\b(?:junior\s+resident|jr\.?\s*resident|house[-\s]?staff)\b", low):
+        if re.search(r"\b(?:rmo|clinical\s+tutor|tutor|demonstrator)\b", low):
+            return {"qualification": "MBBS", "designation": "RMO / Clinical Tutor"}
+        if re.search(r"\b(?:non[-\s]*academic\s+(?:jr\.?|junior\s+resident)|junior\s+resident|jr\.?\s*resident|\bjr\b|house[-\s]?staff)\b", low):
             return {"qualification": "MBBS", "designation": "Junior Resident / House Staff"}
         if has_mbbs:
             return {"qualification": "MBBS", "designation": "Medical Officer / GDMO"}
@@ -615,7 +615,7 @@ class LiveGazetteScraper:
             elif inferred["qualification"] == "MBBS / MD/MS" and row.qualification in ("MBBS", "MD/MS"):
                 row.qualification = inferred["qualification"]
                 row.designation = inferred["designation"]
-            elif inferred["qualification"] == "MBBS" and row.qualification == "MD/MS":
+            elif inferred["qualification"] == "MBBS" and row.qualification in ("MD/MS", "MBBS / MD/MS"):
                 row.qualification = inferred["qualification"]
                 row.designation = inferred["designation"]
             nt = _norm_title(row.title or "")

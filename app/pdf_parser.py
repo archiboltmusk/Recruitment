@@ -196,7 +196,7 @@ class GovtNotificationPDFParser:
         qual_sec_m = re.search(r"(?:essential\s+)?qualifications?\s*[:\-].{0,350}", text, re.IGNORECASE | re.DOTALL)
         qual_scope = f"{header_text}\n{qual_sec_m.group(0) if qual_sec_m else ''}"
         has_pg_header = bool(re.search(r"\b(?:MD/MS|M\.?D\.?|M\.?S\.?|DNB|D\.?M\.?|M\.?Ch\.?|PG\s+Degree|PG\s+Diploma|Specialist|Senior\s+Resident|Sr\.?\s*Resident|Consultant)\b", qual_scope, re.IGNORECASE))
-        has_mbbs_header = bool(re.search(r"\b(?:MBBS|GDMO|CGDMO|Junior\s+Resident|Jr\.?\s*Resident|House\s*Staff)\b", qual_scope, re.IGNORECASE))
+        has_mbbs_header = bool(re.search(r"\b(?:MBBS|GDMO|CGDMO|Junior\s+Resident|Jr\.?\s*Resident|\bJR\b|Non[-\s]*Academic|House\s*Staff|RMO|Clinical\s+Tutor|Tutor|Demonstrator)\b", qual_scope, re.IGNORECASE))
         if has_pg_header and not has_mbbs_header:
             extracted["qualification"] = "MD/MS"
         elif has_mbbs_header and not has_pg_header:

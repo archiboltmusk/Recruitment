@@ -26,7 +26,8 @@
                 <span class="text-base font-bold tracking-tight text-[#1D1D1F]">MedAlerts</span>
             </a>
 
-            <div id="testTimerBar" class="hidden flex items-center gap-3">
+            <div id="testTimerBar" class="hidden flex items-center gap-2.5">
+                <span id="tutorModeIndicator" class="hidden px-3 py-1 rounded-full bg-[#E6F4F1] text-[#0F766E] text-[11px] font-bold">Tutor Mode</span>
                 <span class="px-3.5 py-1.5 rounded-full bg-white border border-black/10 text-xs font-mono font-bold text-[#1D1D1F]" id="timerDisplay">120:00</span>
                 <button onclick="confirmSubmitTest()" class="pill-btn px-4 py-1.5 bg-[#0F766E] text-white font-semibold text-xs rounded-full">Submit</button>
             </div>
@@ -49,28 +50,36 @@
             <div class="text-center max-w-2xl mx-auto space-y-3">
                 <p class="text-xs font-semibold uppercase tracking-[0.14em] text-[#0F766E]">UPSC CMS &amp; ESIC Practice</p>
                 <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-[#1D1D1F]">Free Mock CBT. Real -0.33 Marking.</h1>
-                <p class="text-sm text-[#6E6E73]">Full mocks, 10-minute subject drills, Mistake Notebook revision, and Harrison's / Park's explanations.</p>
-                <div class="pt-2 flex justify-center">
+                <p class="text-sm text-[#6E6E73]">Full mocks, Tutor Mode instant explanations, Image-Based Questions, and Mistake Bank revision.</p>
+                <div class="pt-2 flex flex-col items-center gap-3">
                     <input type="text" id="candidateNameInput" placeholder="Dr. Candidate Name" value="Dr. Candidate" class="max-w-xs w-full px-4 py-2.5 bg-white border border-black/10 rounded-full text-sm text-center font-semibold outline-none focus:ring-2 focus:ring-[#0F766E]/25">
+                    <div class="inline-flex items-center p-1 rounded-full bg-white border border-black/10 shadow-sm">
+                        <button id="modeTimedBtn" onclick="setExamMode(false)" class="px-4 py-1.5 rounded-full text-xs font-semibold bg-[#1D1D1F] text-white transition">Timed CBT</button>
+                        <button id="modeTutorBtn" onclick="setExamMode(true)" class="px-4 py-1.5 rounded-full text-xs font-semibold text-[#6E6E73] hover:text-[#1D1D1F] transition">Tutor Mode (Instant Explanation)</button>
+                    </div>
+                    <p id="modeHintText" class="text-[11px] text-[#86868B]">Timed CBT reveals answers and explanations after submission.</p>
                 </div>
             </div>
 
-            <!-- Subject-Wise Quick Practice Pills -->
+            <!-- Subject-Wise Quick Practice & IBQ Filter -->
             <div class="apple-card p-5 space-y-3">
                 <div class="flex items-center justify-between">
-                    <h2 class="text-xs font-bold uppercase tracking-wider text-[#6E6E73]">Quick Subject Drills</h2>
-                    <span class="text-[11px] text-[#86868B]">Tap any subject to start</span>
+                    <h2 class="text-xs font-bold uppercase tracking-wider text-[#6E6E73]">Quick Subject &amp; Visual Drills</h2>
+                    <span class="text-[11px] text-[#86868B]">Tap any filter to start</span>
                 </div>
                 <div id="subjectPillsContainer" class="flex flex-wrap gap-2"></div>
             </div>
 
-            <!-- Mistake Notebook -->
+            <!-- Mistake Bank -->
             <div id="mistakeBanner" class="hidden apple-card p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-l-4 border-l-rose-500">
                 <div>
-                    <h3 class="text-sm font-bold text-[#1D1D1F]">Mistake Notebook (<span id="mistakeCountLabel">0</span> Questions)</h3>
-                    <p class="text-xs text-[#6E6E73] mt-0.5">Questions you missed earlier are saved here for rapid revision.</p>
+                    <h3 class="text-sm font-bold text-[#1D1D1F]">Mistake Bank (<span id="mistakeCountLabel">0</span> Questions)</h3>
+                    <p class="text-xs text-[#6E6E73] mt-0.5">Wrong answers are saved automatically and removed once you master them.</p>
                 </div>
-                <button onclick="startMistakeDrill()" class="pill-btn px-5 py-2.5 bg-rose-600 text-white font-semibold text-xs rounded-full shrink-0">Re-Practice Mistakes</button>
+                <div class="flex items-center gap-2 shrink-0">
+                    <button onclick="clearMistakeBank()" class="px-4 py-2.5 bg-[#F5F5F7] hover:bg-gray-200 text-[#6E6E73] font-semibold text-xs rounded-full transition">Clear</button>
+                    <button onclick="startMistakeDrill()" class="pill-btn px-5 py-2.5 bg-rose-600 text-white font-semibold text-xs rounded-full">Retry Mistakes</button>
+                </div>
             </div>
 
             <div class="space-y-4" id="examsListContainer"></div>
@@ -95,10 +104,11 @@
                         <img id="qImage" src="" alt="Clinical Question Diagram" class="max-h-72 rounded-2xl border border-black/10 mx-auto object-contain bg-white p-2 shadow-sm">
                     </div>
                     <div class="space-y-2.5" id="qOptionsContainer"></div>
+                    <div id="tutorFeedbackBox" class="hidden p-4 rounded-2xl border text-xs space-y-1.5"></div>
                 </div>
                 <div class="px-6 py-4 bg-[#F5F5F7]/60 border-t border-black/[0.06] flex flex-wrap items-center justify-between gap-3">
                     <div class="flex items-center gap-2">
-                        <button onclick="clearResponse()" class="px-3.5 py-2 text-xs font-semibold bg-white border border-black/10 rounded-full">Clear</button>
+                        <button onclick="clearResponse()" id="clearBtn" class="px-3.5 py-2 text-xs font-semibold bg-white border border-black/10 rounded-full">Clear</button>
                         <button onclick="markForReviewAndNext()" class="px-3.5 py-2 text-xs font-semibold bg-amber-50 text-amber-800 rounded-full">Review &amp; Next</button>
                     </div>
                     <div class="flex items-center gap-2">
@@ -149,8 +159,16 @@
                     <div class="p-4 bg-[#F5F5F7] rounded-2xl space-y-2"><h4 class="text-xs font-bold text-[#6E6E73]">Subject Accuracy</h4><div id="subjectBreakdownBox" class="space-y-2 text-xs"></div></div>
                     <div class="p-4 bg-[#F5F5F7] rounded-2xl space-y-2"><h4 class="text-xs font-bold text-[#6E6E73] flex justify-between"><span>Leaderboard</span><span id="peerAvgLabel" class="text-[#0F766E]"></span></h4><div id="peerLeaderboardBox" class="space-y-1.5 text-xs"></div></div>
                 </div>
-                <div class="flex justify-end">
-                    <button onclick="returnToLobby()" class="pill-btn px-5 py-2.5 bg-[#1D1D1F] text-white font-semibold rounded-full text-xs">Back to Tests</button>
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                    <div class="inline-flex items-center gap-1.5 bg-[#F5F5F7] p-1 rounded-full">
+                        <button id="revFilterAll" onclick="setReviewFilter('all')" class="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-[#1D1D1F] text-white transition">All</button>
+                        <button id="revFilterWrong" onclick="setReviewFilter('wrong')" class="px-3.5 py-1.5 rounded-full text-xs font-semibold text-[#6E6E73] transition">Wrong Only</button>
+                        <button id="revFilterIbq" onclick="setReviewFilter('ibq')" class="px-3.5 py-1.5 rounded-full text-xs font-semibold text-[#6E6E73] transition">Image-Based Only</button>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button id="retryWrongBtn" onclick="retryCurrentWrong()" class="hidden pill-btn px-5 py-2.5 bg-rose-600 text-white font-semibold rounded-full text-xs">Retry Wrong Questions</button>
+                        <button onclick="returnToLobby()" class="pill-btn px-5 py-2.5 bg-[#1D1D1F] text-white font-semibold rounded-full text-xs">Back to Tests</button>
+                    </div>
                 </div>
             </div>
             <div id="reviewContainer" class="space-y-4"></div>
@@ -159,17 +177,49 @@
 
     <script>
         let currentExam = null, questions = [], currentIndex = 0, userResponses = {}, questionStatus = {}, timerInterval = null, timeRemainingSeconds = 0;
+        let tutorMode = false, tutorFeedback = {}, lastReviewItems = [], activeReviewFilter = 'all';
 
         document.addEventListener('DOMContentLoaded', () => {
             try { const p = JSON.parse(localStorage.getItem('med_doctor_profile') || '{}'); if (p.name) document.getElementById('candidateNameInput').value = p.name; } catch(e){}
             loadExams(); loadSubjectPills(); refreshMistakeBanner();
         });
 
+        function setExamMode(isTutor) {
+            tutorMode = !!isTutor;
+            const timedBtn = document.getElementById('modeTimedBtn');
+            const tutorBtn = document.getElementById('modeTutorBtn');
+            const hint = document.getElementById('modeHintText');
+            if (tutorMode) {
+                tutorBtn.className = 'px-4 py-1.5 rounded-full text-xs font-semibold bg-[#0F766E] text-white transition';
+                timedBtn.className = 'px-4 py-1.5 rounded-full text-xs font-semibold text-[#6E6E73] hover:text-[#1D1D1F] transition';
+                hint.innerText = 'Tutor Mode reveals the correct answer and Clinical Pearl immediately after each click.';
+            } else {
+                timedBtn.className = 'px-4 py-1.5 rounded-full text-xs font-semibold bg-[#1D1D1F] text-white transition';
+                tutorBtn.className = 'px-4 py-1.5 rounded-full text-xs font-semibold text-[#6E6E73] hover:text-[#1D1D1F] transition';
+                hint.innerText = 'Timed CBT reveals answers and explanations after submission.';
+            }
+        }
+
         async function loadSubjectPills() {
             try {
-                const res = await fetch('/api/exam-subjects');
-                const subjects = await res.json();
-                document.getElementById('subjectPillsContainer').innerHTML = subjects.map(s => `
+                const [subjRes, ibqRes] = await Promise.all([
+                    fetch('/api/exam-subjects'),
+                    fetch('/api/exams/image-based').catch(() => null)
+                ]);
+                const subjects = await subjRes.json();
+                let ibqPill = '';
+                if (ibqRes && ibqRes.ok) {
+                    const ibqData = await ibqRes.json();
+                    const ibqCount = (ibqData.questions || []).length;
+                    if (ibqCount > 0) {
+                        ibqPill = `
+                            <button onclick="startTest('image-based')" class="pill-btn px-3.5 py-2 rounded-full bg-[#E6F4F1] hover:bg-[#0F766E] text-[#0F766E] hover:text-white text-xs font-semibold transition flex items-center gap-1.5">
+                                <i class="fa-regular fa-image"></i> Image-Based Questions <span class="opacity-75">(${ibqCount})</span>
+                            </button>
+                        `;
+                    }
+                }
+                document.getElementById('subjectPillsContainer').innerHTML = ibqPill + subjects.map(s => `
                     <button onclick="startTest('${s.id}')" class="pill-btn px-3.5 py-2 rounded-full bg-[#F5F5F7] hover:bg-[#1D1D1F] hover:text-white text-xs font-semibold text-[#1D1D1F] transition">
                         ${s.subject} <span class="opacity-60 ml-1">(${s.count})</span>
                     </button>
@@ -183,9 +233,34 @@
             if (list.length > 0) { document.getElementById('mistakeCountLabel').innerText = list.length; banner.classList.remove('hidden'); }
             else banner.classList.add('hidden');
         }
+        function clearMistakeBank() {
+            if (!confirm('Clear all saved questions from your Mistake Bank?')) return;
+            localStorage.removeItem('med_mistake_notebook');
+            refreshMistakeBanner();
+        }
+        function syncSingleQuestionToMistakeBank(q, fb) {
+            const map = {};
+            getMistakeNotebook().forEach(item => map[item.id] = item);
+            if (!fb.is_correct) {
+                map[q.id] = {
+                    id: q.id,
+                    subject: q.subject,
+                    text: q.text,
+                    image_url: q.image_url || null,
+                    options: q.options,
+                    correct_option: fb.correct_option,
+                    explanation: fb.explanation,
+                    citation: fb.citation
+                };
+            } else if (map[q.id]) {
+                delete map[q.id];
+            }
+            localStorage.setItem('med_mistake_notebook', JSON.stringify(Object.values(map)));
+            refreshMistakeBanner();
+        }
         function startMistakeDrill() {
             const list = getMistakeNotebook(); if (!list.length) return;
-            currentExam = { id: 'mistake-notebook', title: 'Mistake Notebook Revision', duration_minutes: Math.max(10, list.length * 2), total_marks: list.length, cutoff_reference: Math.ceil(list.length * 0.6) };
+            currentExam = { id: 'mistake-notebook', title: 'Mistake Bank Revision', duration_minutes: Math.max(10, list.length * 2), total_marks: list.length, cutoff_reference: Math.ceil(list.length * 0.6) };
             questions = list; beginSession();
         }
         async function loadExams() {
@@ -206,13 +281,14 @@
             currentExam = data.exam; questions = data.questions; beginSession();
         }
         function beginSession() {
-            currentIndex = 0; userResponses = {}; questionStatus = {};
+            currentIndex = 0; userResponses = {}; questionStatus = {}; tutorFeedback = {};
             questions.forEach(q => questionStatus[q.id] = 'NOT_VISITED');
             questionStatus[questions[0].id] = 'NOT_ANSWERED';
             document.getElementById('lobbyView').classList.add('hidden');
             document.getElementById('resultsView').classList.add('hidden');
             document.getElementById('cbtView').classList.remove('hidden');
             document.getElementById('testTimerBar').classList.remove('hidden');
+            document.getElementById('tutorModeIndicator').classList.toggle('hidden', !tutorMode);
             document.getElementById('lobbyNavBtns').classList.add('hidden');
             document.getElementById('mobileBackBtn').classList.add('hidden');
             timeRemainingSeconds = currentExam.duration_minutes * 60;
@@ -228,7 +304,7 @@
             }, 1000);
         }
         function renderQuestion() {
-            const q = questions[currentIndex], selected = userResponses[q.id], letters = ['A','B','C','D'];
+            const q = questions[currentIndex], selected = userResponses[q.id], fb = tutorFeedback[q.id], letters = ['A','B','C','D'];
             document.getElementById('qSubjectBadge').innerText = q.subject;
             document.getElementById('qNumberText').innerText = `${currentIndex + 1} / ${questions.length}`;
             document.getElementById('qText').innerText = q.text;
@@ -236,17 +312,83 @@
             const imgEl = document.getElementById('qImage');
             if (q.image_url) { imgEl.src = q.image_url; imgBox.classList.remove('hidden'); }
             else { imgEl.src = ''; imgBox.classList.add('hidden'); }
-            document.getElementById('qOptionsContainer').innerHTML = q.options.map((opt, idx) => `
-                <label class="flex items-start gap-3 p-4 rounded-2xl border ${selected === idx ? 'bg-[#E6F4F1] border-[#0F766E]' : 'bg-[#F5F5F7] border-transparent hover:bg-gray-200/70'} cursor-pointer transition">
-                    <input type="radio" name="optRadio" value="${idx}" ${selected === idx ? 'checked' : ''} onchange="selectOption(${idx})" class="mt-1 accent-[#0F766E]">
-                    <span class="text-sm text-[#1D1D1F]"><strong class="mr-1.5">${letters[idx]}.</strong> ${opt}</span>
-                </label>
-            `).join('');
+
+            document.getElementById('qOptionsContainer').innerHTML = q.options.map((opt, idx) => {
+                let rowCls = 'bg-[#F5F5F7] border-transparent hover:bg-gray-200/70';
+                if (fb) {
+                    if (idx === fb.correct_option) rowCls = 'bg-emerald-50 border-emerald-500';
+                    else if (selected === idx) rowCls = 'bg-rose-50 border-rose-400';
+                    else rowCls = 'bg-[#F5F5F7] border-transparent opacity-70';
+                } else if (selected === idx) {
+                    rowCls = 'bg-[#E6F4F1] border-[#0F766E]';
+                }
+                const disabledAttr = (tutorMode && fb) ? 'disabled' : '';
+                return `
+                    <label class="flex items-start gap-3 p-4 rounded-2xl border ${rowCls} ${(tutorMode && fb) ? 'cursor-default' : 'cursor-pointer'} transition">
+                        <input type="radio" name="optRadio" value="${idx}" ${selected === idx ? 'checked' : ''} ${disabledAttr} onchange="selectOption(${idx})" class="mt-1 accent-[#0F766E]">
+                        <span class="text-sm text-[#1D1D1F]"><strong class="mr-1.5">${letters[idx]}.</strong> ${opt}</span>
+                    </label>
+                `;
+            }).join('');
+
+            const fbBox = document.getElementById('tutorFeedbackBox');
+            if (tutorMode && fb) {
+                fbBox.classList.remove('hidden');
+                fbBox.className = `p-4 rounded-2xl border text-xs space-y-1.5 ${fb.is_correct ? 'bg-emerald-50/80 border-emerald-200 text-emerald-950' : 'bg-rose-50/80 border-rose-200 text-rose-950'}`;
+                fbBox.innerHTML = `
+                    <div class="flex items-center justify-between font-bold">
+                        <span>${fb.is_correct ? 'Correct (+1.0)' : `Incorrect (-0.33) — Correct Answer: ${letters[fb.correct_option]}`}</span>
+                    </div>
+                    <p class="leading-relaxed"><strong>Clinical Pearl:</strong> ${fb.explanation || 'No explanation available.'}</p>
+                    ${fb.citation ? `<p class="text-[10px] opacity-75 italic">${fb.citation}</p>` : ''}
+                `;
+            } else {
+                fbBox.classList.add('hidden');
+                fbBox.innerHTML = '';
+            }
+
+            document.getElementById('clearBtn').disabled = !!(tutorMode && fb);
             document.getElementById('prevBtn').disabled = (currentIndex === 0);
             updateStatusCounts();
         }
-        function selectOption(idx) { const qId = questions[currentIndex].id; userResponses[qId] = idx; questionStatus[qId] = 'ANSWERED'; renderQuestion(); renderPalette(); }
-        function clearResponse() { const qId = questions[currentIndex].id; delete userResponses[qId]; questionStatus[qId] = 'NOT_ANSWERED'; renderQuestion(); renderPalette(); }
+        async function selectOption(idx) {
+            const q = questions[currentIndex], qId = q.id;
+            if (tutorMode && tutorFeedback[qId]) return;
+            userResponses[qId] = idx;
+            questionStatus[qId] = 'ANSWERED';
+            if (tutorMode) {
+                let fb;
+                if (currentExam.id === 'mistake-notebook' && q.correct_option !== undefined) {
+                    fb = {
+                        question_id: qId,
+                        selected_option: idx,
+                        correct_option: q.correct_option,
+                        is_correct: idx === q.correct_option,
+                        explanation: q.explanation || '',
+                        citation: q.citation || ''
+                    };
+                } else {
+                    try {
+                        const res = await fetch('/api/exams/check-question', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ question_id: qId, selected_option: idx })
+                        });
+                        if (res.ok) fb = await res.json();
+                    } catch (e) {}
+                }
+                if (fb) {
+                    tutorFeedback[qId] = fb;
+                    syncSingleQuestionToMistakeBank(q, fb);
+                }
+            }
+            renderQuestion(); renderPalette();
+        }
+        function clearResponse() {
+            const qId = questions[currentIndex].id;
+            if (tutorMode && tutorFeedback[qId]) return;
+            delete userResponses[qId]; questionStatus[qId] = 'NOT_ANSWERED'; renderQuestion(); renderPalette();
+        }
         function markForReviewAndNext() { questionStatus[questions[currentIndex].id] = 'MARKED'; renderPalette(); nextQuestion(); }
         function saveAndNext() { const qId = questions[currentIndex].id; questionStatus[qId] = userResponses[qId] === undefined ? 'NOT_ANSWERED' : 'ANSWERED'; renderPalette(); nextQuestion(); }
         function nextQuestion() { if (currentIndex < questions.length - 1) { currentIndex++; if (questionStatus[questions[currentIndex].id] === 'NOT_VISITED') questionStatus[questions[currentIndex].id] = 'NOT_ANSWERED'; renderQuestion(); renderPalette(); } }
@@ -254,9 +396,10 @@
         function jumpToQuestion(i) { currentIndex = i; if (questionStatus[questions[i].id] === 'NOT_VISITED') questionStatus[questions[i].id] = 'NOT_ANSWERED'; renderQuestion(); renderPalette(); }
         function renderPalette() {
             document.getElementById('paletteGrid').innerHTML = questions.map((q, idx) => {
-                const st = questionStatus[q.id];
+                const st = questionStatus[q.id], fb = tutorFeedback[q.id];
                 let bg = 'bg-[#F5F5F7] text-[#1D1D1F]';
-                if (st === 'ANSWERED') bg = 'bg-emerald-500 text-white';
+                if (tutorMode && fb) bg = fb.is_correct ? 'bg-emerald-500 text-white' : 'bg-rose-500 text-white';
+                else if (st === 'ANSWERED') bg = 'bg-emerald-500 text-white';
                 else if (st === 'NOT_ANSWERED') bg = 'bg-rose-500 text-white';
                 else if (st === 'MARKED') bg = 'bg-amber-500 text-white';
                 return `<button onclick="jumpToQuestion(${idx})" class="w-8 h-8 rounded-full text-xs font-semibold ${bg} ${idx === currentIndex ? 'ring-2 ring-black' : ''}">${idx + 1}</button>`;
@@ -296,6 +439,44 @@
             localStorage.setItem('med_mistake_notebook', JSON.stringify(Object.values(map)));
             refreshMistakeBanner();
         }
+        function setReviewFilter(mode) {
+            activeReviewFilter = mode;
+            ['all', 'wrong', 'ibq'].forEach(k => {
+                const btn = document.getElementById(k === 'all' ? 'revFilterAll' : (k === 'wrong' ? 'revFilterWrong' : 'revFilterIbq'));
+                btn.className = `px-3.5 py-1.5 rounded-full text-xs font-semibold transition ${k === mode ? 'bg-[#1D1D1F] text-white' : 'text-[#6E6E73]'}`;
+            });
+            renderReviewCards();
+        }
+        function renderReviewCards() {
+            const letters = ['A','B','C','D'];
+            let items = lastReviewItems;
+            if (activeReviewFilter === 'wrong') items = items.filter(q => q.is_attempted && !q.is_correct);
+            else if (activeReviewFilter === 'ibq') items = items.filter(q => !!q.image_url);
+            if (!items.length) {
+                document.getElementById('reviewContainer').innerHTML = `<div class="apple-card p-6 text-center text-xs text-[#86868B]">No questions match this filter.</div>`;
+                return;
+            }
+            document.getElementById('reviewContainer').innerHTML = items.map((q, idx) => `
+                <div class="apple-card p-6 space-y-3">
+                    <div class="flex justify-between text-xs font-semibold"><span class="text-[#0F766E]">Q${idx+1} • ${q.subject}${q.image_url ? ' • IBQ' : ''}</span><span class="${q.is_correct ? 'text-emerald-700' : (q.is_attempted ? 'text-rose-600' : 'text-[#86868B]')}">${q.is_correct ? 'Correct' : (q.is_attempted ? 'Wrong (-0.33)' : 'Skipped')}</span></div>
+                    <p class="text-sm font-semibold text-[#1D1D1F]">${q.text}</p>
+                    ${q.image_url ? `<img src="${q.image_url}" alt="Diagram" class="max-h-56 rounded-2xl border border-black/10 object-contain bg-white p-2">` : ''}
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                        ${q.options.map((opt, oIdx) => `<div class="p-3 rounded-xl ${oIdx === q.correct_option ? 'bg-emerald-50 text-emerald-900 font-semibold' : (q.user_choice === oIdx ? 'bg-rose-50 text-rose-900' : 'bg-[#F5F5F7] text-[#6E6E73]')}">${letters[oIdx]}. ${opt}</div>`).join('')}
+                    </div>
+                    <div class="p-3.5 bg-[#F5F5F7] rounded-2xl text-xs text-[#6E6E73] space-y-1"><strong class="text-[#1D1D1F] block">Clinical Pearl</strong><p>${q.explanation}</p><p class="text-[10px] italic">${q.citation}</p></div>
+                </div>
+            `).join('');
+        }
+        function retryCurrentWrong() {
+            const wrongQs = lastReviewItems
+                .filter(q => q.is_attempted && !q.is_correct)
+                .map(q => ({ id:q.id, subject:q.subject, text:q.text, image_url:q.image_url, options:q.options, correct_option:q.correct_option, explanation:q.explanation, citation:q.citation }));
+            if (!wrongQs.length) return;
+            currentExam = { id: 'mistake-notebook', title: 'Retry Wrong Questions', duration_minutes: Math.max(10, wrongQs.length * 2), total_marks: wrongQs.length, cutoff_reference: Math.ceil(wrongQs.length * 0.6) };
+            questions = wrongQs;
+            beginSession();
+        }
         function renderResultsView(res) {
             document.getElementById('cbtView').classList.add('hidden'); document.getElementById('testTimerBar').classList.add('hidden');
             document.getElementById('lobbyNavBtns').classList.remove('hidden'); document.getElementById('mobileBackBtn').classList.remove('hidden');
@@ -307,6 +488,8 @@
             document.getElementById('resCorrect').innerText = res.correct; document.getElementById('resWrong').innerText = res.wrong;
             document.getElementById('resUnattempted').innerText = res.unattempted; document.getElementById('resAccuracy').innerText = `${res.accuracy_pct}%`;
             saveMistakesFromReview(res.review);
+            lastReviewItems = res.review || [];
+            document.getElementById('retryWrongBtn').classList.toggle('hidden', !(res.wrong > 0));
 
             document.getElementById('subjectBreakdownBox').innerHTML = Object.entries(res.subject_breakdown || {}).map(([s, st]) => {
                 const pct = st.total > 0 ? Math.round((st.correct / st.total) * 100) : 0;
@@ -318,18 +501,7 @@
                 document.getElementById('peerLeaderboardBox').innerHTML = (lb.top_scores || []).slice(0,5).map((s,i) => `<div class="flex justify-between"><span>#${i+1} ${s.candidate_name}</span><span class="font-semibold">${s.final_score.toFixed(1)}</span></div>`).join('') || '<span class="text-[#86868B]">First run recorded!</span>';
             }).catch(()=>{});
 
-            const letters = ['A','B','C','D'];
-            document.getElementById('reviewContainer').innerHTML = res.review.map((q, idx) => `
-                <div class="apple-card p-6 space-y-3">
-                    <div class="flex justify-between text-xs font-semibold"><span class="text-[#0F766E]">Q${idx+1} • ${q.subject}</span><span class="${q.is_correct ? 'text-emerald-700' : (q.is_attempted ? 'text-rose-600' : 'text-[#86868B]')}">${q.is_correct ? 'Correct' : (q.is_attempted ? 'Wrong (-0.33)' : 'Skipped')}</span></div>
-                    <p class="text-sm font-semibold text-[#1D1D1F]">${q.text}</p>
-                    ${q.image_url ? `<img src="${q.image_url}" alt="Diagram" class="max-h-56 rounded-2xl border border-black/10 object-contain bg-white p-2">` : ''}
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-                        ${q.options.map((opt, oIdx) => `<div class="p-3 rounded-xl ${oIdx === q.correct_option ? 'bg-emerald-50 text-emerald-900 font-semibold' : (q.user_choice === oIdx ? 'bg-rose-50 text-rose-900' : 'bg-[#F5F5F7] text-[#6E6E73]')}">${letters[oIdx]}. ${opt}</div>`).join('')}
-                    </div>
-                    <div class="p-3.5 bg-[#F5F5F7] rounded-2xl text-xs text-[#6E6E73] space-y-1"><strong class="text-[#1D1D1F] block">Clinical Pearl</strong><p>${q.explanation}</p><p class="text-[10px] italic">${q.citation}</p></div>
-                </div>
-            `).join('');
+            setReviewFilter('all');
         }
         function returnToLobby() { document.getElementById('resultsView').classList.add('hidden'); document.getElementById('lobbyView').classList.remove('hidden'); loadExams(); }
     </script>

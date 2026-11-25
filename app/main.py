@@ -146,6 +146,10 @@ class ExamSubmissionRequest(BaseModel):
     candidate_name: str = "Dr. Candidate"
     answers: Dict[str, Optional[int]] = {}
 
+class CheckQuestionRequest(BaseModel):
+    question_id: str
+    selected_option: int
+
 class TelegramTestRequest(BaseModel):
     chat_id: str
     bot_token: Optional[str] = None
@@ -284,6 +288,23 @@ def health_check_db():
         }
 
 def _resolve_exam_and_questions(exam_id: str):
+    if exam_id == "image-based":
+        all_qs = [q for qs in EXAM_QUESTIONS.values() for q in qs]
+        matched = [q for q in all_qs if q.get("image_url")]
+        if not matched:
+            return None, []
+        meta = {
+            "id": "image-based",
+            "title": "Image-Based Questions (IBQ) — Clinical & Visual Drill",
+            "subtitle": f"Clinical, X-ray, anatomy & surgical diagram questions ({len(matched)} Questions)",
+            "total_questions": len(matched),
+            "total_marks": len(matched),
+            "duration_minutes": max(15, len(matched) * 2),
+            "negative_marking": 0.33,
+            "cutoff_reference": max(1, int(len(matched) * 0.6))
+        }
+        return meta, matched
+
     if exam_id.startswith("subject-"):
         slug = exam_id[len("subject-"):].lower()
         all_qs = [q for qs in EXAM_QUESTIONS.values() for q in qs]
@@ -338,6 +359,22 @@ def get_exam_questions(exam_id: str):
         for q in questions
     ]
     return {"exam": exam_meta, "questions": safe_questions}
+
+@app.post("/api/exams/check-question")
+def check_single_question(payload: CheckQuestionRequest):
+    for qs in EXAM_QUESTIONS.values():
+        for q in qs:
+            if q["id"] == payload.question_id:
+                is_correct = (payload.selected_option == q["correct_option"])
+                return {
+                    "question_id": q["id"],
+                    "selected_option": payload.selected_option,
+                    "correct_option": q["correct_option"],
+                    "is_correct": is_correct,
+                    "explanation": q.get("explanation", ""),
+                    "citation": q.get("citation", "")
+                }
+    raise HTTPException(status_code=404, detail="Question not found")
 
 @app.post("/api/exams/{exam_id}/submit")
 def submit_exam(exam_id: str, payload: ExamSubmissionRequest, db: Session = Depends(get_db)):

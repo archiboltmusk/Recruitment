@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0F766E">
+    <link rel="manifest" href="/manifest.json">
     <title>MedAlerts — Medical Officer Jobs &amp; Exam Prep</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -353,12 +355,19 @@
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
-            <div class="flex flex-wrap items-center gap-2 pb-2 border-b border-black/[0.06]">
-                <button onclick="exportBackupJson()" class="pill-btn px-3.5 py-1.5 rounded-full bg-[#F5F5F7] hover:bg-gray-200 text-xs font-semibold text-[#1D1D1F]"><i class="fa-solid fa-download mr-1.5 text-[#0F766E]"></i>Export JSON Backup</button>
-                <label class="pill-btn px-3.5 py-1.5 rounded-full bg-[#F5F5F7] hover:bg-gray-200 text-xs font-semibold text-[#1D1D1F] cursor-pointer">
-                    <i class="fa-solid fa-upload mr-1.5 text-[#0F766E]"></i>Import JSON
-                    <input type="file" accept="application/json,.json" onchange="importBackupJson(event)" class="hidden">
-                </label>
+            <div class="space-y-2.5 pb-3 border-b border-black/[0.06]">
+                <div class="flex flex-wrap items-center gap-2">
+                    <button onclick="exportBackupJson()" class="pill-btn px-3.5 py-1.5 rounded-full bg-[#F5F5F7] hover:bg-gray-200 text-xs font-semibold text-[#1D1D1F]"><i class="fa-solid fa-download mr-1.5 text-[#0F766E]"></i>Export JSON</button>
+                    <label class="pill-btn px-3.5 py-1.5 rounded-full bg-[#F5F5F7] hover:bg-gray-200 text-xs font-semibold text-[#1D1D1F] cursor-pointer">
+                        <i class="fa-solid fa-upload mr-1.5 text-[#0F766E]"></i>Import JSON
+                        <input type="file" accept="application/json,.json" onchange="importBackupJson(event)" class="hidden">
+                    </label>
+                </div>
+                <div class="flex flex-wrap items-center gap-2">
+                    <input type="text" id="cloudSyncKeyInput" placeholder="Cloud Sync PIN/Key (min 6 chars)" class="flex-1 min-w-[180px] px-3.5 py-1.5 bg-[#F5F5F7] rounded-full text-xs outline-none">
+                    <button onclick="saveCloudBackup()" class="pill-btn px-3.5 py-1.5 rounded-full bg-[#0F766E] text-white text-xs font-semibold">Save Cloud</button>
+                    <button onclick="loadCloudBackup()" class="pill-btn px-3.5 py-1.5 rounded-full bg-[#1D1D1F] text-white text-xs font-semibold">Restore Cloud</button>
+                </div>
             </div>
             <div id="trackerListContainer" class="space-y-3 text-xs"></div>
         </div>
@@ -1115,7 +1124,44 @@
             }).join('');
         }
 
+        function _collectBackupData() {
+            const data = {};
+            ['med_doctor_profile', 'med_app_tracker', 'med_walkin_kit', 'med_mistake_notebook'].forEach(k => {
+                try { const v = localStorage.getItem(k); if (v !== null) data[k] = JSON.parse(v); } catch (e) {}
+            });
+            return data;
+        }
+        async function saveCloudBackup() {
+            const key = (document.getElementById('cloudSyncKeyInput').value || '').trim();
+            if (key.length < 6) return showToast('Enter a Sync Key of at least 6 characters.');
+            try {
+                const res = await fetch('/api/profile/sync', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ sync_key: key, payload: _collectBackupData() })
+                });
+                if (!res.ok) throw new Error('Sync failed');
+                showToast('Synced to cloud!');
+            } catch (e) { showToast('Cloud sync failed.'); }
+        }
+        async function loadCloudBackup() {
+            const key = (document.getElementById('cloudSyncKeyInput').value || '').trim();
+            if (key.length < 6) return showToast('Enter your 6+ char Sync Key.');
+            try {
+                const res = await fetch(`/api/profile/sync/${encodeURIComponent(key)}`);
+                if (!res.ok) return showToast('No cloud backup found for that key.');
+                const d = await res.json();
+                const payload = d.payload || {};
+                ['med_doctor_profile', 'med_app_tracker', 'med_walkin_kit', 'med_mistake_notebook'].forEach(k => {
+                    if (payload[k] !== undefined) localStorage.setItem(k, JSON.stringify(payload[k]));
+                });
+                loadKitState(); updateTrackerBadge(); openTrackerModal(); applyFilters();
+                showToast('Restored from cloud!');
+            } catch (e) { showToast('Cloud restore failed.'); }
+        }
+
         document.getElementById('searchInput').addEventListener('input', applyFilters);
+        if ('serviceWorker' in navigator) { navigator.serviceWorker.register('/sw.js').catch(() => {}); }
         loadKitState();
         updateTrackerBadge();
         init();

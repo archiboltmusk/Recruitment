@@ -1,5 +1,6 @@
 import os
 import hmac
+import hashlib
 import json
 import time
 import threading
@@ -14,7 +15,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func, or_
 
 from .database import engine, Base, get_db, SessionLocal
-from .models import Vacancy, Subscription, NotificationLog, ExamAttempt, PortalHealth, SyncJob, RateLimitBucket, SchemaMigration
+from .models import Vacancy, Subscription, NotificationLog, ExamAttempt, PortalHealth, SyncJob, RateLimitBucket, SchemaMigration, DoctorSyncBlob
 from .collector import VacancyCollector
 from .scraper import LiveGazetteScraper, PORTAL_SOURCES
 from .notifier import Notifier
@@ -1264,3 +1265,99 @@ def deactivate_vacancy(vacancy_id: str, db: Session = Depends(get_db)):
 @app.post("/api/telegram/broadcast-digest", dependencies=[Depends(verify_admin_key)])
 def trigger_telegram_digest(force: bool = False, db: Session = Depends(get_db)):
     return Notifier.broadcast_daily_digest(db, force=force)
+
+@app.post("/api/telegram/webhook")
+async def telegram_webhook(
+    request: Request,
+    x_telegram_bot_api_secret_token: Optional[str] = Header(default=None),
+    db: Session = Depends(get_db),
+):
+    secret = os.getenv("TELEGRAM_WEBHOOK_SECRET", "").strip()
+    if secret and (not x_telegram_bot_api_secret_token or not hmac.compare_digest(x_telegram_bot_api_secret_token, secret)):
+        raise HTTPException(status_code=403, detail="Invalid webhook secret")
+    update = await request.json()
+    msg = update.get("message") or update.get("edited_message") or {}
+    chat_id = (msg.get("chat") or {}).get("id")
+    text = msg.get("text") or ""
+    if not chat_id:
+        return {"ok": True, "ignored": True}
+    reply = Notifier.handle_telegram_command(db, str(chat_id), text)
+    token = os.getenv("TELEGRAM_BOT_TOKEN", "").strip()
+    if token:
+        try:
+            requests.post(
+                f"https://api.telegram.org/bot{token}/sendMessage",
+                json={"chat_id": chat_id, "text": reply, "parse_mode": "HTML"},
+                timeout=8,
+            )
+        except Exception:
+            pass
+    return {"ok": True, "reply": reply}
+
+class ProfileSyncPayload(BaseModel):
+    sync_key: str = Field(..., min_length=6, max_length=64)
+    payload: Dict[str, Any]
+
+def _hash_sync_key(raw_key: str) -> str:
+    return hashlib.sha256(raw_key.strip().encode("utf-8")).hexdigest()
+
+@app.post("/api/profile/sync")
+def save_cloud_profile(body: ProfileSyncPayload, request: Request, db: Session = Depends(get_db)):
+    check_rate_limit(request, "profile_sync", max_calls=20, window_sec=300)
+    hashed = _hash_sync_key(body.sync_key)
+    raw_json = json.dumps(body.payload)[:100000]
+    row = db.query(DoctorSyncBlob).filter(DoctorSyncBlob.sync_key == hashed).first()
+    if not row:
+        db.add(DoctorSyncBlob(sync_key=hashed, payload_json=raw_json, updated_at=datetime.utcnow()))
+    else:
+        row.payload_json = raw_json
+        row.updated_at = datetime.utcnow()
+    db.commit()
+    return {"ok": True, "updated_at": datetime.utcnow().isoformat()}
+
+@app.get("/api/profile/sync/{sync_key}")
+def load_cloud_profile(sync_key: str, request: Request, db: Session = Depends(get_db)):
+    check_rate_limit(request, "profile_sync_read", max_calls=20, window_sec=300)
+    if len(sync_key.strip()) < 6:
+        raise HTTPException(status_code=400, detail="Sync key must be at least 6 characters")
+    hashed = _hash_sync_key(sync_key)
+    row = db.query(DoctorSyncBlob).filter(DoctorSyncBlob.sync_key == hashed).first()
+    if not row:
+        raise HTTPException(status_code=404, detail="No synced backup found for this key")
+    return {"ok": True, "payload": json.loads(row.payload_json or "{}"), "updated_at": row.updated_at.isoformat() if row.updated_at else None}
+
+@app.get("/manifest.json")
+def pwa_manifest():
+    manifest = {
+        "name": "MedAlerts — Medical Officer Jobs & Mock CBT",
+        "short_name": "MedAlerts",
+        "start_url": "/",
+        "display": "standalone",
+        "background_color": "#F5F5F7",
+        "theme_color": "#0F766E",
+        "icons": [
+            {
+                "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%230F766E'/%3E%3Ctext x='50%25' y='55%25' font-size='34' text-anchor='middle' fill='white'%3E%E2%9A%95%3C/text%3E%3C/svg%3E",
+                "sizes": "192x192",
+                "type": "image/svg+xml",
+            }
+        ],
+    }
+    return Response(content=json.dumps(manifest), media_type="application/manifest+json")
+
+@app.get("/sw.js")
+def pwa_service_worker():
+    sw_code = """const CACHE = 'medalerts-v1';
+const SHELL = ['/', '/onboarding', '/exam', '/bonds', '/toolkit'];
+self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).catch(()=>{})); self.skipWaiting(); });
+self.addEventListener('activate', e => { e.waitUntil(self.clients.claim()); });
+self.addEventListener('fetch', e => {
+  if (e.request.method !== 'GET') return;
+  e.respondWith(fetch(e.request).then(r => {
+    if (r.ok && e.request.url.startsWith(self.location.origin)) {
+      const copy = r.clone(); caches.open(CACHE).then(c => c.put(e.request, copy)).catch(()=>{});
+    }
+    return r;
+  }).catch(() => caches.match(e.request)));
+});"""
+    return Response(content=sw_code, media_type="application/javascript")

@@ -322,3 +322,88 @@ class Notifier:
             except Exception:
                 pass
         return {"sent": sent, "targets": len(set(targets))}
+
+    @classmethod
+    def handle_telegram_command(cls, db: Session, chat_id: str, text: str) -> str:
+        """Handles interactive Telegram bot commands (/start, /filter, /closing, /stop)."""
+        cmd_raw = (text or "").strip()
+        parts = cmd_raw.split()
+        cmd = parts[0].lower().split("@")[0] if parts else ""
+        chat_id_str = str(chat_id).strip()
+
+        sub = db.query(Subscription).filter(
+            Subscription.channel == "telegram",
+            Subscription.target == chat_id_str,
+        ).first()
+
+        if cmd == "/start":
+            if not sub:
+                sub = Subscription(
+                    channel="telegram",
+                    target=chat_id_str,
+                    qualification_filter="ALL",
+                    state_filter="ALL",
+                    category_filter="ALL",
+                    is_active=True,
+                )
+                db.add(sub)
+            else:
+                sub.is_active = True
+            db.commit()
+            return (
+                "🩺 <b>Welcome to MedAlerts Bot!</b>\n"
+                "You're subscribed to live Medical Officer recruitment alerts.\n\n"
+                "<b>Commands:</b>\n"
+                "• <code>/filter MBBS WestBengal</code> — Set degree &amp; state filter\n"
+                "• <code>/closing</code> — View notices closing soon\n"
+                "• <code>/stop</code> — Pause alerts"
+            )
+
+        if cmd == "/filter":
+            qual = parts[1].upper() if len(parts) > 1 else "ALL"
+            if qual not in ("ALL", "MBBS", "MD/MS", "AYUSH"):
+                qual = "MBBS" if "MBBS" in qual else ("MD/MS" if "MD" in qual or "MS" in qual or "PG" in qual else "ALL")
+            state = " ".join(parts[2:]).strip() if len(parts) > 2 else "ALL"
+            if state.lower() in ("wb", "westbengal", "west_bengal"):
+                state = "West Bengal"
+            elif state.lower() in ("allindia", "all_india", "india"):
+                state = "All India"
+            if not sub:
+                sub = Subscription(channel="telegram", target=chat_id_str, is_active=True)
+                db.add(sub)
+            sub.qualification_filter = qual
+            sub.state_filter = state or "ALL"
+            sub.is_active = True
+            db.commit()
+            return f"✅ Filter updated: <b>{html.escape(qual)}</b> | State: <b>{html.escape(sub.state_filter)}</b>"
+
+        if cmd == "/closing":
+            rows = (
+                db.query(Vacancy)
+                .filter(Vacancy.is_active == True)
+                .order_by(Vacancy.last_date.asc())
+                .limit(5)
+                .all()
+            )
+            if not rows:
+                return "No active notices found right now."
+            lines = ["⏰ <b>Top Active / Closing Notices:</b>"]
+            for v in rows:
+                due = v.last_date.strftime("%d %b %Y") if v.last_date else "Check PDF"
+                lines.append(f"• <b>{html.escape(v.title or '')}</b> ({v.total_posts or 0} seats) — Due: {due}")
+            lines.append(f"\n🔗 <a href='{APP_BASE_URL}'>Open MedAlerts</a>")
+            return "\n".join(lines)
+
+        if cmd == "/stop":
+            if sub:
+                sub.is_active = False
+                db.commit()
+            return "⏸️ Alerts paused. Send /start anytime to resume."
+
+        return (
+            "Available commands:\n"
+            "• <code>/start</code> — Subscribe\n"
+            "• <code>/filter MBBS WestBengal</code> — Filter alerts\n"
+            "• <code>/closing</code> — Closing soon\n"
+            "• <code>/stop</code> — Pause alerts"
+        )

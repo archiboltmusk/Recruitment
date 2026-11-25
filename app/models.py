@@ -126,3 +126,11 @@ class SchemaMigration(Base):
 
     version = Column(String(64), primary_key=True)
     applied_at = Column(DateTime, default=datetime.utcnow)
+
+
+class DoctorSyncBlob(Base):
+    __tablename__ = "doctor_sync_blobs"
+
+    sync_key = Column(String(64), primary_key=True)
+    payload_json = Column(Text, default="{}")
+    updated_at = Column(DateTime, default=datetime.utcnow)

@@ -247,9 +247,14 @@
         }
 
         function getMistakeNotebook() { try { return JSON.parse(localStorage.getItem('med_mistake_notebook') || '[]'); } catch (e) { return []; } }
+        function _dueMistakes(list) {
+            const now = Date.now();
+            return list.filter(item => !item.next_review_at || item.next_review_at <= now);
+        }
         function refreshMistakeBanner() {
             const list = getMistakeNotebook(), banner = document.getElementById('mistakeBanner');
-            if (list.length > 0) { document.getElementById('mistakeCountLabel').innerText = list.length; banner.classList.remove('hidden'); }
+            const dueCount = _dueMistakes(list).length;
+            if (list.length > 0) { document.getElementById('mistakeCountLabel').innerText = `${list.length} (${dueCount} Due)`; banner.classList.remove('hidden'); }
             else banner.classList.add('hidden');
         }
         function clearMistakeBank() {
@@ -257,30 +262,39 @@
             localStorage.removeItem('med_mistake_notebook');
             refreshMistakeBanner();
         }
+        function _applyLeitnerUpdate(map, q, isCorrect, correctOpt, explanation, citation) {
+            const dayMs = 86400000;
+            const prev = map[q.id];
+            if (!isCorrect) {
+                map[q.id] = {
+                    id: q.id, subject: q.subject, text: q.text, image_url: q.image_url || null,
+                    options: q.options, correct_option: correctOpt, explanation: explanation, citation: citation,
+                    streak: 0, next_review_at: Date.now() + dayMs
+                };
+            } else if (prev) {
+                const nextStreak = (prev.streak || 0) + 1;
+                if (nextStreak >= 3) { delete map[q.id]; }
+                else {
+                    const days = nextStreak === 1 ? 3 : 7;
+                    prev.streak = nextStreak;
+                    prev.next_review_at = Date.now() + days * dayMs;
+                    map[q.id] = prev;
+                }
+            }
+        }
         function syncSingleQuestionToMistakeBank(q, fb) {
             const map = {};
             getMistakeNotebook().forEach(item => map[item.id] = item);
-            if (!fb.is_correct) {
-                map[q.id] = {
-                    id: q.id,
-                    subject: q.subject,
-                    text: q.text,
-                    image_url: q.image_url || null,
-                    options: q.options,
-                    correct_option: fb.correct_option,
-                    explanation: fb.explanation,
-                    citation: fb.citation
-                };
-            } else if (map[q.id]) {
-                delete map[q.id];
-            }
+            _applyLeitnerUpdate(map, q, fb.is_correct, fb.correct_option, fb.explanation, fb.citation);
             localStorage.setItem('med_mistake_notebook', JSON.stringify(Object.values(map)));
             refreshMistakeBanner();
         }
         function startMistakeDrill() {
             const list = getMistakeNotebook(); if (!list.length) return;
-            currentExam = { id: 'mistake-notebook', title: 'Mistake Bank Revision', duration_minutes: Math.max(10, list.length * 2), total_marks: list.length, cutoff_reference: Math.ceil(list.length * 0.6) };
-            questions = list; beginSession();
+            const due = _dueMistakes(list);
+            const selected = due.length ? due : list;
+            currentExam = { id: 'mistake-notebook', title: `Mistake Bank (${due.length ? 'Due Today' : 'All'})`, duration_minutes: Math.max(10, selected.length * 2), total_marks: selected.length, cutoff_reference: Math.ceil(selected.length * 0.6) };
+            questions = selected; beginSession();
         }
         async function loadExams() {
             const res = await fetch('/api/exams'), exams = await res.json();
@@ -486,8 +500,7 @@
         function saveMistakesFromReview(review) {
             const map = {}; getMistakeNotebook().forEach(q => map[q.id] = q);
             (review || []).forEach(q => {
-                if (q.is_attempted && !q.is_correct) map[q.id] = { id:q.id, subject:q.subject, text:q.text, image_url:q.image_url, options:q.options, correct_option:q.correct_option, explanation:q.explanation, citation:q.citation };
-                else if (q.is_correct && map[q.id]) delete map[q.id];
+                if (q.is_attempted) _applyLeitnerUpdate(map, q, q.is_correct, q.correct_option, q.explanation, q.citation);
             });
             localStorage.setItem('med_mistake_notebook', JSON.stringify(Object.values(map)));
             refreshMistakeBanner();

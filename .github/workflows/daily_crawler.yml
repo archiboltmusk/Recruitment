@@ -19,27 +19,53 @@ jobs:
         with:
           python-version: '3.11.8'
 
-      - name: Install OCR binaries & Python dependencies
+      - name: Install OCR binaries, Python & Playwright
         run: |
           sudo apt-get update && sudo apt-get install -y --no-install-recommends poppler-utils tesseract-ocr tesseract-ocr-eng
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          pip install -r requirements.txt playwright
+          python -m playwright install chromium
 
-      - name: Run Automated Crawler, Expiry & Telegram Digest
+      - name: Run Automated Crawler, JS-Portal Pass, Expiry & Telegram Digest
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           APP_BASE_URL: ${{ secrets.APP_BASE_URL }}
         run: |
+          python -m py_compile app/main.py app/models.py app/scraper.py app/pdf_parser.py app/notifier.py
           python -c "
-          from app.database import engine, Base
+          from app.database import engine, Base, SessionLocal
           from app.scheduler import scheduled_recruitment_sync
+          from app.scraper import LiveGazetteScraper, PORTAL_SOURCES, MEDICAL_PATTERN, NON_JOB_PATTERN
           from app.notifier import Notifier
-          from app.database import SessionLocal
+          from app.models import Vacancy
+          from bs4 import BeautifulSoup
+          from playwright.sync_api import sync_playwright
           Base.metadata.create_all(bind=engine)
           scheduled_recruitment_sync()
+          js_targets = [s for s in PORTAL_SOURCES if s['name'] in ('WBHRB', 'AIIMS', 'AFMS_SSC', 'BHEL_Careers')]
           db = SessionLocal()
           try:
+              with sync_playwright() as pw:
+                  browser = pw.chromium.launch(headless=True)
+                  page = browser.new_page()
+                  for src in js_targets:
+                      try:
+                          page.goto(src['url'], timeout=20000, wait_until='domcontentloaded')
+                          page.wait_for_timeout(2000)
+                          html = page.content()
+                          soup = BeautifulSoup(html, 'html.parser')
+                          for text, url in LiveGazetteScraper._extract_candidate_links(soup, html, src['url']):
+                              if len(text) < 12 or not MEDICAL_PATTERN.search(text) or NON_JOB_PATTERN.search(text):
+                                  continue
+                              exists = db.query(Vacancy).filter(Vacancy.title == text[:250]).first()
+                              if not exists:
+                                  role = LiveGazetteScraper._infer_role_and_qual(text)
+                                  v = Vacancy(title=text[:250], organization=src['organization'], category=src['category'], state=src['state'], designation=role['designation'], qualification=role['qualification'], total_posts=0, pay_scale=src['pay_scale'], notification_url=url, apply_url=src['url'], summary=f'JS-rendered circular from {src[\"organization\"]}.', stage='APPLICATION_OPEN', is_active=True)
+                                  db.add(v); db.commit()
+                      except Exception as e:
+                          print('Playwright skip:', src['name'], e)
+                  browser.close()
               digest = Notifier.broadcast_daily_digest(db)
               print('Automated sync & digest completed:', digest)
           finally:

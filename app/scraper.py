@@ -469,27 +469,71 @@ class LiveGazetteScraper:
                 break
         return discovered
 
+    @staticmethod
+    def _extract_candidate_links(soup: BeautifulSoup, html_text: str, base_url: str) -> List[Tuple[str, str]]:
+        """Extracts (title, url) pairs from <a> tags, onclick handlers, data-url attributes, and embedded JSON."""
+        candidates: List[Tuple[str, str]] = []
+        for a in soup.find_all("a", href=True):
+            text = " ".join(a.get_text(" ", strip=True).split())
+            if len(text) < 12:
+                parent_row = a.find_parent("tr")
+                if parent_row:
+                    text = " ".join(parent_row.get_text(" ", strip=True).split())
+            candidates.append((text, urljoin(base_url, a["href"])))
+
+        # Fallback for JS-driven / ASP.NET postback portals using onclick / data-href / data-url
+        for el in soup.find_all(attrs={"onclick": True}):
+            onclick = el.get("onclick") or ""
+            m = re.search(r"(?:window\.open|location\.href\s*=)\s*\(?\s*['\"]([^'\"]+)['\"]", onclick)
+            if m:
+                text = " ".join(el.get_text(" ", strip=True).split())
+                if len(text) >= 12:
+                    candidates.append((text, urljoin(base_url, m.group(1))))
+
+        for attr in ("data-href", "data-url", "data-link"):
+            for el in soup.find_all(attrs={attr: True}):
+                text = " ".join(el.get_text(" ", strip=True).split())
+                if len(text) >= 12:
+                    candidates.append((text, urljoin(base_url, el.get(attr))))
+
+        # Fallback for embedded JSON/Next.js/SPA payloads containing PDF links
+        for m in re.finditer(r'"title"\s*:\s*"([^"]{12,220})"[^}]{0,240}"(?:url|link|pdf|href)"\s*:\s*"([^"]+\.pdf[^"]*)"', html_text, re.IGNORECASE):
+            candidates.append((m.group(1), urljoin(base_url, m.group(2).replace("\\/", "/"))))
+
+        return candidates
+
     @classmethod
-    def fetch_portal_links(cls, source: Dict[str, str]) -> List[Dict[str, Any]]:
+    def fetch_portal_links_with_telemetry(cls, source: Dict[str, str]) -> Tuple[List[Dict[str, Any]], Dict[str, Any]]:
         discovered: List[Dict[str, Any]] = []
+        t0 = time.monotonic()
+        telemetry: Dict[str, Any] = {
+            "name": source["name"],
+            "organization": source["organization"],
+            "url": source["url"],
+            "last_status": None,
+            "latency_ms": 0,
+            "discovered_count": 0,
+            "last_error": None,
+        }
         try:
             resp = requests.get(source["url"], headers=cls.HEADERS, timeout=8)
+            telemetry["last_status"] = resp.status_code
             if not resp.ok:
                 logger.warning(f"Portal {source['name']} returned HTTP {resp.status_code}")
-                return discovered
+                telemetry["last_error"] = f"HTTP {resp.status_code}"
+                telemetry["latency_ms"] = int((time.monotonic() - t0) * 1000)
+                return discovered, telemetry
 
             soup = BeautifulSoup(resp.text, "html.parser")
             if source.get("parser") == "wbhealth_hr_table":
-                return cls._parse_wbhealth_hr_table(soup, source)
+                discovered = cls._parse_wbhealth_hr_table(soup, source)
+                telemetry["discovered_count"] = len(discovered)
+                telemetry["latency_ms"] = int((time.monotonic() - t0) * 1000)
+                return discovered, telemetry
 
             seen_titles = set()
             pdf_parsed_count = 0
-            for a in soup.find_all("a", href=True):
-                text = " ".join(a.get_text(" ", strip=True).split())
-                if len(text) < 12:
-                    parent_row = a.find_parent("tr")
-                    if parent_row:
-                        text = " ".join(parent_row.get_text(" ", strip=True).split())
+            for text, full_url in cls._extract_candidate_links(soup, resp.text, source["url"]):
                 if len(text) < 12 or len(text) > 260:
                     continue
                 text = re.sub(r"\s+Downlo(?:ad)?$", "", text, flags=re.IGNORECASE).strip()
@@ -502,7 +546,6 @@ class LiveGazetteScraper:
                     continue
                 seen_titles.add(text)
 
-                full_url = urljoin(source["url"], a["href"])
                 is_walkin = "walk-in" in low or "walk in" in low or "contract" in low
                 role_info = cls._infer_role_and_qual(text)
                 if role_info["qualification"] == "BDS":
@@ -562,7 +605,10 @@ class LiveGazetteScraper:
                             entry["qualification"] = parsed["qualification"]
                         if parsed.get("parsed_confident"):
                             entry["verification_status"] = "VERIFIED_PDF"
-                            entry["summary"] = f"Auto-parsed from official PDF ({parsed.get('memo_number') or source['name']}). Verify annexures before applying."
+                            cadre_note = ""
+                            if parsed.get("cadre_breakdown"):
+                                cadre_note = " Cadres: " + ", ".join(f"{c['cadre']} ({c['posts']})" for c in parsed["cadre_breakdown"][:4]) + "."
+                            entry["summary"] = f"Auto-parsed from official PDF ({parsed.get('memo_number') or source['name']}).{cadre_note} Verify annexures before applying."
                     except Exception as pdf_err:
                         logger.debug(f"PDF auto-parse skipped for {full_url}: {pdf_err}")
 
@@ -581,6 +627,14 @@ class LiveGazetteScraper:
                     break
         except Exception as e:
             logger.warning(f"Live scrape skipped for {source['name']}: {e}")
+            telemetry["last_error"] = str(e)[:250]
+        telemetry["discovered_count"] = len(discovered)
+        telemetry["latency_ms"] = int((time.monotonic() - t0) * 1000)
+        return discovered, telemetry
+
+    @classmethod
+    def fetch_portal_links(cls, source: Dict[str, str]) -> List[Dict[str, Any]]:
+        discovered, _ = cls.fetch_portal_links_with_telemetry(source)
         return discovered
 
     @classmethod
@@ -631,16 +685,59 @@ class LiveGazetteScraper:
         db.commit()
 
         all_discovered: List[Dict[str, Any]] = []
+        telemetry_batch: List[Dict[str, Any]] = []
         with ThreadPoolExecutor(max_workers=8) as executor:
-            futures = {executor.submit(cls.fetch_portal_links, src): src for src in PORTAL_SOURCES}
+            futures = {executor.submit(cls.fetch_portal_links_with_telemetry, src): src for src in PORTAL_SOURCES}
             for fut in as_completed(futures):
                 checked_portals += 1
                 src = futures[fut]
                 try:
-                    for item in fut.result():
+                    items, tel = fut.result()
+                    telemetry_batch.append(tel)
+                    for item in items:
                         all_discovered.append((src["url"], item))
                 except Exception as exc:
                     logger.warning(f"Concurrent fetch failed for {src['name']}: {exc}")
+                    telemetry_batch.append({
+                        "name": src["name"],
+                        "organization": src["organization"],
+                        "url": src["url"],
+                        "last_status": None,
+                        "latency_ms": 0,
+                        "discovered_count": 0,
+                        "last_error": str(exc)[:250],
+                    })
+
+        # Persist per-portal health telemetry
+        for tel in telemetry_batch:
+            try:
+                ph = db.query(PortalHealth).filter(PortalHealth.name == tel["name"]).first()
+                failed = bool(tel.get("last_error")) or (tel.get("last_status") is not None and tel["last_status"] >= 400)
+                if not ph:
+                    ph = PortalHealth(
+                        name=tel["name"],
+                        organization=tel["organization"],
+                        url=tel["url"],
+                        last_status=tel["last_status"],
+                        latency_ms=tel["latency_ms"],
+                        discovered_count=tel["discovered_count"],
+                        consecutive_failures=1 if failed else 0,
+                        last_error=tel["last_error"],
+                        last_checked_at=now,
+                    )
+                    db.add(ph)
+                else:
+                    ph.organization = tel["organization"]
+                    ph.url = tel["url"]
+                    ph.last_status = tel["last_status"]
+                    ph.latency_ms = tel["latency_ms"]
+                    ph.discovered_count = tel["discovered_count"]
+                    ph.consecutive_failures = (ph.consecutive_failures or 0) + 1 if failed else 0
+                    ph.last_error = tel["last_error"]
+                    ph.last_checked_at = now
+            except Exception as ph_err:
+                logger.debug(f"PortalHealth update warning for {tel['name']}: {ph_err}")
+        db.commit()
 
         for portal_root_url, item in all_discovered:
             existing = db.query(Vacancy).filter(

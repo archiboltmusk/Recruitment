@@ -6,30 +6,35 @@ import requests
 from datetime import datetime, timedelta
 from sqlalchemy.orm import Session
 from .models import Subscription, NotificationLog, Vacancy
+from .pdf_parser import GovtNotificationPDFParser
 
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "")
+APP_BASE_URL = os.getenv("APP_BASE_URL", "https://medalerts.onrender.com").rstrip("/")
 
 class Notifier:
     @staticmethod
     def format_telegram_message(vacancy: Vacancy) -> str:
         last_date_str = vacancy.last_date.strftime("%d-%b-%Y") if vacancy.last_date else "Not Specified"
         exam_str = vacancy.exam_date.strftime("%d-%b-%Y") if vacancy.exam_date else "To be announced"
+        esc = lambda s: html.escape(str(s or ""))
+        notif_url = esc(vacancy.notification_url or vacancy.apply_url or "#")
+        apply_url = esc(vacancy.apply_url or vacancy.notification_url or "#")
         
         msg = (
             f"🩺 <b>NEW MEDICAL OFFICER RECRUITMENT</b>\n\n"
-            f"📌 <b>Title:</b> {vacancy.title}\n"
-            f"🏥 <b>Organization:</b> {vacancy.organization}\n"
-            f"🏛️ <b>Category:</b> {vacancy.category} ({vacancy.state})\n"
-            f"🎯 <b>Status:</b> {vacancy.stage.replace('_', ' ').title()}\n"
-            f"👥 <b>Total Posts:</b> {vacancy.total_posts} Seats\n"
-            f"🎓 <b>Qualification:</b> {vacancy.qualification}\n"
-            f"💰 <b>Pay Scale:</b> {vacancy.pay_scale or 'Level 10 Pay Matrix'}\n"
-            f"📜 <b>Service Bond:</b> {vacancy.bond_penalty_amount or 'No Bond'}\n"
-            f"📝 <b>Selection Mode:</b> {vacancy.selection_mode or 'Written Exam / Interview'}\n"
+            f"📌 <b>Title:</b> {esc(vacancy.title)}\n"
+            f"🏥 <b>Organization:</b> {esc(vacancy.organization)}\n"
+            f"🏛️ <b>Category:</b> {esc(vacancy.category)} ({esc(vacancy.state)})\n"
+            f"🎯 <b>Status:</b> {esc((vacancy.stage or '').replace('_', ' ').title())}\n"
+            f"👥 <b>Total Posts:</b> {vacancy.total_posts or 0} Seats\n"
+            f"🎓 <b>Qualification:</b> {esc(vacancy.qualification)}\n"
+            f"💰 <b>Pay Scale:</b> {esc(vacancy.pay_scale or 'Level 10 Pay Matrix')}\n"
+            f"📜 <b>Service Bond:</b> {esc(vacancy.bond_penalty_amount or 'No Bond')}\n"
+            f"📝 <b>Selection Mode:</b> {esc(vacancy.selection_mode or 'Written Exam / Interview')}\n"
             f"📅 <b>Application Deadline:</b> {last_date_str}\n"
             f"🗓️ <b>Exam / Interview:</b> {exam_str}\n\n"
-            f"🔗 <a href='{vacancy.notification_url or vacancy.apply_url or '#' }'>Official Gazette PDF</a> | "
-            f"<a href='{vacancy.apply_url or vacancy.notification_url or '#' }'>Apply Portal</a>"
+            f"🔗 <a href='{notif_url}'>Official Gazette PDF</a> | "
+            f"<a href='{apply_url}'>Apply Portal</a>"
         )
         return msg
 
@@ -77,45 +82,50 @@ class Notifier:
                 details = "Simulated delivery (Set TELEGRAM_BOT_TOKEN to enable real Telegram dispatches)"
 
         elif sub.channel == "webhook":
-            try:
-                res = requests.post(
-                    sub.target,
-                    json={
-                        "event": "NEW_VACANCY",
-                        "vacancy": {
-                            "id": vacancy.id,
-                            "title": vacancy.title,
-                            "organization": vacancy.organization,
-                            "qualification": vacancy.qualification,
-                            "total_posts": vacancy.total_posts,
-                            "stage": vacancy.stage,
-                            "bond": vacancy.bond_penalty_amount,
-                            "last_date": vacancy.last_date.isoformat() if vacancy.last_date else None,
-                            "apply_url": vacancy.apply_url
-                        }
-                    },
-                    timeout=5
-                )
-                if not res.ok:
-                    status = "FAILED"
-                    details = f"Webhook HTTP {res.status_code}"
-                else:
-                    details = f"Webhook HTTP {res.status_code}"
-            except Exception as e:
+            if not GovtNotificationPDFParser.is_safe_url(sub.target):
                 status = "FAILED"
-                details = str(e)
+                details = "Blocked unsafe or private webhook URL"
+            else:
+                try:
+                    res = requests.post(
+                        sub.target,
+                        json={
+                            "event": "NEW_VACANCY",
+                            "vacancy": {
+                                "id": vacancy.id,
+                                "title": vacancy.title,
+                                "organization": vacancy.organization,
+                                "qualification": vacancy.qualification,
+                                "total_posts": vacancy.total_posts,
+                                "stage": vacancy.stage,
+                                "bond": vacancy.bond_penalty_amount,
+                                "last_date": vacancy.last_date.isoformat() if vacancy.last_date else None,
+                                "apply_url": vacancy.apply_url
+                            }
+                        },
+                        timeout=5
+                    )
+                    if not res.ok:
+                        status = "FAILED"
+                        details = f"Webhook HTTP {res.status_code}"
+                    else:
+                        details = f"Webhook HTTP {res.status_code}"
+                except Exception as e:
+                    status = "FAILED"
+                    details = str(e)
 
         elif sub.channel == "email":
+            esc = lambda s: html.escape(str(s or ""))
             ok, info = cls.send_email_alert(
                 to_email=sub.target,
                 subject=f"MedAlerts: {vacancy.title} ({vacancy.total_posts} Seats)",
                 html_body=f"""
-                <h3>{vacancy.title}</h3>
-                <p><strong>Organization:</strong> {vacancy.organization} ({vacancy.state})</p>
-                <p><strong>Qualification:</strong> {vacancy.qualification} | <strong>Seats:</strong> {vacancy.total_posts}</p>
-                <p><strong>Bond:</strong> {vacancy.bond_penalty_amount or 'No Bond'}</p>
+                <h3>{esc(vacancy.title)}</h3>
+                <p><strong>Organization:</strong> {esc(vacancy.organization)} ({esc(vacancy.state)})</p>
+                <p><strong>Qualification:</strong> {esc(vacancy.qualification)} | <strong>Seats:</strong> {vacancy.total_posts}</p>
+                <p><strong>Bond:</strong> {esc(vacancy.bond_penalty_amount or 'No Bond')}</p>
                 <p><strong>Deadline:</strong> {vacancy.last_date.strftime('%d-%b-%Y') if vacancy.last_date else 'Check Notice'}</p>
-                <p><a href="{vacancy.apply_url or 'https://medalerts.onrender.com'}">Apply on Official Portal</a></p>
+                <p><a href="{esc(vacancy.apply_url or APP_BASE_URL)}">Apply on Official Portal</a></p>
                 """
             )
             if not ok:
@@ -161,13 +171,14 @@ class Notifier:
 
         sent = 0
         due_str = vacancy.last_date.strftime("%d %b %Y") if vacancy.last_date else "Soon"
+        esc = lambda s: html.escape(str(s or ""))
         msg = (
             f"⏰ <b>CLOSING IN 48 HOURS</b>\n\n"
-            f"📌 <b>{vacancy.title}</b>\n"
-            f"🏢 {vacancy.organization} ({vacancy.state})\n"
-            f"👥 <b>Seats:</b> {vacancy.total_posts} | 🎓 <b>Qual:</b> {vacancy.qualification}\n"
+            f"📌 <b>{esc(vacancy.title)}</b>\n"
+            f"🏢 {esc(vacancy.organization)} ({esc(vacancy.state)})\n"
+            f"👥 <b>Seats:</b> {vacancy.total_posts} | 🎓 <b>Qual:</b> {esc(vacancy.qualification)}\n"
             f"📅 <b>Deadline:</b> {due_str}\n\n"
-            f"🔗 <a href='{vacancy.apply_url or 'https://medalerts.onrender.com'}'>Apply Before Portal Closes</a>"
+            f"🔗 <a href='{esc(vacancy.apply_url or APP_BASE_URL)}'>Apply Before Portal Closes</a>"
         )
 
         for sub in subscriptions:
@@ -277,7 +288,7 @@ class Notifier:
             for v in walkins[:4]:
                 lines.append(f"• <b>{html.escape(v.title or '')}</b> ({html.escape(v.state or '')}) — {v.total_posts} seats")
             lines.append("")
-        lines.append("🔗 <a href='https://medalerts.onrender.com'>Open MedAlerts Dashboard</a> | <a href='https://medalerts.onrender.com/onboarding'>Check Eligibility</a>")
+        lines.append(f"🔗 <a href='{APP_BASE_URL}'>Open MedAlerts Dashboard</a> | <a href='{APP_BASE_URL}/onboarding'>Check Eligibility</a>")
 
         digest_text = "\n".join(lines)
         targets = [target_channel] if target_channel else [

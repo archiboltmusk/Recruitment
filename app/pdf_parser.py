@@ -145,6 +145,7 @@ class GovtNotificationPDFParser:
             "total_posts": None,
             "min_age": 21,
             "max_age": 35,
+            "age_cutoff_date": None,
             "experience_years_required": 0,
             "pay_scale": None,
             "last_date": None,
@@ -154,6 +155,7 @@ class GovtNotificationPDFParser:
             "bond_penalty_amount": "No Bond",
             "selection_mode": "Written Exam + Interview",
             "category_seats": {},
+            "cadre_breakdown": [],
             "application_fee": "As per notification",
             "key_clauses": [],
             "parsed_confident": False,
@@ -232,6 +234,16 @@ class GovtNotificationPDFParser:
             extracted["max_age"] = int(range_age.group(2))
         elif upper_age:
             extracted["max_age"] = int(upper_age.group(1))
+
+        cutoff_m = re.search(
+            r"(?:age\s+(?:limit|as\s+on|reckoned\s+as\s+on)|as\s+on)\s*[:=-]?\s*" + DATE_TOKEN_RE.pattern,
+            text,
+            re.IGNORECASE,
+        )
+        if cutoff_m:
+            dt = _parse_indian_date(cutoff_m.group(1))
+            if dt:
+                extracted["age_cutoff_date"] = dt.strftime("%Y-%m-%d")
 
         # 4. Pay Scale / Consolidated Remuneration ("Rs. 60,000/-", "60000.00 per month", "Level-16")
         pay_match = re.search(
@@ -328,6 +340,23 @@ class GovtNotificationPDFParser:
             yrs = int(exp_m.group(1))
             if 0 < yrs <= 25:
                 extracted["experience_years_required"] = yrs
+
+        # 11. Multi-Cadre Seat Breakdown (splits GDMO vs Specialist vs Junior Resident vs AYUSH)
+        cadre_patterns = [
+            ("GDMO / Medical Officer", "MBBS", r"(?:General\s+Duty\s+Medical\s+Officer|GDMO|Medical\s+Officer\s*(?:\(MBBS\))?)\s*[-–:=]+\s*(\d+)"),
+            ("Senior Resident / Specialist", "MD/MS", r"(?:Senior\s+Resident|Sr\.?\s*Resident|Specialist(?:\s+Medical\s+Officer)?)\s*[-–:=]+\s*(\d+)"),
+            ("Junior Resident", "MBBS", r"(?:Junior\s+Resident|Jr\.?\s*Resident|House\s*Staff)\s*[-–:=]+\s*(\d+)"),
+            ("AYUSH Medical Officer", "AYUSH", r"(?:AYUSH\s*(?:Medical\s+Officer|MO)|BAMS|BHMS)\s*[-–:=]+\s*(\d+)"),
+        ]
+        cadres: List[Dict[str, Any]] = []
+        for label, c_qual, pat in cadre_patterns:
+            cm = re.search(pat, text, re.IGNORECASE)
+            if cm:
+                cnt = int(cm.group(1))
+                if 0 < cnt <= 2000:
+                    cadres.append({"cadre": label, "qualification": c_qual, "posts": cnt})
+        if cadres:
+            extracted["cadre_breakdown"] = cadres
 
         extracted["parsed_confident"] = signals >= 2
         return extracted

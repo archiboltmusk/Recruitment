@@ -129,6 +129,7 @@
                 <div class="flex flex-wrap sm:flex-nowrap items-center gap-2">
                     <select id="qualificationFilter" onchange="applyFilters()" class="px-3.5 py-2.5 bg-[#F5F5F7] rounded-xl text-xs font-medium text-[#1D1D1F] outline-none">
                         <option value="MBBS" selected>MBBS / General Practice</option>
+                        <option value="MBBS_ONLY">MBBS Only (Exclude PG)</option>
                         <option value="MD/MS">PG / Super-Specialty (MD, MS, DNB, Diploma)</option>
                         <option value="AYUSH">AYUSH (BAMS, BHMS, BUMS, BSMS)</option>
                         <option value="">All 3 Groups</option>
@@ -180,6 +181,7 @@
             <!-- 1-Tap Quick Filter Pills -->
             <div class="flex items-center gap-2 overflow-x-auto pb-1">
                 <button onclick="setQuickFilter('ALL', this)" class="quick-pill px-4 py-1.5 rounded-full text-xs font-semibold bg-[#1D1D1F] text-white shrink-0 transition">All</button>
+                <button onclick="setQuickFilter('ELIGIBLE_ME', this)" class="quick-pill px-4 py-1.5 rounded-full text-xs font-semibold bg-emerald-50 border border-emerald-200 text-[#0F766E] hover:bg-emerald-100 shrink-0 transition"><i class="fa-solid fa-user-check mr-1"></i>Eligible for Me</button>
                 <button onclick="setQuickFilter('Walk-in', this)" class="quick-pill px-4 py-1.5 rounded-full text-xs font-semibold bg-white border border-black/10 text-[#1D1D1F] hover:bg-gray-50 shrink-0 transition">Walk-in (No Exam)</button>
                 <button onclick="setQuickFilter('West Bengal', this)" class="quick-pill px-4 py-1.5 rounded-full text-xs font-semibold bg-white border border-black/10 text-[#1D1D1F] hover:bg-gray-50 shrink-0 transition">West Bengal</button>
                 <button onclick="setQuickFilter('Delhi', this)" class="quick-pill px-4 py-1.5 rounded-full text-xs font-semibold bg-white border border-black/10 text-[#1D1D1F] hover:bg-gray-50 shrink-0 transition">Delhi NCR</button>
@@ -344,12 +346,19 @@
         <div class="bg-white rounded-3xl max-w-2xl w-full p-6 shadow-2xl space-y-4 max-h-[85vh] overflow-y-auto">
             <div class="flex items-center justify-between">
                 <div>
-                    <h3 class="text-lg font-bold text-[#1D1D1F]">Saved Applications</h3>
-                    <p class="text-xs text-[#6E6E73]">Saved privately in your browser.</p>
+                    <h3 class="text-lg font-bold text-[#1D1D1F]">Saved Applications &amp; Backup</h3>
+                    <p class="text-xs text-[#6E6E73]">Saved privately in your browser. Export or restore across devices.</p>
                 </div>
                 <button onclick="closeModal('trackerModal')" class="w-8 h-8 rounded-full bg-[#F5F5F7] text-[#6E6E73] hover:text-black flex items-center justify-center">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
+            </div>
+            <div class="flex flex-wrap items-center gap-2 pb-2 border-b border-black/[0.06]">
+                <button onclick="exportBackupJson()" class="pill-btn px-3.5 py-1.5 rounded-full bg-[#F5F5F7] hover:bg-gray-200 text-xs font-semibold text-[#1D1D1F]"><i class="fa-solid fa-download mr-1.5 text-[#0F766E]"></i>Export JSON Backup</button>
+                <label class="pill-btn px-3.5 py-1.5 rounded-full bg-[#F5F5F7] hover:bg-gray-200 text-xs font-semibold text-[#1D1D1F] cursor-pointer">
+                    <i class="fa-solid fa-upload mr-1.5 text-[#0F766E]"></i>Import JSON
+                    <input type="file" accept="application/json,.json" onchange="importBackupJson(event)" class="hidden">
+                </label>
             </div>
             <div id="trackerListContainer" class="space-y-3 text-xs"></div>
         </div>
@@ -477,7 +486,8 @@
                 );
                 const matchBond = !bond || (bond === 'no_bond' && v.bond_years === 0);
                 const matchUR = activeQuickFilter !== 'UR_ONLY' || !(v.category_seats && v.category_seats.UR === 0);
-                return matchSearch && matchQual && matchRole && matchCat && matchBond && matchUR;
+                const matchEligible = activeQuickFilter !== 'ELIGIBLE_ME' || (eligibleIdSet && eligibleIdSet.has(String(v.id)));
+                return matchSearch && matchQual && matchRole && matchCat && matchBond && matchUR && matchEligible;
             });
 
             filtered.sort((a, b) => {
@@ -498,6 +508,10 @@
 
         function escapeHtml(str) {
             return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+        }
+        function safeUrl(url) {
+            const u = String(url || '').trim();
+            return /^https?:\/\//i.test(u) ? escapeHtml(u) : '#';
         }
 
         function renderCards(list) {
@@ -567,10 +581,10 @@
                             <button onclick="shareVacancyToWhatsApp('${v.id}')" title="Share on WhatsApp" class="w-8 h-8 rounded-full bg-[#F5F5F7] text-[#0F766E] hover:bg-emerald-50 flex items-center justify-center text-xs transition">
                                 <i class="fa-brands fa-whatsapp"></i>
                             </button>
-                            <a href="${v.notification_url || '#'}" target="_blank" class="px-3 py-1.5 rounded-full bg-[#F5F5F7] hover:bg-gray-200 text-[#1D1D1F] text-xs font-semibold transition">
+                            <a href="${safeUrl(v.notification_url)}" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 rounded-full bg-[#F5F5F7] hover:bg-gray-200 text-[#1D1D1F] text-xs font-semibold transition">
                                 PDF
                             </a>
-                            <a href="${v.apply_url || '#'}" target="_blank" class="pill-btn px-4 py-1.5 rounded-full bg-[#1D1D1F] hover:bg-black text-white text-xs font-semibold">
+                            <a href="${safeUrl(v.apply_url)}" target="_blank" rel="noopener noreferrer" class="pill-btn px-4 py-1.5 rounded-full bg-[#1D1D1F] hover:bg-black text-white text-xs font-semibold">
                                 Apply
                             </a>
                         </div>
@@ -618,7 +632,17 @@
             const icon = document.getElementById('refreshIcon');
             icon.classList.add('animate-spin');
             try {
-                await fetch('/api/sync', { method: 'POST' });
+                const res = await fetch('/api/sync', { method: 'POST' });
+                const data = await res.json();
+                if (data.job_id && data.status === 'RUNNING') {
+                    showToast('Background sync started...');
+                    for (let i = 0; i < 15; i++) {
+                        await new Promise(r => setTimeout(r, 2000));
+                        const stRes = await fetch(`/api/sync/status?job_id=${encodeURIComponent(data.job_id)}`);
+                        const st = await stRes.json();
+                        if (st.status === 'COMPLETED' || st.status === 'FAILED') break;
+                    }
+                }
                 await init();
                 showToast('Feeds refreshed.');
             } catch (err) { console.error(err); }
@@ -626,8 +650,29 @@
         }
 
         let activeQuickFilter = 'ALL';
+        let eligibleIdSet = null;
 
-        function setQuickFilter(val, btnEl) {
+        async function setQuickFilter(val, btnEl) {
+            if (val === 'ELIGIBLE_ME') {
+                let prof = null;
+                try { prof = JSON.parse(localStorage.getItem('med_doctor_profile') || 'null'); } catch (e) {}
+                if (!prof || !prof.age || !prof.qualification) {
+                    showToast('Save your Doctor Profile on Eligibility page first.');
+                    setTimeout(() => { window.location.href = '/onboarding'; }, 900);
+                    return;
+                }
+                try {
+                    const res = await fetch('/api/check-eligibility', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(prof)
+                    });
+                    if (res.ok) {
+                        const data = await res.json();
+                        eligibleIdSet = new Set((data.matches || []).filter(m => m.status !== 'INELIGIBLE').map(m => String(m.vacancy_id)));
+                    }
+                } catch (e) {}
+            }
             activeQuickFilter = val;
             document.querySelectorAll('.quick-pill').forEach(b => {
                 b.className = 'quick-pill px-4 py-1.5 rounded-full text-xs font-semibold bg-white border border-black/10 text-[#1D1D1F] hover:bg-gray-50 shrink-0 transition';
@@ -642,7 +687,7 @@
                 document.getElementById('bondFilter').value = 'no_bond';
             } else if (val === 'Delhi') {
                 document.getElementById('searchInput').value = 'Delhi';
-            } else if (val !== 'ALL' && val !== 'UR_ONLY') {
+            } else if (val !== 'ALL' && val !== 'UR_ONLY' && val !== 'ELIGIBLE_ME') {
                 document.getElementById('categoryFilter').value = val;
             }
             applyFilters();
@@ -871,10 +916,10 @@
                     </button>
                 </div>
                 <div class="flex items-center gap-2">
-                    <a href="${v.notification_url || '#'}" target="_blank" class="pill-btn px-4 py-2 rounded-full bg-white border border-black/10 hover:bg-gray-50 text-[#1D1D1F] text-xs font-semibold">
+                    <a href="${safeUrl(v.notification_url)}" target="_blank" rel="noopener noreferrer" class="pill-btn px-4 py-2 rounded-full bg-white border border-black/10 hover:bg-gray-50 text-[#1D1D1F] text-xs font-semibold">
                         Official PDF
                     </a>
-                    <a href="${v.apply_url || '#'}" target="_blank" class="pill-btn px-5 py-2 rounded-full bg-[#1D1D1F] hover:bg-black text-white text-xs font-semibold">
+                    <a href="${safeUrl(v.apply_url)}" target="_blank" rel="noopener noreferrer" class="pill-btn px-5 py-2 rounded-full bg-[#1D1D1F] hover:bg-black text-white text-xs font-semibold">
                         Apply Now
                     </a>
                 </div>
@@ -1004,6 +1049,44 @@
             }
             renderSourcesList();
         }
+        function exportBackupJson() {
+            const keys = ['med_doctor_profile', 'med_app_tracker', 'med_walkin_kit', 'med_mistake_notebook'];
+            const payload = { exported_at: new Date().toISOString(), app: 'MedAlerts', data: {} };
+            keys.forEach(k => {
+                try { const v = localStorage.getItem(k); if (v !== null) payload.data[k] = JSON.parse(v); } catch (e) {}
+            });
+            const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `medalerts-backup-${new Date().toISOString().slice(0, 10)}.json`;
+            a.click();
+            URL.revokeObjectURL(a.href);
+            showToast('Backup JSON exported.');
+        }
+
+        function importBackupJson(ev) {
+            const file = ev.target.files && ev.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = () => {
+                try {
+                    const parsed = JSON.parse(reader.result);
+                    const data = parsed.data || parsed;
+                    ['med_doctor_profile', 'med_app_tracker', 'med_walkin_kit', 'med_mistake_notebook'].forEach(k => {
+                        if (data[k] !== undefined) localStorage.setItem(k, JSON.stringify(data[k]));
+                    });
+                    loadKitState();
+                    updateTrackerBadge();
+                    openTrackerModal();
+                    applyFilters();
+                    showToast('Backup restored.');
+                } catch (e) {
+                    alert('Invalid MedAlerts JSON backup file.');
+                }
+            };
+            reader.readAsText(file);
+        }
+
         function renderSourcesList() {
             const q = (document.getElementById('sourcesSearchInput').value || '').toLowerCase();
             const container = document.getElementById('sourcesListContainer');
@@ -1012,15 +1095,24 @@
                 container.innerHTML = '<p class="text-center text-[#86868B] py-8">No matching recruitment portals.</p>';
                 return;
             }
-            container.innerHTML = items.map(s => `
-                <a href="${escapeHtml(s.url)}" target="_blank" class="block p-3.5 bg-[#F5F5F7] hover:bg-gray-200/70 rounded-2xl transition">
+            container.innerHTML = items.map(s => {
+                const healthTag = s.last_error || (s.last_status && s.last_status >= 400)
+                    ? `<span class="px-2 py-0.5 rounded-full bg-rose-50 text-[#DC2626] text-[10px] font-semibold">Err${s.last_status ? ' ' + s.last_status : ''}</span>`
+                    : (s.last_status
+                        ? `<span class="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-[10px] font-semibold">OK • ${s.latency_ms || 0}ms • ${s.discovered_count || 0}</span>`
+                        : `<span class="px-2 py-0.5 rounded-full bg-white text-[#86868B] text-[10px] font-semibold">Pending</span>`);
+                return `
+                <a href="${safeUrl(s.url)}" target="_blank" rel="noopener noreferrer" class="block p-3.5 bg-[#F5F5F7] hover:bg-gray-200/70 rounded-2xl transition">
                     <div class="flex items-center justify-between gap-2">
                         <span class="font-bold text-[#1D1D1F]">${escapeHtml(s.organization)}</span>
-                        <span class="px-2.5 py-0.5 rounded-full bg-white text-[10px] font-semibold text-[#0F766E] shrink-0">${escapeHtml(s.state)}</span>
+                        <div class="flex items-center gap-1.5 shrink-0">
+                            ${healthTag}
+                            <span class="px-2.5 py-0.5 rounded-full bg-white text-[10px] font-semibold text-[#0F766E]">${escapeHtml(s.state)}</span>
+                        </div>
                     </div>
                     <p class="text-[11px] text-[#6E6E73] mt-1">${escapeHtml(s.category)} • ${escapeHtml(s.pay_scale)}</p>
-                </a>
-            `).join('');
+                </a>`;
+            }).join('');
         }
 
         document.getElementById('searchInput').addEventListener('input', applyFilters);

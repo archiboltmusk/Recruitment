@@ -6,15 +6,15 @@ import threading
 import requests
 from datetime import datetime, timedelta
 from typing import Optional, List, Dict, Any
-from fastapi import FastAPI, Depends, Query, HTTPException, status, Request, Header
+from fastapi import FastAPI, Depends, Query, HTTPException, status, Request, Header, BackgroundTasks
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse, Response
+from fastapi.responses import FileResponse, Response, HTMLResponse
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 from sqlalchemy import func, or_
 
-from .database import engine, Base, get_db
-from .models import Vacancy, Subscription, NotificationLog, ExamAttempt
+from .database import engine, Base, get_db, SessionLocal
+from .models import Vacancy, Subscription, NotificationLog, ExamAttempt, PortalHealth, SyncJob, RateLimitBucket, SchemaMigration
 from .collector import VacancyCollector
 from .scraper import LiveGazetteScraper, PORTAL_SOURCES
 from .notifier import Notifier
@@ -22,15 +22,46 @@ from .scheduler import start_scheduler, shutdown_scheduler, scheduler
 from .pdf_parser import GovtNotificationPDFParser
 from .exam_data import EXAMS_CATALOG, EXAM_QUESTIONS
 
-# Thread-safe in-memory rate limiter & security helpers
+# Thread-safe rate limiter (DB-backed with in-memory fallback) & security helpers
 _RATE_LOCK = threading.Lock()
 _RATE_BUCKETS: Dict[str, List[float]] = {}
+APP_BASE_URL = os.getenv("APP_BASE_URL", "https://medalerts.onrender.com").rstrip("/")
 
 def check_rate_limit(request: Request, bucket: str, max_calls: int = 5, window_sec: int = 300):
     client_ip = request.headers.get("x-forwarded-for", request.client.host if request.client else "unknown").split(",")[0].strip()
     key = f"{bucket}:{client_ip}"
     now = time.time()
+    try:
+        db = SessionLocal()
+        try:
+            row = db.query(RateLimitBucket).filter(RateLimitBucket.key == key).first()
+            existing_ts = json.loads(row.timestamps_json) if row and row.timestamps_json else []
+            timestamps = [t for t in existing_ts if now - t < window_sec]
+            if len(timestamps) >= max_calls:
+                raise HTTPException(
+                    status_code=429,
+                    detail=f"Rate limit exceeded for {bucket}. Please wait a few minutes and try again."
+                )
+            timestamps.append(now)
+            if not row:
+                db.add(RateLimitBucket(key=key, timestamps_json=json.dumps(timestamps), updated_at=datetime.utcnow()))
+            else:
+                row.timestamps_json = json.dumps(timestamps)
+                row.updated_at = datetime.utcnow()
+            db.commit()
+            return
+        finally:
+            db.close()
+    except HTTPException:
+        raise
+    except Exception:
+        pass
+
     with _RATE_LOCK:
+        if len(_RATE_BUCKETS) > 1000:
+            stale = [k for k, ts in _RATE_BUCKETS.items() if not ts or now - ts[-1] > 86400]
+            for k in stale:
+                del _RATE_BUCKETS[k]
         timestamps = [t for t in _RATE_BUCKETS.get(key, []) if now - t < window_sec]
         if len(timestamps) >= max_calls:
             raise HTTPException(
@@ -78,6 +109,16 @@ def ensure_schema():
             if col_name not in existing_cols:
                 with engine.begin() as conn:
                     conn.execute(text(col_sql))
+    db = SessionLocal()
+    try:
+        for ver in ("001_vacancy_cols", "002_telemetry_ratelimit_syncjob"):
+            if not db.query(SchemaMigration).filter(SchemaMigration.version == ver).first():
+                db.add(SchemaMigration(version=ver))
+        db.commit()
+    except Exception:
+        db.rollback()
+    finally:
+        db.close()
 
 try:
     ensure_schema()
@@ -136,6 +177,9 @@ class DoctorProfile(BaseModel):
     category: str = "UR"
     home_state: str = "All India"
     registered_with_smc: bool = True
+    is_pwbd: bool = False
+    attempt_count: int = 0
+    dob: Optional[str] = None
 
 class PDFAnalyzeURLRequest(BaseModel):
     url: str
@@ -244,6 +288,65 @@ def serve_toolkit():
     if os.path.exists(toolkit_file):
         return FileResponse(toolkit_file)
     return {"message": "Post-MBBS Doctor Survival & Career Toolkit"}
+
+@app.get("/admin")
+@app.head("/admin")
+def serve_admin():
+    admin_file = os.path.join(static_dir, "admin.html")
+    if os.path.exists(admin_file):
+        return FileResponse(admin_file)
+    return HTMLResponse("""<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Admin Moderation Console — MedAlerts</title><script src="https://cdn.tailwindcss.com"></script></head>
+<body class="bg-[#F5F5F7] text-[#1D1D1F] min-h-screen">
+<header class="sticky top-0 bg-[#F5F5F7]/90 backdrop-blur border-b border-black/10 px-6 h-16 flex items-center justify-between">
+  <a href="/" class="font-bold text-base">MedAlerts Admin</a>
+  <div class="flex items-center gap-2">
+    <input type="password" id="adminKeyInput" placeholder="X-Admin-Key" class="px-3.5 py-1.5 bg-white border border-black/10 rounded-full text-xs">
+    <button onclick="saveAndLoad()" class="px-4 py-1.5 rounded-full bg-[#1D1D1F] text-white text-xs font-semibold">Unlock</button>
+    <a href="/" class="px-3.5 py-1.5 rounded-full bg-white border border-black/10 text-xs font-semibold">Home</a>
+  </div>
+</header>
+<main class="max-w-5xl mx-auto p-6 space-y-6">
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div class="bg-white rounded-2xl p-5 space-y-2 border border-black/5">
+      <p class="text-xs font-bold uppercase text-[#6E6E73]">Background Sync</p>
+      <p id="syncStatusText" class="text-sm font-semibold">Idle</p>
+      <button onclick="triggerSync()" class="px-4 py-2 rounded-full bg-[#0F766E] text-white text-xs font-semibold">Run Live Sync</button>
+    </div>
+    <div class="bg-white rounded-2xl p-5 space-y-2 border border-black/5">
+      <p class="text-xs font-bold uppercase text-[#6E6E73]">Telegram Digest</p>
+      <p id="digestResult" class="text-xs text-[#6E6E73]">Trigger manual digest</p>
+      <button onclick="triggerDigest()" class="px-4 py-2 rounded-full bg-[#1D1D1F] text-white text-xs font-semibold">Broadcast Digest</button>
+    </div>
+    <div class="bg-white rounded-2xl p-5 space-y-2 border border-black/5">
+      <p class="text-xs font-bold uppercase text-[#6E6E73]">Portal Health</p>
+      <p id="portalHealthSummary" class="text-sm font-semibold">-</p>
+      <button onclick="loadSources()" class="px-4 py-2 rounded-full bg-[#F5F5F7] text-xs font-semibold">Refresh Telemetry</button>
+    </div>
+  </div>
+  <section class="bg-white rounded-2xl p-6 space-y-3 border border-black/5">
+    <h2 class="font-bold">Flagged Circulars</h2>
+    <div id="flaggedList" class="space-y-2 text-xs text-[#6E6E73]">Unlock with X-Admin-Key to load.</div>
+  </section>
+  <section class="bg-white rounded-2xl p-6 space-y-3 border border-black/5">
+    <h2 class="font-bold">Recent Notification Logs</h2>
+    <div id="logsList" class="space-y-2 text-xs text-[#6E6E73]">Unlock with X-Admin-Key to load.</div>
+  </section>
+</main>
+<script>
+function getKey(){return sessionStorage.getItem('med_admin_key')||'';}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function saveAndLoad(){const v=document.getElementById('adminKeyInput').value.trim();if(v)sessionStorage.setItem('med_admin_key',v);loadFlagged();loadLogs();loadSources();loadSyncStatus();}
+async function loadSyncStatus(){try{const d=await (await fetch('/api/sync/status')).json();document.getElementById('syncStatusText').textContent=`${d.status} • Portals: ${d.portals_checked||0} • Live Added: ${d.live_added||0}`;}catch(e){}}
+async function triggerSync(){const d=await (await fetch('/api/sync',{method:'POST'})).json();document.getElementById('syncStatusText').textContent=`${d.status||'STARTED'} (${d.job_id||''})`;setTimeout(loadSyncStatus,3000);}
+async function loadSources(){try{const d=await (await fetch('/api/sources')).json();document.getElementById('portalHealthSummary').textContent=`${d.healthy_count||0} / ${d.total||0} Portals Healthy`;}catch(e){}}
+async function loadFlagged(){const k=getKey();if(!k)return;const r=await fetch('/api/vacancies/flagged',{headers:{'X-Admin-Key':k}});const b=document.getElementById('flaggedList');if(!r.ok){b.textContent='Auth error ('+r.status+')';return;}const rows=await r.json();b.innerHTML=rows.length?rows.map(x=>`<div class='p-3 bg-[#F5F5F7] rounded-xl flex justify-between items-center'><div><b>${esc(x.title)}</b><p>${esc(x.organization)} • Flags: ${x.flag_count}</p></div>${x.is_active?`<button onclick="deactivate('${esc(x.id)}')" class='px-3 py-1 rounded-full bg-rose-600 text-white font-semibold'>Deactivate</button>`:'Closed'}</div>`).join(''):'No flagged circulars.';}
+async function deactivate(id){const r=await fetch(`/api/vacancies/${id}/deactivate`,{method:'POST',headers:{'X-Admin-Key':getKey()}});if(r.ok)loadFlagged();}
+async function loadLogs(){const k=getKey();if(!k)return;const r=await fetch('/api/notifications/recent?limit=20',{headers:{'X-Admin-Key':k}});const b=document.getElementById('logsList');if(!r.ok){b.textContent='Auth error ('+r.status+')';return;}const rows=await r.json();b.innerHTML=rows.length?rows.map(l=>`<div class='p-3 bg-[#F5F5F7] rounded-xl flex justify-between'><span><b>${esc(l.channel)}</b> → ${esc(l.target)} • ${esc(l.status)}</span><span>${esc(l.sent_at)}</span></div>`).join(''):'No logs.';}
+async function triggerDigest(){const r=await fetch('/api/telegram/broadcast-digest?force=true',{method:'POST',headers:{'X-Admin-Key':getKey()}});document.getElementById('digestResult').textContent=await r.text();}
+if(getKey()){document.getElementById('adminKeyInput').value=getKey();saveAndLoad();}else{loadSources();loadSyncStatus();}
+</script></body></html>""")
 
 @app.get("/api/health/db")
 def health_check_db():
@@ -586,20 +689,29 @@ def get_stats(db: Session = Depends(get_db)):
     }
 
 @app.get("/api/sources")
-def list_monitored_sources():
+def list_monitored_sources(db: Session = Depends(get_db)):
+    health_map = {h.name: h for h in db.query(PortalHealth).all()}
+    sources_out = []
+    for s in PORTAL_SOURCES:
+        h = health_map.get(s["name"])
+        sources_out.append({
+            "name": s["name"],
+            "organization": s["organization"],
+            "url": s["url"],
+            "category": s["category"],
+            "state": s["state"],
+            "pay_scale": s["pay_scale"],
+            "last_status": h.last_status if h else None,
+            "latency_ms": h.latency_ms if h else None,
+            "discovered_count": h.discovered_count if h else 0,
+            "consecutive_failures": h.consecutive_failures if h else 0,
+            "last_error": h.last_error if h else None,
+            "last_checked_at": h.last_checked_at.isoformat() if h and h.last_checked_at else None,
+        })
     return {
         "total": len(PORTAL_SOURCES),
-        "sources": [
-            {
-                "name": s["name"],
-                "organization": s["organization"],
-                "url": s["url"],
-                "category": s["category"],
-                "state": s["state"],
-                "pay_scale": s["pay_scale"],
-            }
-            for s in PORTAL_SOURCES
-        ]
+        "healthy_count": sum(1 for x in sources_out if x["last_status"] and x["last_status"] < 400 and not x["last_error"]),
+        "sources": sources_out,
     }
 
 @app.get("/api/vacancies")
@@ -611,6 +723,8 @@ def list_vacancies(
     stage: Optional[str] = None,
     bond: Optional[str] = None,
     active_only: bool = True,
+    limit: int = Query(default=200, ge=1, le=500),
+    offset: int = Query(default=0, ge=0),
     db: Session = Depends(get_db)
 ):
     query = db.query(Vacancy)
@@ -649,7 +763,7 @@ def list_vacancies(
     if bond == "NO_BOND":
         query = query.filter(Vacancy.bond_years == 0)
 
-    vacancies = query.order_by(Vacancy.last_date.asc()).all()
+    vacancies = query.order_by(Vacancy.last_date.asc()).offset(offset).limit(limit).all()
 
     results = []
     now = datetime.utcnow()
@@ -723,11 +837,25 @@ def check_eligibility(profile: DoctorProfile, db: Session = Depends(get_db)):
     results = []
     now = datetime.utcnow()
 
-    age_relaxation = 0
+    base_relaxation = 0
     if profile.category in ["SC", "ST"]:
-        age_relaxation = 5
+        base_relaxation = 5
     elif profile.category == "OBC":
-        age_relaxation = 3
+        base_relaxation = 3
+    elif profile.category == "EWS":
+        base_relaxation = 0
+    elif profile.category == "PwBD":
+        base_relaxation = 10
+    pwbd_bonus = 10 if (profile.is_pwbd and profile.category != "PwBD") else 0
+    age_relaxation = base_relaxation + pwbd_bonus
+    effective_age = profile.age
+    if profile.dob:
+        try:
+            dob_dt = datetime.strptime(profile.dob.strip(), "%Y-%m-%d").date()
+            today_d = now.date()
+            effective_age = today_d.year - dob_dt.year - ((today_d.month, today_d.day) < (dob_dt.month, dob_dt.day))
+        except ValueError:
+            effective_age = profile.age
 
     current_year = datetime.utcnow().year
     years_since_pass = max(0, current_year - profile.passing_year)
@@ -738,19 +866,21 @@ def check_eligibility(profile: DoctorProfile, db: Session = Depends(get_db)):
         is_hard_fail = False
         is_conditional = False
 
-        # 1. Qualification Check
-        user_qual = profile.qualification.upper()
+        # 1. Qualification Check (normalize BAMS/BHMS & PG Diploma)
+        raw_qual = profile.qualification.upper().strip()
+        user_qual = "AYUSH" if any(k in raw_qual for k in ("AYUSH", "BAMS", "BHMS", "BUMS")) else raw_qual
+        is_pg_holder = user_qual in ["MD/MS", "PG DIPLOMA"]
         req_qual = v.qualification.upper()
 
         if "MBBS" in req_qual and "MD/MS" in req_qual:
-            if user_qual in ["MBBS", "MD/MS"]:
+            if user_qual == "MBBS" or is_pg_holder:
                 criteria_checks.append({"name": "Qualification", "pass": True, "detail": "MBBS or MD/MS qualification accepted"})
             else:
                 is_hard_fail = True
                 criteria_checks.append({"name": "Qualification", "pass": False, "detail": "Requires MBBS or MD/MS degree"})
         elif req_qual == "MD/MS":
-            if user_qual == "MD/MS":
-                criteria_checks.append({"name": "Qualification", "pass": True, "detail": "Postgraduate Specialist (MD/MS) matched"})
+            if is_pg_holder:
+                criteria_checks.append({"name": "Qualification", "pass": True, "detail": f"Postgraduate Specialist ({profile.qualification}) matched"})
             else:
                 is_hard_fail = True
                 criteria_checks.append({"name": "Qualification", "pass": False, "detail": "Requires Specialist MD/MS/DNB degree (You have MBBS)"})
@@ -767,7 +897,7 @@ def check_eligibility(profile: DoctorProfile, db: Session = Depends(get_db)):
                 is_hard_fail = True
                 criteria_checks.append({"name": "Qualification", "pass": False, "detail": "Requires BDS degree"})
         else: # MBBS
-            if user_qual in ["MBBS", "MD/MS"]:
+            if user_qual == "MBBS" or is_pg_holder:
                 criteria_checks.append({"name": "Qualification", "pass": True, "detail": "MBBS degree criterion satisfied"})
             else:
                 is_hard_fail = True
@@ -778,18 +908,20 @@ def check_eligibility(profile: DoctorProfile, db: Session = Depends(get_db)):
         min_req_age = v.min_age or 21
         unparsed_default_age = (v.verification_status == "NEEDS_PDF_CHECK" and not v.memo_number and (v.max_age or 35) == 35)
 
-        if profile.age < min_req_age:
+        if effective_age < min_req_age:
             is_hard_fail = True
-            criteria_checks.append({"name": "Age Limit", "pass": False, "detail": f"Underage: Minimum age is {min_req_age} yrs (You are {profile.age})"})
-        elif profile.age > allowed_max_age:
+            criteria_checks.append({"name": "Age Limit", "pass": False, "detail": f"Underage: Minimum age is {min_req_age} yrs (You are {effective_age})"})
+        elif effective_age > allowed_max_age:
             if unparsed_default_age:
                 is_conditional = True
                 criteria_checks.append({"name": "Age Limit", "pass": True, "conditional": True, "detail": f"Age limit not auto-parsed (default {allowed_max_age} yrs) — verify upper age in official PDF"})
             else:
                 is_hard_fail = True
-                criteria_checks.append({"name": "Age Limit", "pass": False, "detail": f"Overage: Max age allowed is {allowed_max_age} yrs for {profile.category} (You are {profile.age})"})
+                cat_label = f"{profile.category}{'+PwBD' if profile.is_pwbd and profile.category != 'PwBD' else ''}"
+                criteria_checks.append({"name": "Age Limit", "pass": False, "detail": f"Overage: Max age allowed is {allowed_max_age} yrs for {cat_label} (You are {effective_age})"})
         else:
-            relax_msg = f" (incl. {age_relaxation} yrs {profile.category} relaxation)" if age_relaxation > 0 else ""
+            cat_label = f"{profile.category}{'+PwBD' if profile.is_pwbd and profile.category != 'PwBD' else ''}"
+            relax_msg = f" (incl. {age_relaxation} yrs {cat_label} relaxation)" if age_relaxation > 0 else ""
             criteria_checks.append({"name": "Age Limit", "pass": True, "detail": f"Eligible: Under {allowed_max_age} yrs limit{relax_msg}"})
 
         # 3. Internship & Experience Check
@@ -816,7 +948,10 @@ def check_eligibility(profile: DoctorProfile, db: Session = Depends(get_db)):
                 criteria_checks.append({"name": "Internship", "pass": True, "detail": "Internship completed"})
 
         # 4. State Domicile & Registration Check
-        if v.state != "All India" and v.state != profile.home_state:
+        if not profile.registered_with_smc and v.state_registration_mandatory:
+            is_conditional = True
+            criteria_checks.append({"name": "SMC Registration", "pass": True, "conditional": True, "detail": f"Permanent NMC / {v.state} Medical Council registration required before joining"})
+        elif v.state != "All India" and v.state != profile.home_state:
             if v.state_registration_mandatory:
                 is_conditional = True
                 criteria_checks.append({"name": "State Registration", "pass": True, "conditional": True, "detail": f"State Council registration with {v.state} Medical Council required before final joining"})
@@ -907,13 +1042,60 @@ def create_vacancy(payload: VacancyCreate, db: Session = Depends(get_db)):
     vacancy = VacancyCollector.parse_and_add_custom(db, payload.dict())
     return {"message": "Vacancy added and broadcast dispatched", "id": vacancy.id}
 
+def _run_sync_job(job_id: str):
+    db = SessionLocal()
+    try:
+        sample_res = VacancyCollector.sync_sample_feed(db)
+        live_res = LiveGazetteScraper.sync_live_portals(db)
+        job = db.query(SyncJob).filter(SyncJob.id == job_id).first()
+        if job:
+            job.status = "COMPLETED"
+            job.portals_checked = live_res.get("portals_checked", 0)
+            job.live_added = live_res.get("live_added", 0)
+            job.sample_added = sample_res.get("added", 0)
+            job.finished_at = datetime.utcnow()
+            db.commit()
+    except Exception as exc:
+        job = db.query(SyncJob).filter(SyncJob.id == job_id).first()
+        if job:
+            job.status = "FAILED"
+            job.error = str(exc)[:300]
+            job.finished_at = datetime.utcnow()
+            db.commit()
+    finally:
+        db.close()
+
 @app.post("/api/collector/refresh")
 @app.post("/api/sync")
-def refresh_collector(request: Request, db: Session = Depends(get_db)):
+def refresh_collector(request: Request, background_tasks: BackgroundTasks, background: bool = True, db: Session = Depends(get_db)):
     check_rate_limit(request, "sync", max_calls=2, window_sec=300)
-    result = VacancyCollector.sync_sample_feed(db)
-    live = LiveGazetteScraper.sync_live_portals(db)
-    return {"message": "Recruitment aggregator executed successfully", **result, **live}
+    if not background:
+        result = VacancyCollector.sync_sample_feed(db)
+        live = LiveGazetteScraper.sync_live_portals(db)
+        return {"message": "Recruitment aggregator executed successfully", **result, **live}
+    job = SyncJob(status="RUNNING")
+    db.add(job)
+    db.commit()
+    db.refresh(job)
+    background_tasks.add_task(_run_sync_job, job.id)
+    return {"message": "Background sync started", "job_id": job.id, "status": "RUNNING"}
+
+@app.get("/api/sync/status")
+def get_sync_status(job_id: Optional[str] = None, db: Session = Depends(get_db)):
+    q = db.query(SyncJob)
+    job = q.filter(SyncJob.id == job_id).first() if job_id else q.order_by(SyncJob.started_at.desc()).first()
+    if not job:
+        return {"status": "IDLE", "message": "No sync jobs recorded yet"}
+    return {
+        "job_id": job.id,
+        "status": job.status,
+        "portals_checked": job.portals_checked,
+        "live_added": job.live_added,
+        "sample_added": job.sample_added,
+        "error": job.error,
+        "started_at": job.started_at.isoformat() if job.started_at else None,
+        "finished_at": job.finished_at.isoformat() if job.finished_at else None,
+    }
 
 @app.post("/api/subscriptions", status_code=status.HTTP_201_CREATED)
 @app.post("/api/subscribe", status_code=status.HTTP_201_CREATED)
@@ -921,6 +1103,10 @@ def subscribe(payload: SubscriptionCreate, request: Request, db: Session = Depen
     check_rate_limit(request, "subscribe", max_calls=10, window_sec=300)
     channel = payload.channel.strip().lower()
     target = payload.target.strip()
+    if channel not in ("telegram", "email", "webhook"):
+        raise HTTPException(status_code=400, detail="Channel must be telegram, email, or webhook.")
+    if channel == "webhook" and not GovtNotificationPDFParser.is_safe_url(target):
+        raise HTTPException(status_code=400, detail="Webhook URL must be a valid public http(s) endpoint.")
     if channel == "telegram":
         is_numeric = target.lstrip("-").isdigit()
         is_channel = target.startswith("@") and len(target) >= 5

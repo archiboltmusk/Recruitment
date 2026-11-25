@@ -84,3 +84,45 @@ class ExamAttempt(Base):
     accuracy_pct = Column(Float, default=0.0)
     qualified = Column(Boolean, default=False)
     created_at = Column(DateTime, default=datetime.utcnow)
+
+
+class PortalHealth(Base):
+    __tablename__ = "portal_health"
+
+    name = Column(String(100), primary_key=True)
+    organization = Column(String(255), nullable=True)
+    url = Column(Text, nullable=True)
+    last_status = Column(Integer, nullable=True)
+    latency_ms = Column(Integer, default=0)
+    discovered_count = Column(Integer, default=0)
+    consecutive_failures = Column(Integer, default=0)
+    last_error = Column(Text, nullable=True)
+    last_checked_at = Column(DateTime, default=datetime.utcnow)
+
+
+class SyncJob(Base):
+    __tablename__ = "sync_jobs"
+
+    id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    status = Column(String(30), default="RUNNING")  # RUNNING, COMPLETED, FAILED
+    portals_checked = Column(Integer, default=0)
+    live_added = Column(Integer, default=0)
+    sample_added = Column(Integer, default=0)
+    error = Column(Text, nullable=True)
+    started_at = Column(DateTime, default=datetime.utcnow)
+    finished_at = Column(DateTime, nullable=True)
+
+
+class RateLimitBucket(Base):
+    __tablename__ = "rate_limit_buckets"
+
+    key = Column(String(180), primary_key=True)
+    timestamps_json = Column(Text, default="[]")
+    updated_at = Column(DateTime, default=datetime.utcnow)
+
+
+class SchemaMigration(Base):
+    __tablename__ = "schema_migrations"
+
+    version = Column(String(64), primary_key=True)
+    applied_at = Column(DateTime, default=datetime.utcnow)

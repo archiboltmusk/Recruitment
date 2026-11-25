@@ -144,6 +144,22 @@ def on_startup():
     try:
         db = SessionLocal()
         try:
+            default_channel = os.getenv("TELEGRAM_DEFAULT_CHANNEL", "@MedAlerts_Official").strip()
+            if default_channel:
+                existing_sub = db.query(Subscription).filter(
+                    Subscription.channel == "telegram",
+                    Subscription.target == default_channel
+                ).first()
+                if not existing_sub:
+                    db.add(Subscription(
+                        channel="telegram",
+                        target=default_channel,
+                        qualification_filter="ALL",
+                        state_filter="ALL",
+                        category_filter="ALL",
+                        is_active=True
+                    ))
+                    db.commit()
             VacancyCollector.sync_sample_feed(db)
         finally:
             db.close()

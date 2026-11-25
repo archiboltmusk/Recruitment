@@ -262,6 +262,7 @@ class LiveGazetteScraper:
                 "selection_mode": "Online Merit / Interview (hr.wbhealth.gov.in)",
                 "bond_years": 0,
                 "bond_penalty_amount": "No Bond (Contractual)",
+                "verification_status": "PORTAL_VERIFIED",
             })
             if len(discovered) >= 10:
                 break
@@ -315,6 +316,7 @@ class LiveGazetteScraper:
                     "selection_mode": "Walk-in Interview" if is_walkin else "Written Exam / Interview",
                     "bond_years": 0,
                     "bond_penalty_amount": "Check Official Notice",
+                    "verification_status": "NEEDS_PDF_CHECK",
                 })
                 if len(discovered) >= 5:
                     break

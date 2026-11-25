@@ -467,15 +467,24 @@
                 const needsVerify = v.stage === 'NEEDS_VERIFICATION' || (v.flag_count || 0) >= 5;
                 const badgeText = needsVerify ? 'Verify Notice' : (isUrgent ? `${v.days_left}d left` : (isWalkIn ? 'Walk-in' : v.qualification));
                 const badgeClass = needsVerify ? 'bg-amber-50 text-amber-800' : (isUrgent ? 'bg-rose-50 text-[#DC2626]' : (isWalkIn ? 'bg-purple-50 text-purple-700' : 'bg-[#F5F5F7] text-[#1D1D1F]'));
+                const vStatus = v.verification_status || 'NEEDS_PDF_CHECK';
+                const verifyBadge = vStatus === 'VERIFIED_PDF'
+                    ? '<span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 shrink-0"><i class="fa-solid fa-circle-check mr-1"></i>PDF Verified</span>'
+                    : (vStatus === 'PORTAL_VERIFIED'
+                        ? '<span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-teal-50 text-[#0F766E] shrink-0">Portal Verified</span>'
+                        : '<span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 shrink-0">Verify PDF</span>');
 
                 return `
                 <div class="apple-card p-6 flex flex-col justify-between space-y-5">
                     <div onclick="openVacancyDetail('${v.id}')" class="space-y-2.5 cursor-pointer group">
                         <div class="flex items-center justify-between gap-2">
                             <span class="text-xs font-semibold text-[#0F766E] truncate">${escapeHtml(v.organization)} • ${escapeHtml(v.state)}</span>
-                            <span class="text-[11px] font-semibold px-2.5 py-0.5 rounded-full shrink-0 ${badgeClass}">
-                                ${escapeHtml(badgeText)}
-                            </span>
+                            <div class="flex items-center gap-1.5 shrink-0">
+                                ${verifyBadge}
+                                <span class="text-[11px] font-semibold px-2.5 py-0.5 rounded-full ${badgeClass}">
+                                    ${escapeHtml(badgeText)}
+                                </span>
+                            </div>
                         </div>
 
                         <h3 class="text-lg font-bold text-[#1D1D1F] group-hover:text-[#0F766E] transition leading-snug">
@@ -719,12 +728,15 @@
                         <span class="text-xs font-semibold text-[#0F766E]">${escapeHtml(v.organization)}</span>
                         <span class="text-[#86868B] text-xs">•</span>
                         <span class="text-xs font-medium text-[#6E6E73]">${escapeHtml(v.state)}</span>
-                        <span class="ml-auto text-[11px] font-semibold px-2.5 py-0.5 rounded-full ${isUrgent ? 'bg-rose-50 text-[#DC2626]' : 'bg-[#F5F5F7] text-[#1D1D1F]'}">
+                        <span class="ml-auto text-[11px] font-semibold px-2.5 py-0.5 rounded-full ${(v.verification_status === 'VERIFIED_PDF') ? 'bg-emerald-50 text-emerald-700' : (v.verification_status === 'PORTAL_VERIFIED' ? 'bg-teal-50 text-[#0F766E]' : 'bg-amber-50 text-amber-700')}">
+                            ${v.verification_status === 'VERIFIED_PDF' ? 'PDF Verified' : (v.verification_status === 'PORTAL_VERIFIED' ? 'Portal Verified' : 'Verify Official PDF')}
+                        </span>
+                        <span class="text-[11px] font-semibold px-2.5 py-0.5 rounded-full ${isUrgent ? 'bg-rose-50 text-[#DC2626]' : 'bg-[#F5F5F7] text-[#1D1D1F]'}">
                             ${v.days_left !== null ? `${v.days_left}d left` : escapeHtml(v.qualification)}
                         </span>
                     </div>
                     <h2 class="text-2xl font-extrabold text-[#1D1D1F] leading-tight">${escapeHtml(v.title)}</h2>
-                    <p class="text-xs font-medium text-[#6E6E73]">${escapeHtml(v.designation)} • ${escapeHtml(v.category)} • Verified ${escapeHtml(v.last_verified_at || 'Recently')}</p>
+                    <p class="text-xs font-medium text-[#6E6E73]">${escapeHtml(v.designation)} • ${escapeHtml(v.category)}${v.memo_number ? ` • Memo: ${escapeHtml(v.memo_number)}` : ''} • Checked ${escapeHtml(v.last_verified_at || 'Recently')}</p>
                 </div>
 
                 ${v.summary ? `<p class="text-sm text-[#3A3A3C] leading-relaxed bg-[#F5F5F7]/70 p-4 rounded-2xl">${escapeHtml(v.summary)}</p>` : ''}

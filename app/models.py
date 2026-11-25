@@ -42,6 +42,8 @@ class Vacancy(Base):
     
     is_active = Column(Boolean, default=True)
     flag_count = Column(Integer, default=0)
+    verification_status = Column(String(40), default="NEEDS_PDF_CHECK")  # VERIFIED_PDF, PORTAL_VERIFIED, NEEDS_PDF_CHECK
+    memo_number = Column(String(120), nullable=True)
     last_verified_at = Column(DateTime, default=datetime.utcnow)
     created_at = Column(DateTime, default=datetime.utcnow)
 

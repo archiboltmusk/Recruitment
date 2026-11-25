@@ -69,6 +69,8 @@ def ensure_schema():
         existing_cols = {c["name"] for c in inspector.get_columns("vacancies")}
         migrations = {
             "flag_count": "ALTER TABLE vacancies ADD COLUMN flag_count INTEGER DEFAULT 0",
+            "verification_status": "ALTER TABLE vacancies ADD COLUMN verification_status VARCHAR(40) DEFAULT 'NEEDS_PDF_CHECK'",
+            "memo_number": "ALTER TABLE vacancies ADD COLUMN memo_number VARCHAR(120)",
             "last_verified_at": "ALTER TABLE vacancies ADD COLUMN last_verified_at TIMESTAMP",
         }
         for col_name, col_sql in migrations.items():
@@ -113,6 +115,8 @@ class VacancyCreate(BaseModel):
     bond_penalty_amount: str = "No Bond"
     category_seats_json: Optional[str] = None
     application_fee: str = "As per rules"
+    verification_status: str = "VERIFIED_PDF"
+    memo_number: Optional[str] = None
 
 class SubscriptionCreate(BaseModel):
     channel: str = Field(..., description="telegram, email, or webhook")
@@ -630,6 +634,8 @@ def list_vacancies(
             "apply_url": v.apply_url,
             "summary": v.summary,
             "flag_count": v.flag_count or 0,
+            "verification_status": v.verification_status or "NEEDS_PDF_CHECK",
+            "memo_number": v.memo_number,
             "last_verified_at": v.last_verified_at.strftime("%d %b %Y") if v.last_verified_at else (v.created_at.strftime("%d %b %Y") if v.created_at else "Today"),
             "created_at": v.created_at.strftime("%Y-%m-%d") if v.created_at else None
         })

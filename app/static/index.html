@@ -350,6 +350,7 @@
         async function fetchStats() {
             try {
                 const res = await fetch('/api/stats');
+                if (!res.ok) return;
                 const data = await res.json();
                 document.getElementById('statActive').textContent = data.active_notices ?? '-';
                 document.getElementById('statPosts').textContent = (data.total_vacancies_seats ?? 0).toLocaleString();
@@ -361,6 +362,11 @@
             try {
                 const res = await fetch('/api/vacancies');
                 allVacancies = await res.json();
+                if (Array.isArray(allVacancies) && document.getElementById('statActive').textContent === '-') {
+                    document.getElementById('statActive').textContent = allVacancies.length;
+                    document.getElementById('statPosts').textContent = allVacancies.reduce((s, v) => s + (v.total_posts || 0), 0).toLocaleString();
+                    document.getElementById('statClosing').textContent = allVacancies.filter(v => v.days_left !== null && v.days_left <= 7).length;
+                }
                 applyFilters();
             } catch (err) { console.error(err); }
         }

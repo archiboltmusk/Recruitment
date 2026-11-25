@@ -518,21 +518,28 @@ def download_vacancy_calendar(vacancy_id: str, db: Session = Depends(get_db)):
 @app.head("/api/stats")
 def get_stats(db: Session = Depends(get_db)):
     now = datetime.utcnow()
-    total_active = db.query(Vacancy).filter(Vacancy.is_active == True).count()
-    total_seats = db.query(func.sum(Vacancy.total_posts)).filter(Vacancy.is_active == True).scalar() or 0
-    closing_soon = db.query(Vacancy).filter(
-        Vacancy.is_active == True,
-        Vacancy.last_date <= now + timedelta(days=7),
-        Vacancy.last_date >= now
-    ).count()
-    subscribers_count = db.query(Subscription).filter(Subscription.is_active == True).count()
+    try:
+        active_rows = db.query(Vacancy.total_posts, Vacancy.last_date).filter(Vacancy.is_active == True).all()
+        total_active = len(active_rows)
+        total_seats = sum((r[0] or 0) for r in active_rows)
+        cutoff = now + timedelta(days=7)
+        closing_soon = sum(1 for r in active_rows if r[1] and now <= r[1] <= cutoff)
+    except Exception as e:
+        print(f"Stats vacancy query error: {e}")
+        total_active, total_seats, closing_soon = 0, 0, 0
+
+    try:
+        subscribers_count = db.query(Subscription).filter(Subscription.is_active == True).count()
+    except Exception as e:
+        print(f"Stats subscription query error: {e}")
+        subscribers_count = 0
 
     return {
         "active_notices": total_active,
         "total_vacancies_seats": int(total_seats),
         "closing_in_7_days": closing_soon,
         "active_subscribers": subscribers_count,
-        "scheduler_running": scheduler.running
+        "scheduler_running": bool(getattr(scheduler, "running", False))
     }
 
 @app.get("/api/vacancies")

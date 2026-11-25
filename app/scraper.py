@@ -35,7 +35,40 @@ MBBS_CORE_PATTERN = re.compile(
     re.IGNORECASE,
 )
 
-PAST_YEAR_LINK_PATTERN = re.compile(r"\b202[0-4]\b")
+PAST_YEAR_LINK_PATTERN = re.compile(r"\b202[0-5]\b")
+
+_TITLE_NUM_DATE_RE = re.compile(r"\b(\d{1,2})[./-](\d{1,2})[./-](20\d{2})\b")
+_TITLE_TXT_DATE_RE = re.compile(
+    r"\b(\d{1,2})(?:st|nd|rd|th)?\s+(Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?),?\s+(20\d{2})\b",
+    re.IGNORECASE,
+)
+
+
+def _norm_title(title: str) -> str:
+    return re.sub(r"[^a-z0-9]+", " ", (title or "").lower()).strip()[:75]
+
+
+def _is_stale_dated_title(text: str, today) -> bool:
+    """Returns True if a title's latest explicit date is >45 days in the past."""
+    if PAST_YEAR_LINK_PATTERN.search(text or ""):
+        return True
+    parsed_dates = []
+    for d, m, y in _TITLE_NUM_DATE_RE.findall(text or ""):
+        try:
+            parsed_dates.append(datetime(int(y), int(m), int(d)).date())
+        except ValueError:
+            pass
+    for d, mon, y in _TITLE_TXT_DATE_RE.findall(text or ""):
+        for fmt in ("%d %B %Y", "%d %b %Y"):
+            try:
+                parsed_dates.append(datetime.strptime(f"{int(d)} {mon} {y}", fmt).date())
+                break
+            except ValueError:
+                pass
+    if not parsed_dates:
+        return False
+    latest = max(parsed_dates)
+    return latest < (today - timedelta(days=45))
 
 WBHEALTH_HR_REG_DATE_RE = re.compile(
     r"Last Date for Registration is\s+(\d{1,2}\s+[A-Za-z]{3}\s+\d{4})",
@@ -484,7 +517,7 @@ class LiveGazetteScraper:
                     "verification_status": "NEEDS_PDF_CHECK",
                 }
 
-                if ".pdf" in full_url.lower() and pdf_parsed_count < 6:
+                if ".pdf" in full_url.lower() and pdf_parsed_count < 15:
                     pdf_parsed_count += 1
                     try:
                         pdf_text = GovtNotificationPDFParser.extract_from_url(full_url)
@@ -527,6 +560,8 @@ class LiveGazetteScraper:
                     continue
                 if not entry.get("last_date") and entry.get("exam_date") and entry["exam_date"].date() < today:
                     continue
+                if not entry.get("last_date") and _is_stale_dated_title(text, today):
+                    continue
 
                 discovered.append(entry)
                 if len(discovered) >= 12:
@@ -549,15 +584,17 @@ class LiveGazetteScraper:
             Vacancy.is_active == True,
             Vacancy.last_date.is_(None),
             Vacancy.verification_status == "NEEDS_PDF_CHECK",
-            Vacancy.created_at < now - timedelta(days=30),
+            Vacancy.created_at < now - timedelta(days=14),
         ).update({"is_active": False, "stage": "APPLICATION_CLOSED"}, synchronize_session=False)
         db.commit()
 
         # Re-classify / deactivate stale, non-medical, dental, or misclassified MD/MS rows already in DB
+        today_date = now.date()
         active_rows = db.query(Vacancy).filter(Vacancy.is_active == True).all()
+        seen_norm_titles = set()
         for row in active_rows:
             title_blob = f"{row.title or ''} {row.designation or ''}"
-            if NON_JOB_PATTERN.search(title_blob) or PAST_YEAR_LINK_PATTERN.search(row.title or ""):
+            if NON_JOB_PATTERN.search(title_blob) or (not row.last_date and _is_stale_dated_title(row.title or "", today_date)):
                 row.is_active = False
                 row.stage = "APPLICATION_CLOSED"
                 continue
@@ -565,9 +602,13 @@ class LiveGazetteScraper:
             if inferred["qualification"] == "BDS":
                 row.is_active = False
                 row.stage = "APPLICATION_CLOSED"
+                continue
             elif inferred["qualification"] in ("MD/MS", "MBBS / MD/MS", "AYUSH") and row.qualification == "MBBS":
                 row.qualification = inferred["qualification"]
                 row.designation = inferred["designation"]
+            nt = _norm_title(row.title or "")
+            if nt:
+                seen_norm_titles.add(nt)
         db.commit()
 
         all_discovered: List[Dict[str, Any]] = []
@@ -595,7 +636,12 @@ class LiveGazetteScraper:
                 existing = db.query(Vacancy).filter(
                     Vacancy.memo_number == item["memo_number"]
                 ).first()
+            nt = _norm_title(item.get("title", ""))
+            if not existing and nt and nt in seen_norm_titles:
+                continue
             if not existing:
+                if nt:
+                    seen_norm_titles.add(nt)
                 v = Vacancy(**item, stage="APPLICATION_OPEN", is_active=True)
                 db.add(v)
                 db.commit()

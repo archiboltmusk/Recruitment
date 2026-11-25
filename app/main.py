@@ -1,4 +1,5 @@
 import os
+import hmac
 import json
 import time
 import threading
@@ -46,7 +47,7 @@ def verify_admin_key(x_admin_key: Optional[str] = Header(default=None)):
             status_code=503,
             detail="Admin endpoint is locked. Configure ADMIN_API_KEY in environment variables to enable."
         )
-    if x_admin_key != expected:
+    if not x_admin_key or not hmac.compare_digest(x_admin_key, expected):
         raise HTTPException(status_code=403, detail="Invalid or missing X-Admin-Key")
 
 def mask_target(target: str) -> str:
@@ -629,7 +630,10 @@ def list_vacancies(
         )
 
     if qualification and qualification != "ALL":
-        query = query.filter(Vacancy.qualification.ilike(f"%{qualification}%"))
+        if qualification == "MBBS_ONLY":
+            query = query.filter(Vacancy.qualification == "MBBS")
+        else:
+            query = query.filter(Vacancy.qualification.ilike(f"%{qualification}%"))
 
     if category and category != "ALL":
         query = query.filter(Vacancy.category.ilike(f"%{category}%"))
@@ -904,7 +908,7 @@ def create_vacancy(payload: VacancyCreate, db: Session = Depends(get_db)):
 @app.post("/api/collector/refresh")
 @app.post("/api/sync")
 def refresh_collector(request: Request, db: Session = Depends(get_db)):
-    check_rate_limit(request, "sync", max_calls=6, window_sec=300)
+    check_rate_limit(request, "sync", max_calls=2, window_sec=300)
     result = VacancyCollector.sync_sample_feed(db)
     live = LiveGazetteScraper.sync_live_portals(db)
     return {"message": "Recruitment aggregator executed successfully", **result, **live}

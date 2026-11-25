@@ -228,6 +228,14 @@ def serve_bonds():
         return FileResponse(bonds_file)
     return {"message": "All-India Bond & Pay Matrix page"}
 
+@app.get("/toolkit")
+@app.head("/toolkit")
+def serve_toolkit():
+    toolkit_file = os.path.join(static_dir, "toolkit.html")
+    if os.path.exists(toolkit_file):
+        return FileResponse(toolkit_file)
+    return {"message": "Post-MBBS Doctor Survival & Career Toolkit"}
+
 @app.get("/api/health/db")
 def health_check_db():
     from urllib.parse import urlparse

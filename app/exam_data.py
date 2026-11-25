@@ -1,11 +1,12 @@
 import json
+from pathlib import Path
 from typing import List, Dict, Any
 
 EXAMS_CATALOG: List[Dict[str, Any]] = [
     {
         "id": "upsc-cms-2026-paper-1-authentic",
         "title": "UPSC CMS 2026 Official Paper-I (Authentic PYQ Set)",
-        "subtitle": "Complete 120 Qs • Official Booklet T.B.C. NTDC-O-KPMS (General Medicine & Pediatrics + X-Ray)",
+        "subtitle": "Complete 120 Qs • Official Booklet T.B.C. NTDC-O-KPMS (General Medicine & Pediatrics + 4 Image Questions)",
         "total_questions": 120,
         "total_marks": 250,
         "duration_minutes": 120,
@@ -18,7 +19,7 @@ EXAMS_CATALOG: List[Dict[str, Any]] = [
     {
         "id": "upsc-cms-2026-paper-2-authentic",
         "title": "UPSC CMS 2026 Official Paper-II (Authentic PYQ Set)",
-        "subtitle": "Complete 120 Qs • Official Booklet T.B.C. NTDC-T-GSPO (Surgery, OBG & PSM + 9 Image Questions)",
+        "subtitle": "Complete 120 Qs • Official Booklet T.B.C. NTDC-T-GSPO (Surgery, OBG & PSM + 11 Image Questions)",
         "total_questions": 120,
         "total_marks": 250,
         "duration_minutes": 120,
@@ -773,7 +774,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
         {
             "id": "cms26-p1-006",
             "subject": "General Medicine",
-            "text": "iTumour Plop' is a characteristic auscultatory finding seen in which one of the following conditions?",
+            "text": "'Tumour Plop' is a characteristic auscultatory finding seen in which one of the following conditions?",
             "options": [
                 "Atrial myxoma",
                 "Arrhythmogenic ventricular cardiomyopathy",
@@ -955,6 +956,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
         {
             "id": "cms26-p1-019",
             "subject": "General Medicine",
+            "image_url": "/static/exam_images/cms26_p1_q19_xray.png",
             "text": "A 42-year-old male with chronic kidney disease undergoing chronic dialysis presents with worsening breathlessness. Examination reveals muffled heart. sounds. Chest X-ray image is shown below. What is the most likely diagnosis of this patient?",
             "options": [
                 "Pneumothorax",
@@ -969,6 +971,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
         {
             "id": "cms26-p1-020",
             "subject": "General Medicine",
+            "image_url": "/static/exam_images/cms26_p1_q20_ct.png",
             "text": "A 22-year-old male presents with left-sided chest pain and breathlessness after a road traffic accident. Examination reveals absent left-sided breath sounds. CT Chest image is shown below. What is the diagnosis of this patient ?",
             "options": [
                 "Pneumothorax",
@@ -2187,7 +2190,8 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
         {
             "id": "cms26-p1-107",
             "subject": "Pediatrics",
-            "text": "An 8-year-old girl is provided a few cubes and asked to create the structure in the image provided. If she can create the Structure A, but cannot make the Structure B, her developmental quotient (DQ) in the fine motor domain is : B.",
+            "image_url": "/static/exam_images/cms26_p1_q107_cubes.png",
+            "text": "An 8-year-old girl is provided a few cubes and asked to create the structure in the image provided. If she can create the Structure A, but cannot make the Structure B, her developmental quotient (DQ) in the fine motor domain is :",
             "options": [
                 "50",
                 "62￾5",
@@ -2375,7 +2379,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Measles with eye or mouth complications",
                 "Measles",
                 "Severe complicated measles",
-                "Measles with severe acute malnutrition SPACE FOR ROUGH WORK SPACE FOR ROUGH WORK SPACE FOR ROUGH WORK SPACE FOR ROUGH WORK"
+                "Measles with severe acute malnutrition"
             ],
             "correct_option": 2,
             "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (c) — Severe complicated measles.",
@@ -2598,6 +2602,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
         {
             "id": "cms26-p2-016",
             "subject": "General Surgery",
+            "image_url": "/static/exam_images/cms26_p2_q16_intussusception.png",
             "text": "The line diagram shows the cross- section of bowel intussusception. The part marked with an asterisk is called as",
             "options": [
                 "apex",
@@ -2626,6 +2631,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
         {
             "id": "cms26-p2-018",
             "subject": "General Surgery",
+            "image_url": "/static/exam_images/cms26_p2_q18_calot.png",
             "text": "A trainee surgeon is performing his/her first cholecystectomy. The area marked with an asterisk in the diagram represents",
             "options": [
                 "Rouviere's area",
@@ -4066,7 +4072,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "1 → 3 → 4→2",
                 "2→4→1→3",
                 "3→4→2 → 1",
-                "3 → 2→4 → 1 SPACE FOR ROUGH WORK SPACE FOR ROUGH WORK SPACE FOR ROUGH WORK SPACE FOR ROUGH WORK * * * 32 26BS-115968"
+                "3 → 2→4 → 1"
             ],
             "correct_option": 2,
             "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (c) — 3→4→2 → 1.",
@@ -4074,3 +4080,12 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
         }
     ]
 }
+
+_PYQ_PATH = Path(__file__).with_name("pyq_papers.json")
+if _PYQ_PATH.exists():
+    _pyq_data = json.loads(_PYQ_PATH.read_text(encoding="utf-8"))
+    _pyq_catalog = _pyq_data.get("catalog", [])
+    _pyq_questions = _pyq_data.get("questions", {})
+    _insert_idx = 2 if len(EXAMS_CATALOG) >= 2 else len(EXAMS_CATALOG)
+    EXAMS_CATALOG[_insert_idx:_insert_idx] = _pyq_catalog
+    EXAM_QUESTIONS.update(_pyq_questions)

@@ -149,6 +149,27 @@ class MedAlertsSmokeTests(unittest.TestCase):
         Notifier.broadcast_corrigendum(self.db, vac, [{"field": "last_date", "old": "2026-11-30", "new": "2026-12-15"}])
         self.assertEqual(self.db.query(NotificationLog).count(), 1)
 
+    def test_exam_catalog_and_images_integrity(self):
+        from pathlib import Path
+        from app.exam_data import EXAMS_CATALOG, EXAM_QUESTIONS
+
+        static_root = Path(__file__).resolve().parent.parent / "app"
+        self.assertGreaterEqual(len(EXAMS_CATALOG), 10)
+        image_count = 0
+        for exam in EXAMS_CATALOG:
+            eid = exam["id"]
+            self.assertIn(eid, EXAM_QUESTIONS)
+            qs = EXAM_QUESTIONS[eid]
+            self.assertGreater(len(qs), 0)
+            for q in qs:
+                self.assertEqual(len(q["options"]), 4)
+                self.assertIn(q["correct_option"], (0, 1, 2, 3))
+                if "image_url" in q:
+                    image_count += 1
+                    rel = q["image_url"].lstrip("/")
+                    self.assertTrue((static_root / rel).is_file(), f"Missing image: {rel}")
+        self.assertEqual(image_count, 15)
+
 
 if __name__ == "__main__":
     unittest.main()

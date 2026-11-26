@@ -117,9 +117,15 @@ def ensure_schema():
         if "zero_bond_only" not in sub_cols:
             with engine.begin() as conn:
                 conn.execute(text("ALTER TABLE subscriptions ADD COLUMN zero_bond_only BOOLEAN DEFAULT FALSE"))
+    if "portal_health" in inspector.get_table_names():
+        ph_cols = {c["name"] for c in inspector.get_columns("portal_health")}
+        for col_name, col_sql in (("etag", "ALTER TABLE portal_health ADD COLUMN etag VARCHAR(200)"), ("last_modified", "ALTER TABLE portal_health ADD COLUMN last_modified VARCHAR(200)")):
+            if col_name not in ph_cols:
+                with engine.begin() as conn:
+                    conn.execute(text(col_sql))
     db = SessionLocal()
     try:
-        for ver in ("001_vacancy_cols", "002_telemetry_ratelimit_syncjob", "003_sub_zero_bond"):
+        for ver in ("001_vacancy_cols", "002_telemetry_ratelimit_syncjob", "003_sub_zero_bond", "004_portal_etag"):
             if not db.query(SchemaMigration).filter(SchemaMigration.version == ver).first():
                 db.add(SchemaMigration(version=ver))
         db.commit()
@@ -262,13 +268,70 @@ def on_startup():
 def on_shutdown():
     shutdown_scheduler()
 
+_SEO_JOB_SLUGS = {
+    "west-bengal": ("West Bengal Medical Officer & JR Jobs", "Latest WBHRB, NHM, KMC, and West Bengal medical college JR/RMO/GDMO circulars."),
+    "delhi": ("Delhi NCR JR & Medical Officer Jobs", "Latest VMMC Safdarjung, RMLH, AIIMS, and Delhi Health & Family Welfare circulars."),
+    "walk-in": ("Zero-Exam Walk-in Medical Officer Jobs", "Direct walk-in interviews for MBBS, JR, SR, and GDMO doctors across India."),
+    "aiims-jr": ("AIIMS & INI Junior/Senior Resident Jobs", "Latest AIIMS, PGIMER, JIPMER, and NIMHANS JR/SR recruitment circulars."),
+    "upsc-cms": ("UPSC CMS & Central Govt Medical Officer Jobs", "Permanent Central Health Service, ESIC, AFMS, and CAPF Medical Officer circulars."),
+    "zero-bond": ("Zero-Bond Medical Officer Vacancies", "Verified government and PSU medical officer openings with zero service bond."),
+}
+
+def _render_index_with_seo(title: str, description: str, canonical_url: str, json_ld_obj: Optional[Dict[str, Any]] = None):
+    from html import escape
+    index_file = os.path.join(static_dir, "index.html")
+    if not os.path.exists(index_file):
+        return {"message": "MedAlerts API is live."}
+    with open(index_file, "r", encoding="utf-8") as f:
+        raw_html = f.read()
+    meta_tags = (
+        f'<meta name="description" content="{escape(description, quote=True)}">\n'
+        f'<meta property="og:type" content="website">\n'
+        f'<meta property="og:title" content="{escape(title, quote=True)}">\n'
+        f'<meta property="og:description" content="{escape(description, quote=True)}">\n'
+        f'<meta property="og:url" content="{escape(canonical_url, quote=True)}">\n'
+        f'<link rel="canonical" href="{escape(canonical_url, quote=True)}">'
+    )
+    if json_ld_obj:
+        meta_tags += f'\n<script type="application/ld+json">{json.dumps(json_ld_obj)}</script>'
+    patched = raw_html.replace("<title>MedAlerts — Medical Officer Jobs &amp; Exam Prep</title>", f"<title>{escape(title)}</title>\n{meta_tags}", 1)
+    return HTMLResponse(content=patched)
+
 @app.get("/")
 @app.head("/")
-def serve_index():
+def serve_index(job: Optional[str] = None, db: Session = Depends(get_db)):
+    if job:
+        v = db.query(Vacancy).filter(Vacancy.id == job.strip()).first()
+        if v:
+            seats_txt = f"{v.total_posts} Seats" if v.total_posts else "Check Official PDF"
+            due_txt = v.last_date.strftime("%Y-%m-%d") if v.last_date else None
+            desc = f"{v.organization} ({v.state}) • {v.qualification} • {seats_txt} • {v.pay_scale or 'Govt Pay Matrix'}"
+            job_ld: Dict[str, Any] = {
+                "@context": "https://schema.org/",
+                "@type": "JobPosting",
+                "title": v.title,
+                "description": v.summary or desc,
+                "datePosted": (v.created_at or datetime.utcnow()).strftime("%Y-%m-%d"),
+                "employmentType": "CONTRACTOR" if (v.selection_mode and "walk-in" in v.selection_mode.lower()) else "FULL_TIME",
+                "hiringOrganization": {"@type": "Organization", "name": v.organization},
+                "jobLocation": {"@type": "Place", "address": {"@type": "PostalAddress", "addressRegion": v.state or "India", "addressCountry": "IN"}},
+            }
+            if due_txt:
+                job_ld["validThrough"] = due_txt
+            return _render_index_with_seo(f"{v.title} — MedAlerts", desc, f"{APP_BASE_URL}/?job={v.id}", job_ld)
     index_file = os.path.join(static_dir, "index.html")
     if os.path.exists(index_file):
         return FileResponse(index_file)
     return {"message": "MedAlerts API is live."}
+
+@app.get("/jobs/{slug}")
+@app.head("/jobs/{slug}")
+def serve_seo_job_track(slug: str):
+    info = _SEO_JOB_SLUGS.get(slug.lower().strip())
+    if not info:
+        raise HTTPException(status_code=404, detail="Job track not found")
+    title, desc = info
+    return _render_index_with_seo(f"{title} — MedAlerts", desc, f"{APP_BASE_URL}/jobs/{slug.lower().strip()}")
 
 @app.get("/onboarding")
 @app.head("/onboarding")
@@ -420,6 +483,40 @@ def health_check_db():
         }
 
 def _resolve_exam_and_questions(exam_id: str):
+    if exam_id == "cms-paper-1":
+        all_qs = [q for qs in EXAM_QUESTIONS.values() for q in qs]
+        matched = [q for q in all_qs if any(k in (q.get("subject") or "").lower() for k in ("medicine", "pediatric", "paediatric"))][:120]
+        if not matched:
+            return None, []
+        meta = {
+            "id": "cms-paper-1",
+            "title": "UPSC CMS Paper I — Medicine & Paediatrics",
+            "subtitle": f"Paper I Pattern Simulator ({len(matched)} Questions)",
+            "total_questions": len(matched),
+            "total_marks": len(matched),
+            "duration_minutes": 120,
+            "negative_marking": 0.33,
+            "cutoff_reference": max(1, int(len(matched) * 0.55)),
+        }
+        return meta, matched
+
+    if exam_id == "cms-paper-2":
+        all_qs = [q for qs in EXAM_QUESTIONS.values() for q in qs]
+        matched = [q for q in all_qs if any(k in (q.get("subject") or "").lower() for k in ("surgery", "obstetrics", "gynaecology", "gynecology", "obg", "psm", "community", "preventive"))][:120]
+        if not matched:
+            return None, []
+        meta = {
+            "id": "cms-paper-2",
+            "title": "UPSC CMS Paper II — Surgery, OBG & PSM",
+            "subtitle": f"Paper II Pattern Simulator ({len(matched)} Questions)",
+            "total_questions": len(matched),
+            "total_marks": len(matched),
+            "duration_minutes": 120,
+            "negative_marking": 0.33,
+            "cutoff_reference": max(1, int(len(matched) * 0.55)),
+        }
+        return meta, matched
+
     if exam_id == "image-based":
         all_qs = [q for qs in EXAM_QUESTIONS.values() for q in qs]
         matched = [q for q in all_qs if q.get("image_url")]
@@ -1557,7 +1654,7 @@ def rss_feed(db: Session = Depends(get_db)):
 @app.get("/sitemap.xml")
 def sitemap_xml(db: Session = Depends(get_db)):
     from html import escape
-    static_paths = ["", "/onboarding", "/exam", "/bonds", "/toolkit"]
+    static_paths = ["", "/onboarding", "/exam", "/bonds", "/toolkit"] + [f"/jobs/{s}" for s in _SEO_JOB_SLUGS]
     urls = [f"<url><loc>{escape(APP_BASE_URL + p, quote=True)}</loc><changefreq>daily</changefreq></url>" for p in static_paths]
     rows = db.query(Vacancy.id, Vacancy.created_at).filter(Vacancy.is_active == True).order_by(Vacancy.created_at.desc()).limit(200).all()
     for v_id, created_at in rows:

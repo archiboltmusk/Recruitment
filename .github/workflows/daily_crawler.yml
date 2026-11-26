@@ -44,7 +44,7 @@ jobs:
           from playwright.sync_api import sync_playwright
           Base.metadata.create_all(bind=engine)
           scheduled_recruitment_sync()
-          js_targets = [s for s in PORTAL_SOURCES if s['name'] in ('WBHRB', 'AIIMS', 'AFMS_SSC', 'BHEL_Careers')]
+          js_targets = [s for s in PORTAL_SOURCES if s['name'] in ('WBHRB', 'AIIMS', 'AFMS_SSC', 'BHEL_Careers', 'AIIMS_Jodhpur', 'AIIMS_Nagpur', 'APSC_Assam', 'MPSC_Maharashtra', 'RPSC_Rajasthan', 'KPSC_Karnataka', 'GPSC_Gujarat')]
           db = SessionLocal()
           try:
               with sync_playwright() as pw:

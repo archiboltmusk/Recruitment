@@ -229,6 +229,26 @@ class MedAlertsSmokeTests(unittest.TestCase):
         vac_wb_bond.bond_years = 0
         self.assertTrue(Notifier._matches_subscription(sub, vac_wb_bond))
 
+    def test_seo_jobposting_and_paper_split_exams(self):
+        from app.main import serve_index, serve_seo_job_track, _resolve_exam_and_questions
+
+        res_job = serve_index(job="smoke-vac-1", db=self.db)
+        self.assertIn(b'"@type": "JobPosting"', res_job.body)
+        self.assertIn(b'WBHRB GDMO Recruitment 2026', res_job.body)
+
+        res_track = serve_seo_job_track("west-bengal")
+        self.assertIn(b"West Bengal Medical Officer", res_track.body)
+
+        sm = sitemap_xml(db=self.db)
+        self.assertIn(b"/jobs/west-bengal</loc>", sm.body)
+
+        m1, q1 = _resolve_exam_and_questions("cms-paper-1")
+        m2, q2 = _resolve_exam_and_questions("cms-paper-2")
+        self.assertIsNotNone(m1)
+        self.assertIsNotNone(m2)
+        self.assertGreater(len(q1), 0)
+        self.assertGreater(len(q2), 0)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -1,0 +1,17 @@
+name: Keep Render Alive
+
+on:
+  schedule:
+    - cron: '*/14 * * * *'
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping MedAlerts health endpoint
+        env:
+          APP_BASE_URL: ${{ secrets.APP_BASE_URL }}
+        run: |
+          URL="${APP_BASE_URL:-https://medalerts.onrender.com}"
+          curl -fsS --max-time 20 "${URL%/}/api/stats" > /dev/null || true

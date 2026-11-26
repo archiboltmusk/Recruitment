@@ -1067,10 +1067,13 @@ class LiveGazetteScraper:
                 telemetry["latency_ms"] = int((time.monotonic() - t0) * 1000)
                 return discovered, telemetry
             if resp.headers.get("ETag") or resp.headers.get("Last-Modified"):
-                cls._PORTAL_CACHE[source["url"]] = {
+                meta = {
                     "etag": resp.headers.get("ETag", ""),
                     "last_modified": resp.headers.get("Last-Modified", ""),
                 }
+                cls._PORTAL_CACHE[source["url"]] = meta
+                telemetry["etag"] = meta["etag"]
+                telemetry["last_modified"] = meta["last_modified"]
 
             soup = BeautifulSoup(resp.text, "html.parser")
             if source.get("parser") == "wbhealth_hr_table":
@@ -1305,6 +1308,13 @@ class LiveGazetteScraper:
                 seen_token_sets.append((row.state or "", toks))
         db.commit()
 
+        try:
+            for ph in db.query(PortalHealth).all():
+                if ph.url and (ph.etag or ph.last_modified):
+                    cls._PORTAL_CACHE[ph.url] = {"etag": ph.etag or "", "last_modified": ph.last_modified or ""}
+        except Exception:
+            pass
+
         all_discovered: List[Dict[str, Any]] = []
         telemetry_batch: List[Dict[str, Any]] = []
         with ThreadPoolExecutor(max_workers=12) as executor:
@@ -1350,6 +1360,8 @@ class LiveGazetteScraper:
                         discovered_count=tel["discovered_count"],
                         consecutive_failures=1 if failed else 0,
                         last_error=tel["last_error"],
+                        etag=tel.get("etag"),
+                        last_modified=tel.get("last_modified"),
                         last_checked_at=now,
                     )
                     db.add(ph)
@@ -1361,6 +1373,10 @@ class LiveGazetteScraper:
                     ph.discovered_count = tel["discovered_count"]
                     ph.consecutive_failures = (ph.consecutive_failures or 0) + 1 if failed else 0
                     ph.last_error = tel["last_error"]
+                    if tel.get("etag"):
+                        ph.etag = tel["etag"]
+                    if tel.get("last_modified"):
+                        ph.last_modified = tel["last_modified"]
                     ph.last_checked_at = now
             except Exception as ph_err:
                 logger.debug(f"PortalHealth update warning for {tel['name']}: {ph_err}")

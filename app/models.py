@@ -98,6 +98,8 @@ class PortalHealth(Base):
     discovered_count = Column(Integer, default=0)
     consecutive_failures = Column(Integer, default=0)
     last_error = Column(Text, nullable=True)
+    etag = Column(String(200), nullable=True)
+    last_modified = Column(String(200), nullable=True)
     last_checked_at = Column(DateTime, default=datetime.utcnow)
 
 

@@ -186,6 +186,7 @@
                 <button onclick="setQuickFilter('ALL', this)" class="quick-pill px-4 py-1.5 rounded-full text-xs font-semibold bg-[#1D1D1F] text-white shrink-0 transition">All</button>
                 <button onclick="setQuickFilter('ELIGIBLE_ME', this)" class="quick-pill px-4 py-1.5 rounded-full text-xs font-semibold bg-emerald-50 border border-emerald-200 text-[#0F766E] hover:bg-emerald-100 shrink-0 transition"><i class="fa-solid fa-user-check mr-1"></i>Eligible for Me</button>
                 <button onclick="setQuickFilter('VERIFIED_DATE', this)" class="quick-pill px-4 py-1.5 rounded-full text-xs font-semibold bg-white border border-black/10 text-[#1D1D1F] hover:bg-gray-50 shrink-0 transition">Verified Deadlines</button>
+                <button onclick="setQuickFilter('THIS_WEEK', this)" class="quick-pill px-4 py-1.5 rounded-full text-xs font-semibold bg-rose-50 border border-rose-200 text-[#DC2626] hover:bg-rose-100 shrink-0 transition">Closing This Week</button>
                 <button onclick="setQuickFilter('Walk-in', this)" class="quick-pill px-4 py-1.5 rounded-full text-xs font-semibold bg-white border border-black/10 text-[#1D1D1F] hover:bg-gray-50 shrink-0 transition">Walk-in (No Exam)</button>
                 <button onclick="setQuickFilter('West Bengal', this)" class="quick-pill px-4 py-1.5 rounded-full text-xs font-semibold bg-white border border-black/10 text-[#1D1D1F] hover:bg-gray-50 shrink-0 transition">West Bengal</button>
                 <button onclick="setQuickFilter('Delhi', this)" class="quick-pill px-4 py-1.5 rounded-full text-xs font-semibold bg-white border border-black/10 text-[#1D1D1F] hover:bg-gray-50 shrink-0 transition">Delhi NCR</button>
@@ -450,6 +451,27 @@
         </div>
     </div>
 
+    <!-- Floating Compare Bar -->
+    <div id="compareBar" class="hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-40 bg-[#1D1D1F] text-white px-5 py-2.5 rounded-full shadow-2xl flex items-center gap-3 text-xs">
+        <span id="compareBarLabel" class="font-semibold">0 selected</span>
+        <button onclick="openCompareModal()" class="px-3.5 py-1 rounded-full bg-[#0F766E] hover:bg-[#115E59] font-semibold">Compare</button>
+        <button onclick="clearCompare()" class="text-white/70 hover:text-white">Clear</button>
+    </div>
+
+    <!-- Side-by-Side Comparison Modal -->
+    <div id="compareModal" onclick="if (event.target === this) closeModal('compareModal')" class="fixed inset-0 bg-black/45 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-4xl w-full p-6 shadow-2xl space-y-4 max-h-[88vh] flex flex-col">
+            <div class="flex items-center justify-between shrink-0">
+                <div>
+                    <h3 class="text-lg font-bold text-[#1D1D1F]">Side-by-Side Job Comparison</h3>
+                    <p class="text-xs text-[#6E6E73]">Compare pay, bond, selection mode, and deadlines before applying.</p>
+                </div>
+                <button onclick="closeModal('compareModal')" class="w-8 h-8 rounded-full bg-[#F5F5F7] text-[#6E6E73] hover:text-black flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div id="compareTableContainer" class="overflow-x-auto overflow-y-auto text-xs"></div>
+        </div>
+    </div>
+
     <!-- Toast -->
     <div id="toast" class="fixed bottom-6 right-6 bg-[#1D1D1F] text-white px-5 py-3 rounded-full shadow-xl text-xs font-medium z-50 hidden flex items-center gap-2">
         <i class="fa-solid fa-circle-check text-emerald-400"></i>
@@ -463,6 +485,16 @@
         let deepLinkHandled = false;
 
         async function init() {
+            const path = window.location.pathname.toLowerCase();
+            if (path === '/jobs/west-bengal') activeQuickFilter = 'West Bengal';
+            else if (path === '/jobs/delhi') activeQuickFilter = 'Delhi';
+            else if (path === '/jobs/walk-in') activeQuickFilter = 'Walk-in';
+            else if (path === '/jobs/zero-bond') activeQuickFilter = 'ZERO_BOND';
+            else if (path === '/jobs/aiims-jr') { document.getElementById('searchInput').value = 'AIIMS'; }
+            else if (path === '/jobs/upsc-cms') { document.getElementById('searchInput').value = 'UPSC'; }
+            if (activeQuickFilter === 'West Bengal' || activeQuickFilter === 'Walk-in') document.getElementById('categoryFilter').value = activeQuickFilter;
+            else if (activeQuickFilter === 'Delhi') document.getElementById('searchInput').value = 'Delhi';
+            else if (activeQuickFilter === 'ZERO_BOND') document.getElementById('bondFilter').value = 'no_bond';
             await Promise.all([fetchStats(), fetchVacancies(), fetchCorrigenda()]);
         }
 
@@ -568,7 +600,8 @@
                 const matchUR = activeQuickFilter !== 'UR_ONLY' || !(v.category_seats && v.category_seats.UR === 0);
                 const matchEligible = activeQuickFilter !== 'ELIGIBLE_ME' || (eligibleIdSet && eligibleIdSet.has(String(v.id)));
                 const matchVerifiedDate = activeQuickFilter !== 'VERIFIED_DATE' || Boolean(v.last_date);
-                return matchHidden && matchSearch && matchQual && matchRole && matchCat && matchStage && matchBond && matchUR && matchEligible && matchVerifiedDate;
+                const matchThisWeek = activeQuickFilter !== 'THIS_WEEK' || (v.days_left !== null && v.days_left <= 7);
+                return matchHidden && matchSearch && matchQual && matchRole && matchCat && matchStage && matchBond && matchUR && matchEligible && matchVerifiedDate && matchThisWeek;
             });
             renderRegionalStrip(allVacancies);
 
@@ -672,6 +705,9 @@
                         </button>
 
                         <div class="flex items-center gap-1.5">
+                            <button onclick="toggleCompare('${v.id}')" title="Compare" class="w-8 h-8 rounded-full ${compareIds.includes(String(v.id)) ? 'bg-[#1D1D1F] text-white' : 'bg-[#F5F5F7] text-[#6E6E73] hover:text-black'} flex items-center justify-center text-xs transition">
+                                <i class="fa-solid fa-scale-balanced"></i>
+                            </button>
                             <button onclick="toggleTrackVacancy('${v.id}')" title="Save" class="w-8 h-8 rounded-full ${isTracked(v.id) ? 'bg-[#0F766E] text-white' : 'bg-[#F5F5F7] text-[#6E6E73] hover:text-black'} flex items-center justify-center text-xs transition">
                                 <i class="${isTracked(v.id) ? 'fa-solid' : 'fa-regular'} fa-bookmark"></i>
                             </button>
@@ -917,6 +953,76 @@
             return url.toString();
         }
 
+        let compareIds = [];
+        function toggleCompare(id) {
+            const sid = String(id);
+            if (compareIds.includes(sid)) compareIds = compareIds.filter(x => x !== sid);
+            else if (compareIds.length >= 3) { showToast('Compare up to 3 jobs at a time.'); return; }
+            else compareIds.push(sid);
+            updateCompareBar();
+            applyFilters();
+        }
+        function clearCompare() { compareIds = []; updateCompareBar(); applyFilters(); }
+        function updateCompareBar() {
+            const bar = document.getElementById('compareBar');
+            if (!bar) return;
+            if (compareIds.length === 0) { bar.classList.add('hidden'); return; }
+            bar.classList.remove('hidden');
+            document.getElementById('compareBarLabel').textContent = `${compareIds.length} job${compareIds.length > 1 ? 's' : ''} selected`;
+        }
+        function openCompareModal() {
+            const items = compareIds.map(id => allVacancies.find(v => String(v.id) === id)).filter(Boolean);
+            if (items.length < 2) return showToast('Select at least 2 jobs to compare.');
+            const cols = items.map(v => `<th class='p-3 text-left font-bold text-[#1D1D1F] min-w-[200px]'>${escapeHtml(v.title)}<p class='text-[11px] font-normal text-[#0F766E] mt-0.5'>${escapeHtml(v.organization)}</p></th>`).join('');
+            const row = (label, fn) => `<tr class='border-t border-black/[0.06]'><td class='p-3 font-semibold text-[#6E6E73] whitespace-nowrap'>${label}</td>${items.map(v => `<td class='p-3 text-[#1D1D1F]'>${fn(v)}</td>`).join('')}</tr>`;
+            document.getElementById('compareTableContainer').innerHTML = `
+                <table class='w-full border-collapse'>
+                    <thead><tr class='bg-[#F5F5F7]'><th class='p-3 text-left text-[#6E6E73]'>Field</th>${cols}</tr></thead>
+                    <tbody>
+                        ${row('State', v => escapeHtml(v.state))}
+                        ${row('Qualification', v => escapeHtml(v.qualification))}
+                        ${row('Seats', v => v.total_posts > 0 ? v.total_posts + ' Seats' : 'Check PDF')}
+                        ${row('Pay Scale', v => escapeHtml(v.pay_scale || 'Govt Pay Matrix'))}
+                        ${row('Bond', v => v.bond_years === 0 ? '<span class="text-emerald-700 font-semibold">Zero Bond</span>' : escapeHtml(v.bond_penalty_amount))}
+                        ${row('Selection', v => escapeHtml(v.selection_mode || 'Notice'))}
+                        ${row('Deadline', v => escapeHtml(v.last_date || 'Check PDF'))}
+                    </tbody>
+                </table>
+            `;
+            openModal('compareModal');
+        }
+        function generateWalkinPacket(id) {
+            const v = allVacancies.find(item => String(item.id) === String(id));
+            if (!v) return;
+            let p = {};
+            try { p = JSON.parse(localStorage.getItem('med_doctor_profile') || '{}'); } catch (e) {}
+            const win = window.open('', '_blank', 'width=820,height=900');
+            if (!win) return showToast('Allow popups to print Walk-in CV packet.');
+            win.document.write(`<!DOCTYPE html><html><head><title>Walk-in Packet — ${escapeHtml(v.title)}</title><style>body{font-family:Inter,Arial,sans-serif;padding:36px;color:#111;line-height:1.5;max-width:740px;margin:auto}h1{font-size:20px;margin-bottom:4px}h2{font-size:14px;border-bottom:1px solid #ddd;padding-bottom:4px;margin-top:22px;text-transform:uppercase;color:#0F766E}table{width:100%;border-collapse:collapse;font-size:13px}td{padding:6px 4px;border-bottom:1px solid #f0f0f0}.btn{padding:8px 16px;background:#0F766E;color:#fff;border:none;border-radius:99px;cursor:pointer;font-weight:600}@media print{.noprint{display:none}}</style></head><body>
+                <div class='noprint' style='text-align:right;margin-bottom:16px'><button class='btn' onclick='window.print()'>Print / Save PDF</button></div>
+                <h1>${escapeHtml(p.name || 'Dr. [Your Name]')}</h1>
+                <p style='font-size:13px;color:#555'>${escapeHtml(p.qualification || 'MBBS')} • ${escapeHtml(p.college_name || '[Medical College]')} (${escapeHtml(p.passing_year || 'Batch')}) • Category: ${escapeHtml(p.category || 'UR')} • Home State: ${escapeHtml(p.home_state || 'India')}</p>
+                <h2>Application / Walk-in Target</h2>
+                <p style='font-size:13px'><strong>Post:</strong> ${escapeHtml(v.title)}<br><strong>Organization:</strong> ${escapeHtml(v.organization)} (${escapeHtml(v.state)})<br><strong>Memo / Ref:</strong> ${escapeHtml(v.memo_number || 'As per official circular')}</p>
+                <h2>Candidate Summary</h2>
+                <table>
+                    <tr><td><strong>Full Name</strong></td><td>${escapeHtml(p.name || '________________')}</td></tr>
+                    <tr><td><strong>Degree &amp; Passing Year</strong></td><td>${escapeHtml(p.qualification || 'MBBS')} (${escapeHtml(p.passing_year || '____')})</td></tr>
+                    <tr><td><strong>Age</strong></td><td>${escapeHtml(p.age || '__')} years</td></tr>
+                    <tr><td><strong>Internship (CRRI)</strong></td><td>${escapeHtml(p.internship_status || 'Completed')}</td></tr>
+                    <tr><td><strong>NMC / State Medical Council Reg.</strong></td><td>${p.registered_with_smc ? 'Registered (Permanent)' : 'Provisional / Pending'}</td></tr>
+                </table>
+                <h2>Self-Attested Walk-in Document Checklist</h2>
+                <ul style='font-size:13px'>
+                    <li>Permanent NMC / State Medical Council Registration Certificate (Original + 2 copies)</li>
+                    <li>MBBS Degree / Provisional Certificate &amp; CRRI Internship Completion Certificate</li>
+                    <li>All Prof Marksheets &amp; Attempt Certificate</li>
+                    <li>Photo ID (Aadhaar / PAN), 6 Passport Photos &amp; Category Certificate (if applicable)</li>
+                </ul>
+            </body></html>`);
+            win.document.close();
+        }
+
         function shareVacancyToWhatsApp(id) {
             const v = allVacancies.find(item => String(item.id) === String(id));
             if (!v) return;
@@ -1066,6 +1172,9 @@
                     </button>
                 </div>
                 <div class="flex items-center gap-2">
+                    <button onclick="generateWalkinPacket('${v.id}')" class="pill-btn px-3.5 py-2 rounded-full bg-[#E6F4F1] hover:bg-[#D1ECE6] text-[#0F766E] text-xs font-semibold">
+                        Walk-in CV
+                    </button>
                     <a href="${safeUrl(v.notification_url)}" target="_blank" rel="noopener noreferrer" class="pill-btn px-4 py-2 rounded-full bg-white border border-black/10 hover:bg-gray-50 text-[#1D1D1F] text-xs font-semibold">
                         Official PDF
                     </a>

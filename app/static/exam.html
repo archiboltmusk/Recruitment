@@ -113,6 +113,25 @@
                 </label>
             </div>
 
+            <!-- UPSC CMS Split Simulators & Ward-Break Flashcards -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <button onclick="startTest('cms-paper-1')" class="apple-card p-4 text-left hover:border-[#0F766E]/40 transition">
+                    <span class="text-[10px] font-bold uppercase text-[#0F766E]">UPSC CMS Paper I</span>
+                    <p class="text-sm font-bold text-[#1D1D1F] mt-0.5">Medicine &amp; Paediatrics</p>
+                    <p class="text-[11px] text-[#6E6E73] mt-0.5">120 Qs • 120 Mins</p>
+                </button>
+                <button onclick="startTest('cms-paper-2')" class="apple-card p-4 text-left hover:border-[#0F766E]/40 transition">
+                    <span class="text-[10px] font-bold uppercase text-[#0F766E]">UPSC CMS Paper II</span>
+                    <p class="text-sm font-bold text-[#1D1D1F] mt-0.5">Surgery, OBG &amp; PSM</p>
+                    <p class="text-[11px] text-[#6E6E73] mt-0.5">120 Qs • 120 Mins</p>
+                </button>
+                <button onclick="startFlashcards()" class="apple-card p-4 text-left bg-[#E6F4F1]/60 hover:bg-[#E6F4F1] transition">
+                    <span class="text-[10px] font-bold uppercase text-[#0F766E]">5-Min Duty Break</span>
+                    <p class="text-sm font-bold text-[#1D1D1F] mt-0.5">Ward-Break Flashcards</p>
+                    <p class="text-[11px] text-[#6E6E73] mt-0.5">Tap to flip &amp; reveal pearls</p>
+                </button>
+            </div>
+
             <div class="space-y-4" id="examsListContainer"></div>
 
             <!-- Recent Exam History & Readiness Predictor -->
@@ -214,6 +233,25 @@
                 </div>
             </div>
             <div id="reviewContainer" class="space-y-4"></div>
+        </div>
+
+        <!-- VIEW 4: WARD-BREAK FLASHCARDS -->
+        <div id="flashcardView" class="hidden max-w-2xl mx-auto w-full space-y-5">
+            <div class="flex items-center justify-between">
+                <span id="fcCounter" class="text-xs font-bold text-[#0F766E]">Card 1 / 20</span>
+                <button onclick="exitFlashcards()" class="px-4 py-1.5 rounded-full bg-white border border-black/10 text-xs font-semibold">Back to Lobby</button>
+            </div>
+            <div class="apple-card p-6 sm:p-8 space-y-5">
+                <span id="fcSubject" class="text-[11px] font-bold px-3 py-1 rounded-full bg-[#E6F4F1] text-[#0F766E]">Subject</span>
+                <p id="fcQuestion" class="text-base font-semibold text-[#1D1D1F] leading-relaxed"></p>
+                <div id="fcImageBox" class="hidden"><img id="fcImage" src="" alt="Flashcard Image" class="max-h-60 rounded-2xl border border-black/10 mx-auto object-contain bg-white p-2"></div>
+                <div id="fcAnswerBox" class="hidden p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-xs space-y-1.5"></div>
+                <div class="flex items-center justify-between pt-2">
+                    <button onclick="prevFlashcard()" class="px-4 py-2 rounded-full bg-[#F5F5F7] text-xs font-semibold">Previous</button>
+                    <button onclick="revealFlashcard()" id="fcRevealBtn" class="pill-btn px-5 py-2 rounded-full bg-[#0F766E] text-white text-xs font-semibold">Flip / Reveal Pearl</button>
+                    <button onclick="nextFlashcard()" class="px-4 py-2 rounded-full bg-[#1D1D1F] text-white text-xs font-semibold">Next</button>
+                </div>
+            </div>
         </div>
     </main>
 
@@ -396,6 +434,45 @@
             const res = await fetch(`/api/exams/${examId}`), data = await res.json();
             currentExam = data.exam; questions = data.questions; beginSession();
         }
+        let fcList = [], fcIdx = 0;
+        async function startFlashcards() {
+            try {
+                const res = await fetch('/api/exams/image-based');
+                const data = await res.json();
+                fcList = (data.questions || []).slice(0, 25);
+                if (!fcList.length) return;
+                fcIdx = 0;
+                document.getElementById('lobbyView').classList.add('hidden');
+                document.getElementById('flashcardView').classList.remove('hidden');
+                renderFlashcard();
+            } catch (e) {}
+        }
+        function exitFlashcards() {
+            document.getElementById('flashcardView').classList.add('hidden');
+            document.getElementById('lobbyView').classList.remove('hidden');
+        }
+        function renderFlashcard() {
+            const q = fcList[fcIdx]; if (!q) return;
+            document.getElementById('fcCounter').innerText = `Card ${fcIdx + 1} / ${fcList.length}`;
+            document.getElementById('fcSubject').innerText = q.subject;
+            document.getElementById('fcQuestion').innerHTML = formatQuestionHtml(q.text);
+            const ib = document.getElementById('fcImageBox'), im = document.getElementById('fcImage');
+            if (q.image_url) { im.src = q.image_url; ib.classList.remove('hidden'); } else { im.src = ''; ib.classList.add('hidden'); }
+            document.getElementById('fcAnswerBox').classList.add('hidden');
+            document.getElementById('fcRevealBtn').disabled = false;
+        }
+        async function revealFlashcard() {
+            const q = fcList[fcIdx]; if (!q) return;
+            const box = document.getElementById('fcAnswerBox');
+            const res = await fetch('/api/exams/check-question', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ question_id: q.id, selected_option: 0 }) });
+            if (!res.ok) return;
+            const fb = await res.json();
+            const letters = ['A', 'B', 'C', 'D'];
+            box.innerHTML = `<p class='font-bold text-emerald-900'>Answer: ${letters[fb.correct_option]}. ${q.options[fb.correct_option] || ''}</p><p class='text-emerald-950 leading-relaxed'>${fb.explanation || ''}</p>`;
+            box.classList.remove('hidden');
+        }
+        function nextFlashcard() { if (fcIdx < fcList.length - 1) { fcIdx++; renderFlashcard(); } }
+        function prevFlashcard() { if (fcIdx > 0) { fcIdx--; renderFlashcard(); } }
         function importCustomQuestions(ev) {
             const file = ev.target.files && ev.target.files[0];
             if (!file) return;

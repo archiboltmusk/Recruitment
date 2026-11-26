@@ -453,6 +453,50 @@
                 document.getElementById('timerDisplay').innerText = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
             }, 1000);
         }
+        function formatQuestionHtml(rawText) {
+            const esc = (s) => String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            const text = String(rawText || '').trim();
+            const hasLists = /\bList\s*[-–]?\s*I\b/i.test(text) && /\bList\s*[-–]?\s*II\b/i.test(text);
+            if (hasLists && /\bA\.\s+/.test(text) && /\b1\.\s+/.test(text)) {
+                const l1Idx = text.search(/\n?List\s*[-–]?\s*I\b(?!I)/i);
+                const intro = l1Idx > 0 ? text.slice(0, l1Idx).trim() : '';
+                const body = text.slice(Math.max(0, l1Idx));
+                const l1Match = body.match(/List\s*[-–]?\s*I\b(?:\s*\([^)]+\))?/i);
+                const l2Match = body.match(/List\s*[-–]?\s*II\b(?:\s*\([^)]+\))?/i);
+                const l1Hdr = l1Match ? l1Match[0].trim() : 'List I';
+                const l2Hdr = l2Match ? l2Match[0].trim() : 'List II';
+                const codeIdx = body.search(/\n?Code\s*:/i);
+                const itemsBlock = codeIdx > 0 ? body.slice(0, codeIdx) : body;
+                const codeLine = codeIdx > 0 ? body.slice(codeIdx).trim() : '';
+
+                const leftItems = {}, rightItems = {};
+                const cleanBlock = itemsBlock.replace(/\s+/g, ' ');
+                const aMatches = [...cleanBlock.matchAll(/(?:^|\s)([A-D])\.\s+(.*?)(?=\s+(?:[A-D]|[1-4])\.\s+|$)/g)];
+                for (const m of aMatches) leftItems[m[1]] = m[2].trim();
+                const nMatches = [...cleanBlock.matchAll(/(?:^|\s)([1-4])\.\s+(.*?)(?=\s+(?:[A-D]|[1-4])\.\s+|$)/g)];
+                for (const m of nMatches) rightItems[m[1]] = m[2].trim();
+
+                if (Object.keys(leftItems).length >= 3 && Object.keys(rightItems).length >= 3) {
+                    const pairs = [['A','1'], ['B','2'], ['C','3'], ['D','4']];
+                    let html = intro ? `<div class="mb-3">${esc(intro)}</div>` : '';
+                    html += `<div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 p-4 rounded-2xl bg-[#F5F5F7]/80 border border-black/5 text-sm font-medium">`;
+                    html += `<div class="font-bold text-[#0F766E] italic pb-1 border-b border-black/5">${esc(l1Hdr)}</div>`;
+                    html += `<div class="font-bold text-[#0F766E] italic pb-1 border-b border-black/5">${esc(l2Hdr)}</div>`;
+                    for (const [lk, rk] of pairs) {
+                        html += `<div><span class="font-bold">${lk}.</span> ${esc(leftItems[lk] || '')}</div>`;
+                        html += `<div><span class="font-bold">${rk}.</span> ${esc(rightItems[rk] || '')}</div>`;
+                    }
+                    html += `</div>`;
+                    if (codeLine) {
+                        const formattedCode = codeLine.replace(/\bA\s+B\s+C\s+D\b/, '<span class="ml-3 tracking-[0.45em] font-mono">ABCD</span>');
+                        html += `<div class="mt-3 text-xs font-bold text-[#6E6E73]">${formattedCode.startsWith('Code') ? formattedCode : esc(codeLine)}</div>`;
+                    }
+                    return html;
+                }
+            }
+            return esc(text);
+        }
+
         function renderQuestion() {
             const q = questions[currentIndex], selected = userResponses[q.id], fb = tutorFeedback[q.id], letters = ['A','B','C','D'];
             document.getElementById('qSubjectBadge').innerText = q.subject;
@@ -462,7 +506,7 @@
                 const isSaved = getPearlBookmarks().some(x => x.id === q.id);
                 pbBtn.innerHTML = isSaved ? '<i class="fa-solid fa-bookmark text-[#0F766E]"></i>' : '<i class="fa-regular fa-bookmark"></i>';
             }
-            document.getElementById('qText').innerText = q.text;
+            document.getElementById('qText').innerHTML = formatQuestionHtml(q.text);
             const imgBox = document.getElementById('qImageContainer');
             const imgEl = document.getElementById('qImage');
             if (q.image_url) { imgEl.src = q.image_url; imgBox.classList.remove('hidden'); }
@@ -478,10 +522,14 @@
                     rowCls = 'bg-[#E6F4F1] border-[#0F766E]';
                 }
                 const disabledAttr = (tutorMode && fb) ? 'disabled' : '';
+                const isCodeGrid = /^[1-4](\s+[1-4]){3}$/.test(String(opt).trim());
+                const optHtml = isCodeGrid
+                    ? `<span class="font-mono tracking-[0.45em] font-semibold">${String(opt).trim().replace(/\s+/g, '')}</span>`
+                    : opt;
                 return `
                     <label class="flex items-start gap-3 p-4 rounded-2xl border ${rowCls} ${(tutorMode && fb) ? 'cursor-default' : 'cursor-pointer'} transition">
                         <input type="radio" name="optRadio" value="${idx}" ${selected === idx ? 'checked' : ''} ${disabledAttr} onchange="selectOption(${idx})" class="mt-1 accent-[#0F766E]">
-                        <span class="text-sm text-[#1D1D1F]"><strong class="mr-1.5">${letters[idx]}.</strong> ${opt}</span>
+                        <span class="text-sm text-[#1D1D1F]"><strong class="mr-1.5">${letters[idx]}.</strong> ${optHtml}</span>
                     </label>
                 `;
             }).join('');

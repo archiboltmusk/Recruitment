@@ -456,13 +456,13 @@
         function formatQuestionHtml(rawText) {
             const esc = (s) => String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
             const text = String(rawText || '').trim();
-            const hasLists = /\bList\s*[-–]?\s*I\b/i.test(text) && /\bList\s*[-–]?\s*II\b/i.test(text);
+            const hasLists = /\bList\s*[-–]?\s*(?:I|1)\b/i.test(text) && /\bList\s*[-–]?\s*(?:II|2)\b/i.test(text);
             if (hasLists && /\bA\.\s+/.test(text) && /\b1\.\s+/.test(text)) {
-                const l1Idx = text.search(/\n?List\s*[-–]?\s*I\b(?!I)/i);
+                const l1Idx = text.search(/\n?List\s*[-–]?\s*(?:I|1)\b(?![I1])/i);
                 const intro = l1Idx > 0 ? text.slice(0, l1Idx).trim() : '';
                 const body = text.slice(Math.max(0, l1Idx));
-                const l1Match = body.match(/List\s*[-–]?\s*I\b(?:\s*\([^)]+\))?/i);
-                const l2Match = body.match(/List\s*[-–]?\s*II\b(?:\s*\([^)]+\))?/i);
+                const l1Match = body.match(/List\s*[-–]?\s*(?:I|1)\b(?:\s*\([^)]+\))?/i);
+                const l2Match = body.match(/List\s*[-–]?\s*(?:II|2)\b(?:\s*\([^)]+\))?/i);
                 const l1Hdr = l1Match ? l1Match[0].trim() : 'List I';
                 const l2Hdr = l2Match ? l2Match[0].trim() : 'List II';
                 const codeIdx = body.search(/\n?Code\s*:/i);
@@ -471,20 +471,23 @@
 
                 const leftItems = {}, rightItems = {};
                 const cleanBlock = itemsBlock.replace(/\s+/g, ' ');
-                const aMatches = [...cleanBlock.matchAll(/(?:^|\s)([A-D])\.\s+(.*?)(?=\s+(?:[A-D]|[1-4])\.\s+|$)/g)];
+                const aMatches = [...cleanBlock.matchAll(/(?:^|\s)([A-D])\.\s+(.*?)(?=\s+(?:[A-D]|[1-5])\.\s+|$)/g)];
                 for (const m of aMatches) leftItems[m[1]] = m[2].trim();
-                const nMatches = [...cleanBlock.matchAll(/(?:^|\s)([1-4])\.\s+(.*?)(?=\s+(?:[A-D]|[1-4])\.\s+|$)/g)];
+                const nMatches = [...cleanBlock.matchAll(/(?:^|\s)([1-5])\.\s+(.*?)(?=\s+(?:[A-D]|[1-5])\.\s+|$)/g)];
                 for (const m of nMatches) rightItems[m[1]] = m[2].trim();
 
                 if (Object.keys(leftItems).length >= 3 && Object.keys(rightItems).length >= 3) {
-                    const pairs = [['A','1'], ['B','2'], ['C','3'], ['D','4']];
+                    const leftKeys = ['A', 'B', 'C', 'D'];
+                    const maxRows = Math.max(4, Object.keys(rightItems).length);
                     let html = intro ? `<div class="mb-3">${esc(intro)}</div>` : '';
                     html += `<div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 p-4 rounded-2xl bg-[#F5F5F7]/80 border border-black/5 text-sm font-medium">`;
                     html += `<div class="font-bold text-[#0F766E] italic pb-1 border-b border-black/5">${esc(l1Hdr)}</div>`;
                     html += `<div class="font-bold text-[#0F766E] italic pb-1 border-b border-black/5">${esc(l2Hdr)}</div>`;
-                    for (const [lk, rk] of pairs) {
-                        html += `<div><span class="font-bold">${lk}.</span> ${esc(leftItems[lk] || '')}</div>`;
-                        html += `<div><span class="font-bold">${rk}.</span> ${esc(rightItems[rk] || '')}</div>`;
+                    for (let r = 0; r < maxRows; r++) {
+                        const lk = leftKeys[r];
+                        const rk = String(r + 1);
+                        html += lk && leftItems[lk] ? `<div><span class="font-bold">${lk}.</span> ${esc(leftItems[lk])}</div>` : `<div></div>`;
+                        html += rightItems[rk] ? `<div><span class="font-bold">${rk}.</span> ${esc(rightItems[rk])}</div>` : `<div></div>`;
                     }
                     html += `</div>`;
                     if (codeLine) {
@@ -494,7 +497,11 @@
                     return html;
                 }
             }
-            return esc(text);
+            // Format multi-statement questions (1. ... 2. ... 3. ... 4. ... 5. ...) cleanly
+            let out = esc(text);
+            out = out.replace(/(?:^|\n|\s+)([1-5]\.\s+[^\n]+)/g, (m, stmt) => `\n<div class="pl-4 py-0.5 text-[15px] font-medium text-[#1D1D1F]">${stmt.trim()}</div>`);
+            out = out.replace(/\b(except\s*:?)/gi, '<em class="font-bold underline decoration-black/30">$1</em>');
+            return out;
         }
 
         function renderQuestion() {

@@ -343,6 +343,66 @@ class MedAlertsSmokeTests(unittest.TestCase):
         self.assertEqual(len(reports), 1)
         self.assertEqual(reports[0]["reason"], "OCR typo")
 
+    def test_admin_password_and_question_correction(self):
+        import os
+        from unittest.mock import patch
+        from fastapi import HTTPException
+        from app.main import (
+            admin_login,
+            AdminLoginRequest,
+            admin_search_questions,
+            admin_ai_fix_question,
+            QuestionAIFixRequest,
+            admin_update_question,
+            QuestionUpdateRequest,
+            _find_question_in_memory,
+            _apply_question_overrides,
+        )
+
+        req = Request({"type": "http", "headers": [], "client": ("127.0.0.1", 12345)})
+        with patch.dict(os.environ, {"ADMIN_PASSWORD": "test-secret-pw"}, clear=False), \
+             patch("app.main.check_rate_limit"):
+            with self.assertRaises(HTTPException) as ctx:
+                admin_login(AdminLoginRequest(password="wrong"), req)
+            self.assertEqual(ctx.exception.status_code, 403)
+
+            ok = admin_login(AdminLoginRequest(password="test-secret-pw"), req)
+            self.assertTrue(ok["ok"])
+
+        found = admin_search_questions(q="cms16-p1-003", limit=5, db=self.db)
+        self.assertEqual(len(found["results"]), 1)
+
+        with patch("app.main.check_rate_limit"):
+            ai_res = admin_ai_fix_question(
+                "cms16-p1-003",
+                QuestionAIFixRequest(provider="local", text="Test stem 1. First 2. Second", options=["2 a nd 3 only", "1, 2 and 3", "1 and 3 only", "1 and 2 only"]),
+                req,
+            )
+            self.assertTrue(ai_res["ok"])
+            self.assertEqual(ai_res["suggestion"]["options"][0], "2 and 3 only")
+
+        q_orig = dict(_find_question_in_memory("cms16-p1-003"))
+        try:
+            with patch("app.main._persist_question_to_pyq_json", return_value=True):
+                upd = admin_update_question(
+                    "cms16-p1-003",
+                    QuestionUpdateRequest(
+                        subject=q_orig["subject"],
+                        text=q_orig["text"],
+                        options=q_orig["options"],
+                        correct_option=q_orig["correct_option"],
+                        explanation="Verified manual edit",
+                        citation=q_orig.get("citation", ""),
+                    ),
+                    db=self.db,
+                )
+            self.assertTrue(upd["ok"])
+            _find_question_in_memory("cms16-p1-003")["explanation"] = "stale"
+            _apply_question_overrides(self.db)
+            self.assertEqual(_find_question_in_memory("cms16-p1-003")["explanation"], "Verified manual edit")
+        finally:
+            _find_question_in_memory("cms16-p1-003").update(q_orig)
+
 
 if __name__ == "__main__":
     unittest.main()

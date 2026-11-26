@@ -77,15 +77,18 @@ def check_rate_limit(request: Request, bucket: str, max_calls: int = 5, window_s
         timestamps.append(now)
         _RATE_BUCKETS[key] = timestamps
 
+def _get_admin_secret() -> str:
+    return (os.getenv("ADMIN_PASSWORD") or os.getenv("ADMIN_API_KEY") or "").strip()
+
 def verify_admin_key(x_admin_key: Optional[str] = Header(default=None)):
-    expected = os.getenv("ADMIN_API_KEY", "").strip()
+    expected = _get_admin_secret()
     if not expected:
         raise HTTPException(
             status_code=503,
-            detail="Admin endpoint is locked. Configure ADMIN_API_KEY in environment variables to enable."
+            detail="Admin endpoint is locked. Configure ADMIN_PASSWORD or ADMIN_API_KEY in environment variables to enable."
         )
-    if not x_admin_key or not hmac.compare_digest(x_admin_key, expected):
-        raise HTTPException(status_code=403, detail="Invalid or missing X-Admin-Key")
+    if not x_admin_key or not hmac.compare_digest(x_admin_key.strip(), expected):
+        raise HTTPException(status_code=403, detail="Invalid or missing admin password / X-Admin-Key")
 
 def mask_target(target: str) -> str:
     if not target:
@@ -256,6 +259,7 @@ def on_startup():
                     ))
                     db.commit()
             VacancyCollector.sync_sample_feed(db)
+            _apply_question_overrides(db)
         finally:
             db.close()
     except Exception as e:
@@ -702,6 +706,264 @@ def report_exam_question(payload: QuestionReportRequest, request: Request, db: S
 def list_question_reports(db: Session = Depends(get_db)):
     row = db.query(AppSetting).filter(AppSetting.key == "exam_question_reports").first()
     return json.loads(row.value) if row and row.value else []
+
+class AdminLoginRequest(BaseModel):
+    password: str = Field(..., min_length=1, max_length=200)
+
+class QuestionUpdateRequest(BaseModel):
+    subject: str = Field(..., min_length=2, max_length=80)
+    text: str = Field(..., min_length=5, max_length=5000)
+    options: List[str] = Field(..., min_length=4, max_length=4)
+    correct_option: int = Field(..., ge=0, le=3)
+    explanation: Optional[str] = Field(default="", max_length=4000)
+    citation: Optional[str] = Field(default="", max_length=300)
+    resolve_reports: bool = True
+
+class QuestionAIFixRequest(BaseModel):
+    instruction: Optional[str] = Field(default="", max_length=400)
+    provider: str = Field(default="auto")
+    api_key: Optional[str] = Field(default="", max_length=200)
+    text: Optional[str] = None
+    options: Optional[List[str]] = None
+
+def _find_question_in_memory(question_id: str) -> Optional[Dict[str, Any]]:
+    qid = question_id.strip()
+    for qs in EXAM_QUESTIONS.values():
+        for q in qs:
+            if q.get("id") == qid:
+                return q
+    return None
+
+def _apply_question_overrides(db: Session):
+    try:
+        row = db.query(AppSetting).filter(AppSetting.key == "exam_question_overrides").first()
+        if not row or not row.value:
+            return
+        overrides = json.loads(row.value)
+        for qid, patch in overrides.items():
+            q = _find_question_in_memory(qid)
+            if q and isinstance(patch, dict):
+                for k in ("subject", "text", "options", "correct_option", "explanation", "citation"):
+                    if k in patch and patch[k] is not None:
+                        q[k] = patch[k]
+    except Exception as e:
+        print(f"Question overrides load warning: {e}")
+
+def _persist_question_to_pyq_json(question_id: str, updated: Dict[str, Any]):
+    pyq_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "pyq_papers.json")
+    if not os.path.exists(pyq_path):
+        return False
+    try:
+        with open(pyq_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        changed = False
+        for qlist in (data.get("questions") or {}).values():
+            for q in qlist:
+                if q.get("id") == question_id:
+                    for k in ("subject", "text", "options", "correct_option", "explanation", "citation"):
+                        q[k] = updated[k]
+                    changed = True
+        if changed:
+            with open(pyq_path, "w", encoding="utf-8") as f:
+                json.dump(data, f, indent=2, ensure_ascii=False)
+        return changed
+    except Exception:
+        return False
+
+def _local_ocr_clean_question(text: str, options: List[str]) -> Dict[str, Any]:
+    import re
+    cleaned_text = (text or "").strip()
+    cleaned_text = re.sub(r"\s*SLPJ-U-CXJ/76D.*$", "", cleaned_text)
+    cleaned_text = re.sub(r"\s*Vacancies ond updates on one click.*$", "", cleaned_text)
+    cleaned_text = re.sub(r"\ba nd\b", "and", cleaned_text)
+    cleaned_text = re.sub(r"\bo nly\b", "only", cleaned_text)
+    cleaned_text = re.sub(r"\baad\b", "and", cleaned_text)
+    cleaned_text = re.sub(r"(?<!\n)\s+(?=(?:[1-4]|I{1,3}|IV)\.\s)", "\n", cleaned_text)
+    cleaned_text = re.sub(r"(?<!\n)\s+(?=(?:Select the(?: correct)? answer|Which of the statements given above))", "\n", cleaned_text)
+    cleaned_opts = []
+    for opt in (options or []):
+        o = str(opt or "").strip()
+        o = re.sub(r"\s*SLPJ-U-CXJ/76D.*$", "", o)
+        o = re.sub(r"\s*Vacancies ond updates on one click.*$", "", o)
+        o = re.sub(r"\ba nd\b", "and", o)
+        o = re.sub(r"\bo nly\b", "only", o)
+        o = re.sub(r"\baad\b", "and", o)
+        if not re.search(r"\b(II|III|IV)\b", cleaned_text):
+            o = re.sub(r"^I(\s+(and|only))", r"1\1", o)
+            o = re.sub(r"^I$", "1", o)
+        cleaned_opts.append(o)
+    return {"text": cleaned_text, "options": cleaned_opts}
+
+@app.post("/api/admin/login")
+def admin_login(payload: AdminLoginRequest, request: Request):
+    check_rate_limit(request, "admin_login", max_calls=15, window_sec=300)
+    expected = _get_admin_secret()
+    if not expected:
+        raise HTTPException(status_code=503, detail="Admin password not configured. Set ADMIN_PASSWORD or ADMIN_API_KEY in environment variables.")
+    if not hmac.compare_digest(payload.password.strip(), expected):
+        raise HTTPException(status_code=403, detail="Incorrect admin password")
+    return {
+        "ok": True,
+        "ai_providers": {
+            "gemini": bool(os.getenv("GEMINI_API_KEY", "").strip() or os.getenv("GOOGLE_API_KEY", "").strip()),
+            "groq": bool(os.getenv("GROQ_API_KEY", "").strip()),
+        }
+    }
+
+@app.get("/api/admin/questions", dependencies=[Depends(verify_admin_key)])
+def admin_search_questions(q: str = Query(..., min_length=2, max_length=100), limit: int = Query(default=25, ge=1, le=50), db: Session = Depends(get_db)):
+    needle = q.strip().lower()
+    row = db.query(AppSetting).filter(AppSetting.key == "exam_question_overrides").first()
+    overrides = json.loads(row.value) if row and row.value else {}
+    matches = []
+    for qs in EXAM_QUESTIONS.values():
+        for item in qs:
+            if needle in (item.get("id") or "").lower() or needle in (item.get("text") or "").lower() or needle in (item.get("subject") or "").lower():
+                matches.append({**item, "has_override": item.get("id") in overrides})
+                if len(matches) >= limit:
+                    return {"results": matches}
+    return {"results": matches}
+
+@app.get("/api/admin/questions/{question_id}", dependencies=[Depends(verify_admin_key)])
+def admin_get_question(question_id: str, db: Session = Depends(get_db)):
+    q = _find_question_in_memory(question_id)
+    if not q:
+        raise HTTPException(status_code=404, detail="Question not found")
+    row = db.query(AppSetting).filter(AppSetting.key == "exam_question_overrides").first()
+    overrides = json.loads(row.value) if row and row.value else {}
+    return {**q, "has_override": q.get("id") in overrides}
+
+@app.put("/api/admin/questions/{question_id}", dependencies=[Depends(verify_admin_key)])
+def admin_update_question(question_id: str, payload: QuestionUpdateRequest, db: Session = Depends(get_db)):
+    q = _find_question_in_memory(question_id)
+    if not q:
+        raise HTTPException(status_code=404, detail="Question not found")
+    cleaned_opts = [o.strip() for o in payload.options]
+    if any(not o for o in cleaned_opts):
+        raise HTTPException(status_code=400, detail="All 4 options must be non-empty")
+    updated_fields = {
+        "subject": payload.subject.strip(),
+        "text": payload.text.strip(),
+        "options": cleaned_opts,
+        "correct_option": payload.correct_option,
+        "explanation": (payload.explanation or "").strip(),
+        "citation": (payload.citation or "").strip(),
+    }
+    q.update(updated_fields)
+    row = db.query(AppSetting).filter(AppSetting.key == "exam_question_overrides").first()
+    overrides = json.loads(row.value) if row and row.value else {}
+    overrides[q["id"]] = {**updated_fields, "updated_at": _utc_now().isoformat()}
+    if not row:
+        db.add(AppSetting(key="exam_question_overrides", value=json.dumps(overrides), updated_at=_utc_now()))
+    else:
+        row.value = json.dumps(overrides)
+        row.updated_at = _utc_now()
+    if payload.resolve_reports:
+        rep_row = db.query(AppSetting).filter(AppSetting.key == "exam_question_reports").first()
+        if rep_row and rep_row.value:
+            reps = [r for r in json.loads(rep_row.value) if r.get("question_id") != q["id"]]
+            rep_row.value = json.dumps(reps)
+            rep_row.updated_at = _utc_now()
+    db.commit()
+    json_saved = _persist_question_to_pyq_json(q["id"], updated_fields)
+    return {"ok": True, "question": q, "persisted_to_json": json_saved}
+
+@app.post("/api/admin/reports/{question_id}/dismiss", dependencies=[Depends(verify_admin_key)])
+def admin_dismiss_question_report(question_id: str, db: Session = Depends(get_db)):
+    rep_row = db.query(AppSetting).filter(AppSetting.key == "exam_question_reports").first()
+    if rep_row and rep_row.value:
+        reps = [r for r in json.loads(rep_row.value) if r.get("question_id") != question_id.strip()]
+        rep_row.value = json.dumps(reps)
+        rep_row.updated_at = _utc_now()
+        db.commit()
+    return {"ok": True}
+
+@app.get("/api/admin/questions-overrides/export", dependencies=[Depends(verify_admin_key)])
+def export_question_overrides(db: Session = Depends(get_db)):
+    row = db.query(AppSetting).filter(AppSetting.key == "exam_question_overrides").first()
+    return json.loads(row.value) if row and row.value else {}
+
+@app.post("/api/admin/questions/{question_id}/ai-fix", dependencies=[Depends(verify_admin_key)])
+def admin_ai_fix_question(question_id: str, payload: QuestionAIFixRequest, request: Request):
+    check_rate_limit(request, "admin_ai_fix", max_calls=30, window_sec=300)
+    q = _find_question_in_memory(question_id)
+    if not q:
+        raise HTTPException(status_code=404, detail="Question not found")
+    cur_text = (payload.text if payload.text is not None else q.get("text", "")).strip()
+    cur_opts = payload.options if (payload.options and len(payload.options) == 4) else list(q.get("options", []))
+    provider = (payload.provider or "auto").lower().strip()
+    user_key = (payload.api_key or "").strip()
+    gemini_key = user_key or os.getenv("GEMINI_API_KEY", "").strip() or os.getenv("GOOGLE_API_KEY", "").strip()
+    groq_key = user_key if provider == "groq" else os.getenv("GROQ_API_KEY", "").strip()
+
+    prompt = (
+        "You are an expert UPSC CMS medical exam editor. Fix OCR typos, broken line breaks, garbled symbols, "
+        "and formatting in this MCQ without altering medical facts or option order. "
+        "For multi-statement questions, put each numbered statement (1./2./3./4. or I./II./III./IV.) on its own line. "
+        "For Match List I / List II questions, format List I and List II cleanly. "
+        f"Extra admin instruction: {payload.instruction or 'Fix OCR errors and verify answer key & explanation.'}\n\n"
+        f"Question ID: {q['id']}\nSubject: {q.get('subject','')}\n"
+        f"Question Text:\n{cur_text}\n\n"
+        f"Options (0=A, 1=B, 2=C, 3=D):\n{json.dumps(cur_opts, ensure_ascii=False)}\n"
+        f"Current Correct Option Index: {q.get('correct_option', 0)}\n"
+        f"Current Explanation: {q.get('explanation', '')}\n\n"
+        "Return ONLY valid JSON with keys: subject, text, options (array of 4 strings), correct_option (int 0-3), explanation, citation, changes_summary."
+    )
+
+    if provider in ("auto", "gemini") and gemini_key:
+        try:
+            url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={gemini_key}"
+            resp = requests.post(
+                url,
+                json={
+                    "contents": [{"parts": [{"text": prompt}]}],
+                    "generationConfig": {"temperature": 0.1, "responseMimeType": "application/json"},
+                },
+                timeout=20,
+            )
+            if resp.ok:
+                raw_txt = resp.json()["candidates"][0]["content"]["parts"][0]["text"]
+                suggestion = json.loads(raw_txt)
+                return {"ok": True, "provider_used": "gemini-2.5-flash (free tier)", "suggestion": suggestion}
+        except Exception as e:
+            if provider == "gemini":
+                raise HTTPException(status_code=502, detail=f"Gemini API error: {str(e)}")
+
+    if provider in ("auto", "groq") and groq_key:
+        try:
+            resp = requests.post(
+                "https://api.groq.com/openai/v1/chat/completions",
+                headers={"Authorization": f"Bearer {groq_key}", "Content-Type": "application/json"},
+                json={
+                    "model": "llama-3.3-70b-versatile",
+                    "temperature": 0.1,
+                    "response_format": {"type": "json_object"},
+                    "messages": [{"role": "user", "content": prompt}],
+                },
+                timeout=20,
+            )
+            if resp.ok:
+                raw_txt = resp.json()["choices"][0]["message"]["content"]
+                suggestion = json.loads(raw_txt)
+                return {"ok": True, "provider_used": "groq llama-3.3-70b (free tier)", "suggestion": suggestion}
+        except Exception as e:
+            if provider == "groq":
+                raise HTTPException(status_code=502, detail=f"Groq API error: {str(e)}")
+
+    cleaned = _local_ocr_clean_question(cur_text, cur_opts)
+    return {
+        "ok": True,
+        "provider_used": "local-ocr-cleaner (offline fallback — add GEMINI_API_KEY for full AI)",
+        "suggestion": {
+            "subject": q.get("subject", ""),
+            "text": cleaned["text"],
+            "options": cleaned["options"],
+            "correct_option": q.get("correct_option", 0),
+            "explanation": q.get("explanation", ""),
+            "citation": q.get("citation", ""),
+            "changes_summary": "Applied deterministic OCR spacing, watermark removal, and statement line-break formatting.",
+        },
+    }
 
 @app.get("/api/exams/{exam_id}")
 def get_exam_questions(exam_id: str, db: Session = Depends(get_db)):

@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Console — MedAlerts</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/static/theme.js"></script>
+</head>
+<body class="bg-[#F5F5F7] text-[#1D1D1F] min-h-screen antialiased">
+
+<header class="sticky top-0 z-30 bg-[#F5F5F7]/90 backdrop-blur border-b border-black/10 px-6 h-16 flex items-center justify-between">
+  <div class="flex items-center gap-3">
+    <a href="/" class="font-bold text-base tracking-tight">MedAlerts Admin</a>
+    <span id="authBadge" class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-amber-100 text-amber-800">Locked</span>
+  </div>
+  <div class="flex items-center gap-2">
+    <a href="/exam" class="px-3.5 py-1.5 rounded-full bg-white border border-black/10 text-xs font-semibold hover:bg-black/5">Exam Bank</a>
+    <a href="/" class="px-3.5 py-1.5 rounded-full bg-white border border-black/10 text-xs font-semibold hover:bg-black/5">Home</a>
+    <button id="lockBtn" onclick="lockAdmin()" class="hidden px-3.5 py-1.5 rounded-full bg-rose-600 text-white text-xs font-semibold hover:bg-rose-700">Lock</button>
+  </div>
+</header>
+
+<!-- Password Lock Gate -->
+<section id="loginGate" class="max-w-md mx-auto mt-16 px-6">
+  <div class="bg-white rounded-3xl p-8 border border-black/5 shadow-sm space-y-5">
+    <div class="space-y-1">
+      <p class="text-[11px] font-bold uppercase tracking-wider text-[#0F766E]">Protected Console</p>
+      <h1 class="text-xl font-bold">Enter Admin Password</h1>
+      <p class="text-xs text-[#6E6E73]">Unlocks question editing (AI &amp; manual), flagged circulars, portal sync, and metrics.</p>
+    </div>
+    <form onsubmit="event.preventDefault(); unlockAdmin();" class="space-y-3">
+      <div class="relative">
+        <input type="password" id="adminKeyInput" placeholder="Admin Password (ADMIN_PASSWORD / ADMIN_API_KEY)" autocomplete="current-password"
+          class="w-full px-4 py-2.5 pr-16 bg-[#F5F5F7] border border-black/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#0F766E]">
+        <button type="button" onclick="togglePw()" class="absolute right-3 top-2.5 text-xs font-semibold text-[#6E6E73]">Show</button>
+      </div>
+      <p id="loginError" class="hidden text-xs text-rose-600 font-medium"></p>
+      <button type="submit" id="unlockBtn" class="w-full py-2.5 rounded-xl bg-[#1D1D1F] text-white text-sm font-semibold hover:bg-black transition">
+        Unlock Admin Console
+      </button>
+    </form>
+  </div>
+</section>
+
+<!-- Main Admin Dashboard -->
+<main id="adminApp" class="hidden max-w-6xl mx-auto p-6 space-y-6">
+
+  <!-- Question Correction Studio -->
+  <section class="bg-white rounded-2xl p-6 border border-black/5 space-y-5">
+    <div class="flex flex-wrap items-center justify-between gap-3">
+      <div>
+        <div class="flex items-center gap-2">
+          <h2 class="font-bold text-base">Question Correction Studio (AI + Manual)</h2>
+          <span id="aiStatusPill" class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#F5F5F7] text-[#6E6E73]">Checking AI...</span>
+        </div>
+        <p class="text-xs text-[#6E6E73]">Review flagged PYQs or search any question by ID/keyword, auto-fix with free AI or edit manually, and save live.</p>
+      </div>
+      <button onclick="exportOverrides()" class="px-3.5 py-1.5 rounded-full bg-[#F5F5F7] border border-black/10 text-xs font-semibold hover:bg-black/5">
+        Export Overrides JSON
+      </button>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+      <!-- Left: Reports & Search -->
+      <div class="lg:col-span-5 space-y-4">
+        <div class="p-4 bg-[#F5F5F7] rounded-2xl space-y-2.5">
+          <div class="flex items-center justify-between">
+            <h3 class="text-xs font-bold uppercase tracking-wide text-[#6E6E73]">Reported Questions (<span id="reportsCount">0</span>)</h3>
+            <button onclick="loadQuestionReports()" class="text-[11px] font-semibold text-[#0F766E]">Refresh</button>
+          </div>
+          <div id="reportsList" class="space-y-2 max-h-56 overflow-y-auto text-xs text-[#6E6E73]">Loading reports...</div>
+        </div>
+
+        <div class="p-4 bg-[#F5F5F7] rounded-2xl space-y-2.5">
+          <h3 class="text-xs font-bold uppercase tracking-wide text-[#6E6E73]">Search Any Question (4,080+ PYQs)</h3>
+          <form onsubmit="event.preventDefault(); searchQuestions();" class="flex gap-2">
+            <input type="text" id="qSearchInput" placeholder="e.g. cms16-p1-003 or pancreatic"
+              class="flex-1 px-3 py-1.5 bg-white border border-black/10 rounded-xl text-xs focus:outline-none">
+            <button type="submit" class="px-3.5 py-1.5 rounded-xl bg-[#1D1D1F] text-white text-xs font-semibold">Find</button>
+          </form>
+          <div id="qSearchResults" class="space-y-1.5 max-h-56 overflow-y-auto text-xs text-[#6E6E73]">Search by ID or keyword to load a question.</div>
+        </div>
+      </div>
+
+      <!-- Right: Editor -->
+      <div class="lg:col-span-7 p-5 bg-[#F5F5F7] rounded-2xl space-y-3.5">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-bold uppercase text-[#6E6E73]">Editing:</span>
+            <code id="edIdBadge" class="px-2.5 py-0.5 rounded-full bg-white border border-black/10 text-xs font-bold">None selected</code>
+            <span id="edOverrideBadge" class="hidden px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-semibold">Saved Override</span>
+          </div>
+          <span id="edSaveMsg" class="text-xs font-semibold"></span>
+        </div>
+
+        <!-- AI Fix Controls -->
+        <div class="p-3.5 bg-white rounded-xl border border-black/5 space-y-2.5">
+          <div class="flex flex-wrap items-center gap-2">
+            <input type="text" id="aiInstruction" placeholder="Optional AI instruction (e.g. Fix OCR typos & format statements)"
+              class="flex-1 min-w-[200px] px-3 py-1.5 bg-[#F5F5F7] border border-black/10 rounded-lg text-xs">
+            <button type="button" onclick="runAiFix('auto')" id="aiFixBtn"
+              class="px-3.5 py-1.5 rounded-lg bg-[#0F766E] text-white text-xs font-semibold hover:opacity-90">
+              Fix with AI (Free)
+            </button>
+            <button type="button" onclick="runAiFix('local')"
+              class="px-3 py-1.5 rounded-lg bg-[#F5F5F7] border border-black/10 text-xs font-semibold hover:bg-black/5">
+              OCR Clean
+            </button>
+            <button type="button" onclick="copyAiPrompt()"
+              class="px-3 py-1.5 rounded-lg bg-white border border-black/10 text-xs font-semibold hover:bg-black/5">
+              Copy Prompt
+            </button>
+          </div>
+          <details class="text-[11px] text-[#6E6E73]">
+            <summary class="cursor-pointer font-semibold text-[#1D1D1F]">Free AI Setup (Gemini Free Tier / Groq / Zero-Key)</summary>
+            <div class="mt-2 space-y-1.5">
+              <p><b>Best Free Way:</b> Get a free <a href="https://aistudio.google.com/apikey" target="_blank" class="text-[#0F766E] underline">Google AI Studio Gemini API key</a> (no credit card, 1,000+ free requests/day) and set <code class="bg-[#F5F5F7] px-1 rounded">GEMINI_API_KEY</code> in Render, or paste it below for this session:</p>
+              <input type="password" id="sessionGeminiKey" placeholder="Optional session GEMINI_API_KEY (AIza...)"
+                class="w-full px-2.5 py-1 bg-[#F5F5F7] border border-black/10 rounded-lg text-xs">
+            </div>
+          </details>
+          <p id="aiStatusMsg" class="hidden text-[11px] font-medium text-[#0F766E]"></p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-[11px] font-semibold text-[#6E6E73] mb-1">Subject</label>
+            <input type="text" id="edSubject" class="w-full px-3 py-1.5 bg-white border border-black/10 rounded-xl text-xs">
+          </div>
+          <div>
+            <label class="block text-[11px] font-semibold text-[#6E6E73] mb-1">Correct Option</label>
+            <select id="edCorrect" class="w-full px-3 py-1.5 bg-white border border-black/10 rounded-xl text-xs font-semibold">
+              <option value="0">A (Option 1)</option>
+              <option value="1">B (Option 2)</option>
+              <option value="2">C (Option 3)</option>
+              <option value="3">D (Option 4)</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-semibold text-[#6E6E73] mb-1">Question Stem</label>
+          <textarea id="edText" rows="5" class="w-full px-3 py-2 bg-white border border-black/10 rounded-xl text-xs leading-relaxed"></textarea>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+          <div>
+            <label class="block text-[11px] font-semibold text-[#6E6E73] mb-1">Option A</label>
+            <input type="text" id="edOpt0" class="w-full px-3 py-1.5 bg-white border border-black/10 rounded-xl text-xs">
+          </div>
+          <div>
+            <label class="block text-[11px] font-semibold text-[#6E6E73] mb-1">Option B</label>
+            <input type="text" id="edOpt1" class="w-full px-3 py-1.5 bg-white border border-black/10 rounded-xl text-xs">
+          </div>
+          <div>
+            <label class="block text-[11px] font-semibold text-[#6E6E73] mb-1">Option C</label>
+            <input type="text" id="edOpt2" class="w-full px-3 py-1.5 bg-white border border-black/10 rounded-xl text-xs">
+          </div>
+          <div>
+            <label class="block text-[11px] font-semibold text-[#6E6E73] mb-1">Option D</label>
+            <input type="text" id="edOpt3" class="w-full px-3 py-1.5 bg-white border border-black/10 rounded-xl text-xs">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-semibold text-[#6E6E73] mb-1">Explanation</label>
+          <textarea id="edExplanation" rows="2" class="w-full px-3 py-2 bg-white border border-black/10 rounded-xl text-xs"></textarea>
+        </div>
+
+        <div class="flex flex-wrap items-center justify-between gap-3 pt-1">
+          <div class="flex-1 min-w-[180px]">
+            <input type="text" id="edCitation" placeholder="Citation (e.g. UPSC CMS 2016 Paper-I Q.15)"
+              class="w-full px-3 py-1.5 bg-white border border-black/10 rounded-xl text-xs">
+          </div>
+          <label class="flex items-center gap-1.5 text-xs text-[#6E6E73] cursor-pointer">
+            <input type="checkbox" id="edResolveReports" checked> Resolve open reports
+          </label>
+          <button type="button" onclick="saveQuestion()" id="saveQBtn"
+            class="px-5 py-2 rounded-xl bg-[#1D1D1F] text-white text-xs font-semibold hover:bg-black">
+            Save Correction
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Operations Row -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div class="bg-white rounded-2xl p-5 space-y-2 border border-black/5">
+      <p class="text-xs font-bold uppercase text-[#6E6E73]">Background Sync</p>
+      <p id="syncStatusText" class="text-sm font-semibold">Idle</p>
+      <button onclick="triggerSync()" class="px-4 py-2 rounded-full bg-[#0F766E] text-white text-xs font-semibold">Run Live Sync</button>
+    </div>
+    <div class="bg-white rounded-2xl p-5 space-y-2 border border-black/5">
+      <p class="text-xs font-bold uppercase text-[#6E6E73]">Telegram Digest</p>
+      <p id="digestResult" class="text-xs text-[#6E6E73]">Trigger manual digest</p>
+      <button onclick="triggerDigest()" class="px-4 py-2 rounded-full bg-[#1D1D1F] text-white text-xs font-semibold">Broadcast Digest</button>
+    </div>
+    <div class="bg-white rounded-2xl p-5 space-y-2 border border-black/5">
+      <p class="text-xs font-bold uppercase text-[#6E6E73]">Portal Health</p>
+      <p id="portalHealthSummary" class="text-sm font-semibold">-</p>
+      <button onclick="loadSources()" class="px-4 py-2 rounded-full bg-[#F5F5F7] text-xs font-semibold">Refresh Telemetry</button>
+    </div>
+  </div>
+
+  <section class="bg-white rounded-2xl p-6 space-y-3 border border-black/5">
+    <h2 class="font-bold">Flagged Circulars</h2>
+    <div id="flaggedList" class="space-y-2 text-xs text-[#6E6E73]">Loading...</div>
+  </section>
+
+  <section class="bg-white rounded-2xl p-6 space-y-3 border border-black/5">
+    <h2 class="font-bold">Community Corrigendum / Link Suggestions</h2>
+    <div id="suggestionsList" class="space-y-2 text-xs text-[#6E6E73]">Loading...</div>
+  </section>
+
+  <section class="bg-white rounded-2xl p-6 space-y-3 border border-black/5">
+    <h2 class="font-bold">7-Day Discovery &amp; Delivery Metrics</h2>
+    <div id="metricsBox" class="text-xs text-[#6E6E73]">Loading...</div>
+  </section>
+
+  <section class="bg-white rounded-2xl p-6 space-y-3 border border-black/5">
+    <div class="flex items-center justify-between gap-2">
+      <h2 class="font-bold">Portal Health Telemetry</h2>
+      <label class="flex items-center gap-1.5 text-xs text-[#6E6E73] cursor-pointer">
+        <input type="checkbox" id="failingOnlyToggle" onchange="renderPortalHealth()"> Failing Only
+      </label>
+    </div>
+    <div id="portalHealthTable" class="space-y-1.5 max-h-80 overflow-y-auto text-xs text-[#6E6E73]">Loading telemetry...</div>
+  </section>
+
+  <section class="bg-white rounded-2xl p-6 space-y-3 border border-black/5">
+    <h2 class="font-bold">Recent Notification Logs</h2>
+    <div id="logsList" class="space-y-2 text-xs text-[#6E6E73]">Loading...</div>
+  </section>
+</main>
+
+<script>
+let _portalSources = [];
+let _currentQId = null;
+
+function getKey() { return sessionStorage.getItem('med_admin_key') || ''; }
+function esc(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function togglePw() {
+  const inp = document.getElementById('adminKeyInput');
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+}
+
+function lockAdmin() {
+  sessionStorage.removeItem('med_admin_key');
+  document.getElementById('adminApp').classList.add('hidden');
+  document.getElementById('loginGate').classList.remove('hidden');
+  document.getElementById('lockBtn').classList.add('hidden');
+  const badge = document.getElementById('authBadge');
+  badge.textContent = 'Locked';
+  badge.className = 'px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-amber-100 text-amber-800';
+  document.getElementById('adminKeyInput').value = '';
+}
+
+async function unlockAdmin(savedKey) {
+  const pw = (savedKey !== undefined ? savedKey : document.getElementById('adminKeyInput').value).trim();
+  const errEl = document.getElementById('loginError');
+  errEl.classList.add('hidden');
+  if (!pw) {
+    errEl.textContent = 'Please enter the admin password.';
+    errEl.classList.remove('hidden');
+    return;
+  }
+  const btn = document.getElementById('unlockBtn');
+  btn.disabled = true;
+  btn.textContent = 'Verifying...';
+  try {
+    const r = await fetch('/api/admin/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: pw })
+    });
+    const d = await r.json().catch(() => ({}));
+    if (!r.ok) {
+      sessionStorage.removeItem('med_admin_key');
+      errEl.textContent = d.detail || ('Authentication failed (' + r.status + ')');
+      errEl.classList.remove('hidden');
+      return;
+    }
+    sessionStorage.setItem('med_admin_key', pw);
+    document.getElementById('loginGate').classList.add('hidden');
+    document.getElementById('adminApp').classList.remove('hidden');
+    document.getElementById('lockBtn').classList.remove('hidden');
+    const badge = document.getElementById('authBadge');
+    badge.textContent = 'Unlocked';
+    badge.className = 'px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-100 text-emerald-800';
+
+    const aiPill = document.getElementById('aiStatusPill');
+    const ap = d.ai_providers || {};
+    if (ap.gemini) {
+      aiPill.textContent = 'AI Ready: Gemini Free Tier';
+      aiPill.className = 'px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-100 text-emerald-800';
+    } else if (ap.groq) {
+      aiPill.textContent = 'AI Ready: Groq Free Tier';
+      aiPill.className = 'px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-100 text-emerald-800';
+    } else {
+      aiPill.textContent = 'Offline OCR Cleaner (Add GEMINI_API_KEY for AI)';
+      aiPill.className = 'px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-amber-100 text-amber-800';
+    }
+
+    loadQuestionReports();
+    loadFlagged();
+    loadSuggestions();
+    loadLogs();
+    loadMetrics();
+    loadSources();
+    loadSyncStatus();
+  } catch (e) {
+    errEl.textContent = 'Network error while verifying password.';
+    errEl.classList.remove('hidden');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Unlock Admin Console';
+  }
+}
+
+async function loadQuestionReports() {
+  const b = document.getElementById('reportsList');
+  try {
+    const rows = await (await fetch('/api/exams/reports')).json();
+    document.getElementById('reportsCount').textContent = rows.length;
+    b.innerHTML = rows.length ? rows.map(r => `
+      <div class="p-2.5 bg-white rounded-xl border border-black/5 flex items-center justify-between gap-2">
+        <div class="min-w-0">
+          <p class="font-bold text-[#1D1D1F] truncate">${esc(r.question_id)} <span class="font-normal text-[#6E6E73]">• ${esc(r.reason)}</span></p>
+          ${r.note ? `<p class="text-[11px] text-[#6E6E73] truncate">${esc(r.note)}</p>` : ''}
+        </div>
+        <div class="flex gap-1.5 shrink-0">
+          <button onclick="loadQuestion('${esc(r.question_id)}')" class="px-2.5 py-1 rounded-lg bg-[#0F766E] text-white font-semibold">Edit</button>
+          <button onclick="dismissReport('${esc(r.question_id)}')" class="px-2 py-1 rounded-lg bg-[#F5F5F7] text-[#6E6E73] font-semibold">Dismiss</button>
+        </div>
+      </div>
+    `).join('') : '<p class="text-xs text-[#6E6E73]">No open question reports.</p>';
+  } catch (e) {
+    b.textContent = 'Failed to load reports.';
+  }
+}
+
+async function dismissReport(qid) {
+  const r = await fetch(`/api/admin/reports/${encodeURIComponent(qid)}/dismiss`, {
+    method: 'POST', headers: { 'X-Admin-Key': getKey() }
+  });
+  if (r.ok) loadQuestionReports();
+}
+
+async function searchQuestions() {
+  const q = document.getElementById('qSearchInput').value.trim();
+  if (q.length < 2) return;
+  const b = document.getElementById('qSearchResults');
+  b.textContent = 'Searching...';
+  const r = await fetch(`/api/admin/questions?q=${encodeURIComponent(q)}&limit=20`, {
+    headers: { 'X-Admin-Key': getKey() }
+  });
+  if (!r.ok) { b.textContent = 'Search failed'; return; }
+  const d = await r.json();
+  const rows = d.results || [];
+  b.innerHTML = rows.length ? rows.map(x => `
+    <div class="p-2.5 bg-white rounded-xl border border-black/5 flex items-center justify-between gap-2">
+      <div class="min-w-0">
+        <p class="font-bold text-[#1D1D1F]">${esc(x.id)} <span class="font-normal text-[#6E6E73]">• ${esc(x.subject)}</span></p>
+        <p class="text-[11px] text-[#6E6E73] truncate">${esc((x.text || '').slice(0, 90))}</p>
+      </div>
+      <button onclick="loadQuestion('${esc(x.id)}')" class="px-2.5 py-1 rounded-lg bg-[#1D1D1F] text-white font-semibold shrink-0">Load</button>
+    </div>
+  `).join('') : 'No matching questions found.';
+}
+
+async function loadQuestion(qid) {
+  const r = await fetch(`/api/admin/questions/${encodeURIComponent(qid)}`, {
+    headers: { 'X-Admin-Key': getKey() }
+  });
+  if (!r.ok) return alert('Question not found: ' + qid);
+  const q = await r.json();
+  _currentQId = q.id;
+  document.getElementById('edIdBadge').textContent = q.id;
+  document.getElementById('edOverrideBadge').classList.toggle('hidden', !q.has_override);
+  document.getElementById('edSubject').value = q.subject || '';
+  document.getElementById('edText').value = q.text || '';
+  const opts = q.options || ['', '', '', ''];
+  for (let i = 0; i < 4; i++) document.getElementById('edOpt' + i).value = opts[i] || '';
+  document.getElementById('edCorrect').value = String(q.correct_option ?? 0);
+  document.getElementById('edExplanation').value = q.explanation || '';
+  document.getElementById('edCitation').value = q.citation || '';
+  document.getElementById('edSaveMsg').textContent = '';
+  document.getElementById('aiStatusMsg').classList.add('hidden');
+}
+
+async function runAiFix(provider) {
+  if (!_currentQId) return alert('Load a question first.');
+  const btn = document.getElementById('aiFixBtn');
+  const statusEl = document.getElementById('aiStatusMsg');
+  btn.disabled = true;
+  btn.textContent = 'Fixing...';
+  statusEl.classList.add('hidden');
+  try {
+    const r = await fetch(`/api/admin/questions/${encodeURIComponent(_currentQId)}/ai-fix`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Admin-Key': getKey() },
+      body: JSON.stringify({
+        instruction: document.getElementById('aiInstruction').value.trim(),
+        provider: provider,
+        api_key: document.getElementById('sessionGeminiKey').value.trim(),
+        text: document.getElementById('edText').value,
+        options: [0,1,2,3].map(i => document.getElementById('edOpt' + i).value)
+      })
+    });
+    const d = await r.json();
+    if (!r.ok) {
+      alert(d.detail || 'AI fix failed');
+      return;
+    }
+    const s = d.suggestion || {};
+    if (s.subject) document.getElementById('edSubject').value = s.subject;
+    if (s.text) document.getElementById('edText').value = s.text;
+    if (Array.isArray(s.options) && s.options.length === 4) {
+      for (let i = 0; i < 4; i++) document.getElementById('edOpt' + i).value = s.options[i];
+    }
+    if (s.correct_option !== undefined && s.correct_option !== null) {
+      document.getElementById('edCorrect').value = String(s.correct_option);
+    }
+    if (s.explanation !== undefined) document.getElementById('edExplanation').value = s.explanation;
+    if (s.citation !== undefined) document.getElementById('edCitation').value = s.citation;
+    statusEl.textContent = `Applied via ${d.provider_used}. ${s.changes_summary || ''} Review & click Save Correction.`;
+    statusEl.classList.remove('hidden');
+  } catch (e) {
+    alert('AI request failed: ' + e.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Fix with AI (Free)';
+  }
+}
+
+function copyAiPrompt() {
+  if (!_currentQId) return alert('Load a question first.');
+  const opts = [0,1,2,3].map(i => document.getElementById('edOpt' + i).value);
+  const prompt = `Fix OCR typos, broken statements, and formatting in this UPSC CMS MCQ without changing medical facts. Return clean text, 4 options, correct option (A-D), and brief explanation:\n\nID: ${_currentQId}\nSubject: ${document.getElementById('edSubject').value}\nQuestion:\n${document.getElementById('edText').value}\n\nOptions:\nA. ${opts[0]}\nB. ${opts[1]}\nC. ${opts[2]}\nD. ${opts[3]}`;
+  navigator.clipboard.writeText(prompt).then(() => {
+    const statusEl = document.getElementById('aiStatusMsg');
+    statusEl.textContent = 'Copied prompt! Paste into Gemini or ChatGPT web for free, then paste the corrected fields here.';
+    statusEl.classList.remove('hidden');
+  });
+}
+
+async function saveQuestion() {
+  if (!_currentQId) return alert('Load a question first.');
+  const msgEl = document.getElementById('edSaveMsg');
+  const btn = document.getElementById('saveQBtn');
+  btn.disabled = true;
+  btn.textContent = 'Saving...';
+  try {
+    const payload = {
+      subject: document.getElementById('edSubject').value.trim(),
+      text: document.getElementById('edText').value.trim(),
+      options: [0,1,2,3].map(i => document.getElementById('edOpt' + i).value.trim()),
+      correct_option: parseInt(document.getElementById('edCorrect').value, 10),
+      explanation: document.getElementById('edExplanation').value.trim(),
+      citation: document.getElementById('edCitation').value.trim(),
+      resolve_reports: document.getElementById('edResolveReports').checked
+    };
+    const r = await fetch(`/api/admin/questions/${encodeURIComponent(_currentQId)}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'X-Admin-Key': getKey() },
+      body: JSON.stringify(payload)
+    });
+    const d = await r.json();
+    if (!r.ok) {
+      msgEl.className = 'text-xs font-semibold text-rose-600';
+      msgEl.textContent = d.detail || 'Save failed';
+      return;
+    }
+    msgEl.className = 'text-xs font-semibold text-emerald-700';
+    msgEl.textContent = d.persisted_to_json ? 'Saved to DB & pyq_papers.json!' : 'Saved to DB overrides (live)!';
+    document.getElementById('edOverrideBadge').classList.remove('hidden');
+    loadQuestionReports();
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Save Correction';
+  }
+}
+
+async function exportOverrides() {
+  const r = await fetch('/api/admin/questions-overrides/export', { headers: { 'X-Admin-Key': getKey() } });
+  if (!r.ok) return alert('Export failed');
+  const data = await r.json();
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'medalerts-question-overrides.json';
+  a.click();
+}
+
+async function loadSuggestions(){const k=getKey();if(!k)return;const r=await fetch('/api/corrigenda/suggestions',{headers:{'X-Admin-Key':k}});const b=document.getElementById('suggestionsList');if(!r.ok){b.textContent='Auth error ('+r.status+')';return;}const rows=await r.json();b.innerHTML=rows.length?rows.map(s=>`<div class='p-3 bg-[#F5F5F7] rounded-xl flex justify-between items-center gap-2'><div><b>${esc(s.note)}</b><p class='text-[11px]'>Vacancy: ${esc(s.vacancy_id)} ${s.suggested_url?`• ${esc(s.suggested_url)}`:''}</p></div><div class='flex gap-1.5 shrink-0'><button onclick="resolveSuggestion(${s.id},'APPROVED')" class='px-2.5 py-1 rounded-full bg-emerald-600 text-white font-semibold'>Approve</button><button onclick="resolveSuggestion(${s.id},'REJECTED')" class='px-2.5 py-1 rounded-full bg-rose-600 text-white font-semibold'>Reject</button></div></div>`).join(''):'No pending suggestions.';}
+async function resolveSuggestion(id,decision){const r=await fetch(`/api/corrigenda/suggestions/${id}/resolve?decision=${decision}`,{method:'POST',headers:{'X-Admin-Key':getKey()}});if(r.ok)loadSuggestions();}
+async function loadSyncStatus(){try{const d=await (await fetch('/api/sync/status')).json();document.getElementById('syncStatusText').textContent=`${d.status} • Portals: ${d.portals_checked||0} • Live Added: ${d.live_added||0}`;}catch(e){}}
+async function triggerSync(){const d=await (await fetch('/api/sync',{method:'POST'})).json();document.getElementById('syncStatusText').textContent=`${d.status||'STARTED'} (${d.job_id||''})`;setTimeout(loadSyncStatus,3000);}
+async function loadSources(){try{const d=await (await fetch('/api/sources')).json();_portalSources=d.sources||[];document.getElementById('portalHealthSummary').textContent=`${d.healthy_count||0} / ${d.total||0} Portals Healthy`;renderPortalHealth();}catch(e){}}
+function renderPortalHealth(){const b=document.getElementById('portalHealthTable');if(!b)return;const failOnly=document.getElementById('failingOnlyToggle')?.checked;const rows=_portalSources.filter(s=>!failOnly||(s.consecutive_failures>0||s.last_error||(s.last_status&&s.last_status>=400)));b.innerHTML=rows.length?rows.map(s=>{const err=s.last_error||(s.last_status&&s.last_status>=400);const pill=err?`<span class='px-2 py-0.5 rounded-full bg-rose-50 text-rose-700 font-semibold'>${esc(s.last_status||'Err')}</span>`:(s.last_status?`<span class='px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-semibold'>${s.last_status} • ${s.latency_ms||0}ms • ${s.discovered_count||0}</span>`:`<span class='px-2 py-0.5 rounded-full bg-[#F5F5F7] text-[#86868B]'>Pending</span>`);return `<div class='p-2.5 bg-[#F5F5F7] rounded-xl flex items-center justify-between gap-2'><div class='min-w-0'><b class='text-[#1D1D1F]'>${esc(s.name)}</b> <span class='text-[#6E6E73]'>(${esc(s.state)})</span>${s.last_error?`<p class='text-[11px] text-rose-600 truncate'>${esc(s.last_error)}</p>`:''}</div><div class='flex items-center gap-2 shrink-0'>${pill}<button onclick="testPortal('${esc(s.name)}')" class='px-2.5 py-1 rounded-full bg-white border border-black/10 font-semibold text-[#1D1D1F]'>Test</button></div></div>`;}).join(''):'No matching portals.';}
+async function testPortal(name){const k=getKey();if(!k)return alert('Enter admin password first');const r=await fetch(`/api/sources/${encodeURIComponent(name)}/sync`,{method:'POST',headers:{'X-Admin-Key':k}});const d=await r.json();if(!r.ok)return alert(d.detail||'Error');await loadSources();alert(`${name}: HTTP ${d.telemetry.last_status||'Err'} • Discovered ${d.telemetry.discovered_count||0}`);}
+async function loadMetrics(){const k=getKey();if(!k)return;const r=await fetch('/api/metrics',{headers:{'X-Admin-Key':k}});const b=document.getElementById('metricsBox');if(!r.ok){b.textContent='Auth error ('+r.status+')';return;}const m=await r.json();b.innerHTML=`<div class='grid grid-cols-2 sm:grid-cols-4 gap-3'><div class='p-3 bg-[#F5F5F7] rounded-xl'><b>${m.active_vacancies}</b><p>Active Jobs</p></div><div class='p-3 bg-[#F5F5F7] rounded-xl'><b>${m.discovered_7d}</b><p>Added (7d)</p></div><div class='p-3 bg-[#F5F5F7] rounded-xl'><b>${m.notifications_success}/${m.notifications_total}</b><p>Alerts Delivered</p></div><div class='p-3 bg-[#F5F5F7] rounded-xl'><b>${(m.failing_portals||[]).length}</b><p>Failing Portals</p></div></div>`;}
+async function loadFlagged(){const k=getKey();if(!k)return;const r=await fetch('/api/vacancies/flagged',{headers:{'X-Admin-Key':k}});const b=document.getElementById('flaggedList');if(!r.ok){b.textContent='Auth error ('+r.status+')';return;}const rows=await r.json();b.innerHTML=rows.length?rows.map(x=>`<div class='p-3 bg-[#F5F5F7] rounded-xl flex justify-between items-center'><div><b>${esc(x.title)}</b><p>${esc(x.organization)} • Flags: ${x.flag_count}</p></div>${x.is_active?`<button onclick="deactivate('${esc(x.id)}')" class='px-3 py-1 rounded-full bg-rose-600 text-white font-semibold'>Deactivate</button>`:'Closed'}</div>`).join(''):'No flagged circulars.';}
+async function deactivate(id){const r=await fetch(`/api/vacancies/${id}/deactivate`,{method:'POST',headers:{'X-Admin-Key':getKey()}});if(r.ok)loadFlagged();}
+async function loadLogs(){const k=getKey();if(!k)return;const r=await fetch('/api/notifications/recent?limit=20',{headers:{'X-Admin-Key':k}});const b=document.getElementById('logsList');if(!r.ok){b.textContent='Auth error ('+r.status+')';return;}const rows=await r.json();b.innerHTML=rows.length?rows.map(l=>`<div class='p-3 bg-[#F5F5F7] rounded-xl flex justify-between'><span><b>${esc(l.channel)}</b> → ${esc(l.target)} • ${esc(l.status)}</span><span>${esc(l.sent_at)}</span></div>`).join(''):'No logs.';}
+async function triggerDigest(){const r=await fetch('/api/telegram/broadcast-digest?force=true',{method:'POST',headers:{'X-Admin-Key':getKey()}});document.getElementById('digestResult').textContent=await r.text();}
+
+if (getKey()) {
+  unlockAdmin(getKey());
+}
+</script>
+</body>
+</html>

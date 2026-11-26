@@ -573,7 +573,7 @@
       {
         "id": "cms25-p1-001",
         "subject": "General Medicine",
-        "text": "Which of the following heart sounds are best heard with the bell of stethoscope? 1 Opening snap II. Systolic click III. Third heart sound IV. Mid diastolic murmur\nSelect the correct answer using the code given below :",
+        "text": "Which of the following heart sounds are best heard with the bell of stethoscope?\nI. Opening snap\nII. Systolic click\nIII. Third heart sound\nIV. Mid diastolic murmur\nSelect the correct answer using the code given below:",
         "options": [
           "I and IV",
           "II and III only",
@@ -587,7 +587,7 @@
       {
         "id": "cms25-p1-002",
         "subject": "General Medicine",
-        "text": "Consider the following statements for diagnosing ventricular aneurysm in a patient with recent myocardial infarction :\n1. Paradoxical impulse on chest wall II. Persistent ST elevation on ECG III. Unusual bulge from cardiac silhouette on X-ray IV. Presence of pulsus paradoxsus\nWhich of the above are correct?",
+        "text": "Consider the following statements for diagnosing ventricular aneurysm in a patient with recent myocardial infarction:\nI. Paradoxical impulse on chest wall\nII. Persistent ST elevation on ECG\nIII. Unusual bulge from cardiac silhouette on X-ray\nIV. Presence of pulsus paradoxus\nWhich of the above are correct?",
         "options": [
           "I and II only",
           "I and IV",
@@ -993,7 +993,7 @@
       {
         "id": "cms25-p1-031",
         "subject": "General Medicine",
-        "text": "Which of the following findings in a patient are suggestive of acute nephritis ? L Hematuria II. Oliguria III. Reduced size of both kidneys IV. Edema\nSelect the correct answer using the code given below :",
+        "text": "Which of the following findings in a patient are suggestive of acute nephritis?\nI. Hematuria\nII. Oliguria\nIII. Reduced size of both kidneys\nIV. Edema\nSelect the correct answer using the code given below:",
         "options": [
           "I and III",
           "III and IV",
@@ -1091,7 +1091,7 @@
       {
         "id": "cms25-p1-038",
         "subject": "General Medicine",
-        "text": "Which of the following are clinical features of Parkinson's disease?\n1. Reduced eye blinking II. Drooling of saliva III. Soft voice IV. Macrographia\nSelect the correct answer using the code given below",
+        "text": "Which of the following are clinical features of Parkinson's disease?\nI. Reduced eye blinking\nII. Drooling of saliva\nIII. Soft voice\nIV. Macrographia\nSelect the correct answer using the code given below:",
         "options": [
           "I, II and III",
           "I, II and IV",
@@ -1161,7 +1161,7 @@
       {
         "id": "cms25-p1-043",
         "subject": "General Medicine",
-        "text": "With regard to management of idiopathic thrombocytopenic purpura, consider the following statements:\n1. All patients with ITP with platelet count less than 100×10/L should receive high dose of glucocort coids II. For patient with spontaneous bleeding, 40 mg of dexameth sone daily is indicated for 4 days III. Intravenous immunoglobulin can raise the platelet count IV. Life threatening bleeding should be treated with platelet transfusion\nWhich of the statements given above are correct?",
+        "text": "With regard to management of idiopathic thrombocytopenic purpura, consider the following statements:\nI. All patients with ITP with platelet count less than 100×10^9/L should receive high dose of glucocorticoids\nII. For patient with spontaneous bleeding, 40 mg of dexamethasone daily is indicated for 4 days\nIII. Intravenous immunoglobulin can raise the platelet count\nIV. Life threatening bleeding should be treated with platelet transfusion\nWhich of the statements given above are correct?",
         "options": [
           "I, II and III",
           "II, III and IV",
@@ -1175,7 +1175,7 @@
       {
         "id": "cms25-p1-044",
         "subject": "General Medicine",
-        "text": "Which of the following drugs can cause secondary weight gain? L. Insulin II. Propranolol III. Orlistat IV. Thyroxine Select the correct aaswer using the code given below :",
+        "text": "Which of the following drugs can cause secondary weight gain?\nI. Insulin\nII. Propranolol\nIII. Orlistat\nIV. Thyroxine\nSelect the correct answer using the code given below:",
         "options": [
           "I, II and IV",
           "I and III",
@@ -1217,7 +1217,7 @@
       {
         "id": "cms25-p1-047",
         "subject": "General Medicine",
-        "text": "Which of the following can be used for the management of severe hype kalaemia ?\n1. Intravenous calcitonin II. Intravenous sodium bicarbonate III. Oral sodium polystyrene sulphate IV. Intravenous calcium gluconate\nSelect the correct answer using the code given below:",
+        "text": "Which of the following can be used for the management of severe hyperkalaemia?\nI. Intravenous calcitonin\nII. Intravenous sodium bicarbonate\nIII. Oral sodium polystyrene sulphate\nIV. Intravenous calcium gluconate\nSelect the correct answer using the code given below:",
         "options": [
           "I, II and IV",
           "II, III and IV",
@@ -1343,7 +1343,7 @@
       {
         "id": "cms25-p1-056",
         "subject": "General Medicine",
-        "text": "Consider the following statements with regard to the treatment of vitamin A deficiency :\n1. Repeated high doses of retinol can cause liver damage and terat genicity II. Acute overdose of vitamin A may lead to increased intracranial pressure and skin desquamation III. Regular vitamin A supplement tion is also recommended for pregnant women even in countries where vitamin A deficiency is not endemic IV. Excessive intake of carotene may cause harmless orange pigment tion of the skin\nWhich of the statements given above are correct?",
+        "text": "Consider the following statements with regard to the treatment of vitamin A deficiency:\nI. Repeated high doses of retinol can cause liver damage and teratogenicity\nII. Acute overdose of vitamin A may lead to increased intracranial pressure and skin desquamation\nIII. Regular vitamin A supplementation is also recommended for pregnant women even in countries where vitamin A deficiency is not endemic\nIV. Excessive intake of carotene may cause harmless orange pigmentation of the skin\nWhich of the statements given above are correct?",
         "options": [
           "I, II and III",
           "I, II and IV",
@@ -1385,7 +1385,7 @@
       {
         "id": "cms25-p1-059",
         "subject": "General Medicine",
-        "text": "Consider the following statements regarding oculocutaneous albinism :\n1. The disease results from genetic abnormalities leading to destru tion of melanocytes II. Type 1 albinism is due to a defect in the tyrosinase gene III. Patients may present with poor vision, ratator nystagmus and alternating strabismus IV. Patients are at an increased risk of sunburn or developing skin cancer\nWhich of the statements given above are correct?",
+        "text": "Consider the following statements regarding oculocutaneous albinism:\nI. The disease results from genetic abnormalities leading to destruction of melanocytes\nII. Type 1 albinism is due to a defect in the tyrosinase gene\nIII. Patients may present with poor vision, rotator nystagmus and alternating strabismus\nIV. Patients are at an increased risk of sunburn or developing skin cancer\nWhich of the statements given above are correct?",
         "options": [
           "I, II and III",
           "I, II and IV",
@@ -1427,7 +1427,7 @@
       {
         "id": "cms25-p1-062",
         "subject": "General Medicine",
-        "text": "Which of the following are causes of reversible dementia ? I Hypothyroidism II. Vitamin B12 deficiency III. Dementia with lewy body IV. Thiaaine deficiency\nSelect the correct answer using the code given below :",
+        "text": "Which of the following are causes of reversible dementia?\nI. Hypothyroidism\nII. Vitamin B12 deficiency\nIII. Dementia with Lewy body\nIV. Thiamine deficiency\nSelect the correct answer using the code given below:",
         "options": [
           "I, II and III",
           "I, II and IV",
@@ -1497,7 +1497,7 @@
       {
         "id": "cms25-p1-067",
         "subject": "General Medicine",
-        "text": "The 4A Test is a screening tool for detection of delirium. Which of the following parameters are included in the 4AT tool ? 1 Alertness rsor II. Apnoca III. Abbreviated Mental Test (AMT4) IV. Attention\nSelect the correct answer using the code given below :",
+        "text": "The 4A Test is a screening tool for detection of delirium. Which of the following parameters are included in the 4AT tool?\nI. Alertness\nII. Apnoea\nIII. Abbreviated Mental Test (AMT4)\nIV. Attention\nSelect the correct answer using the code given below:",
         "options": [
           "I, II and III",
           "I, II and IV",
@@ -1581,7 +1581,7 @@
       {
         "id": "cms25-p1-073",
         "subject": "General Medicine",
-        "text": "Which of the following statements are typical for classic heat stroke? L. Older patient II. Normokalemia III. Hyponatremia IV. Marked lactic acidosis\nSelect the correct answer using the code given below :",
+        "text": "Which of the following statements are typical for classic heat stroke?\nI. Older patient\nII. Normokalemia\nIII. Hyponatremia\nIV. Marked lactic acidosis\nSelect the correct answer using the code given below:",
         "options": [
           "I and III",
           "I and II",
@@ -1609,7 +1609,7 @@
       {
         "id": "cms25-p1-075",
         "subject": "General Medicine",
-        "text": "Which of the following are co ponents of SOFA scoring system ? L PaOy/FiO, ratio I1. Mean arterial pressure Perso III. Glasgow coma scale IV. Prothrombin Time with INR\nSelect the correct answer using the code given below :",
+        "text": "Which of the following are components of SOFA scoring system?\nI. PaO2/FiO2 ratio\nII. Mean arterial pressure\nIII. Glasgow coma scale\nIV. Prothrombin Time with INR\nSelect the correct answer using the code given below:",
         "options": [
           "I, II and III",
           "I, II and IV",
@@ -1623,7 +1623,7 @@
       {
         "id": "cms25-p1-076",
         "subject": "General Medicine",
-        "text": "What are the components to establish the diagnosis of Brain Death ?\n1. Absent brain stem reflexes II. Apnoea in presence of elevated PCO: III. Hypothermia IV. Irreversible and unresponsive coma\nSelect the correct answer using the code given below :",
+        "text": "What are the components to establish the diagnosis of Brain Death?\nI. Absent brain stem reflexes\nII. Apnoea in presence of elevated PCO2\nIII. Hypothermia\nIV. Irreversible and unresponsive coma\nSelect the correct answer using the code given below:",
         "options": [
           "I, II and III",
           "I, II and IV",
@@ -1959,7 +1959,7 @@
       {
         "id": "cms25-p1-100",
         "subject": "Pediatrics",
-        "text": "Which of the following syndromes are caused due to genomie imprinting?\n1. Rubinstein Taybi syndrome II. Prader-Willi syndrome III. Angelman syndrome IV. Edward syndrome\nSelect the correct answer using the code given below :",
+        "text": "Which of the following syndromes are caused due to genomic imprinting?\nI. Rubinstein Taybi syndrome\nII. Prader-Willi syndrome\nIII. Angelman syndrome\nIV. Edward syndrome\nSelect the correct answer using the code given below:",
         "options": [
           "I and III",
           "II and III",
@@ -2029,7 +2029,7 @@
       {
         "id": "cms25-p1-105",
         "subject": "Pediatrics",
-        "text": "Upto 10% of cases of Autism Spectrum Disorder (ASD) may be caused by genetic conditions. Which of the following are known to be associated with ASD ? I. Tuberous sclerosis IL. Fragile X syndrome III. Prader-Willi syndrome Perso IV. Patau syndrome\nSelect the correct answer using the code given below :",
+        "text": "Upto 10% of cases of Autism Spectrum Disorder (ASD) may be caused by genetic conditions. Which of the following are known to be associated with ASD?\nI. Tuberous sclerosis\nII. Fragile X syndrome\nIII. Prader-Willi syndrome\nIV. Patau syndrome\nSelect the correct answer using the code given below:",
         "options": [
           "I and II",
           "I and III",
@@ -2113,7 +2113,7 @@
       {
         "id": "cms25-p1-111",
         "subject": "Pediatrics",
-        "text": "Which of the following statements are correct about oral rotavirus vaccines ?\n1. The storage should be at 2-8°C II. The vaccine should be used within 2 hours of reconstitution or opening III. Past history of intussusception is a contraindication IV. The vaccine can be given if the baby has ongoing diarrhoea Select the answer using the code given below :",
+        "text": "Which of the following statements are correct about oral rotavirus vaccines?\nI. The storage should be at 2-8°C\nII. The vaccine should be used within 2 hours of reconstitution or opening\nIII. Past history of intussusception is a contraindication\nIV. The vaccine can be given if the baby has ongoing diarrhoea\nSelect the answer using the code given below:",
         "options": [
           "I and II",
           "III and IV",
@@ -2197,7 +2197,7 @@
       {
         "id": "cms25-p1-117",
         "subject": "Pediatrics",
-        "text": "Which of the following statements are correct regarding hypernatremia in children ? L Diabetes insipidus due to a def ciency of antidiuretic hormone (ADH) may cause hyperatremia II. Addison disease may be ass ciated with hypernatremia III. Use of boiled skimmed milk can lead to hypernatremia IV. Use of lactulose can lead to hypernatremia Select the answer using the code given below :",
+        "text": "Which of the following statements are correct regarding hypernatremia in children?\nI. Diabetes insipidus due to a deficiency of antidiuretic hormone (ADH) may cause hypernatremia\nII. Addison disease may be associated with hypernatremia\nIII. Use of boiled skimmed milk can lead to hypernatremia\nIV. Use of lactulose can lead to hypernatremia\nSelect the answer using the code given below:",
         "options": [
           "I, III and IV",
           "II, III and IV",
@@ -2211,7 +2211,7 @@
       {
         "id": "cms25-p1-118",
         "subject": "Pediatrics",
-        "text": "Which of the following statements are correct regarding the management of gastrointestinal bleeding in children? I Somatostatin or octreotide inf sion should be given for at least 7 days after stoppage of initial bleeding to prevent rebleeding II. Endoscopic Sclerotherapy (EST) involves endoscopic injection of N-butyl-2-cyanoacrylate or is butyl-2-cyanoacrylate III. EST has upto 90% efficacy in controlling acute bleeding IV. Following an episode of acute variceal bleeding, all patients should receive secondary proph laxis to prevent rebleeding Select the answer using the code given below :",
+        "text": "Which of the following statements are correct regarding the management of gastrointestinal bleeding in children?\nI. Somatostatin or octreotide infusion should be given for at least 7 days after stoppage of initial bleeding to prevent rebleeding\nII. Endoscopic Sclerotherapy (EST) involves endoscopic injection of N-butyl-2-cyanoacrylate or isobutyl-2-cyanoacrylate\nIII. EST has upto 90% efficacy in controlling acute bleeding\nIV. Following an episode of acute variceal bleeding, all patients should receive secondary prophylaxis to prevent rebleeding\nSelect the answer using the code given below:",
         "options": [
           "I and II",
           "I and III",
@@ -2381,7 +2381,7 @@
       {
         "id": "cms25-p2-010",
         "subject": "General Surgery",
-        "text": "Which of the following statements are correct regarding Cauda equine syndrome ? Its presenting symptoms are perineal numbness, painless urinary retention and fecal incontinence. HI. Urgent investigation with MRI is required. III. It is present most commonly in the 45-60 year age group. IV. Confirmed cases require early surgical decompression. Select the answer using the code given below :",
+        "text": "Which of the following statements are correct regarding Cauda equina syndrome?\nI. Its presenting symptoms are perineal numbness, painless urinary retention and fecal incontinence.\nII. Urgent investigation with MRI is required.\nIII. It is present most commonly in the 45-60 year age group.\nIV. Confirmed cases require early surgical decompression.\nSelect the answer using the code given below:",
         "options": [
           "I, II and III",
           "I, II and IV",
@@ -2451,7 +2451,7 @@
       {
         "id": "cms25-p2-015",
         "subject": "General Surgery",
-        "text": "Which of the following are functions of the gall bladder ? Reservoir for bile Production of bile III. Secretion of mucus IV. Concentration of bile\nSelect the correct answer using the code given below :",
+        "text": "Which of the following are functions of the gall bladder?\nI. Reservoir for bile\nII. Production of bile\nIII. Secretion of mucus\nIV. Concentration of bile\nSelect the correct answer using the code given below:",
         "options": [
           "I, II and III",
           "I, II and IV",
@@ -2496,7 +2496,7 @@
         "text": "Which of the following statements are correct regarding primary survey/management of traumatic head injury patient?\nI. Ensure adequate oxygenation and circulation\nII. Exclude hypoglycaemia\nIII. Check for mechanism of injury\nIV. Check pupil size and response\nSelect the answer using the code given below:",
         "options": [
           "I, II and III",
-          "1I, III and IV",
+          "II, III and IV",
           "I, II and IV",
           "I, III and IV"
         ],
@@ -2549,7 +2549,7 @@
       {
         "id": "cms25-p2-022",
         "subject": "General Surgery",
-        "text": "Which of the following about Minimal Access Surgery are correct? L Decreased intraoperative heat loss II. Improved visualization III. Increased chances of herniation IV. Improved mobility Select the aaswer using the code given below :",
+        "text": "Which of the following about Minimal Access Surgery are correct?\nI. Decreased intraoperative heat loss\nII. Improved visualization\nIII. Increased chances of herniation\nIV. Improved mobility\nSelect the answer using the code given below:",
         "options": [
           "I, II and III",
           "I, III and IV",
@@ -2577,7 +2577,7 @@
       {
         "id": "cms25-p2-024",
         "subject": "General Surgery",
-        "text": "Which of the following are the symptoms commonly experienced by patients with lymphoedema ? L Swelling II. Burning sensation III. Intolerance to cold IV. Cramps\nSelect the correct answer using the code given below :",
+        "text": "Which of the following are the symptoms commonly experienced by patients with lymphoedema?\nI. Swelling\nII. Burning sensation\nIII. Intolerance to cold\nIV. Cramps\nSelect the correct answer using the code given below:",
         "options": [
           "I, II and IV",
           "I, II and III",
@@ -2591,10 +2591,10 @@
       {
         "id": "cms25-p2-025",
         "subject": "General Surgery",
-        "text": "Which of the following are the malignancies associated with lymphoedema ? Kaposi Sarcoma II. Squamous cell carcinoma ers III. Malignant melanoma IV. Leukaemia\nSelect the correct answer using the code given below :",
+        "text": "Which of the following are the malignancies associated with lymphoedema?\nI. Kaposi Sarcoma\nII. Squamous cell carcinoma\nIII. Malignant melanoma\nIV. Leukaemia\nSelect the correct answer using the code given below:",
         "options": [
           "I, II and III",
-          "I, I and IV",
+          "I, II and IV",
           "I, III and IV",
           "II, III and IV"
         ],
@@ -2605,7 +2605,7 @@
       {
         "id": "cms25-p2-026",
         "subject": "General Surgery",
-        "text": "Which of the following are the techniques commonly used to close the raw area after excision of a pilonidal sinus in order to avoid a midline wound ? Limberg procedure II. Y-V plasty III. Z-plasty IV. Karydakis procedure\nSelect the correct answer using the code given below :",
+        "text": "Which of the following are the techniques commonly used to close the raw area after excision of a pilonidal sinus in order to avoid a midline wound?\nI. Limberg procedure\nII. Y-V plasty\nIII. Z-plasty\nIV. Karydakis procedure\nSelect the correct answer using the code given below:",
         "options": [
           "I, II and III",
           "I, II and IV",
@@ -2647,7 +2647,7 @@
       {
         "id": "cms25-p2-029",
         "subject": "General Surgery",
-        "text": "Which of the following are considered aetiological factors for Adenocarcinoma oesophagus ? Barrett's oesophagus II. Gastro-oesophageal reflux III. Obesity IV. Alcohol intake\nSelect the correct answer using the code given below :",
+        "text": "Which of the following are considered aetiological factors for Adenocarcinoma oesophagus?\nI. Barrett's oesophagus\nII. Gastro-oesophageal reflux\nIII. Obesity\nIV. Alcohol intake\nSelect the correct answer using the code given below:",
         "options": [
           "I, II and III",
           "I, II and IV",
@@ -2661,10 +2661,10 @@
       {
         "id": "cms25-p2-030",
         "subject": "General Surgery",
-        "text": "Consider the following statements regarding Plummer-Vinson syndrome : L Findings include cervical oesophageal web, iron deficiency anaemia and dysphagia. II. It is a rare disease, mainly affecting middle-aged women. III. There is predisposition to postcricoid, cervical oesophageal cancer. IV. Treatment is usually surgical.\nWhich of the statements given above are correct?",
+        "text": "Consider the following statements regarding Plummer-Vinson syndrome:\nI. Findings include cervical oesophageal web, iron deficiency anaemia and dysphagia.\nII. It is a rare disease, mainly affecting middle-aged women.\nIII. There is predisposition to postcricoid, cervical oesophageal cancer.\nIV. Treatment is usually surgical.\nWhich of the statements given above are correct?",
         "options": [
           "II, III and IV",
-          "I, 11 and IV",
+          "I, II and IV",
           "I, III and IV",
           "I, II and III"
         ],
@@ -2675,10 +2675,10 @@
       {
         "id": "cms25-p2-031",
         "subject": "General Surgery",
-        "text": "Which of the following are correct regarding late dumping ? L It usually occurs during the second hour after meal. It lasts for 30-40 minutes. III. Major symptoms are tremer, faintness, prostration IV. It is relieved by lying down. Select the answer using the code given below :",
+        "text": "Which of the following are correct regarding late dumping?\nI. It usually occurs during the second hour after meal.\nII. It lasts for 30-40 minutes.\nIII. Major symptoms are tremor, faintness, prostration\nIV. It is relieved by lying down.\nSelect the answer using the code given below:",
         "options": [
           "I, II and III",
-          "I, 1I and IV",
+          "I, II and IV",
           "I, III and IV",
           "II, III and IV"
         ],
@@ -2801,12 +2801,12 @@
       {
         "id": "cms25-p2-040",
         "subject": "General Surgery",
-        "text": "Which of the following statements are correct regarding sutures in surgery? Barbed sutures have the advantage of eliminating the need for knots. Vertical mattresa sutures help in eversion of wound edges. III. Aberdeen knot is used for continuous suturing. IV. Silk is preferred for subcuticular suturing. Select the answer using the code given below :",
+        "text": "Which of the following statements are correct regarding sutures in surgery?\nI. Barbed sutures have the advantage of eliminating the need for knots.\nII. Vertical mattress sutures help in eversion of wound edges.\nIII. Aberdeen knot is used for continuous suturing.\nIV. Silk is preferred for subcuticular suturing.\nSelect the answer using the code given below:",
         "options": [
           "I, II and III",
           "I, II and IV",
           "I, III and IV",
-          "II, III and IV GYNAECOLOGY & OBSTETRICS"
+          "II, III and IV"
         ],
         "correct_option": 0,
         "explanation": "Barbed sutures eliminate knot-tying (I), vertical mattress sutures evert wound edges (II), and the Aberdeen knot secures continuous subcuticular closures (III); silk is braided/reactive and avoided for subcuticular closure.",
@@ -2829,10 +2829,10 @@
       {
         "id": "cms25-p2-042",
         "subject": "Obstetrics & Gynaecology",
-        "text": "Which of the following treatments are recommended for a pregnant woman suffering from sickle cell disease? Folic acid 1 mg daily Azathioprine III. Penicillin prophylaxis IV. Thromboprophylaxis with low molecular weight heparin\nSelect the correct answer using the code given below :",
+        "text": "Which of the following treatments are recommended for a pregnant woman suffering from sickle cell disease?\nI. Folic acid 1 mg daily\nII. Azathioprine\nIII. Penicillin prophylaxis\nIV. Thromboprophylaxis with low molecular weight heparin\nSelect the correct answer using the code given below:",
         "options": [
           "I, II and III",
-          ". I, I and IV",
+          "I, II and IV",
           "I, III and IV",
           "II, III and IV"
         ],
@@ -2846,7 +2846,7 @@
         "text": "Which of the following are contraindications to External Cephalic Version (ECV) in breech?\nI. Pregnancy less than 36 weeks\nII. Multiple pregnancy\nIII. Previous cesarean delivery\nIV. Rhesus isoimmunization\nSelect the correct answer using the code given below:",
         "options": [
           "I, III and IV",
-          "11, III and IV",
+          "II, III and IV",
           "I, II and IV",
           "I, II and III"
         ],
@@ -2885,12 +2885,12 @@
       {
         "id": "cms25-p2-046",
         "subject": "Obstetrics & Gynaecology",
-        "text": "Which of the following maternal complications can be seen in hyperemesis gravidarum? I. Wernicke's encephalopathy IL. Hepatic failure III. Hypoprothrombinemia IV. Convulsions\nSelect the correct answer using the code given below :",
+        "text": "Which of the following maternal complications can be seen in hyperemesis gravidarum?\nI. Wernicke's encephalopathy\nII. Hepatic failure\nIII. Hypoprothrombinemia\nIV. Convulsions\nSelect the correct answer using the code given below:",
         "options": [
           "I, II, III and IV",
           "I, III and IV only",
           "I, II and IV only",
-          "II and III only ou"
+          "II and III only"
         ],
         "correct_option": 0,
         "explanation": "Severe hyperemesis gravidarum can be complicated by Wernicke's encephalopathy from thiamine deficiency (I), hepatic dysfunction/failure (II), vitamin K-dependent hypoprothrombinaemia (III), and convulsions (IV).",
@@ -2955,7 +2955,7 @@
       {
         "id": "cms25-p2-051",
         "subject": "Obstetrics & Gynaecology",
-        "text": "Which of the following factors are associated with cord prolapse during labour ? Malpresentations II. Contracted pelvis III. Stabilizing induction IV. Prematurity\nSelect the correct answer using the code given below :",
+        "text": "Which of the following factors are associated with cord prolapse during labour?\nI. Malpresentations\nII. Contracted pelvis\nIII. Stabilizing induction\nIV. Prematurity\nSelect the correct answer using the code given below:",
         "options": [
           "I, II, III and IV",
           "I, II and IV only",
@@ -2969,7 +2969,7 @@
       {
         "id": "cms25-p2-052",
         "subject": "Obstetrics & Gynaecology",
-        "text": "Detection of magnesium toxicity in a patient receiving magnesium sulphate is noticed by which of the following? Loss of tendon reflexes II. Increased respiratory rate III. Chest pain, heart block IV. Cardiac arrest\nSelect the correct answer using the code given below :",
+        "text": "Detection of magnesium toxicity in a patient receiving magnesium sulphate is noticed by which of the following?\nI. Loss of tendon reflexes\nII. Increased respiratory rate\nIII. Chest pain, heart block\nIV. Cardiac arrest\nSelect the correct answer using the code given below:",
         "options": [
           "I, III and IV",
           "II and IV only",
@@ -3081,11 +3081,11 @@
       {
         "id": "cms25-p2-060",
         "subject": "Obstetrics & Gynaecology",
-        "text": "Twin pregnancy should have ultrasound at 10-13 weeks to confirm which of the following?\n1. Number of foetus Care Viability of foetus III. Chorionicity of twins of IV. Malforaation in either foetus\nSelect the correct answer using the code given below :",
+        "text": "Twin pregnancy should have ultrasound at 10-13 weeks to confirm which of the following?\nI. Number of foetus\nII. Viability of foetus\nIII. Chorionicity of twins\nIV. Malformation in either foetus\nSelect the correct answer using the code given below:",
         "options": [
           "I, II and III only",
           "I and III only",
-          "IF and IV only",
+          "II and IV only",
           "I, II, III and IV"
         ],
         "correct_option": 3,
@@ -3109,7 +3109,7 @@
       {
         "id": "cms25-p2-062",
         "subject": "Obstetrics & Gynaecology",
-        "text": "Which of the following are the predictive factors for Fetal Growth Restriction (FGR) ? Low level of maternal 1a trimester Beta hCG Abnormal uterine artery Doppler at 20-24 weeks of pregnancy III. Fetal echogenic bowel on ultrasound IV. Maternal medical disorder\nSelect the correct answer using the code given below :",
+        "text": "Which of the following are the predictive factors for Fetal Growth Restriction (FGR)?\nI. Low level of maternal 1st trimester Beta hCG\nII. Abnormal uterine artery Doppler at 20-24 weeks of pregnancy\nIII. Fetal echogenic bowel on ultrasound\nIV. Maternal medical disorder\nSelect the correct answer using the code given below:",
         "options": [
           "I, II and III",
           "I, II and IV",
@@ -3193,7 +3193,7 @@
       {
         "id": "cms25-p2-068",
         "subject": "Obstetrics & Gynaecology",
-        "text": "What are the characteristics of dermoid cyst ? Germ cell ovarian tumour II. Bilateral in 15-20% cases III. Torsion is common IV. Rupture is common\nSelect the correct answer using the code given below :",
+        "text": "What are the characteristics of dermoid cyst?\nI. Germ cell ovarian tumour\nII. Bilateral in 15-20% cases\nIII. Torsion is common\nIV. Rupture is common\nSelect the correct answer using the code given below:",
         "options": [
           "I and III only",
           "II and IV only",
@@ -3235,9 +3235,9 @@
       {
         "id": "cms25-p2-071",
         "subject": "Obstetrics & Gynaecology",
-        "text": "Which of the following statements about hysterosalpingography, as an operative procedure, are correct? L Tubal patency assessment following tuboplasty operation II. Diagnosis of uterine synechiae III. Detection of IUD IV. Diagnosis of subserosal fibroid Select the answer using the code given below :",
+        "text": "Which of the following statements about hysterosalpingography, as an operative procedure, are correct?\nI. Tubal patency assessment following tuboplasty operation\nII. Diagnosis of uterine synechiae\nIII. Detection of IUD\nIV. Diagnosis of subserosal fibroid\nSelect the answer using the code given below:",
         "options": [
-          "I, II and III a",
+          "I, II and III",
           "I, II and IV",
           "I, III and IV",
           "II, III and IV"
@@ -3249,7 +3249,7 @@
       {
         "id": "cms25-p2-072",
         "subject": "Obstetrics & Gynaecology",
-        "text": "Which of the following are indications of endometrial sampling? Endometrial tuberculosis IL. Endometrial polyp III. Postmenopausal bleeding IV. Abnormal uterine bleeding\nSelect the correct answer using the code given below :",
+        "text": "Which of the following are indications of endometrial sampling?\nI. Endometrial tuberculosis\nII. Endometrial polyp\nIII. Postmenopausal bleeding\nIV. Abnormal uterine bleeding\nSelect the correct answer using the code given below:",
         "options": [
           "I, II and III",
           "I, II and IV",
@@ -3277,7 +3277,7 @@
       {
         "id": "cms25-p2-074",
         "subject": "Obstetrics & Gynaecology",
-        "text": "Which of the following statements are correct regarding audit in Obstetrics and Gynaecology ? L It can replace the out of date clinical practices with better ones. II. It is an efficient educational tool. III. It should be based on scientific evidences with facts and figures. IV. It is not labour-intensive. Select the answer using the code given below :",
+        "text": "Which of the following statements are correct regarding audit in Obstetrics and Gynaecology?\nI. It can replace the out of date clinical practices with better ones.\nII. It is an efficient educational tool.\nIII. It should be based on scientific evidences with facts and figures.\nIV. It is not labour-intensive.\nSelect the answer using the code given below:",
         "options": [
           "I, II and III",
           "I, II and IV",
@@ -3291,7 +3291,7 @@
       {
         "id": "cms25-p2-075",
         "subject": "Obstetrics & Gynaecology",
-        "text": "Which of the following are poor prognostic factors in endometrial adenocarcinoma? Estrogen and progesterone receptor positivity HER-2/neu gene expression III. Histologic types papillary serous clear cell carcinoma IV. Aneuploid tumours\nSelect the correct answer using the code given below :",
+        "text": "Which of the following are poor prognostic factors in endometrial adenocarcinoma?\nI. Estrogen and progesterone receptor positivity\nII. HER-2/neu gene expression\nIII. Histologic types papillary serous clear cell carcinoma\nIV. Aneuploid tumours\nSelect the correct answer using the code given below:",
         "options": [
           "I, II and III",
           "I, II and IV",
@@ -3333,7 +3333,7 @@
       {
         "id": "cms25-p2-078",
         "subject": "Obstetrics & Gynaecology",
-        "text": "Which of the following are criteria for opting Le Fort's operation for surgical correction of pelvic organ prolapse ? Procidentia in old age Unfit for long duration surgery III. Associated uterine pathology IV. Coital function no longer required\nSelect the correct answer using the code given below :",
+        "text": "Which of the following are criteria for opting Le Fort's operation for surgical correction of pelvic organ prolapse?\nI. Procidentia in old age\nII. Unfit for long duration surgery\nIII. Associated uterine pathology\nIV. Coital function no longer required\nSelect the correct answer using the code given below:",
         "options": [
           "I, III and IV",
           "I and II only",
@@ -3361,12 +3361,12 @@
       {
         "id": "cms25-p2-080",
         "subject": "Obstetrics & Gynaecology",
-        "text": "Which of the following are Amsel's diagnostic criteria ? Vaginal pH > 4.5 IL Positive Whiff test III. Presence of clue cella > 20% IV. Positive bacterial vaginal culture\nSelect the correct answer using the code given below :",
+        "text": "Which of the following are Amsel's diagnostic criteria?\nI. Vaginal pH > 4.5\nII. Positive Whiff test\nIII. Presence of clue cells > 20%\nIV. Positive bacterial vaginal culture\nSelect the correct answer using the code given below:",
         "options": [
           "I, II and III",
           "I, II and IV",
           "I, III and IV",
-          "II, III and IV PREVENTIVE & SOCIAL MEDICINE"
+          "II, III and IV"
         ],
         "correct_option": 0,
         "explanation": "Amsel's diagnostic criteria for bacterial vaginosis include vaginal pH > 4.5 (I), positive KOH whiff test (II), and >20% clue cells on wet mount (III), plus thin homogeneous discharge (not culture).",
@@ -3375,12 +3375,12 @@
       {
         "id": "cms25-p2-081",
         "subject": "Preventive & Social Medicine",
-        "text": "Which of the following indicators are considered for computing Physical Quality of Life Index\" (PQLI) ? L Infant mortality II. Life expectancy at age one III. Literacy IV. Per capita income\nSelect the correct answer using the code given below : uid",
+        "text": "Which of the following indicators are considered for computing Physical Quality of Life Index (PQLI)?\nI. Infant mortality\nII. Life expectancy at age one\nIII. Literacy\nIV. Per capita income\nSelect the correct answer using the code given below:",
         "options": [
           "I, II and III",
           "I, II and IV",
           "I, III and IV",
-          "11, III and IV"
+          "II, III and IV"
         ],
         "correct_option": 0,
         "explanation": "The Physical Quality of Life Index (PQLI) combines three indicators: infant mortality rate (I), life expectancy at age 1 (II), and basic literacy rate (III), excluding per capita income.",
@@ -3459,9 +3459,9 @@
       {
         "id": "cms25-p2-087",
         "subject": "Preventive & Social Medicine",
-        "text": "Given below is a table showing diagnosis of Myocardial infarction by ECG: Myocardial infarction ECG results Present Absent Positive 45 8,000 Negative 32,000 Total 50 40,000 Consider the following statements: Sensitivity is 90%. II. Specificity is 80%.\nWhich of the statements given above is/are correct ?",
+        "text": "Given below is a table showing diagnosis of Myocardial infarction by ECG:\nMyocardial infarction Present: Positive 45, Negative 5, Total 50.\nMyocardial infarction Absent: Positive 8,000, Negative 32,000, Total 40,000.\nConsider the following statements:\nI. Sensitivity is 90%.\nII. Specificity is 80%.\nWhich of the statements given above is/are correct?",
         "options": [
-          "Tonly",
+          "I only",
           "II only",
           "Both I and II",
           "Neither I nor II"
@@ -3473,12 +3473,12 @@
       {
         "id": "cms25-p2-088",
         "subject": "Preventive & Social Medicine",
-        "text": "Data obtained from hospital records is nof a representative sample of the popalation. What are the reasons for this? Mild cases and subclinical cases may be missed. Population served by a hospital usually cannot be defined. III. Cost of hospital care is not recorded. IV. Admission policy for cases can vary from hospital to hospital.\nSelect the correct answer using the code given below :",
+        "text": "Data obtained from hospital records is not a representative sample of the population. What are the reasons for this?\nI. Mild cases and subclinical cases may be missed.\nII. Population served by a hospital usually cannot be defined.\nIII. Cost of hospital care is not recorded.\nIV. Admission policy for cases can vary from hospital to hospital.\nSelect the correct answer using the code given below:",
         "options": [
           "I and II only",
           "I and III only",
           "I, II and IV",
-          "IL, III and IV"
+          "II, III and IV"
         ],
         "correct_option": 2,
         "explanation": "Hospital data are unrepresentative of the general population because mild/subclinical cases are missed (I), the catchment population cannot be defined (II), and admission policies vary across hospitals (IV).",
@@ -3543,7 +3543,7 @@
       {
         "id": "cms25-p2-093",
         "subject": "Preventive & Social Medicine",
-        "text": "What are the reasons for choosing coliform organisma as indicators of faecal pollution of water rather than the waterborne pathogens directly? They are present in great abundance in the human intestine and excreted in great numbers in faeces. They have lower resistance to forces of natural purification. III. They survive lesser than the pathogens. IV. They are easily detected by culture methods.\nSelect the correct answer using the code given below :",
+        "text": "What are the reasons for choosing coliform organisms as indicators of faecal pollution of water rather than the waterborne pathogens directly?\nI. They are present in great abundance in the human intestine and excreted in great numbers in faeces.\nII. They have lower resistance to forces of natural purification.\nIII. They survive lesser than the pathogens.\nIV. They are easily detected by culture methods.\nSelect the correct answer using the code given below:",
         "options": [
           "I and IV",
           "II and III",
@@ -3557,9 +3557,9 @@
       {
         "id": "cms25-p2-094",
         "subject": "Preventive & Social Medicine",
-        "text": "The Ministry of Health and Family Welfare has launched a programme to meet the challenge of high prevalence of anaemia amongst adolescent boys and girls. Consider the following statements in relation to the key interventions being undertaken : L entails supervised weekly administration of 100 mg elemental iron and 500 ug folie acid. II. These weekly iron-folic acid supplements are administered by using a fixed day approach. III. It entails supervised administration of Albenâazole 400 mg every three months for control of helminth infestation.\nWhich of the statements given above is/are correct ?",
+        "text": "The Ministry of Health and Family Welfare has launched a programme to meet the challenge of high prevalence of anaemia amongst adolescent boys and girls. Consider the following statements in relation to the key interventions being undertaken:\nI. It entails supervised weekly administration of 100 mg elemental iron and 500 ug folic acid.\nII. These weekly iron-folic acid supplements are administered by using a fixed day approach.\nIII. It entails supervised administration of Albendazole 400 mg every three months for control of helminth infestation.\nWhich of the statements given above is/are correct?",
         "options": [
-          "Tonly",
+          "I only",
           "II only",
           "I and III",
           "I and II"
@@ -3683,12 +3683,12 @@
       {
         "id": "cms25-p2-103",
         "subject": "Preventive & Social Medicine",
-        "text": "Which of the following strategies were encouraged by the UNICEF under its 'GOBI Campaign'? G for growth charts to better monitor child development II. O for oral rehydration to treat all mild and moderate dehydration III. B for better and continuous evalaation of children up to 5 years of age IV. 1 for immunization against measles, diphtheria, polio, pertussis, tetanus and tuberculosis\nSelect the correct answer using the code given below",
+        "text": "Which of the following strategies were encouraged by the UNICEF under its 'GOBI Campaign'?\nI. G for growth charts to better monitor child development\nII. O for oral rehydration to treat all mild and moderate dehydration\nIII. B for better and continuous evaluation of children up to 5 years of age\nIV. I for immunization against measles, diphtheria, polio, pertussis, tetanus and tuberculosis\nSelect the correct answer using the code given below:",
         "options": [
           "I, II and III",
           "I, II and IV",
           "I, III and IV",
-          "II, IF and IV"
+          "II, II and IV"
         ],
         "correct_option": 1,
         "explanation": "UNICEF's GOBI strategy stands for Growth monitoring (I), Oral rehydration therapy (II), Breastfeeding, and Immunization (IV).",
@@ -3739,9 +3739,9 @@
       {
         "id": "cms25-p2-107",
         "subject": "Preventive & Social Medicine",
-        "text": "Egg proteins are considered to be the best among food proteins because: of their biological value II. of their digestibility III. they contain all the essential amino acids IV. their calorie content is higher than in proteins of vegetable sources\nWhich of the statements given above is'are correct ?",
+        "text": "Egg proteins are considered to be the best among food proteins because:\nI. of their biological value\nII. of their digestibility\nIII. they contain all the essential amino acids\nIV. their calorie content is higher than in proteins of vegetable sources\nWhich of the statements given above is/are correct?",
         "options": [
-          "Tonly",
+          "I only",
           "I, II and III",
           "II, III and IV",
           "I, III and IV"
@@ -3795,9 +3795,9 @@
       {
         "id": "cms25-p2-111",
         "subject": "Preventive & Social Medicine",
-        "text": "As an index of thermal comfort, the 'Corrected Effective Temperature' is considered to be an improvement over 'Effective Temperature'. It deals with which of the following factors? Air velocity HI. Humidity III. Mean radiant heat IV. Sweat rate\nSelect the correct answer using the code given below :",
+        "text": "As an index of thermal comfort, the 'Corrected Effective Temperature' is considered to be an improvement over 'Effective Temperature'. It deals with which of the following factors?\nI. Air velocity\nII. Humidity\nIII. Mean radiant heat\nIV. Sweat rate\nSelect the correct answer using the code given below:",
         "options": [
-          "I, III and IV uid",
+          "I, III and IV",
           "II, III and IV",
           "I, II and III",
           "I and II only"
@@ -3893,7 +3893,7 @@
       {
         "id": "cms25-p2-118",
         "subject": "Preventive & Social Medicine",
-        "text": "Consider the following statements with regard to Home Based Newborn Care (HBNC) : Early detection and special care of pre-term newborns is one of the majar objectives of HBNC. ANM is the main person involved in the delivery of HBNC. III. Supporting the family for adoption of healthy practices helps achieve the key objectives of HBNC. IV. The primary aim of HBNC is to improve newborn survival.\nWhich of the statements given above are correct?",
+        "text": "Consider the following statements with regard to Home Based Newborn Care (HBNC):\nI. Early detection and special care of pre-term newborns is one of the major objectives of HBNC.\nII. ANM is the main person involved in the delivery of HBNC.\nIII. Supporting the family for adoption of healthy practices helps achieve the key objectives of HBNC.\nIV. The primary aim of HBNC is to improve newborn survival.\nWhich of the statements given above are correct?",
         "options": [
           "I and II only",
           "II and III only",
@@ -3907,7 +3907,7 @@
       {
         "id": "cms25-p2-119",
         "subject": "Preventive & Social Medicine",
-        "text": "Which of the following conditions are transmitted as a recessive, sex-linked trait? Retinitis pigmentosa II. Colour blindness III. Cystic fibrosis IV. Duchenne muscular dystrophy\nSelect the correct answer using the code given below :",
+        "text": "Which of the following conditions are transmitted as a recessive, sex-linked trait?\nI. Retinitis pigmentosa\nII. Colour blindness\nIII. Cystic fibrosis\nIV. Duchenne muscular dystrophy\nSelect the correct answer using the code given below:",
         "options": [
           "I, II and III",
           "I, II and IV",
@@ -4571,7 +4571,7 @@
         "options": [
           "Adrenal adenoma secreting aldosterone",
           "Idiopathic bilateral adrenal hyperplasia",
-          "11-deoxycorticosterone secreting adrenal tumour",
+          "II-deoxycorticosterone secreting adrenal tumour",
           "Inadequate renal perfusion due to renal artery stenosis"
         ],
         "correct_option": 3,
@@ -9546,7 +9546,7 @@
         "text": "Ideal weight gain during pregnancy for a woman with normal BMI should be",
         "options": [
           "7 kg",
-          "11-16 kg",
+          "II-16 kg",
           "18 kg",
           "More than 18 kg"
         ],
@@ -16274,7 +16274,7 @@
         "text": "Ideal weight gain during pregnancy for a woman with normal BMI should be",
         "options": [
           "7 kg",
-          "11-16 kg",
+          "II-16 kg",
           "18 kg",
           "More than 18 kg"
         ],
@@ -22355,7 +22355,7 @@
         "subject": "Pediatrics",
         "text": "Which of the following combinations of the Human Papilloma Virus (HPV) serotypes are non-oncogenic?",
         "options": [
-          "6 and 11",
+          "6 and II",
           "6 and 16",
           "6 and 18",
           "16 and 18"
@@ -23632,9 +23632,9 @@
         "text": "In a case-control study, 300 women aged 20-45 years suffering from breast cancer were compared with age-matched 300 women without breast cancer. It was observed that 120 women among cases and 60 women among controls were obese. The odds ratio of developing breast cancer among obese women is:",
         "options": [
           "9/5",
-          "11/5",
+          "II/5",
           "8/3",
-          "11/3"
+          "II/3"
         ],
         "correct_option": 2,
         "explanation": "Cases: 120 obese, 180 non-obese. Controls: 60 obese, 240 non-obese. Odds Ratio = (120 × 240) / (180 × 60) = 28,800 / 10,800 = 8/3.",
@@ -45497,7 +45497,7 @@
         "subject": "General Medicine",
         "text": "A 5-year-old child presents with short history of purpuric rash, pain and swelling of both knee joints and pain in abdomen. The most likely diagnosis is",
         "options": [
-          ". Idiopathic thrombocytopenic purpura",
+          "Idiopathic thrombocytopenic purpura",
           "Kawasaki disease",
           "Henoch-Schönlein purpura",
           "Takayasu arteritis"
@@ -45653,7 +45653,7 @@
         "options": [
           "1, 2, 3 and 4",
           "1, 2 and 3 only",
-          ". 1, 3 and 4 only",
+          "1, 3 and 4 only",
           "2 and. 3 only"
         ],
         "correct_option": 3,
@@ -46017,7 +46017,7 @@
         "subject": "General Surgery",
         "text": "External examination of the patient\n4. Inhalation\nWhich of the statements given above is/ are correct ?",
         "options": [
-          ". 1 and 4",
+          "1 and 4",
           "I and 2 only",
           "1, 2 and 3",
           "2 and 3 only"
@@ -46214,7 +46214,7 @@
         "text": "Which one of the following statements is true regarding \"injection-sclerotherapy\" for haemorrhoids ?",
         "options": [
           "Sclerotherapy is the ideal treatment for acute external haemorrhoids *",
-          "In patients with haemorrhoids at 3 o'clock, 7 o'clock and 11 o'clock positions, the injection is made in the sitting position.",
+          "In patients with haemorrhoids at 3 o'clock, 7 o'clock and II o'clock positions, the injection is made in the sitting position.",
           "Sclerotherapy is the treatment of choice for the prolapsed haemo rhoids",
           "Injection of sclerosant is made above the dentate line (pectinate line)"
         ],
@@ -49466,7 +49466,7 @@
         "text": "Which of the following most strongly suggests the diagnosis of primary hype parathyroidism ?",
         "options": [
           "Serum acid phosphatase above 120 10/L",
-          "Serum calcium above 11 mg/dL",
+          "Serum calcium above II mg/dL",
           "Urinary calcium below 100 mg/day",
           "Serum alkaline phosphatase above 120 IU/L"
         ],
@@ -49481,7 +49481,7 @@
         "options": [
           "Stage I n",
           "Stage II b",
-          ". Stage III a",
+          ". Stage III",
           "Stage III b"
         ],
         "correct_option": 2,
@@ -49761,7 +49761,7 @@
         "options": [
           ". Bacterial infection",
           "Exogenous allergen",
-          ". Virus infection",
+          "Virus infection",
           "Endogenous toxins"
         ],
         "correct_option": 1,
@@ -50028,7 +50028,7 @@
           "I only",
           "I and 3 only",
           "4 only",
-          ". 1, 2, 3 and 4"
+          "1, 2, 3 and 4"
         ],
         "correct_option": 2,
         "explanation": "Official Answer: Option (c) — Contraindications in Pregnancy with Heart Disease Managing pregnancy in women with heart disease requires careful consideration of procedures and medications that could worsen their cardiac condition. Certain interventions pose significant risks and are contraindicated. Analysis of Potential Contraindications 1. External cephalic version (ECV): While sometimes considered, ECV involves physical manipulation and can cause hemodynamic stress. In severe heart disease, the added stress might be...",
@@ -51148,7 +51148,7 @@
         "text": "Criteria for hospital admission of an adult with community acquired pneumonia includes all except :",
         "options": [
           "Respiratory rate > 28/min",
-          "Total leukocyte count > 11,000/cu mm",
+          "Total leukocyte count > II,000/cu mm",
           "New onset confusion or impaired level of consciousness",
           "Hypoxemia PaO2 < 60 mm Hg"
         ],
@@ -51722,7 +51722,7 @@
         "text": "The tumour suppressor gene that is inactivated in over 50% of human tumours including breast and colon carcinomas and childhood leukaemias is",
         "options": [
           "p Rb",
-          "STK 11",
+          "STK II",
           "p 53",
           "VHL"
         ],
@@ -53448,7 +53448,7 @@
           "retroverted gravid uterus",
           "congenital anomalies of the uterus",
           "congenital anomalies of the foetus",
-          "hormonal deficiencies O-DNT-K-THB/1A 11"
+          "hormonal deficiencies O-DNT-K-THB/1A II"
         ],
         "correct_option": 1,
         "explanation": "Official Answer: Option (b) — Second Trimester Abortion Causes Explained Second-trimester abortions, occurring after the 13th week and before the 28th week of gestation, often have distinct causes compared to first-trimester losses. Uterine Anomalies in Pregnancy Loss Structural abnormalities present from birth in the female reproductive system, known as congenital anomalies of the uterus, are a primary reason for abortions during the second trimester. These anomalies can include: Septate uterus Bicornuate uterus...",
@@ -53586,7 +53586,7 @@
         "text": "The true conjugate of the pelvic brim measures",
         "options": [
           "10.5 cm",
-          "11.5 cm",
+          "II.5 cm",
           "12:5 cm",
           "13.5 cm"
         ],
@@ -53656,7 +53656,7 @@
         "text": "Asymptomatic endometrial tube culosis leading to infertility is categorized in which diagnostic category of DOTS?",
         "options": [
           "Category 1",
-          "Category II a",
+          "Category II",
           "Category III",
           "Category IV"
         ],
@@ -55325,7 +55325,7 @@
         "options": [
           "It is caused by paramyxo virus infection",
           "Rash is usually vesicular",
-          ". Infection spreads by droplets",
+          "Infection spreads by droplets",
           "Incubation period is 14 days"
         ],
         "correct_option": 1,
@@ -55659,7 +55659,7 @@
         "subject": "General Medicine",
         "text": "Which one of the following definitions best fits the term enthesitis?",
         "options": [
-          ". Inflammation at the site of tendinous or ligamentous insertion into bone",
+          "Inflammation at the site of tendinous or ligamentous insertion into bone",
           "Inflammation of the periarticular membrane lining the joint capsule",
           "Inflammation of a sac-like cavity near a joint that decreases friction",
           "."
@@ -55842,7 +55842,7 @@
         "text": "Consider the following statements regarding thyroid hormones:\n1. Majority of the circulating T3 remains in bound form.\n2. Only 50% of the circulating T3 secreted by thyroid.\n3. TSH estimation is not a sensitive test for diagnosis of primary hypothyroidism.\n4. Fetal pituitary-thyroid axis is dependent a large extent pituitary-thyroid axis.\nWhich of the statements given above is/are correct ?",
         "options": [
           "I only",
-          ". 1 and 2 only",
+          "1 and 2 only",
           "2 and 4 only",
           "1, 2, 3 and 4"
         ],
@@ -56053,7 +56053,7 @@
         "options": [
           "Seizures",
           "Adenoma sebaceum",
-          ". X-linked recessive inheritance",
+          "X-linked recessive inheritance",
           "Shagreen patches"
         ],
         "correct_option": 2,

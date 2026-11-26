@@ -462,6 +462,13 @@ class MedAlertsSmokeTests(unittest.TestCase):
         )
         self.assertTrue(_is_vacancy_expired(v_dead_ticker, now_ist))
 
+        from app.scraper import NON_JOB_PATTERN, RECRUITMENT_INTENT_PATTERN, _GENERIC_CATEGORY_PATH_RE, _is_stale_dated_title
+        from datetime import date
+        self.assertTrue(NON_JOB_PATTERN.search("Ineligibility List (Interview) - 39/2026-27"))
+        self.assertFalse(RECRUITMENT_INTENT_PATTERN.search("AYUSH Departments"))
+        self.assertTrue(_GENERIC_CATEGORY_PATH_RE.search("https://vmmc-sjh.mohfw.gov.in/recruitment"))
+        self.assertTrue(_is_stale_dated_title("Walk-in for Junior Resident 26-03-2026 02-04-2026", date(2026, 11, 26)))
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -29,7 +29,17 @@ RESULT_OR_JOINING_PATTERN = re.compile(
 )
 
 NON_JOB_PATTERN = re.compile(
-    r"\b(merit\s*list|selected\s*(?:candidates?|list)|shortlisted|waiting\s*list|waitlist|result(?:s)?\s+(?:of|for)|final\s*result|declared\s*result|selection\s*list|admit\s*cards?|corrigendum|addendum|cancellation|cancelled|answer\s*key|provisional\s*(?:list|selection)|final\s*list|joining\s*(?:order|instruction)|offer\s*(?:of\s*appointment|letter)|appointment\s*order|panel\s*for|engagement\s*order|empanelment|recommendation\s*list|document\s*verification\s*schedule|interview\s*schedule|call\s*letter|list\s*of\s*candidates|closed|guest\s*house|attendant|non[-\s]*medical|field\s*worker|molecular\s*biologist|data\s*management|house\s*staffship\s*committee|list\s*for\s*appearing|dentistry|\bbds\b|\bmds\b|group[-\s]*[cd]|class[-\s]*iv|nursing\s+staff|staff\s+nurse|mining\s+sirdar|overman|surveyor)\b",
+    r"\b(merit\s*list|selected\s*(?:candidates?|list)|shortlisted|waiting\s*list|waitlist|result(?:s)?\s+(?:of|for)|final\s*result|declared\s*result|selection\s*list|ineligib(?:le|ility)\s*list|list\s*of\s*ineligible|admit\s*cards?|corrigendum|addendum|cancellation|cancelled|answer\s*key|provisional\s*(?:list|selection)|final\s*list|joining\s*(?:order|instruction)|offer\s*(?:of\s*appointment|letter)|appointment\s*order|panel\s*for|engagement\s*order|empanelment|recommendation\s*list|document\s*verification\s*schedule|interview\s*schedule|call\s*letter|list\s*of\s*candidates|closed|guest\s*house|attendant|non[-\s]*medical|field\s*worker|molecular\s*biologist|data\s*management|house\s*staffship\s*committee|selection\s*committee|list\s*for\s*appearing|bachelor['’]?s\s*degree|master['’]?s\s*degree|available\s*services|opd\s*registration|directorate\s*of\s*ayush|dentistry|\bbds\b|\bmds\b|group[-\s]*[cd]|class[-\s]*iv|nursing\s+staff|staff\s+nurse|mining\s+sirdar|overman|surveyor)\b",
+    re.IGNORECASE,
+)
+
+RECRUITMENT_INTENT_PATTERN = re.compile(
+    r"\b(?:recruit(?:ment|ing)?|vacanc(?:y|ies)|engagement|walk[-\s]?in|interview|advertis(?:ement|ing)|advt\.?|notice|notification|circular|applications?\s+(?:are|is)\s+invited|apply\s+online|posts?\s+of|contractual|adhoc|ad[-\s]?hoc|fellowship|corrigendum|memo(?:\s*no)?|rolling\s+adv)\b",
+    re.IGNORECASE,
+)
+
+_GENERIC_CATEGORY_PATH_RE = re.compile(
+    r"/(?:recruitment|recruitments|vacancies|careers|jobs|ayush-departments|senior-resident-and-junior-resident-non-pg-posts-recruitment|courses(?:/[^/]+)*)/?$",
     re.IGNORECASE,
 )
 
@@ -973,22 +983,20 @@ class LiveGazetteScraper:
     )
 
     @classmethod
-    def _extract_candidate_links(cls, soup: BeautifulSoup, html_text: str, base_url: str) -> List[Tuple[str, str]]:
-        """Extracts (title, url) pairs from <a> tags, attributes, table/list parents, onclick handlers, and embedded JSON."""
-        candidates: List[Tuple[str, str]] = []
+    def _extract_candidate_links_with_context(cls, soup: BeautifulSoup, html_text: str, base_url: str) -> List[Tuple[str, str, str]]:
+        """Extracts (title, url, row_context) triples from <a> tags, attributes, table/list parents, onclick handlers, and embedded JSON."""
+        candidates: List[Tuple[str, str, str]] = []
         for a in soup.find_all("a", href=True):
             text = " ".join(a.get_text(" ", strip=True).split())
+            parent_row = a.find_parent("tr") or a.find_parent("li")
+            row_text = " ".join(parent_row.get_text(" ", strip=True).split()) if parent_row else ""
             if len(text) < 14 or cls._GENERIC_LINK_RE.match(text):
                 attr_text = " ".join((a.get("title") or a.get("aria-label") or "").split())
                 if len(attr_text) >= 14 and not cls._GENERIC_LINK_RE.match(attr_text):
                     text = attr_text
-                else:
-                    parent_row = a.find_parent("tr") or a.find_parent("li")
-                    if parent_row:
-                        row_text = " ".join(parent_row.get_text(" ", strip=True).split())
-                        if len(row_text) >= 14:
-                            text = row_text
-            candidates.append((text, urljoin(base_url, a["href"])))
+                elif len(row_text) >= 14:
+                    text = row_text
+            candidates.append((text, urljoin(base_url, a["href"].strip()), row_text))
 
         # Fallback for JS-driven / ASP.NET postback portals using onclick / data-href / data-url
         for el in soup.find_all(attrs={"onclick": True}):
@@ -996,18 +1004,20 @@ class LiveGazetteScraper:
             m = re.search(r"(?:window\.open|location\.href\s*=)\s*\(?\s*['\"]([^'\"]+)['\"]", onclick)
             if m:
                 text = " ".join((el.get_text(" ", strip=True) or el.get("title") or el.get("aria-label") or "").split())
-                if len(text) < 14 or cls._GENERIC_LINK_RE.match(text):
-                    parent_row = el.find_parent("tr") or el.find_parent("li")
-                    if parent_row:
-                        text = " ".join(parent_row.get_text(" ", strip=True).split())
+                parent_row = el.find_parent("tr") or el.find_parent("li")
+                row_text = " ".join(parent_row.get_text(" ", strip=True).split()) if parent_row else ""
+                if (len(text) < 14 or cls._GENERIC_LINK_RE.match(text)) and len(row_text) >= 14:
+                    text = row_text
                 if len(text) >= 12:
-                    candidates.append((text, urljoin(base_url, m.group(1))))
+                    candidates.append((text, urljoin(base_url, m.group(1).strip()), row_text))
 
         for attr in ("data-href", "data-url", "data-link", "data-file", "data-pdf"):
             for el in soup.find_all(attrs={attr: True}):
                 text = " ".join((el.get_text(" ", strip=True) or el.get("title") or el.get("aria-label") or "").split())
+                parent_row = el.find_parent("tr") or el.find_parent("li")
+                row_text = " ".join(parent_row.get_text(" ", strip=True).split()) if parent_row else ""
                 if len(text) >= 12:
-                    candidates.append((text, urljoin(base_url, el.get(attr))))
+                    candidates.append((text, urljoin(base_url, (el.get(attr) or "").strip()), row_text))
 
         # Fallback for embedded JSON/Next.js/SPA payloads containing PDF links
         for m in re.finditer(
@@ -1015,17 +1025,23 @@ class LiveGazetteScraper:
             html_text,
             re.IGNORECASE,
         ):
-            candidates.append((m.group(1), urljoin(base_url, m.group(2).replace("\\/", "/"))))
+            candidates.append((m.group(1), urljoin(base_url, m.group(2).replace("\\/", "/").strip()), ""))
 
         # Drop dead anchor/ticker links (e.g. news-announcement.php?, #, javascript:) and prefer .pdf URLs per title
-        filtered: List[Tuple[str, str]] = []
-        for title_txt, href in candidates:
-            low_href = (href or "").strip().lower()
-            if not low_href or low_href.endswith("?") or low_href == "#" or low_href.startswith("javascript:"):
+        filtered: List[Tuple[str, str, str]] = []
+        for title_txt, href, r_ctx in candidates:
+            clean_href = (href or "").strip()
+            low_href = clean_href.lower()
+            if not low_href or low_href.endswith("?") or low_href.endswith("#") or low_href == "#" or low_href.startswith("javascript:"):
                 continue
-            filtered.append((title_txt, href))
-        filtered.sort(key=lambda pair: 0 if ".pdf" in pair[1].lower() else 1)
+            filtered.append((title_txt, clean_href, r_ctx))
+        filtered.sort(key=lambda triple: 0 if ".pdf" in triple[1].lower() else 1)
         return filtered
+
+    @classmethod
+    def _extract_candidate_links(cls, soup: BeautifulSoup, html_text: str, base_url: str) -> List[Tuple[str, str]]:
+        """Extracts (title, url) pairs from <a> tags, attributes, table/list parents, onclick handlers, and embedded JSON."""
+        return [(t, u) for t, u, _ in cls._extract_candidate_links_with_context(soup, html_text, base_url)]
 
     _SESSION: Optional[requests.Session] = None
     _PORTAL_CACHE: Dict[str, Dict[str, str]] = {}
@@ -1093,11 +1109,12 @@ class LiveGazetteScraper:
             seen_titles = set()
             pdf_parsed_count = 0
             lifecycle_notices: List[Dict[str, str]] = []
-            for text, full_url in cls._extract_candidate_links(soup, resp.text, source["url"]):
+            for text, full_url, row_ctx in cls._extract_candidate_links_with_context(soup, resp.text, source["url"]):
                 text = _clean_notice_title(text)
                 if len(text) < 12 or len(text) > 260:
                     continue
                 low = text.lower()
+                is_pdf = ".pdf" in full_url.lower()
                 if PAST_YEAR_LINK_PATTERN.search(text):
                     continue
                 if MEDICAL_PATTERN.search(text) and RESULT_OR_JOINING_PATTERN.search(text):
@@ -1105,6 +1122,11 @@ class LiveGazetteScraper:
                     continue
                 if not MEDICAL_PATTERN.search(text) or NON_JOB_PATTERN.search(text):
                     continue
+                if not is_pdf:
+                    if _GENERIC_CATEGORY_PATH_RE.search(full_url.split("?")[0]):
+                        continue
+                    if not RECRUITMENT_INTENT_PATTERN.search(f"{text} {row_ctx}"):
+                        continue
                 if text in seen_titles:
                     continue
                 seen_titles.add(text)
@@ -1205,7 +1227,7 @@ class LiveGazetteScraper:
                     ref_dt = pdf_meta.get("pdf_creation_date") or pdf_meta.get("last_modified")
                     if ref_dt and ref_dt < (now_ist - timedelta(days=45)):
                         continue
-                    if _is_stale_dated_title(text, today) or _STALE_URL_DATE_RE.search(full_url):
+                    if _is_stale_dated_title(f"{text} {row_ctx}", today) or _STALE_URL_DATE_RE.search(full_url):
                         continue
 
                 discovered.append(entry)
@@ -1300,7 +1322,8 @@ class LiveGazetteScraper:
             title_blob = row.title or ""
             summary_blob = f"{title_blob} {row.summary or ''}"
             notif_u = (row.notification_url or "").strip()
-            if (not MEDICAL_PATTERN.search(title_blob)) or NON_JOB_PATTERN.search(title_blob) or notif_u.endswith("?") or (not row.last_date and not row.exam_date and (_is_stale_dated_title(summary_blob, today_date) or _STALE_URL_DATE_RE.search(notif_u))):
+            is_bad_non_pdf = bool(notif_u and ".pdf" not in notif_u.lower() and (_GENERIC_CATEGORY_PATH_RE.search(notif_u.split("?")[0]) or not RECRUITMENT_INTENT_PATTERN.search(title_blob)))
+            if (not MEDICAL_PATTERN.search(title_blob)) or NON_JOB_PATTERN.search(title_blob) or notif_u.endswith(("?", "#")) or is_bad_non_pdf or (not row.last_date and not row.exam_date and (_is_stale_dated_title(summary_blob, today_date) or _STALE_URL_DATE_RE.search(notif_u))):
                 row.is_active = False
                 row.stage = "RESULTS_OUT" if RESULT_OR_JOINING_PATTERN.search(title_blob) else "APPLICATION_CLOSED"
                 continue

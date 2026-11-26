@@ -1194,7 +1194,8 @@ def _is_vacancy_expired(v: Vacancy, now_ist: Optional[datetime] = None) -> bool:
         return True
     if v.exam_date and v.exam_date < now_ist:
         return True
-    if (v.notification_url or "").strip().endswith("?"):
+    notif_u = (v.notification_url or "").strip()
+    if notif_u.endswith(("?", "#")):
         return True
     if not v.last_date and not v.exam_date and v.created_at:
         if (v.created_at + timedelta(hours=5, minutes=30)) < now_ist - timedelta(days=7):

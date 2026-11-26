@@ -170,6 +170,7 @@ class GovtNotificationPDFParser:
             "application_fee": "As per notification",
             "key_clauses": [],
             "parsed_confident": False,
+            "is_scanned": len(re.sub(r"\s+", "", text or "")) < 60,
         }
 
         signals = 0

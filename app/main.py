@@ -112,9 +112,14 @@ def ensure_schema():
             if col_name not in existing_cols:
                 with engine.begin() as conn:
                     conn.execute(text(col_sql))
+    if "subscriptions" in inspector.get_table_names():
+        sub_cols = {c["name"] for c in inspector.get_columns("subscriptions")}
+        if "zero_bond_only" not in sub_cols:
+            with engine.begin() as conn:
+                conn.execute(text("ALTER TABLE subscriptions ADD COLUMN zero_bond_only BOOLEAN DEFAULT FALSE"))
     db = SessionLocal()
     try:
-        for ver in ("001_vacancy_cols", "002_telemetry_ratelimit_syncjob"):
+        for ver in ("001_vacancy_cols", "002_telemetry_ratelimit_syncjob", "003_sub_zero_bond"):
             if not db.query(SchemaMigration).filter(SchemaMigration.version == ver).first():
                 db.add(SchemaMigration(version=ver))
         db.commit()
@@ -169,6 +174,7 @@ class SubscriptionCreate(BaseModel):
     qualification_filter: str = "ALL"
     state_filter: str = "ALL"
     category_filter: str = "ALL"
+    zero_bond_only: bool = False
 
 class DoctorProfile(BaseModel):
     name: str
@@ -341,17 +347,27 @@ def serve_admin():
     <div id="metricsBox" class="text-xs text-[#6E6E73]">Unlock with X-Admin-Key to load analytics.</div>
   </section>
   <section class="bg-white rounded-2xl p-6 space-y-3 border border-black/5">
+    <div class="flex items-center justify-between gap-2">
+      <h2 class="font-bold">Portal Health Telemetry</h2>
+      <label class="flex items-center gap-1.5 text-xs text-[#6E6E73] cursor-pointer"><input type="checkbox" id="failingOnlyToggle" onchange="renderPortalHealth()"> Failing Only</label>
+    </div>
+    <div id="portalHealthTable" class="space-y-1.5 max-h-80 overflow-y-auto text-xs text-[#6E6E73]">Loading telemetry...</div>
+  </section>
+  <section class="bg-white rounded-2xl p-6 space-y-3 border border-black/5">
     <h2 class="font-bold">Recent Notification Logs</h2>
     <div id="logsList" class="space-y-2 text-xs text-[#6E6E73]">Unlock with X-Admin-Key to load.</div>
   </section>
 </main>
 <script>
+let _portalSources=[];
 function getKey(){return sessionStorage.getItem('med_admin_key')||'';}
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 function saveAndLoad(){const v=document.getElementById('adminKeyInput').value.trim();if(v)sessionStorage.setItem('med_admin_key',v);loadFlagged();loadLogs();loadMetrics();loadSources();loadSyncStatus();}
 async function loadSyncStatus(){try{const d=await (await fetch('/api/sync/status')).json();document.getElementById('syncStatusText').textContent=`${d.status} • Portals: ${d.portals_checked||0} • Live Added: ${d.live_added||0}`;}catch(e){}}
 async function triggerSync(){const d=await (await fetch('/api/sync',{method:'POST'})).json();document.getElementById('syncStatusText').textContent=`${d.status||'STARTED'} (${d.job_id||''})`;setTimeout(loadSyncStatus,3000);}
-async function loadSources(){try{const d=await (await fetch('/api/sources')).json();document.getElementById('portalHealthSummary').textContent=`${d.healthy_count||0} / ${d.total||0} Portals Healthy`;}catch(e){}}
+async function loadSources(){try{const d=await (await fetch('/api/sources')).json();_portalSources=d.sources||[];document.getElementById('portalHealthSummary').textContent=`${d.healthy_count||0} / ${d.total||0} Portals Healthy`;renderPortalHealth();}catch(e){}}
+function renderPortalHealth(){const b=document.getElementById('portalHealthTable');if(!b)return;const failOnly=document.getElementById('failingOnlyToggle')?.checked;const rows=_portalSources.filter(s=>!failOnly||(s.consecutive_failures>0||s.last_error||(s.last_status&&s.last_status>=400)));b.innerHTML=rows.length?rows.map(s=>{const err=s.last_error||(s.last_status&&s.last_status>=400);const pill=err?`<span class='px-2 py-0.5 rounded-full bg-rose-50 text-rose-700 font-semibold'>${esc(s.last_status||'Err')}</span>`:(s.last_status?`<span class='px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-semibold'>${s.last_status} • ${s.latency_ms||0}ms • ${s.discovered_count||0}</span>`:`<span class='px-2 py-0.5 rounded-full bg-[#F5F5F7] text-[#86868B]'>Pending</span>`);return `<div class='p-2.5 bg-[#F5F5F7] rounded-xl flex items-center justify-between gap-2'><div class='min-w-0'><b class='text-[#1D1D1F]'>${esc(s.name)}</b> <span class='text-[#6E6E73]'>(${esc(s.state)})</span>${s.last_error?`<p class='text-[11px] text-rose-600 truncate'>${esc(s.last_error)}</p>`:''}</div><div class='flex items-center gap-2 shrink-0'>${pill}<button onclick="testPortal('${esc(s.name)}')" class='px-2.5 py-1 rounded-full bg-white border border-black/10 font-semibold text-[#1D1D1F]'>Test</button></div></div>`;}).join(''):'No matching portals.';}
+async function testPortal(name){const k=getKey();if(!k)return alert('Enter X-Admin-Key first');const r=await fetch(`/api/sources/${encodeURIComponent(name)}/sync`,{method:'POST',headers:{'X-Admin-Key':k}});const d=await r.json();if(!r.ok)return alert(d.detail||'Error');await loadSources();alert(`${name}: HTTP ${d.telemetry.last_status||'Err'} • Discovered ${d.telemetry.discovered_count||0}`);}
 async function loadMetrics(){const k=getKey();if(!k)return;const r=await fetch('/api/metrics',{headers:{'X-Admin-Key':k}});const b=document.getElementById('metricsBox');if(!r.ok){b.textContent='Auth error ('+r.status+')';return;}const m=await r.json();b.innerHTML=`<div class='grid grid-cols-2 sm:grid-cols-4 gap-3'><div class='p-3 bg-[#F5F5F7] rounded-xl'><b>${m.active_vacancies}</b><p>Active Jobs</p></div><div class='p-3 bg-[#F5F5F7] rounded-xl'><b>${m.discovered_7d}</b><p>Added (7d)</p></div><div class='p-3 bg-[#F5F5F7] rounded-xl'><b>${m.notifications_success}/${m.notifications_total}</b><p>Alerts Delivered</p></div><div class='p-3 bg-[#F5F5F7] rounded-xl'><b>${(m.failing_portals||[]).length}</b><p>Failing Portals</p></div></div>`;}
 async function loadFlagged(){const k=getKey();if(!k)return;const r=await fetch('/api/vacancies/flagged',{headers:{'X-Admin-Key':k}});const b=document.getElementById('flaggedList');if(!r.ok){b.textContent='Auth error ('+r.status+')';return;}const rows=await r.json();b.innerHTML=rows.length?rows.map(x=>`<div class='p-3 bg-[#F5F5F7] rounded-xl flex justify-between items-center'><div><b>${esc(x.title)}</b><p>${esc(x.organization)} • Flags: ${x.flag_count}</p></div>${x.is_active?`<button onclick="deactivate('${esc(x.id)}')" class='px-3 py-1 rounded-full bg-rose-600 text-white font-semibold'>Deactivate</button>`:'Closed'}</div>`).join(''):'No flagged circulars.';}
 async function deactivate(id){const r=await fetch(`/api/vacancies/${id}/deactivate`,{method:'POST',headers:{'X-Admin-Key':getKey()}});if(r.ok)loadFlagged();}
@@ -751,6 +767,38 @@ def list_monitored_sources(db: Session = Depends(get_db)):
         "healthy_count": sum(1 for x in sources_out if x["last_status"] and x["last_status"] < 400 and not x["last_error"]),
         "sources": sources_out,
     }
+
+@app.post("/api/sources/{portal_name}/sync", dependencies=[Depends(verify_admin_key)])
+def sync_single_portal(portal_name: str, db: Session = Depends(get_db)):
+    src = next((s for s in PORTAL_SOURCES if s["name"].lower() == portal_name.strip().lower()), None)
+    if not src:
+        raise HTTPException(status_code=404, detail="Portal not found")
+    items, tel = LiveGazetteScraper.fetch_portal_links_with_telemetry(src)
+    now = datetime.utcnow()
+    failed = bool(tel.get("last_error")) or (tel.get("last_status") is not None and tel["last_status"] >= 400)
+    ph = db.query(PortalHealth).filter(PortalHealth.name == tel["name"]).first()
+    if not ph:
+        ph = PortalHealth(
+            name=tel["name"],
+            organization=tel["organization"],
+            url=tel["url"],
+            last_status=tel["last_status"],
+            latency_ms=tel["latency_ms"],
+            discovered_count=tel["discovered_count"],
+            consecutive_failures=1 if failed else 0,
+            last_error=tel["last_error"],
+            last_checked_at=now,
+        )
+        db.add(ph)
+    else:
+        ph.last_status = tel["last_status"]
+        ph.latency_ms = tel["latency_ms"]
+        ph.discovered_count = tel["discovered_count"]
+        ph.consecutive_failures = (ph.consecutive_failures or 0) + 1 if failed else 0
+        ph.last_error = tel["last_error"]
+        ph.last_checked_at = now
+    db.commit()
+    return {"ok": not failed, "telemetry": tel, "discovered_preview": [i.get("title") for i in items[:5]]}
 
 @app.get("/api/vacancies")
 def list_vacancies(
@@ -1200,6 +1248,7 @@ def subscribe(payload: SubscriptionCreate, request: Request, db: Session = Depen
         existing.qualification_filter = payload.qualification_filter
         existing.state_filter = payload.state_filter
         existing.category_filter = payload.category_filter
+        existing.zero_bond_only = payload.zero_bond_only
         existing.is_active = True
         db.commit()
         return {"message": "Subscription updated successfully", "id": existing.id}
@@ -1210,6 +1259,7 @@ def subscribe(payload: SubscriptionCreate, request: Request, db: Session = Depen
         qualification_filter=payload.qualification_filter,
         state_filter=payload.state_filter,
         category_filter=payload.category_filter,
+        zero_bond_only=payload.zero_bond_only,
         is_active=True
     )
     db.add(sub)

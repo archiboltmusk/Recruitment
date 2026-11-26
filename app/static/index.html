@@ -296,15 +296,36 @@
                     <p class="text-[11px] text-[#86868B] mt-1" id="targetHelp">Personal accounts: send /start to @MedAlertsRecruitmentBot and paste your numeric Chat ID.</p>
                 </div>
 
-                <div>
-                    <label class="block text-xs font-semibold text-[#1D1D1F] mb-1">Degree Filter</label>
-                    <select id="subQualification" class="w-full px-4 py-2.5 bg-[#F5F5F7] rounded-xl text-xs outline-none">
-                        <option value="ALL">All 3 Groups (MBBS, MD/MS/DNB, AYUSH)</option>
-                        <option value="MBBS">MBBS</option>
-                        <option value="MD/MS">MD / MS / DNB</option>
-                        <option value="AYUSH">AYUSH / BHMS / BAMS</option>
-                    </select>
+                <div class="grid grid-cols-2 gap-2.5">
+                    <div>
+                        <label class="block text-xs font-semibold text-[#1D1D1F] mb-1">Degree Filter</label>
+                        <select id="subQualification" class="w-full px-3 py-2.5 bg-[#F5F5F7] rounded-xl text-xs outline-none">
+                            <option value="ALL">All Degrees</option>
+                            <option value="MBBS">MBBS</option>
+                            <option value="MD/MS">MD / MS / DNB</option>
+                            <option value="AYUSH">AYUSH</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-[#1D1D1F] mb-1">State Filter</label>
+                        <select id="subState" class="w-full px-3 py-2.5 bg-[#F5F5F7] rounded-xl text-xs outline-none">
+                            <option value="ALL">All States</option>
+                            <option value="West Bengal">West Bengal</option>
+                            <option value="Delhi">Delhi</option>
+                            <option value="All India">All India Only</option>
+                            <option value="Odisha">Odisha</option>
+                            <option value="Bihar">Bihar</option>
+                            <option value="Jharkhand">Jharkhand</option>
+                            <option value="Maharashtra">Maharashtra</option>
+                            <option value="Karnataka">Karnataka</option>
+                            <option value="Tamil Nadu">Tamil Nadu</option>
+                        </select>
+                    </div>
                 </div>
+                <label class="flex items-center gap-2 text-xs text-[#1D1D1F] cursor-pointer">
+                    <input type="checkbox" id="subZeroBond" class="accent-[#0F766E]">
+                    <span>Zero Bond posts only</span>
+                </label>
 
                 <label class="flex items-start gap-2 text-[11px] text-[#6E6E73] cursor-pointer">
                     <input type="checkbox" id="dpdpConsent" required checked class="mt-0.5 accent-[#0F766E]">
@@ -613,7 +634,9 @@
                     ? '<span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 shrink-0"><i class="fa-solid fa-circle-check mr-1"></i>PDF Verified</span>'
                     : (vStatus === 'PORTAL_VERIFIED'
                         ? '<span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-teal-50 text-[#0F766E] shrink-0">Portal Verified</span>'
-                        : '<span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 shrink-0">Verify PDF</span>');
+                        : (vStatus === 'SCANNED_PDF'
+                            ? '<span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-amber-50 text-amber-800 shrink-0">Scanned PDF</span>'
+                            : '<span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 shrink-0">Verify PDF</span>'));
 
                 return `
                 <div class="apple-card p-6 flex flex-col justify-between space-y-5">
@@ -845,12 +868,14 @@
             const channel = document.querySelector('input[name="channel"]:checked').value;
             const target = document.getElementById('targetInput').value.trim();
             const qual = document.getElementById('subQualification').value;
+            const stateFilter = document.getElementById('subState') ? document.getElementById('subState').value : 'ALL';
+            const zeroBondOnly = document.getElementById('subZeroBond') ? document.getElementById('subZeroBond').checked : false;
             btn.disabled = true; btn.textContent = 'Saving...';
             try {
                 const res = await fetch('/api/subscribe', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ channel, target, qualification_filter: qual })
+                    body: JSON.stringify({ channel, target, qualification_filter: qual, state_filter: stateFilter, zero_bond_only: zeroBondOnly })
                 });
                 const data = await res.json();
                 if (!res.ok) { alert(data.detail || 'Invalid details.'); return; }
@@ -947,7 +972,7 @@
                         <span class="text-[#86868B] text-xs">•</span>
                         <span class="text-xs font-medium text-[#6E6E73]">${escapeHtml(v.state)}</span>
                         <span class="ml-auto text-[11px] font-semibold px-2.5 py-0.5 rounded-full ${(v.verification_status === 'VERIFIED_PDF') ? 'bg-emerald-50 text-emerald-700' : (v.verification_status === 'PORTAL_VERIFIED' ? 'bg-teal-50 text-[#0F766E]' : 'bg-amber-50 text-amber-700')}">
-                            ${v.verification_status === 'VERIFIED_PDF' ? 'PDF Verified' : (v.verification_status === 'PORTAL_VERIFIED' ? 'Portal Verified' : 'Verify Official PDF')}
+                            ${v.verification_status === 'VERIFIED_PDF' ? 'PDF Verified' : (v.verification_status === 'PORTAL_VERIFIED' ? 'Portal Verified' : (v.verification_status === 'SCANNED_PDF' ? 'Scanned PDF' : 'Verify Official PDF'))}
                         </span>
                         <span class="text-[11px] font-semibold px-2.5 py-0.5 rounded-full ${isUrgent ? 'bg-rose-50 text-[#DC2626]' : 'bg-[#F5F5F7] text-[#1D1D1F]'}">
                             ${v.days_left !== null ? `${v.days_left}d left` : escapeHtml(v.qualification)}

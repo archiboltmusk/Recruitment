@@ -194,6 +194,41 @@ class MedAlertsSmokeTests(unittest.TestCase):
         self.assertTrue(any("Engagement of 12 GDMO" in t and u.endswith("/files/gdmo.pdf") for t, u in links))
         self.assertTrue(any("Walk-in Interview for Junior Resident" in t and u.endswith("/docs/jr_2026.pdf") for t, u in links))
 
+    def test_scanned_pdf_fuzzy_dedup_and_subscription_filters(self):
+        from app.scraper import _sig_tokens, _is_fuzzy_duplicate
+        from app.models import Subscription
+        from app.notifier import Notifier
+
+        scanned = GovtNotificationPDFParser.parse_notice_text("   ")
+        self.assertTrue(scanned["is_scanned"])
+
+        t1 = _sig_tokens("Engagement of 12 GDMO under NHM Purulia Sadar Hospital")
+        t2 = _sig_tokens("Notice for Engagement of 12 GDMO under NHM Purulia Sadar Hospital")
+        self.assertTrue(_is_fuzzy_duplicate("West Bengal", t2, [("West Bengal", t1)]))
+        self.assertFalse(_is_fuzzy_duplicate("Odisha", t2, [("West Bengal", t1)]))
+
+        vac_wb_bond = Vacancy(
+            id="v-bond",
+            title="State MO",
+            organization="WB",
+            category="State PSC",
+            state="West Bengal",
+            designation="MO",
+            qualification="MBBS",
+            bond_years=2,
+        )
+        sub = Subscription(
+            channel="telegram",
+            target="12345",
+            qualification_filter="MBBS",
+            state_filter="West Bengal",
+            category_filter="ALL",
+            zero_bond_only=True,
+        )
+        self.assertFalse(Notifier._matches_subscription(sub, vac_wb_bond))
+        vac_wb_bond.bond_years = 0
+        self.assertTrue(Notifier._matches_subscription(sub, vac_wb_bond))
+
 
 if __name__ == "__main__":
     unittest.main()

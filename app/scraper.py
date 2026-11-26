@@ -7,6 +7,8 @@ from datetime import datetime, timedelta
 from typing import List, Dict, Any, Optional, Tuple
 from urllib.parse import urljoin
 import requests
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 from bs4 import BeautifulSoup
 from sqlalchemy.orm import Session
 
@@ -62,6 +64,34 @@ def _norm_title(title: str) -> str:
     t = re.sub(r"^(?:2nd\s+notice\s+)?(?:online\s+)?applications?\s+(?:are|is)\s+invited\s+(?:online\s+)?(?:from\s+(?:the\s+)?eligible\s+candidates?\s+)?(?:for\s+(?:the\s+)?)?(?:engagement\s+of\s+(?:the\s+)?(?:post\s+of\s+)?)?", "", t)
     t = re.sub(r"^(?:notification\s+for\s+(?:engagement\s+of\s+)?|walk[-\s]?in[-\s]?interview\s+for\s+(?:the\s+)?post\s+of\s+)", "", t)
     return re.sub(r"[^a-z0-9]+", " ", t).strip()[:65]
+
+
+_DEDUP_STOP_WORDS = {
+    "medical", "officer", "recruitment", "notice", "notification", "engagement",
+    "post", "posts", "under", "health", "district", "government", "govt", "west",
+    "bengal", "india", "contractual", "basis", "walk", "interview", "applications",
+    "invited", "eligible", "candidates", "online", "portal", "official", "circular",
+}
+
+
+def _sig_tokens(title: str) -> set:
+    return {w for w in re.findall(r"[a-z0-9]{4,}", _clean_notice_title(title).lower()) if w not in _DEDUP_STOP_WORDS}
+
+
+def _is_fuzzy_duplicate(state: str, tokens: set, seen_token_sets: List[Tuple[str, set]]) -> bool:
+    if len(tokens) < 3:
+        return False
+    st = (state or "").lower()
+    for s_state, s_tokens in seen_token_sets:
+        s_st = (s_state or "").lower()
+        if st and s_st and st != s_st and st != "all india" and s_st != "all india":
+            continue
+        if len(s_tokens) < 3:
+            continue
+        overlap = len(tokens & s_tokens)
+        if overlap >= 3 and (overlap / min(len(tokens), len(s_tokens))) >= 0.75:
+            return True
+    return False
 
 
 def _is_stale_dated_title(text: str, today) -> bool:
@@ -973,7 +1003,7 @@ class LiveGazetteScraper:
                 if len(text) >= 12:
                     candidates.append((text, urljoin(base_url, m.group(1))))
 
-        for attr in ("data-href", "data-url", "data-link"):
+        for attr in ("data-href", "data-url", "data-link", "data-file", "data-pdf"):
             for el in soup.find_all(attrs={attr: True}):
                 text = " ".join((el.get_text(" ", strip=True) or el.get("title") or el.get("aria-label") or "").split())
                 if len(text) >= 12:
@@ -981,13 +1011,27 @@ class LiveGazetteScraper:
 
         # Fallback for embedded JSON/Next.js/SPA payloads containing PDF links
         for m in re.finditer(
-            r'"(?:title|subject|headline|name)"\s*:\s*"([^"]{12,220})"[^}]{0,260}"(?:url|link|pdf|href|file|path|document)"\s*:\s*"([^"]+\.pdf[^"]*)"',
+            r'"(?:title|subject|headline|name|noticeTitle|advtTitle|postName|heading)"\s*:\s*"([^"]{12,220})"[^}]{0,280}"(?:url|link|pdf|href|file|path|document|pdfUrl|attachment|filePath|downloadUrl)"\s*:\s*"([^"]+\.pdf[^"]*)"',
             html_text,
             re.IGNORECASE,
         ):
             candidates.append((m.group(1), urljoin(base_url, m.group(2).replace("\\/", "/"))))
 
         return candidates
+
+    _SESSION: Optional[requests.Session] = None
+    _PORTAL_CACHE: Dict[str, Dict[str, str]] = {}
+
+    @classmethod
+    def _get_session(cls) -> requests.Session:
+        if cls._SESSION is None:
+            sess = requests.Session()
+            retry = Retry(total=2, backoff_factor=0.3, status_forcelist=[500, 502, 503, 504], allowed_methods=["GET"])
+            adapter = HTTPAdapter(pool_connections=20, pool_maxsize=20, max_retries=retry)
+            sess.mount("https://", adapter)
+            sess.mount("http://", adapter)
+            cls._SESSION = sess
+        return cls._SESSION
 
     @classmethod
     def fetch_portal_links_with_telemetry(cls, source: Dict[str, str]) -> Tuple[List[Dict[str, Any]], Dict[str, Any]]:
@@ -1003,15 +1047,30 @@ class LiveGazetteScraper:
             "last_error": None,
         }
         try:
-            resp = requests.get(source["url"], headers=cls.HEADERS, timeout=7)
+            req_headers = dict(cls.HEADERS)
+            cached_meta = cls._PORTAL_CACHE.get(source["url"], {})
+            if cached_meta.get("etag"):
+                req_headers["If-None-Match"] = cached_meta["etag"]
+            if cached_meta.get("last_modified"):
+                req_headers["If-Modified-Since"] = cached_meta["last_modified"]
+
+            resp = cls._get_session().get(source["url"], headers=req_headers, timeout=7)
+            telemetry["last_status"] = resp.status_code
+            if resp.status_code == 304:
+                telemetry["latency_ms"] = int((time.monotonic() - t0) * 1000)
+                return discovered, telemetry
             if not resp.encoding or resp.encoding.lower() == "iso-8859-1":
                 resp.encoding = resp.apparent_encoding or "utf-8"
-            telemetry["last_status"] = resp.status_code
             if not resp.ok:
                 logger.warning(f"Portal {source['name']} returned HTTP {resp.status_code}")
                 telemetry["last_error"] = f"HTTP {resp.status_code}"
                 telemetry["latency_ms"] = int((time.monotonic() - t0) * 1000)
                 return discovered, telemetry
+            if resp.headers.get("ETag") or resp.headers.get("Last-Modified"):
+                cls._PORTAL_CACHE[source["url"]] = {
+                    "etag": resp.headers.get("ETag", ""),
+                    "last_modified": resp.headers.get("Last-Modified", ""),
+                }
 
             soup = BeautifulSoup(resp.text, "html.parser")
             if source.get("parser") == "wbhealth_hr_table":
@@ -1102,6 +1161,9 @@ class LiveGazetteScraper:
                             if parsed.get("cadre_breakdown"):
                                 cadre_note = " Cadres: " + ", ".join(f"{c['cadre']} ({c['posts']})" for c in parsed["cadre_breakdown"][:4]) + "."
                             entry["summary"] = f"Auto-parsed from official PDF ({parsed.get('memo_number') or source['name']}).{cadre_note} Verify annexures before applying."
+                        elif parsed.get("is_scanned"):
+                            entry["verification_status"] = "SCANNED_PDF"
+                            entry["summary"] = f"Scanned image PDF from {source['organization']}. Open the official PDF directly to verify dates and seats."
                     except Exception as pdf_err:
                         logger.debug(f"PDF auto-parse skipped for {full_url}: {pdf_err}")
                 else:
@@ -1213,6 +1275,7 @@ class LiveGazetteScraper:
         today_date = now_ist.date()
         active_rows = db.query(Vacancy).filter(Vacancy.is_active == True).all()
         seen_norm_titles = set()
+        seen_token_sets: List[Tuple[str, set]] = []
         for row in active_rows:
             title_blob = row.title or ""
             summary_blob = f"{title_blob} {row.summary or ''}"
@@ -1237,6 +1300,9 @@ class LiveGazetteScraper:
             nt = _norm_title(row.title or "")
             if nt:
                 seen_norm_titles.add(nt)
+            toks = _sig_tokens(row.title or "")
+            if toks:
+                seen_token_sets.append((row.state or "", toks))
         db.commit()
 
         all_discovered: List[Dict[str, Any]] = []
@@ -1315,7 +1381,8 @@ class LiveGazetteScraper:
                     Vacancy.memo_number == item["memo_number"]
                 ).first()
             nt = _norm_title(item.get("title", ""))
-            if not existing and nt and nt in seen_norm_titles:
+            toks = _sig_tokens(item.get("title", ""))
+            if not existing and ((nt and nt in seen_norm_titles) or _is_fuzzy_duplicate(item.get("state", ""), toks, seen_token_sets)):
                 continue
             if existing:
                 changes = []
@@ -1352,6 +1419,8 @@ class LiveGazetteScraper:
                 continue
             if nt:
                 seen_norm_titles.add(nt)
+            if toks:
+                seen_token_sets.append((item.get("state", ""), toks))
             v = Vacancy(**item, stage="APPLICATION_OPEN", is_active=True)
             db.add(v)
             db.commit()

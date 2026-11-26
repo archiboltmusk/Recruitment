@@ -40,17 +40,25 @@ class Notifier:
         )
         return msg
 
+    @staticmethod
+    def _matches_subscription(sub: Subscription, vacancy: Vacancy) -> bool:
+        if sub.qualification_filter and sub.qualification_filter != "ALL":
+            if sub.qualification_filter.upper() not in (vacancy.qualification or "").upper():
+                return False
+        if sub.state_filter and sub.state_filter != "ALL" and (vacancy.state or "") != "All India":
+            allowed_states = [s.strip().upper() for s in sub.state_filter.split(",") if s.strip()]
+            if allowed_states and (vacancy.state or "").upper() not in allowed_states:
+                return False
+        if sub.category_filter and sub.category_filter != "ALL":
+            if sub.category_filter.upper() not in (vacancy.category or "").upper():
+                return False
+        if getattr(sub, "zero_bond_only", False) and (vacancy.bond_years or 0) > 0:
+            return False
+        return True
+
     @classmethod
     def send_to_subscription(cls, db: Session, sub: Subscription, vacancy: Vacancy) -> bool:
-        if sub.qualification_filter != "ALL" and sub.qualification_filter.upper() not in vacancy.qualification.upper():
-            return False
-            
-        if sub.state_filter != "ALL" and vacancy.state != "All India":
-            allowed_states = [s.strip().upper() for s in sub.state_filter.split(",")]
-            if vacancy.state.upper() not in allowed_states:
-                return False
-
-        if sub.category_filter != "ALL" and sub.category_filter.upper() not in vacancy.category.upper():
+        if not cls._matches_subscription(sub, vacancy):
             return False
 
         status = "SUCCESS"
@@ -180,6 +188,8 @@ class Notifier:
         )
         sent = 0
         for sub in subs:
+            if not cls._matches_subscription(sub, vacancy):
+                continue
             status = "SUCCESS"
             details = "Corrigendum logged"
             if bot_token:
@@ -238,6 +248,8 @@ class Notifier:
         )
 
         for sub in subscriptions:
+            if not cls._matches_subscription(sub, vacancy):
+                continue
             status = "SUCCESS"
             details = "CLOSING_48H reminder logged"
             if bot_token:

@@ -56,6 +56,7 @@ class Subscription(Base):
     qualification_filter = Column(String(50), default="ALL")
     state_filter = Column(String(100), default="ALL")
     category_filter = Column(String(100), default="ALL")
+    zero_bond_only = Column(Boolean, default=False)
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime, default=datetime.utcnow)
 

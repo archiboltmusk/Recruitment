@@ -32587,7 +32587,7 @@
       {
         "id": "cms16-p2-005",
         "subject": "General Surgery",
-        "text": "Match List-I with List-II and select the correct answer using the code given below the lists:\nList-I (carcinoma)\nList-II (characteristic) A . Seminoma testis\n1. Hormone dependent B . Carcinoma prostrate\n2. Does not spread by lymphatics C . Basal cell carcinoma\n3. Prognosis depends on thickness D . Malignant melanoma\n4. Highly radiosensitive\nCode: A B C D",
+        "text": "Match List-I with List-II and select the correct answer using the code given below the lists:\nList-I (Carcinoma)\nList-II (Characteristic)\nA. Seminoma testis\n1. Hormone dependent\nB. Carcinoma prostate\n2. Does not spread by lymphatics\nC. Basal cell carcinoma\n3. Prognosis depends on thickness\nD. Malignant melanoma\n4. Highly radiosensitive\nCode: A B C D",
         "options": [
           "4 1 2 3",
           "4 2 1 3",
@@ -32965,7 +32965,7 @@
       {
         "id": "cms16-p2-032",
         "subject": "General Surgery",
-        "text": "Match List-I with L ist-II and select the correct answer using the code given below the lists:\nList-I (drug)\nList-II (complications) A . Cisplatinum\n1. Haemorrhagic cystitis B . Adriamycin\n2. Pulmonary fibrosis C . Bleomycin\n3. Cardiomyopathy D . Cyclophosphamide\n4. Tubular necrosis\nCode: A B C D",
+        "text": "Match List-I with List-II and select the correct answer using the code given below the lists:\nList-I (Drug)\nList-II (Complications)\nA. Cisplatinum\n1. Haemorrhagic cystitis\nB. Adriamycin\n2. Pulmonary fibrosis\nC. Bleomycin\n3. Cardiomyopathy\nD. Cyclophosphamide\n4. Tubular necrosis\nCode: A B C D",
         "options": [
           "3 4 2 1",
           "4 3 1 2",
@@ -34241,7 +34241,7 @@
       {
         "id": "cms15-p1-003",
         "subject": "General Medicine",
-        "text": "Patent ductus arteriousus\nD. Wide variable split in the second heart sound\n4. Pericardial effusion\nCode: A B C D",
+        "text": "Match List I with List II and select the correct answer using the code given below the lists:\nList I (Auscultatory findings)\nList II (Cardiac condition)\nA. Wide fixed split in the second heart sound\n1. Pulmonary hypertension\nB. Continuous machinery murmur\n2. Atrial septal defect\nC. Muffled heart sounds\n3. Patent ductus arteriosus\nD. Wide variable split in the second heart sound\n4. Pericardial effusion\nCode: A B C D",
         "options": [
           "2 4 3 1",
           "2 3 4 1",
@@ -34249,13 +34249,13 @@
           "1 3 4 2"
         ],
         "correct_option": 1,
-        "explanation": "Matched features: subacute bacterial endocarditis (A-2), PDA with Eisenmenger (B-3), pericardial effusion/tamponade (C-4), and wide variable split S2 (D-1).",
+        "explanation": "Wide fixed split S2 is classic for atrial septal defect (A-2), continuous machinery murmur for patent ductus arteriosus (B-3), muffled heart sounds for pericardial effusion (C-4), and wide variable split S2 for pulmonary hypertension (D-1).",
         "citation": "UPSC CMS 2015 Paper-I (Q.3)"
       },
       {
         "id": "cms15-p1-004",
         "subject": "General Medicine",
-        "text": "Paroxysmal supraventricular tachycardia\nCode: A B C D",
+        "text": "Match List I with List II and select the correct answer using the code given below the lists:\nList I (Emergency drugs)\nList II (Clinical condition)\nA. Amiodarone\n1. A-V Block, Mobitz type II\nB. Adenosine\n2. Atrial fibrillation\nC. Digoxin\n3. Ventricular tachycardia\nD. Atropine\n4. Paroxysmal supraventricular tachycardia\nCode: A B C D",
         "options": [
           "1 2 4 3",
           "1 4 2 3",
@@ -34263,7 +34263,7 @@
           "3 4 2 1"
         ],
         "correct_option": 3,
-        "explanation": "Characteristic clinical/ECG findings match with complete heart block (3), atrial fibrillation (4), ventricular tachycardia (2), and paroxysmal supraventricular tachycardia (1).",
+        "explanation": "Amiodarone is used for ventricular tachycardia (A-3), adenosine for paroxysmal supraventricular tachycardia (B-4), digoxin for atrial fibrillation (C-2), and atropine for Mobitz type II AV block (D-1).",
         "citation": "UPSC CMS 2015 Paper-I (Q.4)"
       },
       {
@@ -34549,12 +34549,12 @@
       {
         "id": "cms15-p1-025",
         "subject": "General Medicine",
-        "text": "Match List-I with List-II and select the correct answer using the code given below the lists:\nCode: A B C D",
+        "text": "Match List-I with List-II and select the correct answer using the code given below the lists:\nList-I (Disease)\nList-II (Cause)\nA. Macrocytic anaemia\n1. Iron deficiency\nB. Microcytic anaemia\n2. Hypothyroidism\nC. Hemolytic anaemia\n3. Vitamin B12 deficiency\nD. Megaloblastic anaemia\n4. Alpha methyldopa\nCode: A B C D",
         "options": [
           "3 1 4 2",
           "3 2 1 4",
           "2 1 4 3",
-          "1 4 3 2 List-I (Disease) List-II (Cause)"
+          "1 4 3 2"
         ],
         "correct_option": 2,
         "explanation": "Matched List-I and List-II pairs correspond to the disease-cause code A-2, B-1, C-4, D-3.",
@@ -34577,7 +34577,7 @@
       {
         "id": "cms15-p1-027",
         "subject": "General Medicine",
-        "text": "Match List-I with List-II and select the correct answer using the code given below the lists:\nList-I (Blood picture)\nList-II (Type of Anaemia)\nA. Microcytic, hypochromic red cells\n1. Vitamin B12 deficiency anaemia\nB. Macrocytic, hypochromic red cells\n2. Thalassemia major C Large number of early, intermediate and late erythroblasts\n3. Aplastic anaemia\nD. Low reticulocyte count\n4. Iron-deficiency anaemia\nCode: A B C D",
+        "text": "Match List-I with List-II and select the correct answer using the code given below the lists:\nList-I (Blood picture)\nList-II (Type of Anaemia)\nA. Microcytic, hypochromic red cells\n1. Vitamin B12 deficiency anaemia\nB. Macrocytic, hypochromic red cells\n2. Thalassemia major\nC. Large number of early, intermediate and late erythroblasts\n3. Aplastic anaemia\nD. Low reticulocyte count\n4. Iron-deficiency anaemia\nCode: A B C D",
         "options": [
           "1 4 2 3",
           "2 3 4 1",
@@ -34647,7 +34647,7 @@
       {
         "id": "cms15-p1-032",
         "subject": "General Medicine",
-        "text": "Match List-I with List-II and select the correct answer using the code given below the lists :\nList-I (types of hyperlipidemia)\nList-II (feature)\nA. Hyperchylomicronaemia\n1. Palmar plantar xanthoma\nB. Hyperbetalipoproteinaemia\n2. Subcutaneous extensive tendon xanthoma C Type III hyperlipoproteinaemia\n3. Eruptive xanthoma over buttocks\nD. Familial LPL deficiency\n4. Triglyceride level above 1000 mg %\nCode: A B C D",
+        "text": "Match List-I with List-II and select the correct answer using the code given below the lists:\nList-I (Types of hyperlipidemia)\nList-II (Feature)\nA. Hyperchylomicronaemia\n1. Palmar plantar xanthoma\nB. Hyperbetalipoproteinaemia\n2. Subcutaneous extensive tendon xanthoma\nC. Type III hyperlipoproteinaemia\n3. Eruptive xanthoma over buttocks\nD. Familial LPL deficiency\n4. Triglyceride level above 1000 mg %\nCode: A B C D",
         "options": [
           "3 1 2 4",
           "3 2 1 4",
@@ -34955,7 +34955,7 @@
       {
         "id": "cms15-p1-054",
         "subject": "General Medicine",
-        "text": "Match List-I with List-II and select the correct answer using the code given below the lists:\nList-I (drug)\nList-II (side effect)\nA. Phenytoin sodium\n1. Hypothyroidism\nB. Para aminosalicylic acid\n2. Hepatotoxicity C Rifampicin\n3. 8th nerve damage\nD. Streptomycin\n4. Cerebellar dysfunction\nCode: A B C D",
+        "text": "Match List-I with List-II and select the correct answer using the code given below the lists:\nList-I (Drug)\nList-II (Side effect)\nA. Phenytoin sodium\n1. Hypothyroidism\nB. Para aminosalicylic acid\n2. Hepatotoxicity\nC. Rifampicin\n3. 8th nerve damage\nD. Streptomycin\n4. Cerebellar dysfunction\nCode: A B C D",
         "options": [
           "4 1 2 3",
           "4 2 1 3",
@@ -34969,7 +34969,7 @@
       {
         "id": "cms15-p1-055",
         "subject": "General Medicine",
-        "text": "Match List-I with List-II and select the correct answer using the code given below the lists:\nList-I (disease state)\nList-II (clinical feature)\nA. Pemphigus vulgaris\n1. Acro –osteolysis\nB. Psoriasis\n2. Brachydactyly C Turner syndrome\n3. Koebner phenomenon\nD. Primary hyperparathyroidism\n4. Nikolsky sign\nCode: A B C D",
+        "text": "Match List-I with List-II and select the correct answer using the code given below the lists:\nList-I (Disease state)\nList-II (Clinical feature)\nA. Pemphigus vulgaris\n1. Acro-osteolysis\nB. Psoriasis\n2. Brachydactyly\nC. Turner syndrome\n3. Koebner phenomenon\nD. Primary hyperparathyroidism\n4. Nikolsky sign\nCode: A B C D",
         "options": [
           "1 2 3 4",
           "1 3 2 4",
@@ -41263,12 +41263,12 @@
       {
         "id": "cms13-p1-024",
         "subject": "General Ability",
-        "text": "Match List 1 with List II and select the correct answer using the code given below the Lists :\nList I List Il (Disease) (Appropriate Microbe)\n1. Coxiella typhus burnetti 4. Epidemic\nB. Murine typhus\n2. R. rickettsii\nC. Q fever\n3. R. typhi\nD. Rocky mountain\n4. R. prowazekii spotted fever\nCode :",
+        "text": "Match List I with List II and select the correct answer using the code given below the Lists:\nList I (Disease)\nList II (Appropriate Microbe)\nA. Epidemic typhus\n1. Coxiella burnetii\nB. Murine typhus\n2. R. rickettsii\nC. Q fever\n3. R. typhi\nD. Rocky mountain spotted fever\n4. R. prowazekii\nCode: A B C D",
         "options": [
-          "3 24",
-          "3 4 2",
-          "3",
-          "4 2"
+          "3 2 4 1",
+          "3 4 2 1",
+          "4 3 1 2",
+          "1 4 2 3"
         ],
         "correct_option": 2,
         "explanation": "Epidemic typhus is caused by R. prowazekii (A-4), murine typhus by R. typhi (B-3), Q fever by Coxiella burnetii (C-1), and Rocky Mountain spotted fever by R. rickettsii (D-2).",
@@ -41319,11 +41319,11 @@
       {
         "id": "cms13-p1-028",
         "subject": "General Ability",
-        "text": "Match List I with List Il and the conect swer using the code given below the Lists :\nList I List Il (Class of (Anti retroviral drugs) agents)\nA. Nucleoside\n1. Stavudin analogue Reverse Transcriptase\n2. Nevirapine Inhibitor\n3. Lopanavir\nB. Nucleotide\n4. Tenofovir analogue Reverse Transcriptase Inhibitor . Non-Nucleotide Reverse Transcriptase Inhibitor\nD. Protease Inhibitor\nCode : A B D",
+        "text": "Match List I with List II and select the correct answer using the code given below the Lists:\nList I (Class of drugs)\nList II (Anti retroviral agents)\nA. Nucleoside analogue Reverse Transcriptase Inhibitor\n1. Stavudin\nB. Nucleotide analogue Reverse Transcriptase Inhibitor\n2. Nevirapine\nC. Non-Nucleotide Reverse Transcriptase Inhibitor\n3. Lopinavir\nD. Protease Inhibitor\n4. Tenofovir\nCode: A B C D",
         "options": [
-          "T 3",
-          "1 - 3",
-          "2",
+          "1 3 2 4",
+          "1 4 2 3",
+          "2 3 1 4",
           "2 4 1 3"
         ],
         "correct_option": 1,
@@ -47527,11 +47527,11 @@
       {
         "id": "cms12-p2-111",
         "subject": "Preventive & Social Medicine",
-        "text": "Match List I with List Il and select the correct answer using the code given below the Lists :\nList I\nList I| (Epidemiological (Meaning of terms used with the term) disease agents)\nA. Infectivity\n1. Ability to induce clinical B: Pathogenecity signs/ symptoms\nC. Virulence\n2. Ability to cause sever clinical\nD. Communica- manifestations bility\n3. Ability to invade and multiply in a host\n4. Capacity/extent of transmission from host to host\nCode : B D",
+        "text": "Match List I with List II and select the correct answer using the code given below the Lists:\nList I (Epidemiological terms used with disease agents)\nList II (Meaning of the term)\nA. Infectivity\n1. Ability to induce clinical signs/symptoms\nB. Pathogenicity\n2. Ability to cause severe clinical manifestations\nC. Virulence\n3. Ability to invade and multiply in a host\nD. Communicability\n4. Capacity/extent of transmission from host to host\nCode: A B C D",
         "options": [
-          "4 3 1",
-          "2 4",
-          "4 2 .",
+          "4 3 1 2",
+          "2 4 1 3",
+          "4 2 3 1",
           "3 1 2 4"
         ],
         "correct_option": 3,
@@ -48999,15 +48999,15 @@
       {
         "id": "cms11-p1-096",
         "subject": "General Medicine",
-        "text": "Match List I with List II and select the correct answer using the code given below the lists:\nList I\nList I! (Lake) (State) Chilika Lake\n1. Andhra Pradesh B Kolleru Lake\n2. Kerala\nC. Sambhar Lake\n3. Orissa'\nD. Vembanad Lake\n4. Rajasthan\nCode : B C D",
+        "text": "Match List I with List II and select the correct answer using the code given below the lists:\nList I (Lake)\nList II (State)\nA. Chilika Lake\n1. Andhra Pradesh\nB. Kolleru Lake\n2. Kerala\nC. Sambhar Lake\n3. Orissa\nD. Vembanad Lake\n4. Rajasthan\nCode: A B C D",
         "options": [
-          "2 1 4",
-          ". 1 4 2",
-          "2 1 3",
-          "3 4 2"
+          "2 1 4 3",
+          "3 1 4 2",
+          "2 4 1 3",
+          "3 4 1 2"
         ],
-        "correct_option": 2,
-        "explanation": "Official Answer: Option (c) — Matching Lakes to States The question requires matching lakes from List I to states in List II. Based on the provided correct answer's mapping: A. Chilika Lake is matched with 2. Kerala. B. Kolleru Lake is matched with 4. Rajasthan. C. Sambhar Lake is matched with 1. Andhra Pradesh. D. Vembanad Lake is matched with 3. Orissa. This results in the code: A-2, B-4, C-1, D-3.",
+        "correct_option": 1,
+        "explanation": "Official Answer: Option (b) — Chilika Lake is in Orissa (Odisha) (A-3), Kolleru Lake is in Andhra Pradesh (B-1), Sambhar Lake is in Rajasthan (C-4), and Vembanad Lake is in Kerala (D-2). Code: 3 1 4 2.",
         "citation": "UPSC CMS 2011 Paper-I (Q.96)"
       },
       {
@@ -54663,12 +54663,12 @@
       {
         "id": "cms09-p1-020",
         "subject": "General Ability",
-        "text": "Match List I with List II and select the correct answer using the code given below the lists :\nList I\nList I! (Power Plant) (State)\nA. Chandrapur\n1. Andhra Pradesh Kundah\n2. Maharashtra\nC. Lower Sileru\n3. Orissa\nD. Talcher\n4. Tamil Nadu\nCode : B C D",
+        "text": "Match List I with List II and select the correct answer using the code given below the lists:\nList I (Power Plant)\nList II (State)\nA. Chandrapur\n1. Andhra Pradesh\nB. Kundah\n2. Maharashtra\nC. Lower Sileru\n3. Orissa\nD. Talcher\n4. Tamil Nadu\nCode: A B C D",
         "options": [
-          "2 1 4 3",
-          "2 4 1",
-          "4 2",
-          "4 1 2"
+          "2 4 3 1",
+          "2 4 1 3",
+          "3 2 4 1",
+          "3 4 1 2"
         ],
         "correct_option": 1,
         "explanation": "Official Answer: Option (b) — Power Plant and State Matching Solution This question requires matching the power plants listed in List I with their corresponding states from List II. Matching Power Plants to States Chandrapur (A): Located in Maharashtra. Matches with 2. Maharashtra. Kundah (B): Located in Tamil Nadu. Matches with 4. Tamil Nadu. Lower Sileru (C): Located in Andhra Pradesh. Matches with 1. Andhra Pradesh. Talcher (D): Located in Orissa (now Odisha). Matches with 3. Orissa. Correct Matching Code Based on the...",
@@ -56569,12 +56569,12 @@
       {
         "id": "cms09-p2-036",
         "subject": "General Surgery",
-        "text": "Match List I with List Il and select the correct answer using the code given below the Lists :\nList I\nList II (Characteristic (Scar type) feature)\nA. Not familial\n1. Burn scar\nB. Outgrows\n2. Hypertr wound area phic scar\nC. Contractures 3: Tattooed scar\nD. Particles of\n4. Keloid scar dirt, soot implanted in wound\nCode : B C D",
+        "text": "Match List I with List II and select the correct answer using the code given below the Lists:\nList I (Characteristic feature)\nList II (Scar type)\nA. Not familial\n1. Burn scar\nB. Outgrows wound area\n2. Hypertrophic scar\nC. Contractures\n3. Tattooed scar\nD. Particles of dirt, soot implanted in wound\n4. Keloid scar\nCode: A B C D",
         "options": [
           "3 1 4 2",
-          "4 1 3",
-          "4 2",
-          "4"
+          "2 4 1 3",
+          "3 4 1 2",
+          "2 1 4 3"
         ],
         "correct_option": 1,
         "explanation": "Official Answer: Option (b) — Matching Scar Characteristics to Types This question requires matching specific characteristic features of scars (List I) with their corresponding scar types (List II). We will analyze each feature to find the correct match. Step-by-Step Matching A. Not familial corresponds to 2. Hypertrophic scar. While some scars like keloids have genetic predispositions, hypertrophic scars are generally common and not strongly familial. B. Outgrows wound area corresponds to 4. Keloid scar....",
@@ -56905,12 +56905,12 @@
       {
         "id": "cms09-p2-060",
         "subject": "Obstetrics & Gynaecology",
-        "text": "Match List I with List II and select the correct answer using the code given below the Lists :\nList I List Il (Syndrome) (Conditions)\nA. Androgen\n1. Mullerian Insensitivity agencies with syndrome 46 XX B, Mayer\n2. Female phen Rockitansky- type, 46 XY Kuster-Hauser with absent syndrome Mullerian system\nC. Swyer's\n3. Hypogonad syndrome trophic Hyp gonadism with\nD. Kallman Anosmia syndrome\n4. Female phen type with 46 XY gonadal dysgen sis with patent Mullerian system\nCode : B C D",
+        "text": "Match List I with List II and select the correct answer using the code given below the Lists:\nList I (Syndrome)\nList II (Conditions)\nA. Androgen Insensitivity syndrome\n1. Mullerian agenesis with 46 XX\nB. Mayer Rokitansky-Kuster-Hauser syndrome\n2. Female phenotype, 46 XY with absent Mullerian system\nC. Swyer's syndrome\n3. Hypogonadotrophic Hypogonadism with Anosmia\nD. Kallman syndrome\n4. Female phenotype with 46 XY gonadal dysgenesis with patent Mullerian system\nCode: A B C D",
         "options": [
-          "1 4",
-          "2 4",
-          "4 2",
-          "2 4 3"
+          "3 4 1 2",
+          "4 2 1 3",
+          "1 4 3 2",
+          "2 1 4 3"
         ],
         "correct_option": 3,
         "explanation": "Official Answer: Option (d) — Syndrome Matching Explanation This solution explains the matching between specific syndromes (List I) and their associated medical conditions (List II). Syndrome Analysis and Matching: A. Androgen Insensitivity Syndrome (AIS): Individuals with this condition have XY chromosomes but their bodies do not respond to androgens. This results in a female phenotype. Since the testes produce Anti-Mullerian Hormone (AMH), the Mullerian system (uterus, fallopian tubes) is absent. Match: 2. Female...",

@@ -67,35 +67,80 @@ class GovtNotificationPDFParser:
 
     @staticmethod
     def _ocr_pdf_bytes(pdf_bytes: bytes) -> str:
-        """Best-effort OCR fallback for scanned WB govt PDFs when pdftoppm + tesseract are installed."""
-        if not (shutil.which("pdftoppm") and shutil.which("tesseract")):
-            return ""
-        try:
-            with tempfile.TemporaryDirectory() as tmpdir:
-                pdf_path = os.path.join(tmpdir, "notice.pdf")
-                with open(pdf_path, "wb") as f:
-                    f.write(pdf_bytes)
-                subprocess.run(
-                    ["pdftoppm", "-png", "-r", "200", "-f", "1", "-l", "4", pdf_path, os.path.join(tmpdir, "page")],
-                    check=False,
-                    stdout=subprocess.DEVNULL,
-                    stderr=subprocess.DEVNULL,
-                    timeout=20,
+        """Best-effort OCR fallback for scanned WB govt PDFs via local tesseract or optional cloud Vision/OCR API."""
+        if shutil.which("pdftoppm") and shutil.which("tesseract"):
+            try:
+                with tempfile.TemporaryDirectory() as tmpdir:
+                    pdf_path = os.path.join(tmpdir, "notice.pdf")
+                    with open(pdf_path, "wb") as f:
+                        f.write(pdf_bytes)
+                    subprocess.run(
+                        ["pdftoppm", "-png", "-r", "200", "-f", "1", "-l", "4", pdf_path, os.path.join(tmpdir, "page")],
+                        check=False,
+                        stdout=subprocess.DEVNULL,
+                        stderr=subprocess.DEVNULL,
+                        timeout=20,
+                    )
+                    ocr_chunks: List[str] = []
+                    for fname in sorted(os.listdir(tmpdir)):
+                        if fname.endswith(".png"):
+                            res = subprocess.run(
+                                ["tesseract", os.path.join(tmpdir, fname), "stdout", "-l", "eng"],
+                                capture_output=True,
+                                text=True,
+                                timeout=15,
+                            )
+                            if res.stdout:
+                                ocr_chunks.append(res.stdout)
+                    if ocr_chunks:
+                        return "\n".join(ocr_chunks)
+            except Exception:
+                pass
+
+        gemini_key = os.getenv("GEMINI_API_KEY", "").strip()
+        if gemini_key and len(pdf_bytes) <= 4 * 1024 * 1024:
+            try:
+                import base64
+                b64 = base64.b64encode(pdf_bytes).decode("ascii")
+                res = requests.post(
+                    f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={gemini_key}",
+                    json={
+                        "contents": [{
+                            "parts": [
+                                {"text": "Extract all text verbatim from this Indian government medical recruitment PDF notice (memo number, posts, age limit, pay, walk-in/last date)."},
+                                {"inline_data": {"mime_type": "application/pdf", "data": b64}},
+                            ]
+                        }]
+                    },
+                    timeout=15,
                 )
-                ocr_chunks: List[str] = []
-                for fname in sorted(os.listdir(tmpdir)):
-                    if fname.endswith(".png"):
-                        res = subprocess.run(
-                            ["tesseract", os.path.join(tmpdir, fname), "stdout", "-l", "eng"],
-                            capture_output=True,
-                            text=True,
-                            timeout=15,
-                        )
-                        if res.stdout:
-                            ocr_chunks.append(res.stdout)
-                return "\n".join(ocr_chunks)
-        except Exception:
-            return ""
+                if res.ok:
+                    cands = res.json().get("candidates") or []
+                    if cands:
+                        parts = (cands[0].get("content") or {}).get("parts") or []
+                        txt = "\n".join(p.get("text", "") for p in parts if p.get("text"))
+                        if txt.strip():
+                            return txt
+            except Exception:
+                pass
+
+        ocr_space_key = os.getenv("OCR_SPACE_API_KEY", "").strip()
+        if ocr_space_key and len(pdf_bytes) <= 1024 * 1024:
+            try:
+                res = requests.post(
+                    "https://api.ocr.space/parse/image",
+                    data={"apikey": ocr_space_key, "language": "eng", "filetype": "PDF"},
+                    files={"file": ("notice.pdf", pdf_bytes, "application/pdf")},
+                    timeout=15,
+                )
+                if res.ok:
+                    parsed = res.json().get("ParsedResults") or []
+                    txt = "\n".join(p.get("ParsedText", "") for p in parsed)
+                    if txt.strip():
+                        return txt
+            except Exception:
+                pass
+        return ""
 
     @classmethod
     def extract_text_from_bytes(cls, pdf_bytes: bytes) -> str:

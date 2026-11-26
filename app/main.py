@@ -15,7 +15,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func, or_
 
 from .database import engine, Base, get_db, SessionLocal
-from .models import Vacancy, Subscription, NotificationLog, ExamAttempt, PortalHealth, SyncJob, RateLimitBucket, SchemaMigration, DoctorSyncBlob, PushSubscription, CorrigendumLog
+from .models import Vacancy, Subscription, NotificationLog, ExamAttempt, PortalHealth, SyncJob, RateLimitBucket, SchemaMigration, DoctorSyncBlob, PushSubscription, CorrigendumLog, CorrigendumSuggestion
 from .collector import VacancyCollector
 from .scraper import LiveGazetteScraper, PORTAL_SOURCES
 from .notifier import Notifier
@@ -406,6 +406,10 @@ def serve_admin():
     <div id="flaggedList" class="space-y-2 text-xs text-[#6E6E73]">Unlock with X-Admin-Key to load.</div>
   </section>
   <section class="bg-white rounded-2xl p-6 space-y-3 border border-black/5">
+    <h2 class="font-bold">Community Corrigendum / Link Suggestions</h2>
+    <div id="suggestionsList" class="space-y-2 text-xs text-[#6E6E73]">Unlock with X-Admin-Key to load.</div>
+  </section>
+  <section class="bg-white rounded-2xl p-6 space-y-3 border border-black/5">
     <h2 class="font-bold">7-Day Discovery &amp; Delivery Metrics</h2>
     <div id="metricsBox" class="text-xs text-[#6E6E73]">Unlock with X-Admin-Key to load analytics.</div>
   </section>
@@ -425,7 +429,9 @@ def serve_admin():
 let _portalSources=[];
 function getKey(){return sessionStorage.getItem('med_admin_key')||'';}
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
-function saveAndLoad(){const v=document.getElementById('adminKeyInput').value.trim();if(v)sessionStorage.setItem('med_admin_key',v);loadFlagged();loadLogs();loadMetrics();loadSources();loadSyncStatus();}
+function saveAndLoad(){const v=document.getElementById('adminKeyInput').value.trim();if(v)sessionStorage.setItem('med_admin_key',v);loadFlagged();loadSuggestions();loadLogs();loadMetrics();loadSources();loadSyncStatus();}
+async function loadSuggestions(){const k=getKey();if(!k)return;const r=await fetch('/api/corrigenda/suggestions',{headers:{'X-Admin-Key':k}});const b=document.getElementById('suggestionsList');if(!r.ok){b.textContent='Auth error ('+r.status+')';return;}const rows=await r.json();b.innerHTML=rows.length?rows.map(s=>`<div class='p-3 bg-[#F5F5F7] rounded-xl flex justify-between items-center gap-2'><div><b>${esc(s.note)}</b><p class='text-[11px]'>Vacancy: ${esc(s.vacancy_id)} ${s.suggested_url?`• ${esc(s.suggested_url)}`:''}</p></div><div class='flex gap-1.5 shrink-0'><button onclick="resolveSuggestion(${s.id},'APPROVED')" class='px-2.5 py-1 rounded-full bg-emerald-600 text-white font-semibold'>Approve</button><button onclick="resolveSuggestion(${s.id},'REJECTED')" class='px-2.5 py-1 rounded-full bg-rose-600 text-white font-semibold'>Reject</button></div></div>`).join(''):'No pending suggestions.';}
+async function resolveSuggestion(id,decision){const r=await fetch(`/api/corrigenda/suggestions/${id}/resolve?decision=${decision}`,{method:'POST',headers:{'X-Admin-Key':getKey()}});if(r.ok)loadSuggestions();}
 async function loadSyncStatus(){try{const d=await (await fetch('/api/sync/status')).json();document.getElementById('syncStatusText').textContent=`${d.status} • Portals: ${d.portals_checked||0} • Live Added: ${d.live_added||0}`;}catch(e){}}
 async function triggerSync(){const d=await (await fetch('/api/sync',{method:'POST'})).json();document.getElementById('syncStatusText').textContent=`${d.status||'STARTED'} (${d.job_id||''})`;setTimeout(loadSyncStatus,3000);}
 async function loadSources(){try{const d=await (await fetch('/api/sources')).json();_portalSources=d.sources||[];document.getElementById('portalHealthSummary').textContent=`${d.healthy_count||0} / ${d.total||0} Portals Healthy`;renderPortalHealth();}catch(e){}}
@@ -576,6 +582,35 @@ def list_exam_subjects():
         }
         for subj, cnt in sorted(counts.items(), key=lambda x: -x[1])
     ]
+
+@app.get("/api/exams/weak-drill")
+def get_weak_drill_questions(subjects: Optional[str] = None, limit: int = Query(default=30, ge=5, le=60)):
+    import random
+    all_qs = [q for qs in EXAM_QUESTIONS.values() for q in qs]
+    if subjects and subjects.strip():
+        wanted = {s.strip().lower() for s in subjects.split(",") if s.strip()}
+        pool = [q for q in all_qs if any(w in (q.get("subject") or "").lower() for w in wanted)]
+        if not pool:
+            pool = all_qs
+    else:
+        pool = list(all_qs)
+    picked = random.sample(pool, min(limit, len(pool)))
+    safe_questions = [
+        {"id": q["id"], "subject": q["subject"], "text": q["text"], "options": q["options"], "image_url": q.get("image_url")}
+        for q in picked
+    ]
+    label = subjects.strip() if (subjects and subjects.strip()) else "All Subjects"
+    meta = {
+        "id": "weak-drill",
+        "title": f"Focused Drill: {label}",
+        "subtitle": f"Adaptive {len(safe_questions)}-question practice set",
+        "total_questions": len(safe_questions),
+        "total_marks": len(safe_questions),
+        "duration_minutes": max(10, len(safe_questions)),
+        "negative_marking": 0.33,
+        "cutoff_reference": max(1, int(len(safe_questions) * 0.6)),
+    }
+    return {"exam": meta, "questions": safe_questions}
 
 @app.get("/api/exams/{exam_id}")
 def get_exam_questions(exam_id: str):
@@ -1670,6 +1705,10 @@ class PushSubscribeRequest(BaseModel):
     qualification_filter: str = "ALL"
     state_filter: str = "ALL"
 
+@app.get("/api/push/vapid-key")
+def get_vapid_public_key():
+    return {"public_key": os.getenv("VAPID_PUBLIC_KEY", "").strip()}
+
 @app.post("/api/push/subscribe", status_code=status.HTTP_201_CREATED)
 def save_push_subscription(payload: PushSubscribeRequest, request: Request, db: Session = Depends(get_db)):
     check_rate_limit(request, "push_sub", max_calls=15, window_sec=300)
@@ -1696,6 +1735,46 @@ def save_push_subscription(payload: PushSubscribeRequest, request: Request, db: 
         row.is_active = True
     db.commit()
     return {"ok": True, "subscribed": True}
+
+class SuggestUpdateRequest(BaseModel):
+    suggested_url: Optional[str] = None
+    note: str = Field(..., min_length=4, max_length=400)
+
+@app.post("/api/vacancies/{vacancy_id}/suggest-update", status_code=status.HTTP_201_CREATED)
+def suggest_vacancy_update(vacancy_id: str, payload: SuggestUpdateRequest, request: Request, db: Session = Depends(get_db)):
+    check_rate_limit(request, f"suggest:{vacancy_id}", max_calls=3, window_sec=3600)
+    v = db.query(Vacancy).filter(Vacancy.id == vacancy_id).first()
+    if not v:
+        raise HTTPException(status_code=404, detail="Vacancy not found")
+    s_url = (payload.suggested_url or "").strip() or None
+    if s_url and not GovtNotificationPDFParser.is_safe_url(s_url):
+        raise HTTPException(status_code=400, detail="Suggested URL must be a valid public http(s) link")
+    row = CorrigendumSuggestion(vacancy_id=v.id, suggested_url=s_url, note=payload.note.strip(), status="PENDING")
+    db.add(row)
+    db.commit()
+    db.refresh(row)
+    return {"ok": True, "id": row.id, "message": "Update suggestion queued for review"}
+
+@app.get("/api/corrigenda/suggestions", dependencies=[Depends(verify_admin_key)])
+def list_corrigendum_suggestions(status_filter: str = "PENDING", db: Session = Depends(get_db)):
+    rows = db.query(CorrigendumSuggestion).filter(CorrigendumSuggestion.status == status_filter).order_by(CorrigendumSuggestion.created_at.desc()).limit(30).all()
+    return [{"id": r.id, "vacancy_id": r.vacancy_id, "suggested_url": r.suggested_url, "note": r.note, "status": r.status, "created_at": r.created_at.isoformat() if r.created_at else None} for r in rows]
+
+@app.post("/api/corrigenda/suggestions/{suggestion_id}/resolve", dependencies=[Depends(verify_admin_key)])
+def resolve_corrigendum_suggestion(suggestion_id: int, decision: str = Query(..., pattern="^(APPROVED|REJECTED)$"), db: Session = Depends(get_db)):
+    row = db.query(CorrigendumSuggestion).filter(CorrigendumSuggestion.id == suggestion_id).first()
+    if not row:
+        raise HTTPException(status_code=404, detail="Suggestion not found")
+    row.status = decision
+    if decision == "APPROVED" and row.suggested_url:
+        v = db.query(Vacancy).filter(Vacancy.id == row.vacancy_id).first()
+        if v:
+            old_u = v.notification_url or "None"
+            v.notification_url = row.suggested_url
+            v.last_verified_at = datetime.utcnow()
+            db.add(CorrigendumLog(vacancy_id=v.id, title=v.title, field_changed="notification_url", old_value=old_u[:100], new_value=row.suggested_url[:100]))
+    db.commit()
+    return {"ok": True, "status": row.status}
 
 @app.get("/api/corrigenda")
 def list_recent_corrigenda(limit: int = 20, db: Session = Depends(get_db)):

@@ -237,9 +237,20 @@
 
         <!-- VIEW 4: WARD-BREAK FLASHCARDS -->
         <div id="flashcardView" class="hidden max-w-2xl mx-auto w-full space-y-5">
-            <div class="flex items-center justify-between">
+            <div class="flex flex-wrap items-center justify-between gap-2">
                 <span id="fcCounter" class="text-xs font-bold text-[#0F766E]">Card 1 / 20</span>
-                <button onclick="exitFlashcards()" class="px-4 py-1.5 rounded-full bg-white border border-black/10 text-xs font-semibold">Back to Lobby</button>
+                <div class="flex items-center gap-2">
+                    <select id="fcTopicSelect" onchange="startFlashcards(this.value)" class="px-3 py-1.5 rounded-full bg-white border border-black/10 text-xs font-semibold outline-none">
+                        <option value="image-based">Image-Based (IBQ)</option>
+                        <option value="">All Subjects (Random 25)</option>
+                        <option value="Medicine">Medicine</option>
+                        <option value="Paediatrics">Paediatrics</option>
+                        <option value="Surgery">Surgery</option>
+                        <option value="Obstetrics">OBG</option>
+                        <option value="Preventive">PSM</option>
+                    </select>
+                    <button onclick="exitFlashcards()" class="px-4 py-1.5 rounded-full bg-white border border-black/10 text-xs font-semibold">Back to Lobby</button>
+                </div>
             </div>
             <div class="apple-card p-6 sm:p-8 space-y-5">
                 <span id="fcSubject" class="text-[11px] font-bold px-3 py-1 rounded-full bg-[#E6F4F1] text-[#0F766E]">Subject</span>
@@ -410,7 +421,8 @@
                     const topWeak = Object.entries(subjCounts).sort((a, b) => b[1] - a[1]).slice(0, 3);
                     const weakBox = document.getElementById('weakSubjectsRow');
                     weakBox.classList.remove('hidden');
-                    weakBox.innerHTML = '<span class="font-bold text-rose-700">Weak Subjects:</span>' + topWeak.map(([s, c]) => {
+                    const weakCsv = topWeak.map(([s]) => s).join(',');
+                    weakBox.innerHTML = `<button onclick="startWeakDrill('${weakCsv}')" class="px-3 py-1 rounded-full bg-rose-600 text-white font-semibold hover:bg-rose-700">30-Q Weakest-Subjects Drill</button>` + topWeak.map(([s, c]) => {
                         const slug = 'subject-' + s.toLowerCase().replace(/ /g, '-').replace(/&/g, 'and');
                         return `<button onclick="startTest('${slug}')" class="px-3 py-1 rounded-full bg-rose-50 text-rose-800 font-semibold hover:bg-rose-100">${s} (${c} due)</button>`;
                     }).join('');
@@ -435,9 +447,16 @@
             currentExam = data.exam; questions = data.questions; beginSession();
         }
         let fcList = [], fcIdx = 0;
-        async function startFlashcards() {
+        async function startWeakDrill(subjectsCsv) {
+            const res = await fetch(`/api/exams/weak-drill?subjects=${encodeURIComponent(subjectsCsv || '')}&limit=30`);
+            const data = await res.json();
+            currentExam = data.exam; questions = data.questions; beginSession();
+        }
+        async function startFlashcards(topic) {
             try {
-                const res = await fetch('/api/exams/image-based');
+                const sel = topic !== undefined ? topic : (document.getElementById('fcTopicSelect') ? document.getElementById('fcTopicSelect').value : 'image-based');
+                const url = sel === 'image-based' ? '/api/exams/image-based' : `/api/exams/weak-drill?subjects=${encodeURIComponent(sel)}&limit=25`;
+                const res = await fetch(url);
                 const data = await res.json();
                 fcList = (data.questions || []).slice(0, 25);
                 if (!fcList.length) return;

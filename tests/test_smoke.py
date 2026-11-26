@@ -249,6 +249,43 @@ class MedAlertsSmokeTests(unittest.TestCase):
         self.assertGreater(len(q1), 0)
         self.assertGreater(len(q2), 0)
 
+    def test_api_routes_weak_drill_vapid_and_suggest_update(self):
+        from unittest.mock import patch
+        from app.main import (
+            get_stats,
+            get_vapid_public_key,
+            get_weak_drill_questions,
+            suggest_vacancy_update,
+            SuggestUpdateRequest,
+            list_corrigendum_suggestions,
+            resolve_corrigendum_suggestion,
+        )
+
+        st = get_stats(db=self.db)
+        self.assertEqual(st["active_notices"], 1)
+
+        vk = get_vapid_public_key()
+        self.assertIn("public_key", vk)
+
+        drill = get_weak_drill_questions(subjects="Medicine,Surgery", limit=10)
+        self.assertEqual(len(drill["questions"]), 10)
+
+        req = Request({"type": "http", "headers": [], "client": ("127.0.0.1", 12345)})
+        with patch("app.pdf_parser.GovtNotificationPDFParser.is_safe_url", return_value=True):
+            sug = suggest_vacancy_update(
+                "smoke-vac-1",
+                SuggestUpdateRequest(suggested_url="https://www.hrb.wb.gov.in/notice", note="Date extended to 20 Dec 2026"),
+                req,
+                self.db,
+            )
+        self.assertTrue(sug["ok"])
+
+        pending = list_corrigendum_suggestions(status_filter="PENDING", db=self.db)
+        self.assertEqual(len(pending), 1)
+
+        resolved = resolve_corrigendum_suggestion(pending[0]["id"], decision="APPROVED", db=self.db)
+        self.assertEqual(resolved["status"], "APPROVED")
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -1,4 +1,5 @@
 import os
+import json
 import hmac
 import hashlib
 import html
@@ -7,8 +8,14 @@ from email.mime.text import MIMEText
 import requests
 from datetime import datetime, timedelta
 from sqlalchemy.orm import Session
-from .models import Subscription, NotificationLog, Vacancy
+from .models import Subscription, NotificationLog, Vacancy, PushSubscription
 from .pdf_parser import GovtNotificationPDFParser
+
+try:
+    from pywebpush import webpush, WebPushException
+except ImportError:
+    webpush = None
+    WebPushException = Exception
 
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "")
 APP_BASE_URL = os.getenv("APP_BASE_URL", "https://medalerts.onrender.com").rstrip("/")
@@ -163,12 +170,54 @@ class Notifier:
         return status == "SUCCESS"
 
     @classmethod
+    def broadcast_web_push(cls, db: Session, vacancy: Vacancy) -> int:
+        priv_key = os.getenv('VAPID_PRIVATE_KEY', '').strip()
+        if not (webpush and priv_key):
+            return 0
+        claims_sub = os.getenv('VAPID_CLAIMS_SUB', 'mailto:alerts@medalerts.onrender.com').strip()
+        subs = db.query(PushSubscription).filter(PushSubscription.is_active == True).all()
+        payload = json.dumps({
+            'title': f'MedAlerts: {(vacancy.title or "")[:80]}',
+            'body': f'{vacancy.organization} ({vacancy.state}) - {vacancy.total_posts or "Check"} Seats',
+            'url': f'{APP_BASE_URL}/?job={vacancy.id}',
+        })
+        sent = 0
+        for ps in subs:
+            if ps.qualification_filter and ps.qualification_filter != 'ALL':
+                if ps.qualification_filter.upper() not in (vacancy.qualification or '').upper():
+                    continue
+            if ps.state_filter and ps.state_filter != 'ALL' and (vacancy.state or '') != 'All India':
+                if ps.state_filter.upper() != (vacancy.state or '').upper():
+                    continue
+            if not (ps.p256dh and ps.auth):
+                continue
+            try:
+                webpush(
+                    subscription_info={'endpoint': ps.endpoint, 'keys': {'p256dh': ps.p256dh, 'auth': ps.auth}},
+                    data=payload,
+                    vapid_private_key=priv_key,
+                    vapid_claims={'sub': claims_sub},
+                    timeout=5,
+                )
+                sent += 1
+            except WebPushException as exc:
+                resp = getattr(exc, 'response', None)
+                if resp is not None and getattr(resp, 'status_code', None) in (404, 410):
+                    ps.is_active = False
+            except Exception:
+                pass
+        if subs:
+            db.commit()
+        return sent
+
+    @classmethod
     def broadcast_new_vacancy(cls, db: Session, vacancy: Vacancy) -> int:
         subscriptions = db.query(Subscription).filter(Subscription.is_active == True).all()
         sent_count = 0
         for sub in subscriptions:
             if cls.send_to_subscription(db, sub, vacancy):
                 sent_count += 1
+        cls.broadcast_web_push(db, vacancy)
         return sent_count
 
     @classmethod

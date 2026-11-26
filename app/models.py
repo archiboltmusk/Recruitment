@@ -162,3 +162,14 @@ class CorrigendumLog(Base):
     old_value = Column(String(120), nullable=True)
     new_value = Column(String(120), nullable=True)
     detected_at = Column(DateTime, default=datetime.utcnow)
+
+
+class CorrigendumSuggestion(Base):
+    __tablename__ = "corrigendum_suggestions"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    vacancy_id = Column(String(36), nullable=False)
+    suggested_url = Column(Text, nullable=True)
+    note = Column(Text, nullable=False)
+    status = Column(String(20), default="PENDING")  # PENDING, APPROVED, REJECTED
+    created_at = Column(DateTime, default=datetime.utcnow)

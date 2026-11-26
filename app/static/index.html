@@ -178,6 +178,16 @@
                         <option value="ADMIT_CARD_OUT">Admit Card / Exam</option>
                         <option value="CLOSED">Closed / Results Out</option>
                     </select>
+                    <select id="nearMeFilter" onchange="applyFilters()" class="px-3 py-2 bg-[#F5F5F7] rounded-xl text-xs font-medium text-[#1D1D1F] outline-none">
+                        <option value="">Any Location</option>
+                        <option value="purulia">Near Purulia (150km)</option>
+                        <option value="kolkata">Near Kolkata (120km)</option>
+                        <option value="siliguri">Near Siliguri (150km)</option>
+                        <option value="delhi">Near Delhi NCR (100km)</option>
+                    </select>
+                    <button id="viewModeBtn" onclick="toggleViewMode()" class="px-3 py-2 bg-[#F5F5F7] hover:bg-gray-200 rounded-xl text-xs font-semibold text-[#1D1D1F] shrink-0">
+                        <i class="fa-regular fa-calendar mr-1 text-[#0F766E]"></i><span id="viewModeLabel">Timeline</span>
+                    </button>
                 </div>
             </div>
 
@@ -601,7 +611,9 @@
                 const matchEligible = activeQuickFilter !== 'ELIGIBLE_ME' || (eligibleIdSet && eligibleIdSet.has(String(v.id)));
                 const matchVerifiedDate = activeQuickFilter !== 'VERIFIED_DATE' || Boolean(v.last_date);
                 const matchThisWeek = activeQuickFilter !== 'THIS_WEEK' || (v.days_left !== null && v.days_left <= 7);
-                return matchHidden && matchSearch && matchQual && matchRole && matchCat && matchStage && matchBond && matchUR && matchEligible && matchVerifiedDate && matchThisWeek;
+                const nearHub = document.getElementById('nearMeFilter') ? document.getElementById('nearMeFilter').value : '';
+                const matchNear = !nearHub || matchesProximity(v, nearHub);
+                return matchHidden && matchSearch && matchQual && matchRole && matchCat && matchStage && matchBond && matchUR && matchEligible && matchVerifiedDate && matchThisWeek && matchNear;
             });
             renderRegionalStrip(allVacancies);
 
@@ -645,6 +657,37 @@
             return /^https?:\/\//i.test(u) ? escapeHtml(u) : '#';
         }
 
+        const HUB_COORDS = { purulia: [23.33, 86.36, 150], kolkata: [22.57, 88.36, 120], siliguri: [26.73, 88.43, 150], delhi: [28.61, 77.21, 100] };
+        const PLACE_COORDS = [
+            ['purulia', 23.33, 86.36], ['bankura', 23.23, 87.07], ['bardhaman', 23.23, 87.86], ['burdwan', 23.23, 87.86],
+            ['durgapur', 23.52, 87.31], ['asansol', 23.68, 86.95], ['bokaro', 23.67, 86.15], ['deoghar', 24.48, 86.70],
+            ['ranchi', 23.34, 85.31], ['kolkata', 22.57, 88.36], ['howrah', 22.59, 88.26], ['hooghly', 22.90, 88.39],
+            ['kalyani', 22.98, 88.43], ['nadia', 23.47, 88.56], ['s24pgs', 22.14, 88.40], ['24 parganas', 22.72, 88.48],
+            ['medinipur', 22.42, 87.32], ['siliguri', 26.73, 88.43], ['darjeeling', 27.04, 88.26], ['malda', 25.01, 88.14],
+            ['murshidabad', 24.18, 88.27], ['delhi', 28.61, 77.21], ['safdarjung', 28.57, 77.21], ['rmlh', 28.63, 77.20]
+        ];
+        function _distKm(aLat, aLon, bLat, bLon) {
+            const R = 6371, dLat = (bLat - aLat) * Math.PI / 180, dLon = (bLon - aLon) * Math.PI / 180;
+            const x = Math.sin(dLat / 2) ** 2 + Math.cos(aLat * Math.PI / 180) * Math.cos(bLat * Math.PI / 180) * Math.sin(dLon / 2) ** 2;
+            return 2 * R * Math.asin(Math.sqrt(x));
+        }
+        function matchesProximity(v, hubKey) {
+            const hub = HUB_COORDS[hubKey]; if (!hub) return true;
+            if ((v.state || '').toLowerCase() === 'all india') return true;
+            const blob = `${v.title} ${v.organization} ${v.state}`.toLowerCase();
+            for (const [kw, lat, lon] of PLACE_COORDS) {
+                if (blob.includes(kw)) return _distKm(hub[0], hub[1], lat, lon) <= hub[2];
+            }
+            return false;
+        }
+        let viewMode = 'cards';
+        function toggleViewMode() {
+            viewMode = viewMode === 'cards' ? 'timeline' : 'cards';
+            const lbl = document.getElementById('viewModeLabel');
+            if (lbl) lbl.textContent = viewMode === 'cards' ? 'Timeline' : 'Cards';
+            applyFilters();
+        }
+
         function renderCards(list) {
             const container = document.getElementById('vacanciesList');
             const empty = document.getElementById('emptyState');
@@ -655,6 +698,23 @@
                 return;
             }
             empty.classList.add('hidden');
+            if (viewMode === 'timeline') {
+                container.className = 'space-y-3';
+                container.innerHTML = list.map(v => `
+                    <div onclick="openVacancyDetail('${v.id}')" class="apple-card p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 cursor-pointer">
+                        <div class="flex items-center gap-3 min-w-0">
+                            <span class="px-3 py-1.5 rounded-2xl text-[11px] font-bold shrink-0 ${v.days_left !== null && v.days_left <= 7 ? 'bg-rose-50 text-[#DC2626]' : 'bg-[#E6F4F1] text-[#0F766E]'}">${escapeHtml(v.exam_date || v.last_date || 'Check PDF')}</span>
+                            <div class="min-w-0">
+                                <p class="text-sm font-bold text-[#1D1D1F] truncate">${escapeHtml(v.title)}</p>
+                                <p class="text-[11px] text-[#6E6E73] truncate">${escapeHtml(v.organization)} • ${escapeHtml(v.state)} • ${escapeHtml(v.selection_mode || '')}</p>
+                            </div>
+                        </div>
+                        <span class="text-xs font-semibold text-[#0F766E] shrink-0">${v.total_posts > 0 ? v.total_posts + ' Seats' : 'Check PDF'} &rarr;</span>
+                    </div>
+                `).join('');
+                return;
+            }
+            container.className = 'grid grid-cols-1 md:grid-cols-2 gap-5';
 
             container.innerHTML = list.map(v => {
                 const isWalkIn = v.selection_mode && v.selection_mode.toLowerCase().includes('walk-in');
@@ -1157,6 +1217,16 @@
                         </button>
                     </div>
                 </div>
+                <details class="pt-2 border-t border-black/[0.06] text-xs">
+                    <summary class="cursor-pointer font-semibold text-[#0F766E]">Suggest Updated PDF / Date Corrigendum</summary>
+                    <div class="mt-2.5 space-y-2">
+                        <input type="url" id="suggestUrlInput" placeholder="Optional official corrigendum PDF URL..." class="w-full px-3 py-2 bg-[#F5F5F7] rounded-xl outline-none">
+                        <div class="flex gap-2">
+                            <input type="text" id="suggestNoteInput" placeholder="e.g. Extended to 15 Dec 2026" class="flex-1 px-3 py-2 bg-[#F5F5F7] rounded-xl outline-none">
+                            <button onclick="submitUpdateSuggestion('${v.id}')" class="px-4 py-2 rounded-xl bg-[#1D1D1F] text-white font-semibold">Submit</button>
+                        </div>
+                    </div>
+                </details>
             `;
 
             document.getElementById('vacancyDetailFooter').innerHTML = `
@@ -1307,6 +1377,28 @@
             const map = getTrackedMap();
             if (map[id]) { map[id].note = note; localStorage.setItem('med_app_tracker', JSON.stringify(map)); showToast('Application note saved'); }
         }
+        async function submitUpdateSuggestion(id) {
+            const note = (document.getElementById('suggestNoteInput')?.value || '').trim();
+            const suggested_url = (document.getElementById('suggestUrlInput')?.value || '').trim() || null;
+            if (note.length < 4) return showToast('Enter a short note (min 4 chars).');
+            try {
+                const res = await fetch(`/api/vacancies/${id}/suggest-update`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ suggested_url, note })
+                });
+                const d = await res.json();
+                if (!res.ok) return showToast(d.detail || 'Could not submit suggestion.');
+                showToast('Submitted for review!');
+                document.getElementById('suggestNoteInput').value = '';
+            } catch (e) { showToast('Network error.'); }
+        }
+        function _urlBase64ToUint8Array(base64String) {
+            const padding = '='.repeat((4 - base64String.length % 4) % 4);
+            const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+            const raw = atob(base64);
+            return Uint8Array.from([...raw].map(c => c.charCodeAt(0)));
+        }
         async function enableBrowserPush() {
             if (!('Notification' in window) || !('serviceWorker' in navigator)) return showToast('Browser push not supported here.');
             const perm = await Notification.requestPermission();
@@ -1315,17 +1407,24 @@
                 const reg = await navigator.serviceWorker.ready;
                 let sub = await reg.pushManager.getSubscription();
                 if (!sub) {
+                    try {
+                        const vk = await (await fetch('/api/push/vapid-key')).json();
+                        if (vk.public_key) sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: _urlBase64ToUint8Array(vk.public_key) });
+                    } catch (e) {}
+                }
+                const stateFilter = document.getElementById('subState') ? document.getElementById('subState').value : 'ALL';
+                if (!sub) {
                     await fetch('/api/push/subscribe', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ endpoint: 'https://push.medalerts.local/browser/' + (localStorage.getItem('med_push_id') || (localStorage.setItem('med_push_id', crypto.randomUUID()), localStorage.getItem('med_push_id'))), qualification_filter: document.getElementById('subQualification').value })
+                        body: JSON.stringify({ endpoint: 'https://push.medalerts.local/browser/' + (localStorage.getItem('med_push_id') || (localStorage.setItem('med_push_id', crypto.randomUUID()), localStorage.getItem('med_push_id'))), qualification_filter: document.getElementById('subQualification').value, state_filter: stateFilter })
                     });
                 } else {
                     const j = sub.toJSON();
                     await fetch('/api/push/subscribe', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ endpoint: j.endpoint, keys: j.keys || {}, qualification_filter: document.getElementById('subQualification').value })
+                        body: JSON.stringify({ endpoint: j.endpoint, keys: j.keys || {}, qualification_filter: document.getElementById('subQualification').value, state_filter: stateFilter })
                     });
                 }
                 showToast('Browser push alerts enabled!');

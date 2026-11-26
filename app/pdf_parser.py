@@ -272,9 +272,9 @@ class GovtNotificationPDFParser:
             extracted["pay_scale"] = f"Pay Level {level_match.group(1)}"
             signals += 1
 
-        # 5. Dates (Walk-in windows & Application Last Dates)
+        # 5. Dates (Walk-in / Interview windows & Application Last Dates)
         walkin_block = re.search(
-            r"walk[-\s]?in[-\s]?interview.{0,160}",
+            r"(?:walk[-\s]?in[-\s]?interview|date\s+of\s+interview|interview\s+(?:date|schedule|will\s+be\s+held(?:\s+on)?)|reporting\s+date|date\s+of\s+counsell?ing|document\s+verification).{0,240}",
             text,
             re.IGNORECASE | re.DOTALL,
         )

@@ -21,8 +21,13 @@ MEDICAL_PATTERN = re.compile(
     re.IGNORECASE,
 )
 
+RESULT_OR_JOINING_PATTERN = re.compile(
+    r"\b(merit\s*list|selected\s*(?:candidates?|list)|shortlisted|waiting\s*list|waitlist|result(?:s)?\s+(?:of|for)|final\s*result|declared\s*result|selection\s*list|provisional\s*(?:list|selection)|final\s*list|joining\s*(?:order|instruction)|offer\s*(?:of\s*appointment|letter)|appointment\s*order|engagement\s*order|empanelment|recommendation\s*list|panel\s*for|cancellation|cancelled)\b",
+    re.IGNORECASE,
+)
+
 NON_JOB_PATTERN = re.compile(
-    r"\b(merit\s*list|selected\s*(?:candidates?|list)|shortlisted|waiting\s*list|waitlist|result(?:s)?\s+(?:of|for)|admit\s*cards?|corrigendum|addendum|cancellation|cancelled|answer\s*key|provisional\s*list|final\s*list|joining\s*order|panel\s*for|engagement\s*order|closed|guest\s*house|attendant|non[-\s]*medical|field\s*worker|molecular\s*biologist|data\s*management|house\s*staffship\s*committee|list\s*for\s*appearing|dentistry|\bbds\b|\bmds\b|group[-\s]*[cd]|class[-\s]*iv|nursing\s+staff|staff\s+nurse|mining\s+sirdar|overman|surveyor)\b",
+    r"\b(merit\s*list|selected\s*(?:candidates?|list)|shortlisted|waiting\s*list|waitlist|result(?:s)?\s+(?:of|for)|final\s*result|declared\s*result|selection\s*list|admit\s*cards?|corrigendum|addendum|cancellation|cancelled|answer\s*key|provisional\s*(?:list|selection)|final\s*list|joining\s*(?:order|instruction)|offer\s*(?:of\s*appointment|letter)|appointment\s*order|panel\s*for|engagement\s*order|empanelment|recommendation\s*list|document\s*verification\s*schedule|interview\s*schedule|call\s*letter|list\s*of\s*candidates|closed|guest\s*house|attendant|non[-\s]*medical|field\s*worker|molecular\s*biologist|data\s*management|house\s*staffship\s*committee|list\s*for\s*appearing|dentistry|\bbds\b|\bmds\b|group[-\s]*[cd]|class[-\s]*iv|nursing\s+staff|staff\s+nurse|mining\s+sirdar|overman|surveyor)\b",
     re.IGNORECASE,
 )
 
@@ -545,14 +550,18 @@ class LiveGazetteScraper:
 
             seen_titles = set()
             pdf_parsed_count = 0
+            lifecycle_notices: List[Dict[str, str]] = []
             for text, full_url in cls._extract_candidate_links(soup, resp.text, source["url"]):
                 text = _clean_notice_title(text)
                 if len(text) < 12 or len(text) > 260:
                     continue
                 low = text.lower()
-                if not MEDICAL_PATTERN.search(text) or NON_JOB_PATTERN.search(text):
-                    continue
                 if PAST_YEAR_LINK_PATTERN.search(text):
+                    continue
+                if MEDICAL_PATTERN.search(text) and RESULT_OR_JOINING_PATTERN.search(text):
+                    lifecycle_notices.append({"title": text, "organization": source["organization"], "url": full_url})
+                    continue
+                if not MEDICAL_PATTERN.search(text) or NON_JOB_PATTERN.search(text):
                     continue
                 if text in seen_titles:
                     continue
@@ -636,10 +645,11 @@ class LiveGazetteScraper:
 
                 if entry.get("qualification") == "BDS":
                     continue
-                today = datetime.utcnow().date()
-                if entry.get("last_date") and entry["last_date"].date() < today:
+                now_ist = datetime.utcnow() + timedelta(hours=5, minutes=30)
+                today = now_ist.date()
+                if entry.get("last_date") and entry["last_date"] < now_ist:
                     continue
-                if not entry.get("last_date") and entry.get("exam_date") and entry["exam_date"].date() < today:
+                if entry.get("exam_date") and entry["exam_date"] < now_ist:
                     continue
                 if not entry.get("last_date") and (_is_stale_dated_title(text, today) or _STALE_URL_DATE_RE.search(full_url)):
                     continue
@@ -651,6 +661,7 @@ class LiveGazetteScraper:
             logger.warning(f"Live scrape skipped for {source['name']}: {e}")
             telemetry["last_error"] = str(e)[:250]
         telemetry["discovered_count"] = len(discovered)
+        telemetry["lifecycle_notices"] = locals().get("lifecycle_notices", [])
         telemetry["latency_ms"] = int((time.monotonic() - t0) * 1000)
         return discovered, telemetry
 
@@ -660,32 +671,82 @@ class LiveGazetteScraper:
         return discovered
 
     @classmethod
+    def close_matching_vacancies_from_notices(cls, db: Session, notices: List[Dict[str, str]]) -> int:
+        """Auto-closes active parent vacancies when a portal publishes a matching result, merit list, or joining order."""
+        if not notices:
+            return 0
+        active_rows = db.query(Vacancy).filter(Vacancy.is_active == True).all()
+        if not active_rows:
+            return 0
+        stop_words = {"for", "the", "and", "post", "posts", "of", "in", "under", "with", "to", "medical", "officer", "result", "merit", "list", "joining", "order", "final", "provisional", "selected", "candidates", "notice", "notification", "engagement", "recruitment"}
+        closed_count = 0
+        for n in notices:
+            n_org = (n.get("organization") or "").lower()
+            n_title = _clean_notice_title(n.get("title") or "").lower()
+            n_tokens = {w for w in re.findall(r"[a-z0-9]{3,}", n_title) if w not in stop_words}
+            for row in active_rows:
+                if not row.is_active:
+                    continue
+                if (row.organization or "").lower() != n_org:
+                    continue
+                if row.memo_number and row.memo_number.split()[0].lower() in n_title:
+                    match = True
+                else:
+                    r_tokens = {w for w in re.findall(r"[a-z0-9]{3,}", (row.title or "").lower()) if w not in stop_words}
+                    overlap = len(n_tokens & r_tokens)
+                    match = overlap >= 2 or (len(r_tokens) <= 2 and overlap >= 1)
+                if match:
+                    old_stage = row.stage or "APPLICATION_OPEN"
+                    row.is_active = False
+                    row.stage = "RESULTS_OUT"
+                    row.summary = f"[Results / Joining Order Released] {row.summary or ''}".strip()[:1000]
+                    db.add(CorrigendumLog(
+                        vacancy_id=row.id,
+                        title=row.title,
+                        field_changed="stage",
+                        old_value=old_stage,
+                        new_value="RESULTS_OUT",
+                    ))
+                    closed_count += 1
+        if closed_count:
+            db.commit()
+        return closed_count
+
+    @classmethod
     def sync_live_portals(cls, db: Session) -> Dict[str, Any]:
         added = 0
         checked_portals = 0
         now = datetime.utcnow()
+        now_ist = now + timedelta(hours=5, minutes=30)
         db.query(Vacancy).filter(
             Vacancy.is_active == True,
             Vacancy.last_date.isnot(None),
-            Vacancy.last_date < now,
+            Vacancy.last_date < now_ist,
         ).update({"is_active": False, "stage": "APPLICATION_CLOSED"}, synchronize_session=False)
         db.query(Vacancy).filter(
             Vacancy.is_active == True,
+            Vacancy.exam_date.isnot(None),
+            Vacancy.exam_date < now_ist,
+        ).update({"is_active": False, "stage": "INTERVIEW_OVER"}, synchronize_session=False)
+        db.query(Vacancy).filter(
+            Vacancy.is_active == True,
             Vacancy.last_date.is_(None),
+            Vacancy.exam_date.is_(None),
             Vacancy.verification_status == "NEEDS_PDF_CHECK",
-            Vacancy.created_at < now - timedelta(days=14),
+            Vacancy.created_at < now - timedelta(days=7),
         ).update({"is_active": False, "stage": "APPLICATION_CLOSED"}, synchronize_session=False)
         db.commit()
 
         # Re-classify / deactivate stale, non-medical, dental, or misclassified MD/MS rows already in DB
-        today_date = now.date()
+        today_date = now_ist.date()
         active_rows = db.query(Vacancy).filter(Vacancy.is_active == True).all()
         seen_norm_titles = set()
         for row in active_rows:
             title_blob = row.title or ""
-            if (not MEDICAL_PATTERN.search(title_blob)) or NON_JOB_PATTERN.search(title_blob) or (not row.last_date and (_is_stale_dated_title(title_blob, today_date) or _STALE_URL_DATE_RE.search(row.notification_url or ""))):
+            summary_blob = f"{title_blob} {row.summary or ''}"
+            if (not MEDICAL_PATTERN.search(title_blob)) or NON_JOB_PATTERN.search(title_blob) or (not row.last_date and not row.exam_date and (_is_stale_dated_title(summary_blob, today_date) or _STALE_URL_DATE_RE.search(row.notification_url or ""))):
                 row.is_active = False
-                row.stage = "APPLICATION_CLOSED"
+                row.stage = "RESULTS_OUT" if RESULT_OR_JOINING_PATTERN.search(title_blob) else "APPLICATION_CLOSED"
                 continue
             inferred = cls._infer_role_and_qual(title_blob)
             if inferred["qualification"] == "BDS":
@@ -729,6 +790,12 @@ class LiveGazetteScraper:
                         "discovered_count": 0,
                         "last_error": str(exc)[:250],
                     })
+
+        # Auto-close active vacancies whose Result / Merit List / Joining Order was just published
+        all_lifecycle_notices: List[Dict[str, str]] = []
+        for tel in telemetry_batch:
+            all_lifecycle_notices.extend(tel.get("lifecycle_notices") or [])
+        results_closed = cls.close_matching_vacancies_from_notices(db, all_lifecycle_notices)
 
         # Persist per-portal health telemetry
         for tel in telemetry_batch:
@@ -819,4 +886,4 @@ class LiveGazetteScraper:
             db.refresh(v)
             Notifier.broadcast_new_vacancy(db, v)
             added += 1
-        return {"portals_checked": checked_portals, "live_added": added, "corrigenda_detected": corrigenda_detected}
+        return {"portals_checked": checked_portals, "live_added": added, "corrigenda_detected": corrigenda_detected, "results_closed": results_closed}

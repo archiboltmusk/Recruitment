@@ -171,11 +171,12 @@
                         <option value="seats">Sort: Most Seats</option>
                         <option value="newest">Sort: Newest Added</option>
                     </select>
-                    <select id="stageFilter" onchange="applyFilters()" class="px-3 py-2 bg-[#F5F5F7] rounded-xl text-xs font-medium text-[#1D1D1F] outline-none">
+                    <select id="stageFilter" onchange="onStageFilterChange()" class="px-3 py-2 bg-[#F5F5F7] rounded-xl text-xs font-medium text-[#1D1D1F] outline-none">
                         <option value="">All Stages</option>
                         <option value="APPLICATION_OPEN">Open</option>
                         <option value="CLOSING_SOON">Closing Soon</option>
                         <option value="ADMIT_CARD_OUT">Admit Card / Exam</option>
+                        <option value="CLOSED">Closed / Results Out</option>
                     </select>
                 </div>
             </div>
@@ -467,9 +468,23 @@
             } catch (err) { console.error(err); }
         }
 
-        async function fetchVacancies() {
+        function getHiddenVacancySet() {
+            try { return new Set(JSON.parse(localStorage.getItem('med_hidden_vacancies') || '[]').map(String)); }
+            catch (e) { return new Set(); }
+        }
+        function hideVacancyLocally(id) {
+            const s = getHiddenVacancySet();
+            s.add(String(id));
+            localStorage.setItem('med_hidden_vacancies', JSON.stringify(Array.from(s)));
+        }
+        async function onStageFilterChange() {
+            const stageVal = document.getElementById('stageFilter') ? document.getElementById('stageFilter').value : '';
+            await fetchVacancies(stageVal === 'CLOSED' ? 'CLOSED' : '');
+        }
+        async function fetchVacancies(stageOverride = '') {
             try {
-                const res = await fetch('/api/vacancies');
+                const url = stageOverride === 'CLOSED' ? '/api/vacancies?stage=CLOSED&active_only=false' : '/api/vacancies';
+                const res = await fetch(url);
                 allVacancies = await res.json();
                 if (Array.isArray(allVacancies) && document.getElementById('statActive').textContent === '-') {
                     document.getElementById('statActive').textContent = allVacancies.length;
@@ -525,12 +540,14 @@
                     (v.selection_mode && v.selection_mode.toLowerCase().includes(cat.toLowerCase()))
                 );
                 const stageVal = document.getElementById('stageFilter') ? document.getElementById('stageFilter').value : '';
-                const matchStage = !stageVal || v.stage === stageVal || (stageVal === 'ADMIT_CARD_OUT' && (v.stage === 'ADMIT_CARD_OUT' || v.stage === 'EXAM_SCHEDULED'));
+                const hiddenSet = getHiddenVacancySet();
+                const matchHidden = stageVal === 'CLOSED' || !hiddenSet.has(String(v.id));
+                const matchStage = !stageVal || stageVal === 'CLOSED' || v.stage === stageVal || (stageVal === 'ADMIT_CARD_OUT' && (v.stage === 'ADMIT_CARD_OUT' || v.stage === 'EXAM_SCHEDULED'));
                 const matchBond = !bond || (bond === 'no_bond' && v.bond_years === 0);
                 const matchUR = activeQuickFilter !== 'UR_ONLY' || !(v.category_seats && v.category_seats.UR === 0);
                 const matchEligible = activeQuickFilter !== 'ELIGIBLE_ME' || (eligibleIdSet && eligibleIdSet.has(String(v.id)));
                 const matchVerifiedDate = activeQuickFilter !== 'VERIFIED_DATE' || Boolean(v.last_date);
-                return matchSearch && matchQual && matchRole && matchCat && matchStage && matchBond && matchUR && matchEligible && matchVerifiedDate;
+                return matchHidden && matchSearch && matchQual && matchRole && matchCat && matchStage && matchBond && matchUR && matchEligible && matchVerifiedDate;
             });
             renderRegionalStrip(allVacancies);
 
@@ -992,14 +1009,22 @@
                     </div>
                 </div>
 
-                <div class="pt-2 border-t border-black/[0.06] flex items-center justify-between gap-3">
+                <div class="pt-2 border-t border-black/[0.06] flex flex-wrap items-center justify-between gap-2">
                     <span class="text-[11px] text-[#86868B]">
-                        ${flagCount > 0 ? `Flagged ${flagCount}x for verification` : 'Broken link or expired circular?'}
+                        ${flagCount > 0 ? `Flagged ${flagCount}x for verification` : 'Interview over or result out?'}
                     </span>
-                    <button id="drawerFlagBtn" onclick="flagVacancy('${v.id}')" class="pill-btn px-3.5 py-1.5 rounded-full bg-rose-50 hover:bg-rose-100 text-[#DC2626] text-xs font-semibold flex items-center gap-1.5">
-                        <i class="fa-regular fa-flag text-[11px]"></i>
-                        <span>Report Issue</span>
-                    </button>
+                    <div class="flex items-center gap-1.5">
+                        <select id="drawerFlagReason" class="px-2.5 py-1.5 bg-[#F5F5F7] rounded-full text-[11px] font-medium text-[#1D1D1F] outline-none">
+                            <option value="INTERVIEW_OVER">Interview Over</option>
+                            <option value="RESULTS_OUT">Result / Joining Out</option>
+                            <option value="DEADLINE_PASSED">Deadline Passed</option>
+                            <option value="BROKEN_LINK">Broken Link</option>
+                        </select>
+                        <button id="drawerFlagBtn" onclick="flagVacancy('${v.id}')" class="pill-btn px-3.5 py-1.5 rounded-full bg-rose-50 hover:bg-rose-100 text-[#DC2626] text-xs font-semibold flex items-center gap-1.5">
+                            <i class="fa-regular fa-flag text-[11px]"></i>
+                            <span>Mark Closed</span>
+                        </button>
+                    </div>
                 </div>
             `;
 
@@ -1040,26 +1065,41 @@
 
         async function flagVacancy(id) {
             const btn = document.getElementById('drawerFlagBtn');
+            const reasonEl = document.getElementById('drawerFlagReason');
+            const reason = reasonEl ? reasonEl.value : 'BROKEN_LINK';
             if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-[11px]"></i><span>Reporting...</span>'; }
             try {
-                const res = await fetch(`/api/vacancies/${id}/flag`, { method: 'POST' });
+                const res = await fetch(`/api/vacancies/${id}/flag`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ reason })
+                });
                 const data = await res.json();
+                if (reason !== 'BROKEN_LINK') {
+                    hideVacancyLocally(id);
+                }
                 if (!res.ok) {
-                    showToast(res.status === 429 ? 'Already reported for review today.' : (data.detail || 'Could not report issue.'));
+                    showToast(reason !== 'BROKEN_LINK' ? 'Hidden from your active list.' : (res.status === 429 ? 'Already reported for review today.' : (data.detail || 'Could not report issue.')));
+                    if (reason !== 'BROKEN_LINK') { closeVacancyDetail(); applyFilters(); return; }
                     if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-flag text-[11px]"></i><span>Reported</span>'; }
                     return;
                 }
                 const v = allVacancies.find(item => String(item.id) === String(id));
                 if (v) {
                     v.flag_count = data.flag_count;
-                    if (v.flag_count >= 5) v.stage = 'NEEDS_VERIFICATION';
+                    if (data.stage) v.stage = data.stage;
+                    if (data.is_active === false) hideVacancyLocally(id);
                 }
-                showToast(data.message || 'Circular flagged for verification.');
+                showToast(reason !== 'BROKEN_LINK' ? 'Marked closed & hidden from your feed.' : (data.message || 'Circular flagged for verification.'));
+                if (reason !== 'BROKEN_LINK') {
+                    closeVacancyDetail();
+                } else if (currentDetailId === id) {
+                    openVacancyDetail(id, false);
+                }
                 applyFilters();
-                if (currentDetailId === id) openVacancyDetail(id, false);
             } catch (err) {
                 showToast('Network error while flagging.');
-                if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fa-regular fa-flag text-[11px]"></i><span>Report Issue</span>'; }
+                if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fa-regular fa-flag text-[11px]"></i><span>Mark Closed</span>'; }
             }
         }
 

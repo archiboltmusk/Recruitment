@@ -677,16 +677,37 @@ def download_vacancy_calendar(vacancy_id: str, db: Session = Depends(get_db)):
         headers={"Content-Disposition": f"attachment; filename=medalerts-{v.id[:8]}.ics"}
     )
 
+CLOSED_STAGES = {"APPLICATION_CLOSED", "RESULTS_OUT", "INTERVIEW_OVER"}
+
+def _ist_now() -> datetime:
+    return datetime.utcnow() + timedelta(hours=5, minutes=30)
+
+def _is_vacancy_expired(v: Vacancy, now_ist: Optional[datetime] = None) -> bool:
+    now_ist = now_ist or _ist_now()
+    if not v.is_active:
+        return True
+    if (v.stage or "") in CLOSED_STAGES:
+        return True
+    if v.last_date and v.last_date < now_ist:
+        return True
+    if v.exam_date and v.exam_date < now_ist:
+        return True
+    if not v.last_date and not v.exam_date and v.verification_status == "NEEDS_PDF_CHECK" and v.created_at:
+        if (v.created_at + timedelta(hours=5, minutes=30)) < now_ist - timedelta(days=7):
+            return True
+    return False
+
 @app.get("/api/stats")
 @app.head("/api/stats")
 def get_stats(db: Session = Depends(get_db)):
-    now = datetime.utcnow()
+    now_ist = _ist_now()
     try:
-        active_rows = db.query(Vacancy.total_posts, Vacancy.last_date).filter(Vacancy.is_active == True).all()
-        total_active = len(active_rows)
-        total_seats = sum((r[0] or 0) for r in active_rows)
-        cutoff = now + timedelta(days=7)
-        closing_soon = sum(1 for r in active_rows if r[1] and now <= r[1] <= cutoff)
+        active_rows = db.query(Vacancy).filter(Vacancy.is_active == True).all()
+        live_rows = [r for r in active_rows if not _is_vacancy_expired(r, now_ist)]
+        total_active = len(live_rows)
+        total_seats = sum((r.total_posts or 0) for r in live_rows)
+        cutoff = now_ist + timedelta(days=7)
+        closing_soon = sum(1 for r in live_rows if r.last_date and now_ist <= r.last_date <= cutoff)
     except Exception as e:
         print(f"Stats vacancy query error: {e}")
         total_active, total_seats, closing_soon = 0, 0, 0
@@ -745,8 +766,12 @@ def list_vacancies(
     db: Session = Depends(get_db)
 ):
     query = db.query(Vacancy)
+    now_ist = _ist_now()
 
-    if active_only:
+    if stage == "CLOSED":
+        active_only = False
+        query = query.filter(or_(Vacancy.is_active == False, Vacancy.stage.in_(list(CLOSED_STAGES))))
+    elif active_only:
         query = query.filter(Vacancy.is_active == True)
 
     if search:
@@ -774,20 +799,21 @@ def list_vacancies(
     if state and state != "ALL":
         query = query.filter(or_(Vacancy.state == state, Vacancy.state == "All India"))
 
-    if stage and stage != "ALL":
+    if stage and stage not in ("ALL", "CLOSED"):
         query = query.filter(Vacancy.stage == stage)
 
     if bond == "NO_BOND":
         query = query.filter(Vacancy.bond_years == 0)
 
     vacancies = query.order_by(Vacancy.last_date.asc()).offset(offset).limit(limit).all()
+    if active_only:
+        vacancies = [v for v in vacancies if not _is_vacancy_expired(v, now_ist)]
 
     results = []
-    now = datetime.utcnow()
     for v in vacancies:
         days_left = None
         if v.last_date:
-            delta = (v.last_date - now).total_seconds() / 86400.0
+            delta = (v.last_date - now_ist).total_seconds() / 86400.0
             days_left = max(0, int(delta))
 
         # Parse category seats JSON
@@ -878,9 +904,12 @@ def analyze_pdf_file(payload: PDFAnalyzeFileRequest, request: Request):
 
 @app.post("/api/check-eligibility")
 def check_eligibility(profile: DoctorProfile, db: Session = Depends(get_db)):
-    vacancies = db.query(Vacancy).filter(Vacancy.is_active == True).all()
+    all_active = db.query(Vacancy).filter(Vacancy.is_active == True).all()
+    now_ist = _ist_now()
+    vacancies = [v for v in all_active if not _is_vacancy_expired(v, now_ist)]
+    closed_filtered_count = len(all_active) - len(vacancies)
     results = []
-    now = datetime.utcnow()
+    now = now_ist
 
     base_relaxation = 0
     if profile.category in ["SC", "ST"]:
@@ -902,7 +931,7 @@ def check_eligibility(profile: DoctorProfile, db: Session = Depends(get_db)):
         except ValueError:
             effective_age = profile.age
 
-    current_year = datetime.utcnow().year
+    current_year = now_ist.year
     years_since_pass = max(0, current_year - profile.passing_year)
     approx_experience = max(0, years_since_pass - 1) if (profile.internship_status == "completed" and years_since_pass >= 1) else years_since_pass
 
@@ -1077,7 +1106,8 @@ def check_eligibility(profile: DoctorProfile, db: Session = Depends(get_db)):
             "total_evaluated": len(results),
             "fully_eligible": eligible_count,
             "conditionally_eligible": conditional_count,
-            "ineligible": len(results) - eligible_count - conditional_count
+            "ineligible": len(results) - eligible_count - conditional_count,
+            "closed_filtered": closed_filtered_count
         },
         "matches": results
     }
@@ -1279,17 +1309,29 @@ def test_telegram_broadcast(payload: TelegramTestRequest, request: Request):
     except Exception as e:
         return {"success": False, "status": "SEND_ERROR", "message": str(e)}
 
+class VacancyFlagRequest(BaseModel):
+    reason: Optional[str] = None
+
 @app.post("/api/vacancies/{vacancy_id}/flag")
-def flag_vacancy_issue(vacancy_id: str, request: Request, db: Session = Depends(get_db)):
+def flag_vacancy_issue(vacancy_id: str, request: Request, payload: Optional[VacancyFlagRequest] = None, db: Session = Depends(get_db)):
     check_rate_limit(request, f"flag:{vacancy_id}", max_calls=1, window_sec=86400)
     v = db.query(Vacancy).filter(Vacancy.id == vacancy_id).first()
     if not v:
         raise HTTPException(status_code=404, detail="Vacancy not found")
+    reason = (payload.reason if payload and payload.reason else "BROKEN_LINK").upper().strip()
     v.flag_count = (v.flag_count or 0) + 1
-    if v.flag_count >= 3 and v.stage != "APPLICATION_CLOSED":
+    reason_stage_map = {
+        "RESULTS_OUT": "RESULTS_OUT",
+        "INTERVIEW_OVER": "INTERVIEW_OVER",
+        "DEADLINE_PASSED": "APPLICATION_CLOSED",
+    }
+    if reason in reason_stage_map and v.flag_count >= 2:
+        v.stage = reason_stage_map[reason]
+        v.is_active = False
+    elif v.flag_count >= 3 and v.stage not in CLOSED_STAGES:
         v.stage = "NEEDS_VERIFICATION"
     db.commit()
-    return {"message": "Circular flagged for verification review", "flag_count": v.flag_count}
+    return {"message": "Circular flagged for verification review", "flag_count": v.flag_count, "stage": v.stage, "is_active": v.is_active}
 
 @app.get("/api/vacancies/flagged", dependencies=[Depends(verify_admin_key)])
 def list_flagged_vacancies(db: Session = Depends(get_db)):

@@ -23,22 +23,28 @@ def scheduled_recruitment_sync():
         live_result = LiveGazetteScraper.sync_live_portals(db)
         logger.info(f"Sync completed: Sample={sync_result}, Live={live_result}")
 
-        # 2. Update expired vacancies & trigger T-48h closing alerts
-        now = datetime.utcnow()
+        # 2. Update expired vacancies & trigger T-48h closing alerts (evaluated in IST)
+        now_ist = datetime.utcnow() + timedelta(hours=5, minutes=30)
         active_vacancies = db.query(Vacancy).filter(Vacancy.is_active == True).all()
         for v in active_vacancies:
-            if v.last_date and v.last_date < now:
+            if v.stage in ("APPLICATION_CLOSED", "RESULTS_OUT", "INTERVIEW_OVER"):
+                v.is_active = False
+            elif v.last_date and v.last_date < now_ist:
                 v.is_active = False
                 v.stage = "APPLICATION_CLOSED"
-                logger.info(f"Closed expired vacancy: {v.title}")
-            elif not v.last_date and v.verification_status == "NEEDS_PDF_CHECK" and v.created_at and v.created_at < now - timedelta(days=30):
+                logger.info(f"Closed expired vacancy (deadline passed): {v.title}")
+            elif v.exam_date and v.exam_date < now_ist:
+                v.is_active = False
+                v.stage = "INTERVIEW_OVER"
+                logger.info(f"Closed vacancy (interview/exam date passed): {v.title}")
+            elif not v.last_date and not v.exam_date and v.verification_status == "NEEDS_PDF_CHECK" and v.created_at and (v.created_at + timedelta(hours=5, minutes=30)) < now_ist - timedelta(days=7):
                 v.is_active = False
                 v.stage = "APPLICATION_CLOSED"
-                logger.info(f"Closed stale undated vacancy: {v.title}")
-            elif v.last_date and v.last_date <= now + timedelta(hours=48):
+                logger.info(f"Closed stale undated vacancy (>7d): {v.title}")
+            elif v.last_date and v.last_date <= now_ist + timedelta(hours=48):
                 v.stage = "CLOSING_SOON"
                 Notifier.broadcast_closing_reminder(db, v)
-            elif v.last_date and v.last_date <= now + timedelta(days=7):
+            elif v.last_date and v.last_date <= now_ist + timedelta(days=7):
                 v.stage = "CLOSING_SOON"
         db.commit()
     except Exception as e:

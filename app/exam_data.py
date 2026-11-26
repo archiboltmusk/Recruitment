@@ -6,7 +6,7 @@ EXAMS_CATALOG: List[Dict[str, Any]] = [
     {
         "id": "upsc-cms-2026-paper-1-authentic",
         "title": "UPSC CMS 2026 Official Paper-I (Authentic PYQ Set)",
-        "subtitle": "Complete 120 Qs • Official Booklet T.B.C. NTDC-O-KPMS (General Medicine & Pediatrics + 4 Image Questions)",
+        "subtitle": "Complete 120 Qs . Official Booklet T.B.C. NTDC-O-KPMS (General Medicine & Pediatrics + 4 Image Questions)",
         "total_questions": 120,
         "total_marks": 250,
         "duration_minutes": 120,
@@ -19,7 +19,7 @@ EXAMS_CATALOG: List[Dict[str, Any]] = [
     {
         "id": "upsc-cms-2026-paper-2-authentic",
         "title": "UPSC CMS 2026 Official Paper-II (Authentic PYQ Set)",
-        "subtitle": "Complete 120 Qs • Official Booklet T.B.C. NTDC-T-GSPO (Surgery, OBG & PSM + 11 Image Questions)",
+        "subtitle": "Complete 120 Qs . Official Booklet T.B.C. NTDC-T-GSPO (Surgery, OBG & PSM + 11 Image Questions)",
         "total_questions": 120,
         "total_marks": 250,
         "duration_minutes": 120,
@@ -85,7 +85,7 @@ EXAMS_CATALOG: List[Dict[str, Any]] = [
         "id": "esic-imo-clinical-drill",
         "title": "ESIC Insurance Medical Officer (IMO) High-Yield Drill",
         "subtitle": "Clinical Outpatient & Emergency Medicine Scenarios",
-        "total_questions": 10,
+        "total_questions": 6,
         "total_marks": 100,
         "duration_minutes": 60,
         "negative_marking": 0.25,
@@ -704,7 +704,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
         {
             "id": "cms26-p1-001",
             "subject": "General Medicine",
-            "text": "A 35-year-old man presented with serial blood 4. pressure recordings of above 140/90 mmHg. Which one of the following signs is not a clue for an underlying cause of hypertension (secondary hypertension) ?",
+            "text": "A 35-year-old man presented with serial blood pressure recordings of above 140/90 mmHg. Which one of the following signs is not a clue for an underlying cause of hypertension (secondary hypertension) ?",
             "options": [
                 "Radio-femoral delay",
                 "Enlarged kidneys",
@@ -712,7 +712,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Vitiligo"
             ],
             "correct_option": 3,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (d) — Vitiligo.",
+            "explanation": "Vitiligo is an autoimmune depigmenting disorder not associated with secondary hypertension. By contrast, radio-femoral delay suggests coarctation of the aorta, enlarged kidneys suggest polycystic kidney disease, and a bull neck with buffalo hump suggests Cushing syndrome.",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.1)"
         },
         {
@@ -726,13 +726,13 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "1 and 3 only"
             ],
             "correct_option": 0,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (a) — 1 only.",
+            "explanation": "A BP of 220/140 mmHg with headache, dizziness, nausea, and palpitations represents a hypertensive emergency manageable with IV sodium nitroprusside (Statement 1 is correct). Immediate normalization of BP is avoided to prevent cerebral or renal hypoperfusion, and secondary causes such as renovascular disease are actually common in hypertensive emergencies.",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.2)"
         },
         {
             "id": "cms26-p1-003",
             "subject": "General Medicine",
-            "text": "Match List I with List II and select the correct answer using the code given below the lists: List I List Il (Drug used in heart (Mechanism of failure) action) A. Metoprolol 1. Aldosterone antagonist B. Telmisartan 2. Angiotensin- receptor blocker C. Enalapril 3. ACE inhibitor D. Eplerenone 4. Beta-blocker Code : B C D",
+            "text": "Match List I with List II and select the correct answer using the code given below the lists: List I List II (Drug used in heart (Mechanism of failure) action) A. Metoprolol 1. Aldosterone antagonist B. Telmisartan 2. Angiotensin- receptor blocker C. Enalapril 3. ACE inhibitor D. Eplerenone 4. Beta-blocker Code : A B C D",
             "options": [
                 "4 2",
                 "4 2 1",
@@ -740,7 +740,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "1 4"
             ],
             "correct_option": 1,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (b) — 4 2 1.",
+            "explanation": "Metoprolol is a selective beta-1 blocker (4), telmisartan is an angiotensin receptor blocker (2), enalapril is an ACE inhibitor (3), and eplerenone is a selective aldosterone receptor antagonist (1).",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.3)"
         },
         {
@@ -754,7 +754,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "3 and 4"
             ],
             "correct_option": 1,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (b) — 2 and 3.",
+            "explanation": "Takotsubo (stress) cardiomyopathy is typically precipitated by acute emotional or physical stress and mimics acute STEMI clinically and on ECG (Statements 2 and 3 are correct). It involves transient left ventricular (not right ventricular) apical ballooning on ventriculography.",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.4)"
         },
         {
@@ -768,7 +768,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "2"
             ],
             "correct_option": 1,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (b) — 1 2.",
+            "explanation": "Beta-myosin heavy chain (MYH7) mutations classically cause marked left ventricular hypertrophy (1), whereas cardiac troponin T/I mutations are associated with myocardial fibre disarray, minimal hypertrophy, and high arrhythmia risk.",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.5)"
         },
         {
@@ -779,16 +779,16 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Atrial myxoma",
                 "Arrhythmogenic ventricular cardiomyopathy",
                 "Constrictive pericarditis",
-                "Dilated cardiomyopathy Retinal ischaemia, flame-shaped"
+                "Dilated cardiomyopathy"
             ],
             "correct_option": 0,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (a) — Atrial myxoma.",
+            "explanation": "A 'tumour plop' is an early diastolic auscultatory sound heard in atrial myxoma as the pedunculated mass prolapses into the mitral (or tricuspid) orifice during ventricular filling.",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.6)"
         },
         {
             "id": "cms26-p1-007",
             "subject": "General Medicine",
-            "text": "haemorrhages and cotton-wool exudates are fundoscopy findings in which of the following grades of hypertensive retinopathy? 1. Grade 1 2. Grade 2 3. Grade 3 4. Grade 4 Select the correct answer using the code given below :",
+            "text": "Retinal ischaemia, flame-shaped haemorrhages and cotton-wool exudates are fundoscopy findings in which of the following grades of hypertensive retinopathy? 1. Grade 1 2. Grade 2 3. Grade 3 4. Grade 4 Select the correct answer using the code given below :",
             "options": [
                 "1 and 2 only",
                 "3 and 4 only",
@@ -796,7 +796,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "1, 2, 3 and 4"
             ],
             "correct_option": 1,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (b) — 3 and 4 only.",
+            "explanation": "Under the Keith-Wagener-Barker classification of hypertensive retinopathy, retinal ischaemia, flame-shaped haemorrhages, and cotton-wool exudates appear in Grade 3 (with papilloedema added in Grade 4).",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.7)"
         },
         {
@@ -810,7 +810,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Takayasu's arteritis"
             ],
             "correct_option": 0,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (a) — Rheumatic carditis.",
+            "explanation": "Aschoff nodules (granulomatous foci with Anitschkow caterpillar cells and fibrinoid necrosis) are pathognomonic of acute rheumatic carditis.",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.8)"
         },
         {
@@ -824,7 +824,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "2 and 3"
             ],
             "correct_option": 3,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (d) — 2 and 3.",
+            "explanation": "In Eisenmenger syndrome, severe pulmonary hypertension reverses a left-to-right shunt into a right-to-left shunt (so Statement 1 is false), causing differential cyanosis more apparent in the toes in PDA (Statement 2). Peripheral vasodilators drop systemic vascular resistance and worsen right-to-left shunting (Statement 3).",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.9)"
         },
         {
@@ -838,13 +838,13 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "2, 3 and 4"
             ],
             "correct_option": 1,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (b) — 1 and 3.",
+            "explanation": "Patent ductus arteriosus produces a continuous 'machinery' (Gibson) murmur maximal in the second left intercostal space below the clavicle (Statements 1 and 3), with late systolic (not diastolic) accentuation; it softens or disappears when Eisenmenger syndrome develops.",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.10)"
         },
         {
             "id": "cms26-p1-011",
             "subject": "General Medicine",
-            "text": "of the chest. On examination, there was dullness on percussion on left infra-axillary area. X-ray Chest showed left opaque hemithorax. Which one of the following is an indication for tube thoracentesis in this case ?",
+            "text": "A patient presented with pain on the left side of the chest. On examination, there was dullness on percussion on left infra-axillary area. X-ray Chest showed left opaque hemithorax. Which one of the following is an indication for tube thoracentesis in this case ?",
             "options": [
                 "Presence of straw-coloured fluid",
                 "Pleural fluid pH > 7-2",
@@ -852,13 +852,13 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Pleural fluid LDH < 600 IU/L"
             ],
             "correct_option": 2,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (c) — Pleural fluid glucose < 60 mg/dL.",
+            "explanation": "In parapneumonic effusion/empyema, pleural fluid glucose < 60 mg/dL (along with pH < 7.2, frank pus, or positive Gram stain/culture) indicates complicated effusion requiring tube thoracostomy drainage.",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.11)"
         },
         {
             "id": "cms26-p1-012",
             "subject": "General Medicine",
-            "text": "A patient with a history of smoking presents to the emergency with a complaint of breathlessness for the last two days. On examination, he was found to be cyanosed and had bilateral rhonchi. ABG was done, which shows : pH 7•12 PaCO2 : 80 mmHg PaOz 46 mmHg HCO- : 29 mEq/L Based on the history, clinical examination and ABG finding, the most likely diagnosis is :",
+            "text": "A patient with a history of smoking presents to the emergency with a complaint of breathlessness for the last two days. On examination, he was found to be cyanosed and had bilateral rhonchi. ABG was done, which shows : pH: 7.12, PaCO2: 80 mmHg, PaO2: 46 mmHg, HCO3-: 29 mEq/L Based on the history, clinical examination and ABG finding, the most likely diagnosis is :",
             "options": [
                 "Pulmonary embolism",
                 "Pneumonia",
@@ -866,13 +866,13 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Pulmonary fibrosis"
             ],
             "correct_option": 2,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (c) — COPD exacerbation.",
+            "explanation": "Chronic smoking with cyanosis, bilateral rhonchi, and ABG showing severe acute-on-chronic respiratory acidosis (pH 7.12, PaCO2 80 mmHg, mildly elevated HCO3- 29 mEq/L, hypoxemia) is classic for an acute COPD exacerbation.",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.12)"
         },
         {
             "id": "cms26-p1-013",
             "subject": "General Medicine",
-            "text": "A patient presented with pain on the left side 13. A patient with a history of chronic smoking presented with breathlessness for the last one year. On examination, there were bilateral rhonchi in the chest. The Chest X-ray was suggestive of hyper-inflated lung field. Which of the following parameters of the pulmonary function test are consistent with the diagnosis of chronic obstructive pulmonary disease in this case ? 1. Decreased FEV1 2. Increased diffusion capacity 3. Increased residual volume 4. Decreased peak expiratory flow rate Select the correct answer using the code given below :",
+            "text": "A patient with a history of chronic smoking presented with breathlessness for the last one year. On examination, there were bilateral rhonchi in the chest. The Chest X-ray was suggestive of hyper-inflated lung field. Which of the following parameters of the pulmonary function test are consistent with the diagnosis of chronic obstructive pulmonary disease in this case ? 1. Decreased FEV1 2. Increased diffusion capacity 3. Increased residual volume 4. Decreased peak expiratory flow rate Select the correct answer using the code given below :",
             "options": [
                 "1, 2 and 3",
                 "1, 3 and 4",
@@ -880,13 +880,13 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "2 and 4 only"
             ],
             "correct_option": 1,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (b) — 1, 3 and 4.",
+            "explanation": "COPD causes airflow obstruction and air trapping, producing decreased FEV1, decreased PEFR, and increased residual volume (Statements 1, 3, and 4). Emphysema reduces alveolar surface area, so diffusing capacity (DLCO) is decreased rather than increased.",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.13)"
         },
         {
             "id": "cms26-p1-014",
             "subject": "General Medicine",
-            "text": "Omalizumab is helpful in which of the following diseases ? Asthma Idiopathic pulmonary fibrosis Nasal polyposis Select the correct answer using the code given below :",
+            "text": "Omalizumab is helpful in which of the following diseases?\n1. Asthma\n2. Idiopathic pulmonary fibrosis\n3. Nasal polyposis Select the correct answer using the code given below :",
             "options": [
                 "1 and 3 only",
                 "1 and 2 only",
@@ -894,7 +894,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "2 and 3 only"
             ],
             "correct_option": 0,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (a) — 1 and 3 only.",
+            "explanation": "Omalizumab (an anti-IgE monoclonal antibody) is approved for severe allergic asthma and chronic rhinosinusitis with nasal polyposis (Statements 1 and 3), but has no role in idiopathic pulmonary fibrosis.",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.14)"
         },
         {
@@ -908,7 +908,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "2 and 3 only"
             ],
             "correct_option": 3,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (d) — 2 and 3 only.",
+            "explanation": "Silicosis predominantly affects the upper lobes (so Statement 1 is false), strongly predisposes patients to pulmonary tuberculosis (silicotuberculosis), and exhibits dose-dependent pulmonary fibrosis (Statements 2 and 3).",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.15)"
         },
         {
@@ -922,7 +922,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Bronchiectasis"
             ],
             "correct_option": 0,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (a) — Idiopathic pulmonary fibrosis.",
+            "explanation": "Progressive dyspnea, dry cough, clubbing, fine basal Velcro crackles, restrictive spirometry with low DLCO, and subpleural honeycombing on HRCT in an older smoker are classic for idiopathic pulmonary fibrosis (UIP pattern).",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.16)"
         },
         {
@@ -936,7 +936,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "1 and 3"
             ],
             "correct_option": 0,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (a) — 1 only.",
+            "explanation": "Obesity, loud snoring, witnessed apneas/daytime somnolence, and morning fatigue point to obstructive sleep apnea (Statement 1). Polysomnography (not neck CT/MRI) is diagnostic, and CPAP (not sedatives like zolpidem, which worsen apnea) is the treatment of choice.",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.17)"
         },
         {
@@ -950,14 +950,14 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "1, 2 and 3"
             ],
             "correct_option": 0,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (a) — 1 and 2 only.",
+            "explanation": "Massive symptomatic pleural effusion requires therapeutic thoracentesis for symptom relief and fluid analysis (Statement 1), with medical thoracoscopy indicated if fluid studies are inconclusive (Statement 2). Medical thoracoscopy is routinely performed under local anesthesia/conscious sedation rather than mandatory general anesthesia.",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.18)"
         },
         {
             "id": "cms26-p1-019",
             "subject": "General Medicine",
             "image_url": "/static/exam_images/cms26_p1_q19_xray.png",
-            "text": "A 42-year-old male with chronic kidney disease undergoing chronic dialysis presents with worsening breathlessness. Examination reveals muffled heart. sounds. Chest X-ray image is shown below. What is the most likely diagnosis of this patient?",
+            "text": "A 42-year-old male with chronic kidney disease undergoing chronic dialysis presents with worsening breathlessness. Examination reveals muffled heart sounds. Chest X-ray image is shown below. What is the most likely diagnosis of this patient?",
             "options": [
                 "Pneumothorax",
                 "Pleural effusion",
@@ -965,7 +965,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Pulmonary embolism"
             ],
             "correct_option": 2,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (c) — Pericardial effusion.",
+            "explanation": "Chronic kidney disease on dialysis with worsening dyspnea, muffled heart sounds, and a globular 'water-bottle' cardiac silhouette on chest X-ray indicates uremic pericardial effusion.",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.19)"
         },
         {
@@ -980,7 +980,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Bowel loops herniation"
             ],
             "correct_option": 3,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (d) — Bowel loops herniation.",
+            "explanation": "Blunt chest trauma with absent left-sided breath sounds and bowel loops herniated into the left hemithorax on chest CT indicates traumatic diaphragmatic rupture with bowel loop herniation.",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.20)"
         },
         {
@@ -994,7 +994,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Whipple's disease"
             ],
             "correct_option": 3,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (d) — Whipple's disease.",
+            "explanation": "PAS-positive 'foamy' macrophages infiltrating the small-intestinal lamina propria are the hallmark histological finding of Whipple's disease (caused by Tropheryma whipplei).",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.21)"
         },
         {
@@ -1008,7 +1008,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Sharing food"
             ],
             "correct_option": 3,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (d) — Sharing food.",
+            "explanation": "Hepatitis C is transmitted parenterally (IV drug use, unscreened blood transfusion) and vertically, not via casual contact or sharing food.",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.22)"
         },
         {
@@ -1022,7 +1022,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Serum albumin and pre-albumin"
             ],
             "correct_option": 1,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (b) — AST-to-Platelet Ratio Index.",
+            "explanation": "The AST-to-Platelet Ratio Index (APRI) is a validated non-invasive serum biomarker score used to predict liver fibrosis and cirrhosis.",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.23)"
         },
         {
@@ -1036,7 +1036,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "2 and 4"
             ],
             "correct_option": 1,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (b) — 1 only.",
+            "explanation": "In diarrhea-predominant IBS, loperamide slows intestinal motility and is effective for symptom control (1 only), whereas lactulose, lubiprostone, and sorbitol are used for constipation.",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.24)"
         },
         {
@@ -1047,10 +1047,10 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Stimulant laxatives",
                 "Non-steroidal anti-inflammatory drugs",
                 "Proton pump inhibitors",
-                "generation cephalosporins"
+                "4th generation cephalosporins"
             ],
             "correct_option": 0,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (a) — Stimulant laxatives.",
+            "explanation": "Chronic use of anthraquinone stimulant laxatives (such as senna or cascara) causes lipofuscin-like pigment deposition in colonic macrophages, producing dark-brown mucosal pigmentation known as melanosis coli.",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.25)"
         },
         {
@@ -1064,7 +1064,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "1, 2 and 3"
             ],
             "correct_option": 1,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (b) — 1 and 3 only.",
+            "explanation": "Both coeliac disease and its cutaneous manifestation dermatitis herpetiformis are gluten-sensitive disorders that improve with a strict gluten-free diet (1 and 3).",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.26)"
         },
         {
@@ -1072,13 +1072,13 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
             "subject": "General Medicine",
             "text": "The '13C-urea breath test' and the 'faecal antigen test' are non-invasive techniques to diagnose infection with which one of the following ?",
             "options": [
-                "Haemophilus inftuenzae",
+                "Haemophilus influenzae",
                 "Leishmania donovani",
                 "Giardia lamblia",
                 "Helicobacter pylori"
             ],
             "correct_option": 3,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (d) — Helicobacter pylori.",
+            "explanation": "The 13C-urea breath test (detecting urease activity) and stool antigen test are standard non-invasive tests for diagnosing active Helicobacter pylori infection.",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.27)"
         },
         {
@@ -1092,7 +1092,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "2, 3 and 4"
             ],
             "correct_option": 1,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (b) — 1, 2 and 4.",
+            "explanation": "Ménétrier's disease is driven by excess TGF-alpha (1), causing giant gastric rugal folds in the body/fundus (4) and protein-losing gastropathy (2); mucus-secreting foveolar cells proliferate and replace parietal/chief cells (so Statement 3 is reversed).",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.28)"
         },
         {
@@ -1106,13 +1106,13 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "1, 2 and 3"
             ],
             "correct_option": 2,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (c) — 1 and 3 only.",
+            "explanation": "Barrett's oesophagus is a premalignant metaplastic adaptation to chronic GERD (Statements 1 and 3) in which normal stratified squamous epithelium of the distal oesophagus is replaced by intestinal-type columnar epithelium (making Statement 2 false).",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.29)"
         },
         {
             "id": "cms26-p1-030",
             "subject": "General Medicine",
-            "text": "The presence of which of the following is suggestive of metastatic spread of an underlying gastrointestinal malignancy ? Krukenberg Tumour Virchow's Node Meigs' Syndrome 4. Sister Mary Joseph's Nodule Select the correct answer using the code given below :",
+            "text": "The presence of which of the following is suggestive of metastatic spread of an underlying gastrointestinal malignancy?\n1. Krukenberg Tumour\n2. Virchow's Node\n3. Meigs' Syndrome\n4. Sister Mary Joseph's Nodule Select the correct answer using the code given below :",
             "options": [
                 "1, 2 and 3",
                 "1, 2 and 4",
@@ -1120,7 +1120,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "2, 3 and 4"
             ],
             "correct_option": 1,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (b) — 1, 2 and 4.",
+            "explanation": "Krukenberg tumour (ovarian metastasis), Virchow's node (left supraclavicular node), and Sister Mary Joseph's nodule (umbilical metastasis) signify metastatic GI malignancy (1, 2, and 4). Meigs' syndrome is a benign triad of ovarian fibroma, ascites, and pleural effusion.",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.30)"
         },
         {
@@ -1134,7 +1134,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Phosphate"
             ],
             "correct_option": 2,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (c) — Potassium.",
+            "explanation": "Sodium zirconium cyclosilicate and patiromer are oral potassium binders used to treat hyperkalaemia in chronic kidney disease by binding potassium in the GI tract.",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.31)"
         },
         {
@@ -1148,13 +1148,13 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Bowel Necrosis"
             ],
             "correct_option": 3,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (d) — Bowel Necrosis.",
+            "explanation": "Calcium resonium (calcium polystyrene sulfonate), like sodium polystyrene sulfonate, carries a recognized risk of colonic ischaemia and bowel necrosis.",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.32)"
         },
         {
             "id": "cms26-p1-033",
             "subject": "General Medicine",
-            "text": "In multiple monoclonal immunoglobulin light chains combine with Tamm - Horsfall protein precipitate in the renal tubules which leads to the development of which one of the following conditions?",
+            "text": "In multiple myeloma, monoclonal immunoglobulin light chains combine with Tamm - Horsfall protein precipitate in the renal tubules which leads to the development of which one of the following conditions?",
             "options": [
                 "IgA Nephropathy",
                 "Cast Nephropathy",
@@ -1162,13 +1162,13 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Interstitial Nephritis"
             ],
             "correct_option": 1,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (b) — Cast Nephropathy.",
+            "explanation": "In multiple myeloma, filtered monoclonal free light chains bind Tamm-Horsfall mucoprotein (uromodulin) in distal tubules to form obstructive eosinophilic casts, causing myeloma cast nephropathy.",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.33)"
         },
         {
             "id": "cms26-p1-034",
             "subject": "General Medicine",
-            "text": "Multiple myeloma can cause proximal tubular injury due to light chain deposition in the tubular epithelium causing acquired Fanconi Syndrome. Which of the following are characteristic findings in this condition? Little/no proteinuria 2. Aminoaciduria 3. Phosphaturia 4. Glycosuria Select the correct answer using the code given below :",
+            "text": "Multiple myeloma can cause proximal tubular injury due to light chain deposition in the tubular epithelium causing acquired Fanconi Syndrome. Which of the following are characteristic findings in this condition?\n1. Little/no proteinuria\n2. Aminoaciduria 3. Phosphaturia 4. Glycosuria Select the correct answer using the code given below :",
             "options": [
                 "1, 2 and 3",
                 "1, 2 and 4",
@@ -1176,7 +1176,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "2, 3 and 4"
             ],
             "correct_option": 3,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (d) — 2, 3 and 4.",
+            "explanation": "Acquired Fanconi syndrome from proximal tubular light-chain injury causes generalized proximal tubular wasting: aminoaciduria, phosphaturia, and renal glycosuria (2, 3, and 4), accompanied by tubular (low-molecular-weight) proteinuria.",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.34)"
         },
         {
@@ -1190,7 +1190,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Medullary cystic kidney disease type 2"
             ],
             "correct_option": 0,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (a) — Nephronophthisis.",
+            "explanation": "Nephronophthisis is an autosomal recessive cystic/tubulo-interstitial kidney disease (ciliopathy), whereas medullary cystic kidney disease types 1 and 2 (ADTKD) and familial juvenile hyperuricaemic nephropathy are autosomal dominant.",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.35)"
         },
         {
@@ -1204,7 +1204,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Renal transplant dysfunction"
             ],
             "correct_option": 2,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (c) — Uncontrolled hypertension.",
+            "explanation": "Uncontrolled severe hypertension is a major contraindication to percutaneous renal biopsy because of the high risk of post-biopsy retroperitoneal haemorrhage.",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.36)"
         },
         {
@@ -1218,21 +1218,21 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Mesangioproliferative glomerulonephritis"
             ],
             "correct_option": 0,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (a) — Primary membranous nephropathy.",
+            "explanation": "Autoantibodies against the M-type phospholipase A2 receptor (anti-PLA2R) on podocytes are present in ~70–80% of patients with primary (idiopathic) membranous nephropathy.",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.37)"
         },
         {
             "id": "cms26-p1-038",
             "subject": "General Medicine",
-            "text": "Which one of the following stages of chronic kidney disease corresponds to a glomerular filtration rate of 55 mL/min/1•73 m2 ?",
+            "text": "Which one of the following stages of chronic kidney disease corresponds to a glomerular filtration rate of 55 mL/min/1.73 m2 ?",
             "options": [
                 "1",
                 "2",
-                "ЗА",
+                "3A",
                 "3B"
             ],
             "correct_option": 2,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (c) — ЗА.",
+            "explanation": "KDIGO CKD staging defines Stage 3a as a mildly to moderately decreased eGFR of 45–59 mL/min/1.73 m² (Stage 3b is 30–44).",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.38)"
         },
         {
@@ -1246,7 +1246,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Refsum's disease"
             ],
             "correct_option": 3,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (d) — Refsum's disease.",
+            "explanation": "Refsum's disease is a peroxisomal alpha-oxidation disorder causing phytanic acid accumulation, classically presenting with peripheral neuropathy, retinitis pigmentosa, cerebellar ataxia, and elevated CSF protein.",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.39)"
         },
         {
@@ -1274,7 +1274,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "1 and 3"
             ],
             "correct_option": 0,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (a) — 1, 2 and 4.",
+            "explanation": "Multiple sclerosis commonly causes optic neuritis (vision loss/blurring), Lhermitte's sign (tingling down the limbs on neck flexion), and cerebellar gait ataxia (1, 2, and 4); generalized tonic-clonic seizures are uncommon.",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.41)"
         },
         {
@@ -1288,7 +1288,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Upper gastrointestinal endoscopy"
             ],
             "correct_option": 2,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (c) — Lumbar puncture after 12 hours.",
+            "explanation": "Sudden severe 'thunderclap' headache with vomiting and neck pain suggests subarachnoid haemorrhage; when early CT is negative, lumbar puncture (ideally ≥12 hours after onset to detect xanthochromia) is the gold-standard confirmatory test.",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.42)"
         },
         {
@@ -1302,7 +1302,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "2 and 3 only"
             ],
             "correct_option": 2,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (c) — 1, 2 and 4 only.",
+            "explanation": "Paramyotonia congenita is a sodium channelopathy (SCN4A), malignant hyperthermia involves skeletal muscle calcium release (RYR1/CACNA1S), and Thomsen disease is an autosomal dominant chloride channelopathy (CLCN1). Becker myotonia is also a chloride channelopathy, not ryanodine receptor.",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.43)"
         },
         {
@@ -1316,13 +1316,13 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Alien hand syndrome"
             ],
             "correct_option": 0,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (a) — Left hemispatial neglect.",
+            "explanation": "Right frontoparietal lesions classically cause left hemispatial neglect, where the patient ignores stimuli on the left side of space (canceling only targets on the right).",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.44)"
         },
         {
             "id": "cms26-p1-045",
             "subject": "General Medicine",
-            "text": "A 40-year-old man was found to have weakness of the right shoulder and arm 48. 6 hours before presentation. This was followed by weakness of the ipsilateral leg, then left leg, followed by left arm (around-the-clock pattern). Where in the neuraxis is the lesion likely to be present?",
+            "text": "A 40-year-old man was found to have weakness of the right shoulder and arm 6 hours before presentation. This was followed by weakness of the ipsilateral leg, then left leg, followed by left arm (around-the-clock pattern). Where in the neuraxis is the lesion likely to be present?",
             "options": [
                 "Cerebral cortex",
                 "Foramen magnum",
@@ -1330,7 +1330,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Pons"
             ],
             "correct_option": 1,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (b) — Foramen magnum.",
+            "explanation": "Compressive lesions at the foramen magnum classically produce an 'around-the-clock' progression of weakness (ipsilateral arm → ipsilateral leg → contralateral leg → contralateral arm) due to the somatotopic decussation of corticospinal fibres.",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.45)"
         },
         {
@@ -1358,7 +1358,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Severe myoclonic epilepsy of infancy"
             ],
             "correct_option": 0,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (a) — Myoclonic epilepsy with ragged red fibres.",
+            "explanation": "MERRF (Myoclonic Epilepsy with Ragged Red Fibres) is a classic mitochondrial encephalomyopathy caused by mitochondrial DNA mutations.",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.47)"
         },
         {
@@ -1372,13 +1372,13 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Rasmussen Syndrome"
             ],
             "correct_option": 1,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (b) — Lennox-Gastaut Syndrome.",
+            "explanation": "Lennox-Gastaut syndrome is a severe childhood-onset epileptic encephalopathy characterized by multiple seizure types (tonic, atonic, atypical absence), intellectual disability, and slow (< 2.5–3 Hz) spike-and-wave EEG discharges.",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.48)"
         },
         {
             "id": "cms26-p1-049",
             "subject": "General Medicine",
-            "text": "With regard to the treatment of 51. phaeochromocytoma, beta-blocker should never be given before alpha-blocker because it may cause :",
+            "text": "With regard to the treatment of phaeochromocytoma, beta-blocker should never be given before alpha-blocker because it may cause :",
             "options": [
                 "Paradoxical rise in blood pressure due to unopposed alpha-mediated vasoconstriction",
                 "Paradoxical fall in blood pressure due to unopposed alpha-mediated vasoconstriction",
@@ -1400,7 +1400,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "1, 2, 3 and 4"
             ],
             "correct_option": 3,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (d) — 1, 2, 3 and 4.",
+            "explanation": "All four—necrobiosis lipoidica diabeticorum, Charcot neuroarthropathy, diabetic exudative maculopathy, and acanthosis nigricans (insulin resistance)—can be seen on clinical examination in diabetes mellitus.",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.50)"
         },
         {
@@ -1414,7 +1414,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "2, 3 and 4"
             ],
             "correct_option": 1,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (b) — 1, 2 and 3.",
+            "explanation": "GLP-1 and GIP are both gut incretin hormones (1 and 2), and GLP-1 is secreted by distal ileal/colonic L-cells (3); GIP is secreted by duodenal K-cells, not M-cells.",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.51)"
         },
         {
@@ -1428,7 +1428,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "2, 3 and 4"
             ],
             "correct_option": 1,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (b) — 1, 2 and 4.",
+            "explanation": "Factitious thyrotoxicosis from exogenous levothyroxine ingestion suppresses pituitary TSH (2) and produces a high serum T4:T3 ratio (4), while endogenous thyroglobulin is suppressed (low, not elevated).",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.52)"
         },
         {
@@ -1442,13 +1442,13 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "3 only"
             ],
             "correct_option": 1,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (b) — 2 only.",
+            "explanation": "Magnesium is required for PTH secretion and end-organ responsiveness; severe hypomagnesemia impairs PTH release and causes refractory hypocalcemia (2 only).",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.53)"
         },
         {
             "id": "cms26-p1-054",
             "subject": "General Medicine",
-            "text": "Which of the following are long-acting insulin analogues ? 1. Lispro 2. Glargine 3. Detemir Degludec Select the correct answer using the code given below :",
+            "text": "Which of the following are long-acting insulin analogues ? 1. Lispro 2. Glargine 3. Detemir\n4. Degludec\nSelect the correct answer using the code given below :",
             "options": [
                 "2 only",
                 "2 and 4",
@@ -1456,7 +1456,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "2, 3 and 4"
             ],
             "correct_option": 3,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (d) — 2, 3 and 4.",
+            "explanation": "Glargine, detemir, and degludec are long-acting basal insulin analogues (2, 3, and 4), whereas insulin lispro is a rapid-acting prandial insulin analogue.",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.54)"
         },
         {
@@ -1470,7 +1470,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Level 3"
             ],
             "correct_option": 3,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (d) — Level 3.",
+            "explanation": "Under ADA/IHSG classification, Level 1 hypoglycaemia is < 70 mg/dL, Level 2 is < 54 mg/dL (clinically significant), and Level 3 is severe hypoglycaemia characterized by altered mental/physical status requiring external assistance.",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.55)"
         },
         {
@@ -1484,13 +1484,13 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Parathyroid hormone excess"
             ],
             "correct_option": 2,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (c) — Mineralocorticoid excess.",
+            "explanation": "Glycyrrhizic acid in liquorice inhibits renal 11β-hydroxysteroid dehydrogenase type 2, preventing cortisol inactivation to cortisone and allowing cortisol to activate mineralocorticoid receptors (apparent mineralocorticoid excess).",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.56)"
         },
         {
             "id": "cms26-p1-057",
             "subject": "General Medicine",
-            "text": "Which of the following is/are growth hormone receptor antagonist(s) indicated in the treatment of Acromegaly ? 1. Octreotide 2. Lanreotide Pasireotide 4. Pegvisomant Select the correct answer using the code given below :",
+            "text": "Which of the following is/are growth hormone receptor antagonist(s) indicated in the treatment of Acromegaly ? 1. Octreotide 2. Lanreotide\n3. Pasireotide\n4. Pegvisomant Select the correct answer using the code given below :",
             "options": [
                 "1 and 2 only",
                 "3 and 4",
@@ -1498,7 +1498,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "4 only"
             ],
             "correct_option": 3,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (d) — 4 only.",
+            "explanation": "Pegvisomant is a direct growth hormone receptor antagonist used in acromegaly (4 only); octreotide, lanreotide, and pasireotide are somatostatin analogues.",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.57)"
         },
         {
@@ -1512,7 +1512,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "1, 2 and 3"
             ],
             "correct_option": 2,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (c) — 2 and 3 only.",
+            "explanation": "APS Type 1 (APECED, AIRE mutation) is rare and autosomal recessive (2), whereas APS Type 2 (Schmidt syndrome) is much more common (making Statement 1 false) and polygenic/autosomal dominant with incomplete penetrance (3).",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.58)"
         },
         {
@@ -1526,7 +1526,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "B-blockers"
             ],
             "correct_option": 2,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (c) — Thyroxine.",
+            "explanation": "Thyroxine increases basal metabolic rate and causes weight loss rather than weight gain, unlike sulphonylureas, glucocorticoids, and beta-blockers.",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.59)"
         },
         {
@@ -1537,7 +1537,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "It inhibits bone resorption by neutralizing effect of RANKL.",
                 "It is a fragment of human PTH and works by stimulating new bone formation.",
                 "It is administered subcutaneously once a year for 5 years.",
-                "Teriparatide should be combined with"
+                "Teriparatide should be combined with bisphosphonates for better efficacy."
             ],
             "correct_option": 1,
             "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (b) — It is a fragment of human PTH and works by stimulating new bone formation..",
@@ -1546,7 +1546,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
         {
             "id": "cms26-p1-061",
             "subject": "General Medicine",
-            "text": "bisphosphonates for better efficacy. 61. Post-transplant lymphoproliferative disorder, a lymphoma that follows organ transplantation, is associated with infection with which one of the following ?",
+            "text": "Post-transplant lymphoproliferative disorder, a lymphoma that follows organ transplantation, is associated with infection with which one of the following ?",
             "options": [
                 "Epstein-Barr virus",
                 "Mycobacterium tuberculosis",
@@ -1554,7 +1554,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Histoplasma capsulatum"
             ],
             "correct_option": 0,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (a) — Epstein-Barr virus.",
+            "explanation": "Post-transplant lymphoproliferative disorder (PTLD) is most commonly an Epstein-Barr virus (EBV)-driven B-cell proliferation occurring in immunosuppressed transplant recipients.",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.61)"
         },
         {
@@ -1568,7 +1568,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "3 and 4"
             ],
             "correct_option": 2,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (c) — 1 and 3.",
+            "explanation": "Exanthem subitum (roseola infantum) is caused by Human herpesvirus 6 (HHV-6) and less commonly HHV-7 (1 and 3).",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.62)"
         },
         {
@@ -1582,13 +1582,13 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Varicella zoster virus"
             ],
             "correct_option": 2,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (c) — Parvovirus B-19.",
+            "explanation": "Erythema infectiosum ('fifth disease'), featuring the characteristic 'slapped-cheek' facial rash in children, is caused by Parvovirus B19.",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.63)"
         },
         {
             "id": "cms26-p1-064",
             "subject": "General Medicine",
-            "text": "The neuropsychiatric manifestations of the 68. A 35-year-old female infections caused by which one of the following infectious agents presents as Muttering Delirium' or 'Coma Vigil' in which patients pick randomly at bed clothes or imaginary objects ?",
+            "text": "The neuropsychiatric manifestations of the infections caused by which one of the following infectious agents presents as Muttering Delirium' or 'Coma Vigil' in which patients pick randomly at bed clothes or imaginary objects ?",
             "options": [
                 "Neisseria gonorrheae",
                 "Cardiobacterium hominis",
@@ -1596,7 +1596,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Campylobacter jejuni"
             ],
             "correct_option": 2,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (c) — Salmonella typhi.",
+            "explanation": "Enteric fever caused by Salmonella typhi can present in severe/untreated cases with neuropsychiatric toxicity termed 'muttering delirium' or 'coma vigil' with carphologia (picking at bedclothes).",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.64)"
         },
         {
@@ -1604,13 +1604,13 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
             "subject": "General Medicine",
             "text": "Necrotizing fasciitis caused by fungi such as mucoraceous moulds is classified as which one of the following types?",
             "options": [
-                "1ype 1",
+                "Type 1",
                 "Type 2",
                 "Type 3",
                 "Type 4"
             ],
             "correct_option": 3,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (d) — Type 4.",
+            "explanation": "Necrotizing fasciitis is classified into Type 1 (polymicrobial), Type 2 (monomicrobial Group A Streptococcus/S. aureus), Type 3 (Vibrio/Aeromonas marine organisms), and Type 4 (fungal, e.g., Zygomycetes/Candida).",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.65)"
         },
         {
@@ -1624,7 +1624,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Metronidazole"
             ],
             "correct_option": 0,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (a) — Vancomycin.",
+            "explanation": "Rapid IV infusion of vancomycin causes non-IgE-mediated mast cell degranulation and histamine release, producing 'Red Man Syndrome' (flushing, erythema, and pruritus of the head, neck, and upper trunk).",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.66)"
         },
         {
@@ -1635,16 +1635,16 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Auspitz sign",
                 "Koebner phenomenon",
                 "Gottron's sign",
-                "Nikolsky sign presents with"
+                "Nikolsky sign"
             ],
             "correct_option": 3,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (d) — Nikolsky sign presents with.",
+            "explanation": "Staphylococcal scalded skin syndrome (SSSS) causes superficial intraepidermal splitting via exfoliative toxins, yielding a positive Nikolsky sign (epidermal sloughing with lateral pressure).",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.67)"
         },
         {
             "id": "cms26-p1-068",
             "subject": "General Medicine",
-            "text": "generalized muscle rigidity, difficulty in swallowing and laryngeal spasms for the past one week. She has developed trismus over the past 2 days and has a pulse rate of 130 beats/minute and a respiratory rate of 35 breaths/minute on presentation. She gives a history of getting her ears pierced from a roadside jewellery seller 2 weeks ago. What is the most probable diagnosis?",
+            "text": "A 35-year-old female presents with generalized muscle rigidity, difficulty in swallowing and laryngeal spasms for the past one week. She has developed trismus over the past 2 days and has a pulse rate of 130 beats/minute and a respiratory rate of 35 breaths/minute on presentation. She gives a history of getting her ears pierced from a roadside jewellery seller 2 weeks ago. What is the most probable diagnosis?",
             "options": [
                 "Enteric fever",
                 "Pertussis",
@@ -1652,7 +1652,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Tetanus"
             ],
             "correct_option": 3,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (d) — Tetanus.",
+            "explanation": "Trismus (lockjaw), generalized muscle rigidity, dysphagia, laryngeal spasms, and autonomic tachycardia 2 weeks after an unsterile ear piercing are classic for tetanus.",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.68)"
         },
         {
@@ -1666,7 +1666,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Lymphogranuloma venereum"
             ],
             "correct_option": 0,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (a) — Gonorrhea.",
+            "explanation": "Profuse purulent urethral discharge with dysuria after unprotected intercourse and Gram-negative intracellular diplococci on smear is diagnostic of gonorrhoea (Neisseria gonorrhoeae).",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.69)"
         },
         {
@@ -1680,7 +1680,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Schistosomiasis"
             ],
             "correct_option": 0,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (a) — Cutaneous larva migrans.",
+            "explanation": "A slowly migrating, intensely pruritic serpiginous skin track on the foot after walking barefoot on a beach is classic for cutaneous larva migrans (dog/cat hookworm, Ancylostoma braziliense).",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.70)"
         },
         {
@@ -1694,7 +1694,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "1 and 4"
             ],
             "correct_option": 0,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (a) — 1 and 2.",
+            "explanation": "Gas gangrene is an anaerobic clostridial myonecrosis (Clostridium perfringens) producing painful, foul-smelling wounds with serosanguineous discharge and crepitus/gas (1 and 2). It thrives in hypoxic/devitalized tissue (not aerobic) and often requires urgent debridement/amputation.",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.71)"
         },
         {
@@ -1708,7 +1708,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "1, 2, 3 and 4"
             ],
             "correct_option": 3,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (d) — 1, 2, 3 and 4.",
+            "explanation": "Diphtheria can present with punched-out necrotic cutaneous ulcers, bull-neck cervical lymphadenopathy/edema, dysphonia/dysphagia from pseudomembranes, and toxin-mediated myocarditis/arrhythmias (all 4 statements).",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.72)"
         },
         {
@@ -1722,7 +1722,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Reduviid bug"
             ],
             "correct_option": 1,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (b) — Sandfly.",
+            "explanation": "Visceral leishmaniasis (kala-azar) caused by Leishmania donovani is transmitted by the bite of infected female Phlebotomus sandflies.",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.73)"
         },
         {
@@ -1736,7 +1736,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Pyridoxine"
             ],
             "correct_option": 2,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (c) — Niacin.",
+            "explanation": "Casal's necklace—a well-demarcated erythematous/hyperpigmented photosensitive collar rash around the neck—is characteristic of pellagra due to niacin (vitamin B3) deficiency.",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.74)"
         },
         {
@@ -1750,7 +1750,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Pityriasis versicolor"
             ],
             "correct_option": 2,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (c) — Lichen planus.",
+            "explanation": "Wickham's striae are fine, lacy white lines overlying violaceous, flat-topped, pruritic papules and mucosal lesions, pathognomonic of lichen planus.",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.75)"
         },
         {
@@ -1764,13 +1764,13 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "2, 3 and 4"
             ],
             "correct_option": 3,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (d) — 2, 3 and 4.",
+            "explanation": "Molluscum contagiosum is caused by a poxvirus (not papillomavirus, so 1 is false), commonly affects immunosuppressed patients (2), presents as umbilicated papules with a central punctum (3), and can be treated by curettage/expression (4).",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.76)"
         },
         {
             "id": "cms26-p1-077",
             "subject": "General Medicine",
-            "text": "Which one of the following refers to the 79. appearance of punctate bleeding spots on scraping the surface of a skin lesion?",
+            "text": "Which one of the following refers to the appearance of punctate bleeding spots on scraping the surface of a skin lesion?",
             "options": [
                 "Punshi's sign",
                 "Barnett's sign",
@@ -1778,13 +1778,13 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Auspitz's sign"
             ],
             "correct_option": 3,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (d) — Auspitz's sign.",
+            "explanation": "Auspitz's sign refers to pinpoint bleeding spots revealed when silvery scales are scraped off a psoriatic plaque.",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.77)"
         },
         {
             "id": "cms26-p1-078",
             "subject": "General Medicine",
-            "text": "Consider the following statements regarding Complex Regional Pain Syndrome (CRPS) : 1. Type 1 CRPS may be precipitated by a traumatic event such as a fracture. 2. Type 1 CRPS is associated with peripheral nerve damage. Type 2 CRPS is associated with peripheral nerve damage. 4. Budapest criteria are used for diagnosis of CRPS. Which of the statements given above are correct?",
+            "text": "Consider the following statements regarding Complex Regional Pain Syndrome (CRPS) : 1. Type 1 CRPS may be precipitated by a traumatic event such as a fracture. 2. Type 1 CRPS is associated with peripheral nerve damage.\n3. Type 2 CRPS is associated with peripheral nerve damage. 4. Budapest criteria are used for diagnosis of CRPS. Which of the statements given above are correct?",
             "options": [
                 "1, 2 and 3",
                 "1, 2 and 4",
@@ -1792,13 +1792,13 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "2, 3 and 4"
             ],
             "correct_option": 2,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (c) — 1, 3 and 4.",
+            "explanation": "CRPS Type 1 (reflex sympathetic dystrophy) follows trauma without confirmed nerve injury (1), CRPS Type 2 (causalgia) involves documented peripheral nerve injury (3), and the Budapest criteria are standard for diagnosis (4).",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.78)"
         },
         {
             "id": "cms26-p1-079",
             "subject": "General Medicine",
-            "text": "Consider the following statements regarding Dual X-ray Absorptiometry (DXA) : 1. DXA is used to measure bone mineral density. 2. It works on the principle that calcium in bone attenuates passage of X-rays through the tissue in proportion to the amount of mineral present. 3. Osteoporosis is defined to be present when the T-score lies between (-1•0) and below (+2•5). 4. Co-existing conditions, e.g., aortic calcification or degenerative disc disease can cause high bone mineral density even in the presence of osteoporosis. Which of the statements given above are correct?",
+            "text": "Consider the following statements regarding Dual X-ray Absorptiometry (DXA) : 1. DXA is used to measure bone mineral density. 2. It works on the principle that calcium in bone attenuates passage of X-rays through the tissue in proportion to the amount of mineral present. 3. Osteoporosis is defined to be present when the T-score lies between (-1.0) and below (+2.5). 4. Co-existing conditions, e.g., aortic calcification or degenerative disc disease can cause high bone mineral density even in the presence of osteoporosis. Which of the statements given above are correct?",
             "options": [
                 "1, 2 and 3",
                 "1, 2 and 4",
@@ -1806,7 +1806,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "2, 3 and 4"
             ],
             "correct_option": 1,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (b) — 1, 2 and 4.",
+            "explanation": "DXA measures bone mineral density via X-ray attenuation by bone calcium (1 and 2) and can be falsely elevated by aortic calcification or degenerative spine changes (4). Osteoporosis is defined as T-score ≤ -2.5 (not between -1.0 and +2.5).",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.79)"
         },
         {
@@ -1820,13 +1820,13 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "1, 3 and 4"
             ],
             "correct_option": 2,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (c) — 2 and 3.",
+            "explanation": "Sulfasalazine and hydroxychloroquine are considered safe DMARDs during pregnancy (2 and 3), whereas methotrexate and leflunomide are strongly teratogenic and contraindicated.",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.80)"
         },
         {
             "id": "cms26-p1-081",
             "subject": "General Medicine",
-            "text": "Finkelstein's sign/test is done to diagnose 84. which one of the following conditions?",
+            "text": "Finkelstein's sign/test is done to diagnose which one of the following conditions?",
             "options": [
                 "Adhesive capsulitis",
                 "Golfer's elbow",
@@ -1834,7 +1834,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "de Quervain's tenosynovitis"
             ],
             "correct_option": 3,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (d) — de Quervain's tenosynovitis.",
+            "explanation": "Finkelstein's test (pain over the radial styloid on ulnar deviation of the wrist with the thumb flexed in the fist) diagnoses de Quervain's tenosynovitis.",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.81)"
         },
         {
@@ -1848,7 +1848,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "2, 3 and 4"
             ],
             "correct_option": 1,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (b) — 1, 2 and 4.",
+            "explanation": "Schneider's first-rank symptoms of schizophrenia include third-person/running-commentary auditory hallucinations, thought broadcasting, and delusional perceptions (1, 2, and 4), but not memory loss.",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.82)"
         },
         {
@@ -1862,7 +1862,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "1 only"
             ],
             "correct_option": 0,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (a) — 1,2 and 3.",
+            "explanation": "Obsessive-compulsive disorder (washing compulsions) is diagnosed clinically by history (1) and treated first-line with SSRIs/clomipramine (2) and CBT with exposure and response prevention (3); inpatient admission is rarely mandatory.",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.83)"
         },
         {
@@ -1876,7 +1876,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "1, 2 and 3"
             ],
             "correct_option": 0,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (a) — 1 and 2 only.",
+            "explanation": "A transition replaces a purine with a purine (or pyrimidine with a pyrimidine) (1 is true, 3 is false), whereas a transversion replaces a purine with a pyrimidine or vice versa (2 is true).",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.84)"
         },
         {
@@ -1890,7 +1890,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Nodule"
             ],
             "correct_option": 0,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (a) — Macule.",
+            "explanation": "A macule is a flat, circumscribed, non-palpable change in skin colour measuring < 2 cm (or < 1 cm in some texts; larger flat lesions are patches).",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.85)"
         },
         {
@@ -1904,7 +1904,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Epistasis"
             ],
             "correct_option": 1,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (b) — Epigenetics.",
+            "explanation": "Epigenetics refers to heritable changes in gene expression and phenotype caused by DNA methylation or histone modifications without altering the underlying DNA sequence.",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.86)"
         },
         {
@@ -1918,7 +1918,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Solenopsis ants"
             ],
             "correct_option": 0,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (a) — Widow spider.",
+            "explanation": "Latrodectism is the envenomation syndrome (severe local/abdominal pain, diaphoresis, hypertension) caused by the bite of Latrodectus (widow) spiders.",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.87)"
         },
         {
@@ -1932,7 +1932,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "3 only"
             ],
             "correct_option": 3,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (d) — 3 only.",
+            "explanation": "Organophosphate poisoning causes cholinergic crisis (SLUDGE/DUMBBELS) by inhibiting (not activating) acetylcholinesterase; IV atropine is the primary muscarinic antidote (Statement 3 only; note Statement 1 is also clinically true, though the official key marks (d) 3 only).",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.88)"
         },
         {
@@ -1943,10 +1943,10 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "1, 2 and 4",
                 "2, 3 and 4",
                 "1, 3 and 4",
-                "1, 2 and 3 Anti"
+                "1, 2 and 3"
             ],
             "correct_option": 0,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (a) — 1, 2 and 4.",
+            "explanation": "Ancylostoma duodenale causes iron-deficiency anaemia (1), Ascaris lumbricoides causes Löffler's eosinophilic pneumonitis (2), and Trichinella spiralis causes myositis (4); Katayama fever is caused by Schistosoma, not Loa loa.",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.89)"
         },
         {
@@ -1960,27 +1960,27 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "1, 2 and 3"
             ],
             "correct_option": 3,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (d) — 1, 2 and 3.",
+            "explanation": "In locked-in syndrome (ventral pontine lesion), consciousness/cortex is intact (1), bilateral corticospinal/corticobulbar tracts are damaged (2), and patients communicate via vertical eye movements/blinking (3), with no voluntary limb movement (4 is false).",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.90)"
         },
         {
             "id": "cms26-p1-091",
             "subject": "General Medicine",
-            "text": "A 26-year-old female complains of severe 93. fatigue and myalgia. Examination reveals pallor and mild splenomegaly. Haematological investigations are shown below : Haemoglobin - 10 g/dL Peripheral smear - Microcytic hypochromic picture with anisocytosis Reticulocyte count - 5% Serum ferritin - 300 microgram/L What is the most likely underlying diagnosis?",
+            "text": "A 26-year-old female complains of severe fatigue and myalgia. Examination reveals pallor and mild splenomegaly. Haematological investigations are shown below : Haemoglobin - 10 g/dL Peripheral smear - Microcytic hypochromic picture with anisocytosis Reticulocyte count - 5% Serum ferritin - 300 microgram/L What is the most likely underlying diagnosis?",
             "options": [
                 "Iron deficiency",
                 "Folic acid deficiency",
                 "Vitamin B12 deficiency",
-                "B-Thalassemia 94."
+                "β-Thalassemia"
             ],
             "correct_option": 3,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (d) — B-Thalassemia 94..",
+            "explanation": "Microcytic hypochromic anaemia with elevated reticulocyte count (5%) and normal/high serum ferritin (300 µg/L) rules out iron deficiency and points to β-thalassaemia.",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.91)"
         },
         {
             "id": "cms26-p1-092",
             "subject": "General Medicine",
-            "text": "Which of the following infectious agents are associated with the development of lymphoid malignancies ? 1. HIV 2. Hepatitis B Hepatitis C Select the correct answer using the code given below :",
+            "text": "Which of the following infectious agents are associated with the development of lymphoid malignancies ? 1. HIV 2. Hepatitis B\n3. Hepatitis C\nSelect the correct answer using the code given below :",
             "options": [
                 "1, 2 and 3",
                 "1 and 2 only",
@@ -1988,7 +1988,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "2 and 3 only"
             ],
             "correct_option": 0,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (a) — 1, 2 and 3.",
+            "explanation": "HIV, Hepatitis B virus, and Hepatitis C virus are all recognized infectious risk factors associated with lymphoid malignancies (non-Hodgkin lymphomas).",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.92)"
         },
         {
@@ -2002,13 +2002,13 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "2 and 3 only"
             ],
             "correct_option": 0,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (a) — 1, 2 and 3.",
+            "explanation": "TRALI manifests within 6 hours of transfusion (1), is strongly linked to donor anti-HLA class II (or anti-HNA) antibodies (2), and can also arise via a non-antibody 'two-hit' mechanism mediated by bioactive lipids/cytokines (3).",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.93)"
         },
         {
             "id": "cms26-p1-094",
             "subject": "General Medicine",
-            "text": "Match List I with List II and select the correct answer using the code given below the lists: List I List II (Drug) (Mechanism of action) A. Aspirin 1. Thrombolytic B. Enoxaparin 2. Antiplatelet C. Dabigatran 3. Anticoagulant D. Alteplase 4. Direct thrombin inhibitor Code : B C D",
+            "text": "Match List I with List II and select the correct answer using the code given below the lists: List I List II (Drug) (Mechanism of action) A. Aspirin 1. Thrombolytic B. Enoxaparin 2. Antiplatelet C. Dabigatran 3. Anticoagulant D. Alteplase 4. Direct thrombin inhibitor Code : A B C D",
             "options": [
                 "2 4 1",
                 "2 4 3 1",
@@ -2016,13 +2016,13 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "1 4 2"
             ],
             "correct_option": 0,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (a) — 2 4 1.",
+            "explanation": "Aspirin is an antiplatelet agent (2), enoxaparin is a low-molecular-weight heparin anticoagulant (3), dabigatran is a direct thrombin inhibitor (4), and alteplase is a fibrinolytic/thrombolytic agent (1).",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.94)"
         },
         {
             "id": "cms26-p1-095",
             "subject": "General Medicine",
-            "text": "cough and noisy breathing of 2 days' duration. He has a history of running nose and some fever for the preceding 3 - 4 days. Examination reveals respiratory rate of 40 per min, subcostal retractions and stridor. The most important step in the management is :",
+            "text": "A 3-year-old boy is brought with barking cough and noisy breathing of 2 days' duration. He has a history of running nose and some fever for the preceding 3 - 4 days. Examination reveals respiratory rate of 40 per min, subcostal retractions and stridor. The most important step in the management is :",
             "options": [
                 "Nebulized adrenaline",
                 "Nebulized salbutamol",
@@ -2030,7 +2030,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Intravenous hydrocortisone"
             ],
             "correct_option": 0,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (a) — Nebulized adrenaline.",
+            "explanation": "A 3-year-old with viral prodrome, barking cough, stridor, and subcostal retractions has moderate-to-severe croup (acute laryngotracheobronchitis); nebulized adrenaline rapidly reduces subglottic airway oedema alongside corticosteroids.",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.95)"
         },
         {
@@ -2044,13 +2044,13 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Oral Vigabatrin"
             ],
             "correct_option": 3,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (d) — Oral Vigabatrin.",
+            "explanation": "Epileptic spasms, hypopigmented ash-leaf macules, and subependymal nodules on MRI indicate tuberous sclerosis complex; oral vigabatrin is the drug of choice for infantile/epileptic spasms in tuberous sclerosis.",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.96)"
         },
         {
             "id": "cms26-p1-097",
             "subject": "Pediatrics",
-            "text": "A 3-year-old boy is brought with barking 97. A 10-year-old girl presents to the emergency with high grade fever of 2-weeks duration and rashes over lower limbs for the last 7 days. Examination reveals mild pallor, generalized petechiae and hepatosplenomegaly. Investigations reveal : Hemoglobin 9 g/dL, total leucocyte count 2100/mm®, platelet count 20,000/mm®, peripheral smear shows pancytopenia, SGOT 50 IU/dL, SGPT 64 IU/dL, serum ferritin 1200 ug/L, serum fibrinogen 100 mg/dL and serum triglycerides of 350 mg/dL. The most likely diagnosis is :",
+            "text": "A 10-year-old girl presents to the emergency with high grade fever of 2-weeks duration and rashes over lower limbs for the last 7 days. Examination reveals mild pallor, generalized petechiae and hepatosplenomegaly. Investigations reveal : Hemoglobin 9 g/dL, total leucocyte count 2100/mm³, platelet count 20,000/mm³, peripheral smear shows pancytopenia, SGOT 50 IU/dL, SGPT 64 IU/dL, serum ferritin 1200 ug/L, serum fibrinogen 100 mg/dL and serum triglycerides of 350 mg/dL. The most likely diagnosis is :",
             "options": [
                 "Aplastic anemia",
                 "Immune thrombocytopenic purpura",
@@ -2058,7 +2058,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Acute promyelocytic leukemia"
             ],
             "correct_option": 2,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (c) — Hemophagocytic lymphohistiocytosis.",
+            "explanation": "Prolonged high fever, hepatosplenomegaly, pancytopenia, hyperferritinaemia (1200 µg/L), hypofibrinogenaemia (100 mg/dL), and hypertriglyceridaemia fulfill diagnostic criteria for haemophagocytic lymphohistiocytosis (HLH).",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.97)"
         },
         {
@@ -2072,13 +2072,13 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Methotrexate"
             ],
             "correct_option": 2,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (c) — L-asparaginase.",
+            "explanation": "Acute abdominal pain with Cullen's sign (periumbilical ecchymosis from haemorrhagic pancreatitis) during ALL induction therapy is a classic adverse effect of L-asparaginase.",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.98)"
         },
         {
             "id": "cms26-p1-099",
             "subject": "Pediatrics",
-            "text": "A 5-year-old boy who was started on treatment for Burkitt lymphoma develops acute onset respiratory distress and decreased urine output. Investigations reveal : Hb 8 g/dL, TLC 15000/mm®, platelet count 1 lakh/mm?, serum potassium 6￾5 mEq/L, corrected serum calcium 6•7 mg/dL and serum creatinine 2 mg/dL. The most important drug for emergency management is :",
+            "text": "A 5-year-old boy who was started on treatment for Burkitt lymphoma develops acute onset respiratory distress and decreased urine output. Investigations reveal : Hb 8 g/dL, TLC 15000/mm³, platelet count 1 lakh/mm³, serum potassium 6.5 mEq/L, corrected serum calcium 6.7 mg/dL and serum creatinine 2 mg/dL. The most important drug for emergency management is :",
             "options": [
                 "Dexamethasone",
                 "Broad-spectrum antibiotics",
@@ -2086,13 +2086,13 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Folinic acid rescue"
             ],
             "correct_option": 2,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (c) — Rasburicase.",
+            "explanation": "Acute hyperkalaemia (6.5 mEq/L), hypocalcaemia (6.7 mg/dL), and acute kidney injury after starting Burkitt lymphoma chemotherapy represent tumour lysis syndrome; rasburicase (recombinant urate oxidase) rapidly lowers uric acid in emergencies.",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.99)"
         },
         {
             "id": "cms26-p1-100",
             "subject": "Pediatrics",
-            "text": "Consider the following statements regarding human milk banking : 1. The banks accept voluntary milk donations from lactating women who are given nominal payments governed by law. 2. Donor mothers are screened via blood similar to blood donation. 3. Pasteurized donor milk reduces the chances of NEC in preterm neonates. 4. Pasteurized donor milk is non-inferior to fresh mother's own milk (MOM). Which of the statements given above are correct ?",
+            "text": "Consider the following statements regarding human milk banking : 1. The banks accept voluntary milk donations from lactating women who are given nominal payments governed by law. 2. Donor mothers are screened via blood tests for HIV, and Hepatitis B and C, similar to blood donation. 3. Pasteurized donor milk reduces the chances of NEC in preterm neonates. 4. Pasteurized donor milk is non-inferior to fresh mother's own milk (MOM). Which of the statements given above are correct ?",
             "options": [
                 "1, 2 and 3",
                 "2 and 3 only",
@@ -2100,7 +2100,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "1, 2, 3 and 4"
             ],
             "correct_option": 1,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (b) — 2 and 3 only.",
+            "explanation": "Human milk banks accept strictly voluntary unpaid donations (1 is false), screen donors for HIV/HBV/HCV (2), and provide pasteurized donor milk that lowers NEC risk in preterms (3), though pasteurization reduces some bioactive factors compared with fresh mother's own milk (4 is false).",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.100)"
         },
         {
@@ -2120,7 +2120,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
         {
             "id": "cms26-p1-102",
             "subject": "Pediatrics",
-            "text": "A newborn delivered at 37 weeks gestation and birth weight 2:7 kg, presents at 12 h of life with bilious vomiting. On examination, RR is 36/m, HR is 110/m, CRT is < 3s, and there is abdominal distention. Abdominal radiograph reveals multiple air-fluid levels with absent distal gas pattern. The most likely etiology is :",
+            "text": "A newborn delivered at 37 weeks gestation and birth weight 2.7 kg, presents at 12 h of life with bilious vomiting. On examination, RR is 36/m, HR is 110/m, CRT is < 3s, and there is abdominal distention. Abdominal radiograph reveals multiple air-fluid levels with absent distal gas pattern. The most likely etiology is :",
             "options": [
                 "Malrotation leading to volvulus",
                 "Congenital hypertrophic pyloric stenosis",
@@ -2128,13 +2128,13 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Necrotizing enterocolitis"
             ],
             "correct_option": 2,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (c) — Jejunal-ileal atresia.",
+            "explanation": "Term neonate with bilious vomiting at 12 hours, abdominal distension, multiple air-fluid levels, and absent distal bowel gas on abdominal X-ray is characteristic of jejuno-ileal atresia.",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.102)"
         },
         {
             "id": "cms26-p1-103",
             "subject": "Pediatrics",
-            "text": "tests for HIV, and Hepatitis B and C, 103. Consider the following statements regarding the management of trachea-esophageal fistula in neonates : 1. The baby should be nursed in prone position. 2. The neonate should be kept nil per orally and started on intravenous fluids. 3. The neonate needs continuous oral suction using a slow suction device. 4. Surgery should be planned once the neonate attains 25 kg weight. Which of the statements given above are correct?",
+            "text": "Consider the following statements regarding the management of trachea-esophageal fistula in neonates : 1. The baby should be nursed in prone position. 2. The neonate should be kept nil per orally and started on intravenous fluids. 3. The neonate needs continuous oral suction using a slow suction device. 4. Surgery should be planned once the neonate attains 2.5 kg weight. Which of the statements given above are correct?",
             "options": [
                 "1 and 2 only",
                 "1, 2 and 3",
@@ -2142,7 +2142,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "3 and 4"
             ],
             "correct_option": 2,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (c) — 2 and 3 only.",
+            "explanation": "Preoperative neonatal tracheo-oesophageal fistula management requires NPO status with IV fluids (2) and continuous low-pressure suction of the blind upper oesophageal pouch (3); infants are nursed supine/head-elevated (not prone), and repair is not delayed until 2.5 kg.",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.103)"
         },
         {
@@ -2156,7 +2156,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Hematuria"
             ],
             "correct_option": 1,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (b) — Urate crystals in urine.",
+            "explanation": "Pink/brick-dust diaper staining in a healthy 4-day-old neonate with a negative dipstick for RBCs is benign and caused by concentrated urinary urate crystals.",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.104)"
         },
         {
@@ -2170,7 +2170,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Hypoxemia"
             ],
             "correct_option": 0,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (a) — Metabolic alkalosis.",
+            "explanation": "Neonatal hypothermia (32°C) causes hypoglycaemia, metabolic acidosis (not alkalosis), hypoxaemia, and hyperbilirubinaemia from impaired hepatic conjugation and cold stress.",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.105)"
         },
         {
@@ -2184,7 +2184,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Denver II"
             ],
             "correct_option": 0,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (a) — Phatak's Baroda Screening Test.",
+            "explanation": "Phatak's Baroda Developmental Screening Test is validated only up to 30 months (2.5 years) of age, making it unsuitable for a 3-year-old child (unlike ASQ, TDSC, and Denver II).",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.106)"
         },
         {
@@ -2194,12 +2194,12 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
             "text": "An 8-year-old girl is provided a few cubes and asked to create the structure in the image provided. If she can create the Structure A, but cannot make the Structure B, her developmental quotient (DQ) in the fine motor domain is :",
             "options": [
                 "50",
-                "62￾5",
+                "62.5",
                 "75",
                 "100"
             ],
             "correct_option": 1,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (b) — 62￾5.",
+            "explanation": "Passing the Structure A cube-building milestone (5-year fine motor age) while failing Structure B in an 8-year-old child gives a developmental quotient (DQ = [5 / 8] × 100) of 62.5.",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.107)"
         },
         {
@@ -2213,7 +2213,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Metoclopramide"
             ],
             "correct_option": 3,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (d) — Metoclopramide.",
+            "explanation": "Cyanosis with a normal arterial PaO2 (80 mmHg) but low pulse oximetry SpO2 (60%) indicates methemoglobinaemia; metoclopramide is a known drug cause of acquired methemoglobinaemia in young children.",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.108)"
         },
         {
@@ -2227,14 +2227,14 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Naloxone"
             ],
             "correct_option": 3,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (d) — Naloxone.",
+            "explanation": "Coma, respiratory depression (shallow breathing), hypotonia, and pinpoint pupils indicate acute opioid intoxication, which is rapidly reversed by intravenous naloxone.",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.109)"
         },
         {
             "id": "cms26-p1-110",
             "subject": "Pediatrics",
             "image_url": "/static/exam_images/cms26_p1_q110_xray.png",
-            "text": "A neonate is noted to have bilious vomiting at 6 hours of life with abdominal distention. An X-ray is ordered (see image). The most likely diagnoșis is :",
+            "text": "A neonate is noted to have bilious vomiting at 6 hours of life with abdominal distention. An X-ray is ordered (see image). The most likely diagnosis is:",
             "options": [
                 "Pyloric stenosis",
                 "Esophageal atresia",
@@ -2242,7 +2242,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Hirschsprung's disease"
             ],
             "correct_option": 2,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (c) — Duodenal atresia.",
+            "explanation": "Early bilious vomiting at 6 hours of life with a 'double-bubble' sign on abdominal radiograph is classic for congenital duodenal atresia.",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.110)"
         },
         {
@@ -2256,13 +2256,13 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Oral Olanzapine"
             ],
             "correct_option": 0,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (a) — Oral Clonidine.",
+            "explanation": "Chronic motor and vocal tics (snorting) lasting ≥12 months with normal neuroimaging/EEG and negative ASLO/ceruloplasmin indicate Tourette syndrome; oral clonidine (an alpha-2 agonist) is a preferred first-line pharmacotherapy in children.",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.111)"
         },
         {
             "id": "cms26-p1-112",
             "subject": "Pediatrics",
-            "text": "A 4-year-old unimmunized HIV-positive child on antiretroviral therapy for the last 2 years and weighing 15 kg is brought for vaccination. His records reveal a recent CD4 count of 750/mm, with no evidence of any opportunistic infections in the past. Which of the following statements are applicable to this child ? 1. Recombinant Hepatitis B vaccine can be safely administered. 2. MMR vaccine is always contraindicated. 3. BCG may be administered if chest radiograph is normal. IPV is preferred over OPV. Select the correct answer using the code given below :",
+            "text": "A 4-year-old unimmunized HIV-positive child on antiretroviral therapy for the last 2 years and weighing 15 kg is brought for vaccination. His records reveal a recent CD4 count of 750/mm, with no evidence of any opportunistic infections in the past. Which of the following statements are applicable to this child ? 1. Recombinant Hepatitis B vaccine can be safely administered. 2. MMR vaccine is always contraindicated. 3. BCG may be administered if chest radiograph is normal.\n4. IPV is preferred over OPV. Select the correct answer using the code given below :",
             "options": [
                 "1 and 2",
                 "2 and 3",
@@ -2270,7 +2270,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "2 and 4"
             ],
             "correct_option": 2,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (c) — 1 and 4.",
+            "explanation": "In an asymptomatic HIV-positive child on ART with a healthy CD4 count (750/mm³), recombinant Hepatitis B vaccine is safe (1) and MMR/live vaccines (except BCG in most guidelines) can be given when not severely immunosuppressed (4).",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.112)"
         },
         {
@@ -2284,13 +2284,13 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "6 weeks, 14 weeks, 9 months"
             ],
             "correct_option": 3,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (d) — 6 weeks, 14 weeks, 9 months.",
+            "explanation": "Under India's Universal Immunization Programme (National Immunization Schedule), Pneumococcal Conjugate Vaccine (PCV) is administered in a 2+1 schedule at 6 weeks, 14 weeks, and 9 months.",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.113)"
         },
         {
             "id": "cms26-p1-114",
             "subject": "Pediatrics",
-            "text": "Which one of the following vaccines is an exception to the principle \"At least 4 weeks interval is needed between two doses of the same vaccine to ensure adequate immune responseằ_",
+            "text": "Which one of the following vaccines is an exception to the principle \"At least 4 weeks interval is needed between two doses of the same vaccine to ensure adequate immune response\"?",
             "options": [
                 "Rabies vaccine",
                 "HPV vaccine",
@@ -2298,7 +2298,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Hepatitis B vaccine"
             ],
             "correct_option": 0,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (a) — Rabies vaccine.",
+            "explanation": "Post-exposure rabies vaccination requires rapid closely spaced doses (Days 0, 3, 7, 14, 28) rather than waiting at least 4 weeks between doses.",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.114)"
         },
         {
@@ -2312,7 +2312,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Mumps vaccine"
             ],
             "correct_option": 2,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (c) — Oral typhoid vaccine.",
+            "explanation": "Exogenous immunoglobulins neutralize parenteral live viral vaccines (MMR, varicella), whereas oral Ty21a typhoid vaccine (and oral polio/yellow fever) is unaffected.",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.115)"
         },
         {
@@ -2326,13 +2326,13 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Drug addiction"
             ],
             "correct_option": 2,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (c) — Juvenile delinquency.",
+            "explanation": "Under juvenile justice law, repeated unlawful/aggressive acts and illicit substance use by a minor (< 18 years) are legally categorized as juvenile delinquency (whereas conduct disorder is a psychiatric diagnosis).",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.116)"
         },
         {
             "id": "cms26-p1-117",
             "subject": "Pediatrics",
-            "text": "As per the National Vector Borne Disease Control Programme, the first-line agent for treatment of Kala-azar leishmaniasis) is :",
+            "text": "As per the National Vector Borne Disease Control Programme, the first-line agent for treatment of Kala-azar (visceral leishmaniasis) is :",
             "options": [
                 "Amphotericin B, liposomal, IV, single dose",
                 "Sodium stibogluconate, IV, 30-day regimen",
@@ -2340,7 +2340,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Amphotericin B deoxycholate, IV, 30 doses"
             ],
             "correct_option": 0,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (a) — Amphotericin B, liposomal, IV, single dose.",
+            "explanation": "Under NVBDCP India guidelines, a single IV dose of liposomal amphotericin B (10 mg/kg) is the first-line treatment for visceral leishmaniasis (kala-azar).",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.117)"
         },
         {
@@ -2354,13 +2354,13 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Rheumatic heart disease"
             ],
             "correct_option": 0,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (a) — Childhood cancer.",
+            "explanation": "Rashtriya Bal Swasthya Karyakram (RBSK) screens children for the 4 D's (Defects at birth, Deficiencies, Diseases, Developmental delays) including Down syndrome, goitre, and RHD, but does not cover childhood cancer.",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.118)"
         },
         {
             "id": "cms26-p1-119",
             "subject": "Pediatrics",
-            "text": "A 2-year-old child is brought with complaints of not growing well. On examination, he weighs 8-1 kg, height 80 cm (WFL score between 0 and - 2 SD), has a mid-arm circumference (MUAC) of 11•5 cm and both his palms are white. There is no edema of the feet. As per IMNCI, he will be classified as :",
+            "text": "A 2-year-old child is brought with complaints of not growing well. On examination, he weighs 8-1 kg, height 80 cm (WFL score between 0 and - 2 SD), has a mid-arm circumference (MUAC) of 11.5 cm and both his palms are white. There is no edema of the feet. As per IMNCI, he will be classified as :",
             "options": [
                 "No acute malnutrition and anemia",
                 "No acute malnutrition and severe anemia",
@@ -2368,13 +2368,13 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Moderate acute malnutrition and severe anemia"
             ],
             "correct_option": 3,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (d) — Moderate acute malnutrition and severe anemia.",
+            "explanation": "Under IMNCI, a weight-for-length Z-score between 0 and -2 SD with MUAC 11.5 cm (between 11.5 and 12.5 cm) is classified as moderate acute malnutrition, and severe palmar pallor ('both palms white') is classified as severe anaemia.",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.119)"
         },
         {
             "id": "cms26-p1-120",
             "subject": "Pediatrics",
-            "text": "A 2-year-old previously unimmunized girl is brought with poor feeding and fever for 6 days. On day 4 of fever, her mother noticed a maculopapular reddish rash starting from the face and spreading over the neck, chest, arms and trunk over the next one day and she has developed extensive mouth ulcers. The child (visceral has a mid-arm circumference of 11 cm but no edema. As per IMNCI, she will be classified as :",
+            "text": "A 2-year-old previously unimmunized girl is brought with poor feeding and fever for 6 days. On day 4 of fever, her mother noticed a maculopapular reddish rash starting from the face and spreading over the neck, chest, arms and trunk over the next one day and she has developed extensive mouth ulcers. The child has a mid-arm circumference of 11 cm but no edema. As per IMNCI, she will be classified as :",
             "options": [
                 "Measles with eye or mouth complications",
                 "Measles",
@@ -2382,7 +2382,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Measles with severe acute malnutrition"
             ],
             "correct_option": 2,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (c) — Severe complicated measles.",
+            "explanation": "Fever with generalized maculopapular rash and extensive mouth ulcers (plus MUAC 11 cm) in an unimmunized child meets IMNCI criteria for severe complicated measles.",
             "citation": "UPSC CMS 2026 Paper-I (NTDC-O-KPMS Series-A Q.120)"
         }
     ],
@@ -2398,7 +2398,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Class 4"
             ],
             "correct_option": 3,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (d) — Class 4.",
+            "explanation": "A neglected necrotic foot wound infested with maggots represents pre-existing clinical infection/devitalized tissue, which is classified as CDC Class 4 (Dirty/Infected) wound.",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.1)"
         },
         {
@@ -2412,7 +2412,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Dog bite over abdominal wall"
             ],
             "correct_option": 2,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (c) — Donor site of a split-thickness skin graft.",
+            "explanation": "A clean surgical donor site of a split-thickness skin graft is sterile and well-vascularized, unlike soil-contaminated wounds, compound fractures, or animal bites which are tetanus-prone.",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.2)"
         },
         {
@@ -2426,7 +2426,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "patients being systemically ill"
             ],
             "correct_option": 2,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (c) — excessive pain at the surgical site.",
+            "explanation": "Major surgical site infection (SSI) is defined by significant purulent discharge, systemic illness, or delayed discharge; isolated excessive surgical site pain alone is not a defining criterion of major SSI.",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.3)"
         },
         {
@@ -2440,7 +2440,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "cystic hygroma"
             ],
             "correct_option": 3,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (d) — cystic hygroma.",
+            "explanation": "A congenital, soft, partially compressible, brilliantly transilluminant neck swelling in an infant is classic for a cystic hygroma (lymphangioma).",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.4)"
         },
         {
@@ -2454,7 +2454,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Prostate cancer is seen in familial breast cancer syndrome."
             ],
             "correct_option": 2,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (c) — Breast cancer is seen in FAP syndrome..",
+            "explanation": "Familial adenomatous polyposis (FAP, APC mutation) predisposes to colorectal cancer, desmoid tumours, and duodenal/thyroid cancers, not breast cancer (making Statement c incorrect).",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.5)"
         },
         {
@@ -2464,11 +2464,11 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
             "options": [
                 "1, 2 and 3",
                 "1, 2 and 4",
-                "1, 3 and ą",
+                "1, 3 and 4",
                 "2, 3 and 4"
             ],
             "correct_option": 0,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (a) — 1, 2 and 3.",
+            "explanation": "Secondary lymphoedema results from lymphatic obstruction or damage due to trauma, DVT/venous-lymphatic insufficiency, or fungal/filarial infections (1, 2, and 3), not typically viral infections.",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.6)"
         },
         {
@@ -2482,7 +2482,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "pulselessness"
             ],
             "correct_option": 1,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (b) — purple discoloration.",
+            "explanation": "Acute arterial embolic occlusion classically presents with the 6 P's: pain, pallor (pale/white, not purple discoloration initially), pulselessness, paraesthesia, paralysis, and poikilothermia.",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.7)"
         },
         {
@@ -2497,7 +2497,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "basal cell carcinoma"
             ],
             "correct_option": 2,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (c) — tuberculosis.",
+            "explanation": "A chronic ulcer with undermined edges (as depicted in the diagram) is characteristic of a tuberculous ulcer.",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.8)"
         },
         {
@@ -2511,7 +2511,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Facial nerve"
             ],
             "correct_option": 3,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (d) — Facial nerve.",
+            "explanation": "The facial nerve (CN VII) courses through the parotid gland dividing it into superficial and deep lobes and must be meticulously identified and preserved during parotidectomy.",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.9)"
         },
         {
@@ -2525,7 +2525,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Systemic antibiotics"
             ],
             "correct_option": 1,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (b) — Edge biopsy of ulcer.",
+            "explanation": "A persistent non-healing lower alveolar ulcer in a 52-year-old chronic smoker and tobacco chewer requires an urgent edge biopsy to rule out oral squamous cell carcinoma.",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.10)"
         },
         {
@@ -2540,7 +2540,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "PET scan"
             ],
             "correct_option": 2,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (c) — radionuclide scan.",
+            "explanation": "In a patient with hyperthyroid symptoms, the planar functional uptake image of the thyroid lobes is a radionuclide thyroid scan (Tc-99m pertechnetate or I-123/I-131).",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.11)"
         },
         {
@@ -2554,7 +2554,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Ultrasonography"
             ],
             "correct_option": 2,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (c) — Mammography.",
+            "explanation": "In a 29-year-old woman with nipple discharge, dense breast tissue limits mammography sensitivity and exposes her to unnecessary radiation, so clinical exam, ultrasonography, and cytology/histopathology are preferred initially.",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.12)"
         },
         {
@@ -2563,12 +2563,12 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
             "text": "A 45-year-old lady presents with a hard lump in the left breast. On examination, the lump is found to be 4 cm × 6 cm in size, not fixed to the skin, but fixed to the underlying pectoralis major muscle. The T stage of this is",
             "options": [
                 "cT4a",
-                "CT3",
+                "cT3",
                 "cT4b",
                 "cT2"
             ],
             "correct_option": 1,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (b) — CT3.",
+            "explanation": "Under AJCC breast cancer TNM staging, a tumour > 5 cm in greatest dimension (4 × 6 cm) is staged as T3; fixation to the pectoralis major muscle (unlike chest wall ribs/intercostal muscles) does not upstage it to T4a.",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.13)"
         },
         {
@@ -2596,7 +2596,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Simple liver cyst"
             ],
             "correct_option": 1,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (b) — Hemangioma.",
+            "explanation": "Cavernous haemangioma is the most common benign solid liver tumour/lesion.",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.15)"
         },
         {
@@ -2611,7 +2611,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "intussuscipiens"
             ],
             "correct_option": 1,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (b) — intussusceptum.",
+            "explanation": "In bowel intussusception, the inner invaginating proximal bowel segment (marked by the asterisk) is called the intussusceptum, while the outer receiving sheath is the intussuscipiens.",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.16)"
         },
         {
@@ -2640,7 +2640,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "area of Lund"
             ],
             "correct_option": 2,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (c) — Calot's triangle.",
+            "explanation": "The hepatobiliary triangle bounded by the cystic duct, common hepatic duct, and inferior surface of the liver (containing the cystic artery) is Calot's triangle.",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.18)"
         },
         {
@@ -2655,7 +2655,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Pringle"
             ],
             "correct_option": 3,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (d) — Pringle.",
+            "explanation": "Clamping or compressing the hepatoduodenal ligament (portal triad containing hepatic artery and portal vein) at the foramen of Winslow to control hepatic bleeding is the Pringle manoeuvre.",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.19)"
         },
         {
@@ -2669,7 +2669,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "2, 3 and 4"
             ],
             "correct_option": 2,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (c) — 1, 3 and 4.",
+            "explanation": "Post-splenectomy complications include pancreatic tail injury/fistula, left basal atelectasis, and overwhelming post-splenectomy infection (1, 3, and 4); splenectomy causes reactive thrombocytosis rather than thrombocytopenia.",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.20)"
         },
         {
@@ -2683,7 +2683,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "DVT and pulmonary embolism"
             ],
             "correct_option": 2,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (c) — right subdiaphragmatic abscess.",
+            "explanation": "High fever, tachycardia, and referred right shoulder tip pain (phrenic nerve irritation) on postoperative day 3 after laparoscopic cholecystectomy with bile/stone spillage indicate a right subdiaphragmatic abscess.",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.21)"
         },
         {
@@ -2698,7 +2698,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Desarda's repair"
             ],
             "correct_option": 1,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (b) — Lichtenstein's repair.",
+            "explanation": "Tension-free repair of an inguinal hernia using a prosthetic polypropylene mesh sutured over the posterior inguinal wall is Lichtenstein's repair.",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.22)"
         },
         {
@@ -2727,7 +2727,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "horseshoe kidney"
             ],
             "correct_option": 3,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (d) — horseshoe kidney.",
+            "explanation": "Fusion of the lower poles of both kidneys across the midline anterior to the aorta/IVC (hooked beneath the IMA) represents a horseshoe kidney.",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.24)"
         },
         {
@@ -2742,7 +2742,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Cushing's law"
             ],
             "correct_option": 2,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (c) — Monro-Kellie doctrine.",
+            "explanation": "The Monro-Kellie doctrine states that the cranial vault has a fixed volume, so an increase in any component (brain, blood, CSF, or mass) must be compensated by a decrease in the others to maintain normal ICP.",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.25)"
         },
         {
@@ -2756,7 +2756,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Li-Fraumeni syndrome"
             ],
             "correct_option": 1,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (b) — neurofibromatosis type 2.",
+            "explanation": "Astrocytomas/gliomas occur in NF1, Li-Fraumeni, and Cowden syndromes, whereas NF2 classically features bilateral vestibular schwannomas, meningiomas, and ependymomas.",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.26)"
         },
         {
@@ -2771,7 +2771,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "percutaneous tracheostomy"
             ],
             "correct_option": 2,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (c) — emergency cricothyroidotomy.",
+            "explanation": "Creating an emergency surgical airway through the cricothyroid membrane between the thyroid and cricoid cartilages is an emergency cricothyroidotomy.",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.27)"
         },
         {
@@ -2780,12 +2780,12 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
             "text": "Consider the following statements regarding flail chest : 1. Three or more ribs are fractured at two or more places. 2. The chest wall shows paradoxical motion. 3. An X-ray chest AP view is the gold standard for diagnosis. 4. Treatment involves oxygen support, analgesia and physiotherapy. Which of the statements given above are correct?",
             "options": [
                 "1, 2 and 3",
-                "1, 2 and ą",
+                "1, 2 and 4",
                 "1, 3 and 4",
                 "2, 3 and 4"
             ],
             "correct_option": 1,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (b) — 1, 2 and ą.",
+            "explanation": "Flail chest occurs when ≥3 adjacent ribs are fractured in ≥2 places (1), causing paradoxical inward motion on inspiration (2), and is managed with oxygen, analgesia, and pulmonary toilet (4); CT chest (not AP X-ray) is the diagnostic gold standard.",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.28)"
         },
         {
@@ -2799,7 +2799,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "avascular necrosis"
             ],
             "correct_option": 1,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (b) — diabetes.",
+            "explanation": "Secondary osteoarthritis of the hip can follow trauma, Perthes' disease, or avascular necrosis, whereas diabetes mellitus is not a direct cause of secondary hip OA.",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.29)"
         },
         {
@@ -2813,7 +2813,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "uveitis"
             ],
             "correct_option": 1,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (b) — retinitis.",
+            "explanation": "Keratitis, episcleritis, and anterior uveitis cause an acute painful/red eye, whereas retinitis involves the posterior segment and typically presents with painless visual loss/floaters without conjunctival injection.",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.30)"
         },
         {
@@ -2827,7 +2827,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "6 mg/kg"
             ],
             "correct_option": 1,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (b) — 3 mg/kg.",
+            "explanation": "The maximum safe dose of plain lidocaine without adrenaline for local infiltration anaesthesia is 3 mg/kg (and up to 7 mg/kg with adrenaline).",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.31)"
         },
         {
@@ -2841,7 +2841,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "right hydropneumothorax"
             ],
             "correct_option": 1,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (b) — right tension pneumothorax.",
+            "explanation": "Penetrating chest trauma with respiratory distress, distended neck veins, contralateral tracheal shift, hyperresonance, and absent breath sounds on the right is diagnostic of right tension pneumothorax.",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.32)"
         },
         {
@@ -2852,10 +2852,10 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "E3 V4 M4",
                 "E2 V3 M5",
                 "E3 V3 M4",
-                "E2 V4 M 5"
+                "E2 V4 M5"
             ],
             "correct_option": 1,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (b) — E2 V3 M5.",
+            "explanation": "Glasgow Coma Scale scoring: Eye opening to pain = E2, inappropriate words = V3, localizing pain = M5 (total 10/15).",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.33)"
         },
         {
@@ -2870,13 +2870,13 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Le Fort I"
             ],
             "correct_option": 3,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (d) — Le Fort I.",
+            "explanation": "A horizontal maxillary fracture line passing just above the alveolar ridge/palate through the nasal septum and lateral maxillary wall (floating palate) is a Le Fort I fracture.",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.34)"
         },
         {
             "id": "cms26-p2-035",
             "subject": "General Surgery",
-            "text": "Which of the following are the important parameters to be maintained in a patient with head trauma? 1. MAP 70-80 mm Hg (mean arterial pressure) 2. Intracranial pressure ‹ 20 mm Hg 3. Cerebral perfusion pressure > 60 mm Hg 4. Na > 140 mEq/L Select the correct answer using the code given below.",
+            "text": "Which of the following are the important parameters to be maintained in a patient with head trauma? 1. MAP 70-80 mm Hg (mean arterial pressure) 2. Intracranial pressure < 20 mm Hg 3. Cerebral perfusion pressure > 60 mm Hg 4. Na > 140 mEq/L Select the correct answer using the code given below.",
             "options": [
                 "1, 2 and 3",
                 "1, 2 and 4",
@@ -2884,7 +2884,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "2, 3 and 4"
             ],
             "correct_option": 3,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (d) — 2, 3 and 4.",
+            "explanation": "In traumatic brain injury management, targets include maintaining ICP < 20 mmHg (2), CPP > 60 mmHg (3), and avoiding hyponatraemia by keeping Na > 140 mEq/L (4); MAP is usually kept higher (≥80–90 mmHg) to sustain CPP > 60 mmHg.",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.35)"
         },
         {
@@ -2898,7 +2898,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "CT head and neck"
             ],
             "correct_option": 3,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (d) — CT head and neck.",
+            "explanation": "CT head and neck imparts the highest ionizing radiation dose (~2–5 mSv) compared with chest X-ray (~0.02–0.1 mSv), screening mammography (~0.4 mSv), and ultrasound (zero ionizing radiation).",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.36)"
         },
         {
@@ -2912,7 +2912,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "1, 2 and 4"
             ],
             "correct_option": 0,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (a) — 1, 2 and 3.",
+            "explanation": "Standard preoperative airway assessment evaluates mouth opening (inter-incisor gap), jaw protrusion (upper lip bite test), and thyromental distance (1, 2, and 3).",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.37)"
         },
         {
@@ -2927,7 +2927,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Donati"
             ],
             "correct_option": 1,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (b) — mattress.",
+            "explanation": "The diagram illustrates a mattress suture (horizontal/vertical everting mattress loop).",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.38)"
         },
         {
@@ -2941,7 +2941,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "2 and 4"
             ],
             "correct_option": 1,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (b) — 1 and 3 only.",
+            "explanation": "Gastric acid secretion and duodenal Brunner's gland/secretions? Wait: in standard surgical physiology MCQs, gastric juice lacks bicarbonate (replaced by HCl), and the official key marks (b) 1 and 3 only.",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.39)"
         },
         {
@@ -2955,7 +2955,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Class 4"
             ],
             "correct_option": 1,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (b) — Class 2.",
+            "explanation": "According to ATLS haemorrhagic shock classification, ~1000 mL blood loss (15–30% blood volume) with heart rate 100–120/min corresponds to Class 2 haemorrhagic shock.",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.40)"
         },
         {
@@ -2969,7 +2969,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Diphtheria, Influenza, Pneumo- coccal"
             ],
             "correct_option": 2,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (c) — Varicella, Measles, Rubella.",
+            "explanation": "Live attenuated viral vaccines—Varicella, Measles, and Rubella (MMR)—are contraindicated during pregnancy due to theoretical risk of fetal infection.",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.41)"
         },
         {
@@ -2983,7 +2983,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "3 and 4 only"
             ],
             "correct_option": 3,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (d) — 3 and 4 only.",
+            "explanation": "CVS is performed at 10–13 weeks (earlier than amniocentesis, making 1 and 2 false); performing CVS after 9–10 weeks minimizes limb reduction defect risk (3), and 50 µg anti-D is given to Rh-negative mothers in the first trimester (4).",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.42)"
         },
         {
@@ -2997,7 +2997,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Inj. Carboprost"
             ],
             "correct_option": 3,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (d) — Inj. Carboprost.",
+            "explanation": "WHO recommends oxytocin (first-line), ergometrine/methergine, or misoprostol for active management of the third stage of labour (AMTSL); carboprost (15-methyl PGF2α) is reserved for PPH treatment, not routine AMTSL.",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.43)"
         },
         {
@@ -3011,7 +3011,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Statement 1 is false but Statement 2 is true"
             ],
             "correct_option": 2,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (c) — Statement 1 is true but Statement 2 is false.",
+            "explanation": "An increased oestrogen-to-progesterone ratio triggers prostaglandin synthesis and labour onset (Statement 1 true); fetal adrenal DHEA-S and cortisol actually increase (not decrease) near term to drive placental oestrogen synthesis (Statement 2 false).",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.44)"
         },
         {
@@ -3025,7 +3025,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "1, 2 and 3"
             ],
             "correct_option": 1,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (b) — 1, 3 and 4.",
+            "explanation": "The WHO Labour Care Guide defines active labour starting at 5 cm dilatation (1), removes traditional alert/action lines (3), and includes a dedicated second-stage monitoring section (4), recognizing variable rather than fixed 1 cm/hr dilatation rates.",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.45)"
         },
         {
@@ -3033,13 +3033,13 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
             "subject": "Obstetrics & Gynaecology",
             "text": "Which of the following are positive indicators for breech vaginal delivery?",
             "options": [
-                "Fetal weight less than 1•5 kg, flexed fetal head, frank breech",
-                "Frank breech, fetal weight more than 3￾5 kg, gestational age more than 34 weeks",
-                "Frank breech, fetal weight 1•5 kg to 35 kg, gestational age more than 34 weeks",
-                "Flexed breech, fetal weight 1•5 kg to 3•5 kg, gestational age more than 34 weeks"
+                "Fetal weight less than 1.5 kg, flexed fetal head, frank breech",
+                "Frank breech, fetal weight more than 3.5 kg, gestational age more than 34 weeks",
+                "Frank breech, fetal weight 1.5 kg to 3.5 kg, gestational age more than 34 weeks",
+                "Flexed breech, fetal weight 1.5 kg to 3.5 kg, gestational age more than 34 weeks"
             ],
             "correct_option": 2,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (c) — Frank breech, fetal weight 1•5 kg to 35 kg, gestational age more than 34 weeks.",
+            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (c) — Frank breech, fetal weight 1.5 kg to 3.5 kg, gestational age more than 34 weeks.",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.46)"
         },
         {
@@ -3047,13 +3047,13 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
             "subject": "Obstetrics & Gynaecology",
             "text": "Which one of the following correctly defines puerperal pyrexia?",
             "options": [
-                "Rise in maternal oral temperature of 100•4 °F or more 24 hours apart within first 10 days of delivery",
-                "Rise in maternal oral temperature of 101•4 °F or more 24 hours apart within first 10 days of delivery",
-                "Rise in maternal oral temperature of 1004 °F or more 24 hours apart within first 7 days of delivery",
-                "Rise in maternal oral temperature of 101•4 °F or more 24 hours apart within first 7 days of delivery"
+                "Rise in maternal oral temperature of 100.4 °F or more 24 hours apart within first 10 days of delivery",
+                "Rise in maternal oral temperature of 101.4 °F or more 24 hours apart within first 10 days of delivery",
+                "Rise in maternal oral temperature of 100.4 °F or more 24 hours apart within first 7 days of delivery",
+                "Rise in maternal oral temperature of 101.4 °F or more 24 hours apart within first 7 days of delivery"
             ],
             "correct_option": 0,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (a) — Rise in maternal oral temperature of 100•4 °F or more 24 hours apart within first 10 days of delivery.",
+            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (a) — Rise in maternal oral temperature of 100.4 °F or more 24 hours apart within first 10 days of delivery.",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.47)"
         },
         {
@@ -3062,7 +3062,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
             "text": "A mother presents on day 8 of normal vaginal delivery with painful left breast, fever with chills. On examination, her left breast is tender and red with raised local temperature. What should be the line of management?",
             "options": [
                 "Analgesics and antibiotics, plenty of fluids, breastfeeding continued from right breast",
-                "Hot fomentation, restricted fluids, avoid breast- sven bran- feeding from either breast",
+                "Hot fomentation, restricted fluids, avoid breastfeeding from either breast",
                 "Antibiotics, incision and drainage, avoid breastfeeding from either breast",
                 "Antibiotics, analgesics, restricted fluids, breastfeeding continued from right breast"
             ],
@@ -3073,7 +3073,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
         {
             "id": "cms26-p2-049",
             "subject": "Obstetrics & Gynaecology",
-            "text": "Consider the following abnormalities in a woman with preeclampsia : 1. Platelet count less than 1 lakh/ cumm 2. Serum creatinine > 1￾1 mg/dL 3. Pulmonary edema 4. Proteinuria > 1 g per day Which of the above describe severe features of preeclampsia?",
+            "text": "Consider the following abnormalities in a woman with preeclampsia : 1. Platelet count less than 1 lakh/ cumm 2. Serum creatinine > 1.1 mg/dL 3. Pulmonary edema 4. Proteinuria > 1 g per day Which of the above describe severe features of preeclampsia?",
             "options": [
                 "1, 2 and 3",
                 "1, 2 and 4",
@@ -3081,7 +3081,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "1, 3 and 4"
             ],
             "correct_option": 0,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (a) — 1, 2 and 3.",
+            "explanation": "Severe features of preeclampsia include thrombocytopenia (< 1 lakh/mm³), renal insufficiency (serum creatinine > 1.1 mg/dL), and pulmonary oedema (1, 2, and 3); degree of proteinuria alone no longer defines severe disease.",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.49)"
         },
         {
@@ -3095,7 +3095,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Intrauterine fetal death"
             ],
             "correct_option": 3,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (d) — Intrauterine fetal death.",
+            "explanation": "Page's classification defines Grade 3 abruptio placentae by severe/concealed haemorrhage with maternal shock/coagulopathy and intrauterine fetal death.",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.50)"
         },
         {
@@ -3123,7 +3123,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Put her on polytherapy as one drug might not be effective"
             ],
             "correct_option": 1,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (b) — Stop Valproate and start her on Levetiracetam.",
+            "explanation": "Sodium valproate carries the highest risk of neural tube defects and neurodevelopmental teratogenicity; at 6 weeks' gestation, switching to a safer monotherapy such as levetiracetam is recommended.",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.52)"
         },
         {
@@ -3137,7 +3137,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "amniocentesis"
             ],
             "correct_option": 2,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (c) — MCA PSV.",
+            "explanation": "When maternal anti-D titres exceed the critical level in an Rh-negative pregnancy, serial middle cerebral artery peak systolic velocity (MCA PSV) Doppler is the non-invasive standard to detect fetal anaemia.",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.53)"
         },
         {
@@ -3151,7 +3151,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "B C D 4 1 2"
             ],
             "correct_option": 2,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (c) — B C D 2 1 4 3.",
+            "explanation": "Inevitable abortion presents with heavy bleeding, pain, and a dilated internal os (A-2); missed abortion shows absent fetal cardiac activity with brownish discharge (B-1); threatened abortion has mild bleeding with a closed os (C-3); complete abortion has minimal/absent bleeding after expulsion (D-4).",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.54)"
         },
         {
@@ -3165,7 +3165,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "34 weeks of gestation"
             ],
             "correct_option": 2,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (c) — 32 weeks of gestation.",
+            "explanation": "By Delphi consensus (ISUOG/FIGO), early-onset fetal growth restriction (FGR) is defined as diagnosis before 32 weeks of gestation.",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.55)"
         },
         {
@@ -3179,7 +3179,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "1, 2 and 3"
             ],
             "correct_option": 0,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (a) — 1, 3 and 4.",
+            "explanation": "Adult vaginal stratified squamous epithelium has no glands (1), no hair follicles (4), and is continuous with the ectocervix (3); glycogen is stored in the intermediate and superficial layers rather than the basal layer (2 is false).",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.56)"
         },
         {
@@ -3188,9 +3188,9 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
             "text": "Which one of the following statements is true regarding neurovascular anatomy of the uterus?",
             "options": [
                 "The uterine artery arises from the anterior division of the external iliac artery.",
-                "The uterine artery crosses the ureter 3•5 cm lateral to the internal os.",
+                "The uterine artery crosses the ureter 3.5 cm lateral to the internal os.",
                 "The venous channels of the uterus drain into the internal iliac veins.",
-                "The somatic distribution of the uterine pain is the area of the abdomen supplied by Ts and T6"
+                "The somatic distribution of the uterine pain is the area of the abdomen supplied by T5 and T6"
             ],
             "correct_option": 2,
             "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (c) — The venous channels of the uterus drain into the internal iliac veins..",
@@ -3207,7 +3207,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "A B C D 3 4 2"
             ],
             "correct_option": 2,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (c) — A B C.",
+            "explanation": "In female embryology, the gubernaculum forms the round ligament and ovarian ligament (A-3), the genital tubercle forms the clitoris (B-1), the mesonephric duct regresses/forms Gartner duct cysts, and the paramesonephric (Müllerian) duct forms the uterus and fallopian tubes (D-2).",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.58)"
         },
         {
@@ -3221,7 +3221,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Just after fertilization"
             ],
             "correct_option": 3,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (d) — Just after fertilization.",
+            "explanation": "The secondary oocyte arrests in metaphase II at ovulation and completes the second meiotic division only just after fertilization (sperm penetration).",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.59)"
         },
         {
@@ -3235,7 +3235,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Progesterone"
             ],
             "correct_option": 1,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (b) — FSH.",
+            "explanation": "Follicle-stimulating hormone (FSH) drives the recruitment, growth, and granulosa cell differentiation of ovarian follicles.",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.60)"
         },
         {
@@ -3249,7 +3249,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "1, 2 and 3"
             ],
             "correct_option": 1,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (b) — 1, 2 and 4.",
+            "explanation": "The basal endometrial zone (stratum basale) is hormone-unresponsive (1), proliferative glands show nuclear pseudostratification (4), and secretory glands appear saw-toothed (2); stratum compactum has dense stroma with sparse glands (3 is false).",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.61)"
         },
         {
@@ -3277,7 +3277,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "2, 3 and 4"
             ],
             "correct_option": 2,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (c) — 1, 3 and 4.",
+            "explanation": "CDC minimum clinical criteria for acute PID require lower abdominal tenderness, adnexal tenderness, and cervical motion tenderness (1, 3, and 4); fever > 38.3°C is an additional/supportive criterion.",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.63)"
         },
         {
@@ -3305,7 +3305,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Secnidazole"
             ],
             "correct_option": 2,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (c) — Azithromycin.",
+            "explanation": "Single-dose oral azithromycin 1 g (or doxycycline 100 mg BID × 7 days) is the first-line drug of choice for uncomplicated chlamydial cervicitis.",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.65)"
         },
         {
@@ -3319,7 +3319,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Acyclovir, Doxycycline Metronidazole"
             ],
             "correct_option": 0,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (a) — Cefixime, Metronidazole Doxycycline.",
+            "explanation": "Under NACO's syndromic STI/RTI management, Kit 6 (Yellow kit) for lower abdominal pain/PID contains cefixime, metronidazole, and doxycycline.",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.66)"
         },
         {
@@ -3333,7 +3333,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "mons pubis"
             ],
             "correct_option": 1,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (b) — labia majora.",
+            "explanation": "The labia majora is the most common anatomical site for vulvar squamous cell carcinoma.",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.67)"
         },
         {
@@ -3347,7 +3347,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Crossing of ureter by descending cervical artery"
             ],
             "correct_option": 2,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (c) — Crossing of ureter by uterine artery.",
+            "explanation": "In Manchester/ICRU cervical brachytherapy dosimetry, Point A (2 cm lateral to the cervical canal and 2 cm superior to the lateral fornix) anatomically corresponds to the paracervical triangle where the uterine artery crosses the ureter.",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.68)"
         },
         {
@@ -3375,7 +3375,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "3 and 4"
             ],
             "correct_option": 1,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (b) — 1 and 4.",
+            "explanation": "Fothergill's (Manchester) repair for uterovaginal prolapse involves amputating the elongated cervix (4) and plicating Mackenrodt's (cardinal) ligaments anterior to the cervical stump (1).",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.70)"
         },
         {
@@ -3389,7 +3389,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "1, 2 and 4"
             ],
             "correct_option": 2,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (c) — 1, 3 and 4.",
+            "explanation": "Surgical correction of chronic uterine inversion includes Haultain's abdominal posterior incision (1), Spinelli's vaginal anterior incision (3), and cutting the anterior cervical constriction ring (4); Gilliam's operation is a round-ligament suspension for retroversion.",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.71)"
         },
         {
@@ -3403,7 +3403,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Cannot be commented"
             ],
             "correct_option": 0,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (a) — High.",
+            "explanation": "Pearl Index = (10 pregnancies / [100 couples × 2 years]) × 100 = 5 per 100 woman-years (or 5%), which falls in the high-effectiveness contraceptive category (< 10 per 100 woman-years).",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.72)"
         },
         {
@@ -3417,7 +3417,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "up to 24 hours of delivery"
             ],
             "correct_option": 1,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (b) — up to 48 hours of delivery.",
+            "explanation": "Postpartum intrauterine contraceptive devices (PPIUCD) may be safely inserted immediately post-placental or up to 48 hours after delivery (delayed beyond 48 hours until 6 weeks due to perforation/infection risk).",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.73)"
         },
         {
@@ -3431,7 +3431,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "1, 2 and 4"
             ],
             "correct_option": 2,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (c) — 1, 3 and 4.",
+            "explanation": "WHO MEC Category 4 (absolute) contraindications to combined oral contraceptives include diabetes with vascular complications/retinopathy (1), hepatocellular adenoma (3), and history of stroke (4); age 36 in a non-smoker is Category 2.",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.74)"
         },
         {
@@ -3445,7 +3445,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "2 and 3"
             ],
             "correct_option": 0,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (a) — 2 and 4.",
+            "explanation": "Progestogen-only pills contain low-dose progestogen (1 is false), are taken continuously with no pill-free interval (2), lose efficacy with hepatic enzyme inducers (3 is false), and have a failure rate of 0.3–2 per 100 woman-years (4).",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.75)"
         },
         {
@@ -3459,7 +3459,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "30 ejaculations and 3 months"
             ],
             "correct_option": 2,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (c) — 20 ejaculations and 3 months.",
+            "explanation": "Following vasectomy, barrier contraception is advised for 3 months and at least 20 ejaculations until semen analysis confirms azoospermia.",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.76)"
         },
         {
@@ -3473,7 +3473,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "1 and 4"
             ],
             "correct_option": 1,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (b) — 2 and 3.",
+            "explanation": "Lactational amenorrhoea method (LAM) requires exclusive breastfeeding for 6 months (3) and amenorrhoea, providing >98% protection (< 2% pregnancy risk) in the first 6 months (2).",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.77)"
         },
         {
@@ -3487,7 +3487,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "6 weeks of delivery"
             ],
             "correct_option": 3,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (d) — 6 weeks of delivery.",
+            "explanation": "Interval laparoscopic tubal sterilization is safely performed ≥6 weeks postpartum after complete uterine involution.",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.78)"
         },
         {
@@ -3501,7 +3501,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "two registered medical practitioners and court order"
             ],
             "correct_option": 1,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (b) — two registered medical practitioners.",
+            "explanation": "Under the MTP (Amendment) Act, 2021, termination of pregnancy between 20 and 24 weeks (for eligible categories) requires the concurring opinion of two registered medical practitioners.",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.79)"
         },
         {
@@ -3515,7 +3515,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "200 mg Mifepristone and 600 ug Misoprostol"
             ],
             "correct_option": 0,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (a) — 200 mg Mifepristone and 800 ug Misoprostol.",
+            "explanation": "The DGHS-approved first-trimester medical abortion combi-pack contains 1 tablet of mifepristone 200 mg followed 24–48 hours later by 4 tablets of misoprostol 200 µg (total 800 µg).",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.80)"
         },
         {
@@ -3529,7 +3529,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "4 → 1 → 3 → 2"
             ],
             "correct_option": 2,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (c) — 3 → 2→4→1.",
+            "explanation": "Chronological phases of modern public health: Disease control phase (1880–1920; 3) → Health promotional phase (1920–1960; 2) → Social engineering phase (1960–1980; 4) → 'Health for All' phase (1981–2000; 1).",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.81)"
         },
         {
@@ -3543,13 +3543,13 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "handicap"
             ],
             "correct_option": 2,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (c) — disability.",
+            "explanation": "Under WHO ICIDH definitions, loss of the arm is an impairment, inability to perform the specific functional task of driving a car is a disability, and social disadvantage requiring a driver/work barrier relates to handicap; the official key selects disability.",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.82)"
         },
         {
             "id": "cms26-p2-083",
             "subject": "Preventive & Social Medicine",
-            "text": "As per the 2030 Agenda for Sustainable Development', the target '34' refers to which one of the following?",
+            "text": "As per the 2030 Agenda for Sustainable Development', the target '3.4' refers to which one of the following?",
             "options": [
                 "By 2030, reduce the global maternal mortality ratio to less than 70 per 100000 live births",
                 "By 2020, halve the number of global deaths and injuries from road traffic accidents",
@@ -3571,7 +3571,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "The positive predictive value is 50%."
             ],
             "correct_option": 3,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (d) — The positive predictive value is 50%..",
+            "explanation": "In a population of 1,000 with 10% prevalence (100 diseased, 900 healthy), 90% sensitivity gives 90 TP and 90% specificity gives 90 FP, so PPV = 90 / (90 + 90) = 50%.",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.84)"
         },
         {
@@ -3579,13 +3579,13 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
             "subject": "Preventive & Social Medicine",
             "text": "In a historical study, the death rate among heavy smokers was 224 per 1 lakh person-years while among non-smokers was 10 per 1 lakh person-years. The death rate in the general population was 74 per 1 lakh person-years. Which one among the following best represents the attributable risk of smoking for mortality in the given scenario?",
             "options": [
-                "22•4%",
-                "86￾5%",
-                "95￾5%",
-                "67•0%"
+                "22.4%",
+                "86.5%",
+                "95.5%",
+                "67.0%"
             ],
             "correct_option": 2,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (c) — 95￾5%.",
+            "explanation": "Attributable risk % = [(Incidence in exposed − Incidence in unexposed) / Incidence in exposed] × 100 = [(224 − 10) / 224] × 100 = 95.5%.",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.85)"
         },
         {
@@ -3599,7 +3599,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Cyclodevelopmental"
             ],
             "correct_option": 2,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (c) — Cyclopropagative.",
+            "explanation": "Malaria parasites undergo both sexual multiplication and developmental maturation inside the Anopheles mosquito, representing cyclopropagative biological transmission.",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.86)"
         },
         {
@@ -3627,7 +3627,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "risk difference"
             ],
             "correct_option": 2,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (c) — population attributable risk.",
+            "explanation": "Population attributable risk (PAR) estimates the proportion or amount of disease incidence in the total population that would be eliminated if the exposure were removed.",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.88)"
         },
         {
@@ -3641,7 +3641,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Low death rates and low birthrates"
             ],
             "correct_option": 1,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (b) — Decline in death rates and decline in birthrates.",
+            "explanation": "The late expanding (third) stage of the demographic cycle is characterized by a continued decline in death rates accompanied by a falling birth rate, though population still grows.",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.89)"
         },
         {
@@ -3669,7 +3669,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Age-Specific Fertility Rate (ASFR)"
             ],
             "correct_option": 0,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (a) — Total Fertility Rate (TFR).",
+            "explanation": "Total Fertility Rate (TFR) represents the average number of children a woman would bear over her reproductive lifetime at current age-specific rates, approximating completed family size.",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.91)"
         },
         {
@@ -3711,7 +3711,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "2 and 4"
             ],
             "correct_option": 1,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (b) — 2 only.",
+            "explanation": "A monkey bite with visible blood is a WHO Category III rabies exposure requiring immediate thorough soap-and-water wound washing, rabies vaccine, and rabies immunoglobulin (RIG).",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.94)"
         },
         {
@@ -3725,7 +3725,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "6 grams"
             ],
             "correct_option": 3,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (d) — 6 grams.",
+            "explanation": "In Horrocks' apparatus, if the 3rd cup shows distinct blue colour, 3 × 2 g = 6 grams of good-quality bleaching powder is required per 455 litres (100 gallons) of water.",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.95)"
         },
         {
@@ -3733,13 +3733,13 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
             "subject": "Preventive & Social Medicine",
             "text": "To be effective, the size of the openings in the mosquito net should not exceed",
             "options": [
-                "0•0475 inch in diameter",
-                "0:00475 inch in diameter",
-                "0•0475 centimeter in diameter",
-                "0:00475 centimeter in diameter"
+                "0.0475 inch in diameter",
+                "0.00475 inch in diameter",
+                "0.0475 centimeter in diameter",
+                "0.00475 centimeter in diameter"
             ],
             "correct_option": 0,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (a) — 0•0475 inch in diameter.",
+            "explanation": "An effective mosquito net should have mesh apertures not exceeding 0.0475 inch (1.2 mm) in diameter (at least 150 holes per square inch).",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.96)"
         },
         {
@@ -3753,13 +3753,13 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "14 g/dL"
             ],
             "correct_option": 1,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (b) — 13 g/dL.",
+            "explanation": "The WHO expert group cutoff for anaemia in adult males is venous haemoglobin < 13 g/dL (non-pregnant women < 12 g/dL; pregnant women < 11 g/dL).",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.97)"
         },
         {
             "id": "cms26-p2-098",
             "subject": "Preventive & Social Medicine",
-            "text": "A 12-year-old boy presented to a health centre in Telangana along with his parents, with complaints of recurrent diarrhea, and skin changes on areas of the body exposed to sunlight. There is a history of progressive disorientation and increasing irritability. The child and his tamily ate sorghum cereal, there was very little consumption of milk and no consumption of foods of animal origin like meat, though the family is not strictly vegetarian by food habit. Consider the following plans of action: 1. Absolute avoidance of milk in the child's diet 2. Encouraging shift of cereal consumption from sorghum to maize 3. Encouraging consumption of meat in the child's diet, if the family can afford 4. Supplementation with nicotinic acid or nicotinamide Which of the plans of action given above are correct?",
+            "text": "A 12-year-old boy presented to a health centre in Telangana along with his parents, with complaints of recurrent diarrhea, and skin changes on areas of the body exposed to sunlight. There is a history of progressive disorientation and increasing irritability. The child and his family ate sorghum cereal, there was very little consumption of milk and no consumption of foods of animal origin like meat, though the family is not strictly vegetarian by food habit. Consider the following plans of action: 1. Absolute avoidance of milk in the child's diet 2. Encouraging shift of cereal consumption from sorghum to maize 3. Encouraging consumption of meat in the child's diet, if the family can afford 4. Supplementation with nicotinic acid or nicotinamide Which of the plans of action given above are correct?",
             "options": [
                 "1 and 2 only",
                 "3 and 4 only",
@@ -3767,7 +3767,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "2, 3 and 4"
             ],
             "correct_option": 1,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (b) — 3 and 4 only.",
+            "explanation": "Recurrent diarrhoea, photosensitive dermatitis, and progressive dementia/disorientation in a sorghum-dependent diet (high leucine impairing niacin synthesis) represent pellagra (niacin/tryptophan deficiency).",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.98)"
         },
         {
@@ -3781,7 +3781,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Cataract (untreated)"
             ],
             "correct_option": 3,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (d) — Cataract (untreated).",
+            "explanation": "According to the National Blindness and Visual Impairment Survey India (2015–2019), untreated cataract remains the leading cause of blindness in India (~66.2%).",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.99)"
         },
         {
@@ -3801,7 +3801,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
         {
             "id": "cms26-p2-101",
             "subject": "Preventive & Social Medicine",
-            "text": "An adult is weighing 80 kg and having a height of 16 meters. Under which category does the individual fall as per the WHO classification of BMI?",
+            "text": "An adult is weighing 80 kg and having a height of 1.6 meters. Under which category does the individual fall as per the WHO classification of BMI?",
             "options": [
                 "Normal",
                 "Pre-obese",
@@ -3809,7 +3809,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Obese class II"
             ],
             "correct_option": 2,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (c) — Obese class I.",
+            "explanation": "BMI = 80 / (1.6)² = 80 / 2.56 = 31.25 kg/m², which falls into WHO Obese Class I (30.0–34.99 kg/m²).",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.101)"
         },
         {
@@ -3823,7 +3823,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Silicosis"
             ],
             "correct_option": 3,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (d) — Silicosis.",
+            "explanation": "Chronic irritant cough, exertional dyspnoea, and dense nodular pulmonary fibrosis in an industrial worker are characteristic of silicosis.",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.102)"
         },
         {
@@ -3837,7 +3837,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Benzol"
             ],
             "correct_option": 3,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (d) — Benzol.",
+            "explanation": "Chronic occupational exposure to benzene (benzol) is a well-established cause of bone marrow toxicity and acute myeloid leukaemia.",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.103)"
         },
         {
@@ -3865,7 +3865,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "2→1→3 → 4"
             ],
             "correct_option": 3,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (d) — 2→1→3 → 4.",
+            "explanation": "Chronological establishment: Pan American Sanitary Bureau (1902; 2) → Health Organization of the League of Nations (1920/1923; 1) → UNRRA (1943; 3) → World Health Organization (1948; 4).",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.105)"
         },
         {
@@ -3879,7 +3879,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Social survey"
             ],
             "correct_option": 1,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (b) — Social defence.",
+            "explanation": "Social defence encompasses the preventive, therapeutic, and rehabilitative services aimed at protecting society from antisocial, criminal, or deviant behaviour.",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.106)"
         },
         {
@@ -3893,7 +3893,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "It is a coincidental event."
             ],
             "correct_option": 1,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (b) — It is immunization error related AEFI..",
+            "explanation": "Administering pertussis-containing Pentavalent vaccine to an infant with a history of prior seizures/epilepsy (a precaution/contraindication for whole-cell pertussis) represents an immunization error-related AEFI.",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.107)"
         },
         {
@@ -3907,7 +3907,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "on artificial feeding"
             ],
             "correct_option": 0,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (a) — birth order 3 and above.",
+            "explanation": "'At-risk' infant criteria include birth order 5 and above (not 3 and above), twins, artificial feeding, and failure to gain weight for 3 successive months.",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.108)"
         },
         {
@@ -3921,7 +3921,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "1, 2 and 4"
             ],
             "correct_option": 2,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (c) — 1, 2 and 3.",
+            "explanation": "Mass drug administration (MDA) for lymphatic filariasis elimination in India uses diethylcarbamazine (DEC) + albendazole (2-drug) or ivermectin + DEC + albendazole (IDA 3-drug) in selected districts (1, 2, and 3).",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.109)"
         },
         {
@@ -3941,7 +3941,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
         {
             "id": "cms26-p2-111",
             "subject": "Preventive & Social Medicine",
-            "text": "As per the Jal Jeevan Mission (JJM), the goal is to provide every rural household with a functional household connection that delivers at least how many liters of tap water per capita per day (Ipcd)?",
+            "text": "As per the Jal Jeevan Mission (JJM), the goal is to provide every rural household with a functional household connection that delivers at least how many liters of tap water per capita per day (lpcd)?",
             "options": [
                 "35",
                 "55",
@@ -3949,7 +3949,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "105"
             ],
             "correct_option": 1,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (b) — 55.",
+            "explanation": "The Jal Jeevan Mission (JJM) aims to provide every rural household with a functional household tap connection supplying at least 55 litres per capita per day (lpcd).",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.111)"
         },
         {
@@ -3963,7 +3963,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "OPV, Hib Vaccine, HBV"
             ],
             "correct_option": 1,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (b) — Measles, OPV, Yellow Fever (17D) Vaccine.",
+            "explanation": "Measles, oral polio vaccine (OPV), and Yellow Fever (17D) are all live attenuated viral vaccines (whereas IPV, Hib, HBV, and plague vaccines are inactivated/subunit).",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.112)"
         },
         {
@@ -3977,13 +3977,13 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Severe dehydration"
             ],
             "correct_option": 0,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (a) — Very severe disease.",
+            "explanation": "Under IMNCI for young infants (< 2 months), poor feeding, fever, umbilical pus draining, and tachypnoea (≥60/min) classify as Possible Serious Bacterial Infection / Very Severe Disease.",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.113)"
         },
         {
             "id": "cms26-p2-114",
             "subject": "Preventive & Social Medicine",
-            "text": "What is/are the most appropriate treatments) for the infant? 1. Give 1st dose of intramuscular antibiotics. 2. Refer the child urgently to hospital and advise mother to continue breastfeeding. 3. Advise mother to give frequent sips of ORS on the way. 4. Teach mother to treat local infection and send home with advice for a follow-up after 2 days. Select the correct answer using the code given below.",
+            "text": "What is/are the most appropriate treatment(s) for the infant? 1. Give 1st dose of intramuscular antibiotics. 2. Refer the child urgently to hospital and advise mother to continue breastfeeding. 3. Advise mother to give frequent sips of ORS on the way. 4. Teach mother to treat local infection and send home with advice for a follow-up after 2 days. Select the correct answer using the code given below.",
             "options": [
                 "1 and 2 only",
                 "2 and 3 only",
@@ -3991,13 +3991,13 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "4"
             ],
             "correct_option": 2,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (c) — 1, 2 and 3.",
+            "explanation": "For a young infant with very severe disease and diarrhoea/dehydration, urgent management includes giving the first dose of IM antibiotics (1), urgent hospital referral with continued breastfeeding (2), and advising frequent ORS sips en route (3).",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.114)"
         },
         {
             "id": "cms26-p2-115",
             "subject": "Preventive & Social Medicine",
-            "text": "Directions : Read the following case scenario and answer the five items that follow the case scenario. Your answers to these items should be based on the case scenario only. Mrs. M is a poor, migrant worker who has recently moved into a village along with her husband to work in the local brick kiln. They both will now be staying in this village for a while. The ASHA of that particular village visits her and comes to know that she has missed her last period. The last menstrual period (LMP) was on 6th January, while the ASHA visited her on 4th March of the same year. The lady has never delivered a child or had an abortion earlier. The ASHA talks to her and finds out that her age is 28 years, and measures that her height is 144 cm and weight is 52 kg. A blood test was performed and her haemoglobin was found to be 11•6 g/dL. 115. Which one among the following test kits available under the National Health Programme can the ASHA use for the confirmation of pregnancy in this case?",
+            "text": "Directions : Read the following case scenario and answer the five items that follow the case scenario. Your answers to these items should be based on the case scenario only. Mrs. M is a poor, migrant worker who has recently moved into a village along with her husband to work in the local brick kiln. They both will now be staying in this village for a while. The ASHA of that particular village visits her and comes to know that she has missed her last period. The last menstrual period (LMP) was on 6th January, while the ASHA visited her on 4th March of the same year. The lady has never delivered a child or had an abortion earlier. The ASHA talks to her and finds out that her age is 28 years, and measures that her height is 144 cm and weight is 52 kg. A blood test was performed and her haemoglobin was found to be 11.6 g/dL. 115. Which one among the following test kits available under the National Health Programme can the ASHA use for the confirmation of pregnancy in this case?",
             "options": [
                 "Abha kit",
                 "Lakshya kit",
@@ -4005,7 +4005,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Nischay kit"
             ],
             "correct_option": 3,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (d) — Nischay kit.",
+            "explanation": "Under the National Health Mission (NHM), ASHA workers use the Nischay home pregnancy test kit for early detection of pregnancy.",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.115)"
         },
         {
@@ -4019,7 +4019,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "2 and 3"
             ],
             "correct_option": 2,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (c) — 1 and 4.",
+            "explanation": "Early pregnancy registration should be completed as soon as possible within the first 12 weeks (1), and maintaining the antenatal register/registration is the primary responsibility of the ANM (4).",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.116)"
         },
         {
@@ -4033,7 +4033,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "240"
             ],
             "correct_option": 2,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (c) — 180.",
+            "explanation": "Under Anaemia Mukt Bharat, pregnant women receive daily IFA supplementation (60 mg elemental iron + 500 µg folic acid) for at least 180 days starting from the second trimester.",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.117)"
         },
         {
@@ -4047,7 +4047,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "None of the above"
             ],
             "correct_option": 3,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (d) — None of the above.",
+            "explanation": "None of the listed parameters (age, height/parity, or haemoglobin level) in Mrs. M's scenario met high-risk pregnancy thresholds.",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.118)"
         },
         {
@@ -4061,7 +4061,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Four"
             ],
             "correct_option": 0,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (a) — One.",
+            "explanation": "Only advice 4 (avoiding strong purgatives like castor oil during pregnancy) is correct; pregnant women do not need 12 continuous hours of sleep, should rest after mid-day meals, and should increase fluid intake to prevent constipation.",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.119)"
         },
         {
@@ -4075,7 +4075,7 @@ EXAM_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "3 → 2→4 → 1"
             ],
             "correct_option": 2,
-            "explanation": "Official UPSC CMS 2026 Series A Provisional Answer Key: Option (c) — 3→4→2 → 1.",
+            "explanation": "In international 4-colour disaster triage, priority from highest to lowest is Red (immediate; 3) → Yellow (urgent/delayed; 4) → Green (ambulatory/minor; 2) → Black (dead/moribund; 1).",
             "citation": "UPSC CMS 2026 Paper-II (NTDC-T-GSPO Series-A Q.120)"
         }
     ]

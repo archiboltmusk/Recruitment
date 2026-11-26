@@ -556,3 +556,52 @@ class Notifier:
             "• <code>/closing</code> — Closing soon\n"
             "• <code>/stop</code> — Pause alerts"
         )
+
+    @classmethod
+    def alert_failing_core_portals(cls, db: Session, failing_portals: list) -> int:
+        """Sends a 24h-throttled Telegram health warning when core portals fail 3+ consecutive syncs."""
+        if not failing_portals:
+            return 0
+        bot_token = os.getenv("TELEGRAM_BOT_TOKEN", "").strip()
+        admin_target = (os.getenv("TELEGRAM_ADMIN_CHAT_ID") or os.getenv("TELEGRAM_DEFAULT_CHANNEL") or "").strip()
+        if not bot_token or not admin_target:
+            return 0
+        cutoff = _utc_now() - timedelta(hours=24)
+        to_alert = []
+        for p in failing_portals:
+            pname = p.get("name", "")
+            recent = db.query(NotificationLog).filter(
+                NotificationLog.vacancy_id == f"PORTAL_HEALTH:{pname}",
+                NotificationLog.sent_at >= cutoff,
+            ).first()
+            if not recent:
+                to_alert.append(p)
+        if not to_alert:
+            return 0
+        lines = ["⚠️ <b>PORTAL HEALTH ALERT</b> (3+ consecutive failures)"]
+        for p in to_alert[:6]:
+            lines.append(f"• <b>{html.escape(p['name'])}</b>: {html.escape(str(p.get('error') or p.get('status') or 'Error')[:100])}")
+        msg = "\n".join(lines)
+        sent = 0
+        try:
+            res = requests.post(
+                f"https://api.telegram.org/bot{bot_token}/sendMessage",
+                json={"chat_id": admin_target, "text": msg, "parse_mode": "HTML"},
+                timeout=8,
+            )
+            status = "SUCCESS" if res.ok else "FAILED"
+            if res.ok:
+                sent = 1
+            for p in to_alert[:6]:
+                db.add(NotificationLog(
+                    vacancy_id=f"PORTAL_HEALTH:{p['name']}",
+                    channel="telegram",
+                    target=admin_target,
+                    sent_at=_utc_now(),
+                    status=status,
+                    details=f"Portal health alert ({p.get('failures', 3)} failures)",
+                ))
+            db.commit()
+        except Exception:
+            pass
+        return sent

@@ -1851,6 +1851,71 @@ def test_telegram_broadcast(payload: TelegramTestRequest, request: Request):
 class VacancyFlagRequest(BaseModel):
     reason: Optional[str] = None
 
+@app.post("/api/vacancies/{vacancy_id}/ai-extract")
+def smart_extract_vacancy_pdf(vacancy_id: str, request: Request, db: Session = Depends(get_db)):
+    check_rate_limit(request, f"ai_extract:{vacancy_id}", max_calls=5, window_sec=300)
+    v = db.query(Vacancy).filter(Vacancy.id == vacancy_id).first()
+    if not v:
+        raise HTTPException(status_code=404, detail="Vacancy not found")
+    target_url = (v.notification_url or v.apply_url or "").strip()
+    if not target_url or not GovtNotificationPDFParser.is_safe_url(target_url):
+        raise HTTPException(status_code=400, detail="No valid official PDF URL available for this circular.")
+    try:
+        meta = GovtNotificationPDFParser.extract_from_url_with_meta(target_url)
+        parsed = GovtNotificationPDFParser.parse_notice_text(meta.get("text", ""))
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Could not extract PDF: {str(e)[:180]}")
+
+    now_ist = _ist_now()
+    if parsed.get("total_posts"):
+        v.total_posts = parsed["total_posts"]
+    if parsed.get("pay_scale"):
+        v.pay_scale = parsed["pay_scale"]
+    if parsed.get("min_age"):
+        v.min_age = parsed["min_age"]
+    if parsed.get("max_age"):
+        v.max_age = parsed["max_age"]
+    if parsed.get("last_date"):
+        v.last_date = datetime.strptime(parsed["last_date"], "%Y-%m-%d")
+    if parsed.get("exam_date"):
+        v.exam_date = datetime.strptime(parsed["exam_date"], "%Y-%m-%d")
+    if parsed.get("selection_mode"):
+        v.selection_mode = parsed["selection_mode"]
+    if parsed.get("bond_years"):
+        v.bond_years = parsed["bond_years"]
+        v.bond_penalty_amount = parsed["bond_penalty_amount"]
+    if parsed.get("application_fee"):
+        v.application_fee = parsed["application_fee"]
+    if parsed.get("memo_number"):
+        v.memo_number = parsed["memo_number"]
+    if parsed.get("parsed_confident") or v.last_date:
+        v.verification_status = "VERIFIED_PDF"
+
+    ref_dt = meta.get("pdf_creation_date") or meta.get("last_modified")
+    if (v.last_date and v.last_date < now_ist) or (v.exam_date and v.exam_date < now_ist) or (
+        not v.last_date and not v.exam_date and (parsed.get("is_stale_document") or (ref_dt and ref_dt < now_ist - timedelta(days=45)))
+    ):
+        v.is_active = False
+        v.stage = "APPLICATION_CLOSED"
+    v.last_verified_at = _utc_now()
+    db.commit()
+    days_left = max(0, int((v.last_date - now_ist).total_seconds() / 86400.0)) if v.last_date else None
+    return {
+        "ok": True,
+        "id": v.id,
+        "is_active": v.is_active,
+        "total_posts": v.total_posts,
+        "pay_scale": v.pay_scale,
+        "min_age": v.min_age,
+        "max_age": v.max_age,
+        "last_date": v.last_date.strftime("%Y-%m-%d") if v.last_date else None,
+        "exam_date": v.exam_date.strftime("%Y-%m-%d") if v.exam_date else None,
+        "days_left": days_left,
+        "memo_number": v.memo_number,
+        "application_fee": v.application_fee,
+        "verification_status": v.verification_status,
+    }
+
 @app.post("/api/vacancies/{vacancy_id}/flag")
 def flag_vacancy_issue(vacancy_id: str, request: Request, payload: Optional[VacancyFlagRequest] = None, db: Session = Depends(get_db)):
     check_rate_limit(request, f"flag:{vacancy_id}", max_calls=1, window_sec=86400)

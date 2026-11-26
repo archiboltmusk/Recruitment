@@ -1,12 +1,14 @@
 import json
 import logging
 import re
+import ssl
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timedelta
 from typing import List, Dict, Any, Optional, Tuple
 from urllib.parse import urljoin
 import requests
+import urllib3
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 from bs4 import BeautifulSoup
@@ -1044,18 +1046,72 @@ class LiveGazetteScraper:
         return [(t, u) for t, u, _ in cls._extract_candidate_links_with_context(soup, html_text, base_url)]
 
     _SESSION: Optional[requests.Session] = None
+    _INSECURE_SESSION: Optional[requests.Session] = None
     _PORTAL_CACHE: Dict[str, Dict[str, str]] = {}
+    _BROWSER_HEADERS = {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Accept-Language": "en-IN,en-GB;q=0.9,en-US;q=0.8,en;q=0.7",
+    }
+
+    class _LegacyTLSAdapter(HTTPAdapter):
+        def __init__(self, *args, insecure: bool = False, **kwargs):
+            self._insecure = insecure
+            super().__init__(*args, **kwargs)
+
+        def _build_ctx(self):
+            ctx = ssl.create_default_context()
+            ctx.options |= getattr(ssl, "OP_LEGACY_SERVER_CONNECT", 0x4)
+            try:
+                ctx.set_ciphers("DEFAULT:@SECLEVEL=1")
+            except ssl.SSLError:
+                pass
+            if self._insecure:
+                ctx.check_hostname = False
+                ctx.verify_mode = ssl.CERT_NONE
+            return ctx
+
+        def init_poolmanager(self, *args, **kwargs):
+            kwargs["ssl_context"] = self._build_ctx()
+            return super().init_poolmanager(*args, **kwargs)
+
+        def proxy_manager_for(self, *args, **kwargs):
+            kwargs["ssl_context"] = self._build_ctx()
+            return super().proxy_manager_for(*args, **kwargs)
 
     @classmethod
-    def _get_session(cls) -> requests.Session:
+    def _get_session(cls, insecure: bool = False) -> requests.Session:
+        if insecure:
+            if cls._INSECURE_SESSION is None:
+                sess = requests.Session()
+                retry = Retry(total=2, backoff_factor=0.3, status_forcelist=[500, 502, 503, 504], allowed_methods=["GET"])
+                adapter = cls._LegacyTLSAdapter(pool_connections=20, pool_maxsize=20, max_retries=retry, insecure=True)
+                sess.mount("https://", adapter)
+                sess.mount("http://", HTTPAdapter(pool_connections=20, pool_maxsize=20, max_retries=retry))
+                cls._INSECURE_SESSION = sess
+            return cls._INSECURE_SESSION
         if cls._SESSION is None:
             sess = requests.Session()
             retry = Retry(total=2, backoff_factor=0.3, status_forcelist=[500, 502, 503, 504], allowed_methods=["GET"])
-            adapter = HTTPAdapter(pool_connections=20, pool_maxsize=20, max_retries=retry)
+            adapter = cls._LegacyTLSAdapter(pool_connections=20, pool_maxsize=20, max_retries=retry, insecure=False)
             sess.mount("https://", adapter)
-            sess.mount("http://", adapter)
+            sess.mount("http://", HTTPAdapter(pool_connections=20, pool_maxsize=20, max_retries=retry))
             cls._SESSION = sess
         return cls._SESSION
+
+    @classmethod
+    def _get_with_portal_fallbacks(cls, url: str, req_headers: Dict[str, str], timeout: int = 12) -> requests.Response:
+        verify_tls = True
+        try:
+            resp = cls._get_session(insecure=False).get(url, headers=req_headers, timeout=timeout, verify=True)
+        except requests.exceptions.SSLError:
+            urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+            verify_tls = False
+            resp = cls._get_session(insecure=True).get(url, headers=req_headers, timeout=timeout, verify=False)
+        if resp.status_code == 403:
+            browser_hdrs = {**cls._BROWSER_HEADERS, "Referer": url}
+            resp = cls._get_session(insecure=not verify_tls).get(url, headers=browser_hdrs, timeout=timeout, verify=verify_tls)
+        return resp
 
     @classmethod
     def fetch_portal_links_with_telemetry(cls, source: Dict[str, str]) -> Tuple[List[Dict[str, Any]], Dict[str, Any]]:
@@ -1078,7 +1134,7 @@ class LiveGazetteScraper:
             if cached_meta.get("last_modified"):
                 req_headers["If-Modified-Since"] = cached_meta["last_modified"]
 
-            resp = cls._get_session().get(source["url"], headers=req_headers, timeout=7)
+            resp = cls._get_with_portal_fallbacks(source["url"], req_headers, timeout=12)
             telemetry["last_status"] = resp.status_code
             if resp.status_code == 304:
                 telemetry["latency_ms"] = int((time.monotonic() - t0) * 1000)
@@ -1108,13 +1164,15 @@ class LiveGazetteScraper:
 
             seen_titles = set()
             pdf_parsed_count = 0
+            detail_fetched_count = 0
             lifecycle_notices: List[Dict[str, str]] = []
             for text, full_url, row_ctx in cls._extract_candidate_links_with_context(soup, resp.text, source["url"]):
                 text = _clean_notice_title(text)
                 if len(text) < 12 or len(text) > 260:
                     continue
                 low = text.lower()
-                is_pdf = ".pdf" in full_url.lower()
+                is_gdrive = "drive.google.com/file/d/" in full_url.lower() or "drive.google.com/open?id=" in full_url.lower()
+                is_pdf = (".pdf" in full_url.lower()) or is_gdrive
                 if PAST_YEAR_LINK_PATTERN.search(text):
                     continue
                 if MEDICAL_PATTERN.search(text) and RESULT_OR_JOINING_PATTERN.search(text):
@@ -1158,7 +1216,27 @@ class LiveGazetteScraper:
 
                 pdf_meta: Dict[str, Any] = {}
                 parsed: Dict[str, Any] = {}
-                if ".pdf" in full_url.lower() and pdf_parsed_count < 15:
+                if not is_pdf and detail_fetched_count < 2 and GovtNotificationPDFParser.is_safe_url(full_url):
+                    detail_fetched_count += 1
+                    try:
+                        d_resp = cls._get_with_portal_fallbacks(full_url, cls._BROWSER_HEADERS, timeout=8)
+                        if d_resp.ok and "text/html" in (d_resp.headers.get("Content-Type") or "").lower():
+                            d_soup = BeautifulSoup(d_resp.text, "html.parser")
+                            d_pdf_a = d_soup.find("a", href=re.compile(r"\.pdf(?:$|\?)", re.IGNORECASE))
+                            if d_pdf_a:
+                                full_url = urljoin(full_url, d_pdf_a["href"].strip())
+                                entry["notification_url"] = full_url
+                                is_pdf = True
+                            else:
+                                d_text = " ".join(d_soup.get_text(" ", strip=True).split())[:4000]
+                                parsed = GovtNotificationPDFParser.parse_notice_text(d_text)
+                                if parsed.get("last_date"):
+                                    entry["last_date"] = datetime.strptime(parsed["last_date"], "%Y-%m-%d")
+                                if parsed.get("total_posts"):
+                                    entry["total_posts"] = parsed["total_posts"]
+                    except Exception:
+                        pass
+                if is_pdf and pdf_parsed_count < 15:
                     pdf_parsed_count += 1
                     try:
                         pdf_meta = GovtNotificationPDFParser.extract_from_url_with_meta(full_url)
@@ -1442,6 +1520,14 @@ class LiveGazetteScraper:
             except Exception as ph_err:
                 logger.debug(f"PortalHealth update warning for {tel['name']}: {ph_err}")
         db.commit()
+
+        core_names = {"WBHRB", "WBHealth_HR", "WBHealth", "UPSC", "ESIC", "AIIMS", "ESI_WB"}
+        failing_core = [
+            {"name": p.name, "failures": p.consecutive_failures, "error": p.last_error, "status": p.last_status}
+            for p in db.query(PortalHealth).filter(PortalHealth.name.in_(list(core_names)), PortalHealth.consecutive_failures >= 3).all()
+        ]
+        if failing_core:
+            Notifier.alert_failing_core_portals(db, failing_core)
 
         corrigenda_detected = 0
         for portal_root_url, item in all_discovered:

@@ -184,15 +184,40 @@ class GovtNotificationPDFParser:
         """Extracts text from PDF bytes using pypdf, with OCR fallback for scanned notices."""
         return cls.extract_text_and_meta_from_bytes(pdf_bytes)["text"]
 
+    @staticmethod
+    def normalize_pdf_url(url: str) -> str:
+        u = (url or "").strip()
+        m = re.search(r"drive\.google\.com/(?:file/d/|open\?id=)([A-Za-z0-9_-]{15,})", u)
+        if m:
+            return f"https://drive.google.com/uc?export=download&id={m.group(1)}"
+        return u
+
+    @staticmethod
+    def _is_trusted_indian_portal(url: str) -> bool:
+        host = (urlparse(url).hostname or "").lower()
+        return host.endswith((".gov.in", ".nic.in", ".edu.in", ".ac.in", ".org.in"))
+
     @classmethod
     def extract_from_url_with_meta(cls, url: str) -> Dict[str, Any]:
+        url = cls.normalize_pdf_url(url)
         if not cls.is_safe_url(url):
             raise ValueError("Invalid or restricted URL. Access to local, private, or non-HTTP addresses is blocked.")
 
-        headers = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko)"}
+        headers = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36"}
         current_url = url
-        for _ in range(4):
-            with requests.get(current_url, headers=headers, stream=True, timeout=12, allow_redirects=False) as resp:
+        verify_tls = True
+        for _ in range(5):
+            try:
+                resp_cm = requests.get(current_url, headers=headers, stream=True, timeout=14, allow_redirects=False, verify=verify_tls)
+            except requests.exceptions.SSLError:
+                if verify_tls and cls._is_trusted_indian_portal(current_url):
+                    import urllib3
+                    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+                    verify_tls = False
+                    resp_cm = requests.get(current_url, headers=headers, stream=True, timeout=14, allow_redirects=False, verify=False)
+                else:
+                    raise
+            with resp_cm as resp:
                 if resp.is_redirect or resp.status_code in (301, 302, 303, 307, 308):
                     loc = resp.headers.get("Location", "")
                     from urllib.parse import urljoin
@@ -214,6 +239,10 @@ class GovtNotificationPDFParser:
                         last_modified = lm_dt.replace(tzinfo=None) if lm_dt else None
                     except Exception:
                         last_modified = None
+
+                ctype = (resp.headers.get("Content-Type") or "").lower()
+                if "text/html" in ctype and "drive.google.com" in current_url:
+                    return {"text": "", "pdf_creation_date": None, "last_modified": last_modified}
 
                 pdf_bytes = io.BytesIO()
                 downloaded = 0

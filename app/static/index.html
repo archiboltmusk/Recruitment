@@ -1240,6 +1240,24 @@
                     </div>
                 </div>
 
+                ${(v.verification_status === 'SCANNED_PDF' || v.verification_status === 'NEEDS_PDF_CHECK') && v.notification_url ? `
+                <div class="p-3.5 rounded-2xl bg-amber-50/80 border border-amber-200/70 flex flex-wrap items-center justify-between gap-2 text-xs">
+                    <span class="text-amber-900 font-medium"><i class="fa-solid fa-wand-magic-sparkles mr-1.5 text-amber-700"></i>Dates or seats missing? Run on-demand PDF/AI extraction.</span>
+                    <button id="smartExtractBtn" onclick="smartExtractVacancy('${v.id}')" class="pill-btn px-3.5 py-1.5 rounded-full bg-[#1D1D1F] text-white font-semibold text-[11px] shrink-0">Smart Extract PDF</button>
+                </div>` : ''}
+
+                <div class="space-y-2 p-4 rounded-2xl bg-[#F5F5F7]/70">
+                    <h3 class="text-xs font-bold uppercase tracking-[0.1em] text-[#6E6E73]">Required Documents Checklist</h3>
+                    <ul class="text-xs text-[#1D1D1F] space-y-1.5 list-disc pl-4">
+                        <li>${escapeHtml(v.qualification)} Degree / Provisional Certificate &amp; All Prof Marksheets</li>
+                        <li>Permanent NMC / ${v.state && v.state !== 'All India' ? escapeHtml(v.state) + ' ' : ''}State Medical Council Registration</li>
+                        <li>CRRI Compulsory Rotatory Internship Completion Certificate</li>
+                        ${v.experience_years_required > 0 ? `<li><strong>${v.experience_years_required}+ yrs</strong> Post-Qualification Clinical Experience Certificate</li>` : ''}
+                        ${v.application_fee && !/zero|no\s*fee|as per/i.test(v.application_fee) ? `<li>Application Fee / DD Proof: <strong>${escapeHtml(v.application_fee)}</strong></li>` : ''}
+                        ${v.selection_mode && /walk-in/i.test(v.selection_mode) ? '<li>Carry <strong>Original Documents + 2 Self-Attested Sets</strong> &amp; 4–6 Passport Photos</li>' : ''}
+                    </ul>
+                </div>
+
                 <div class="pt-2 border-t border-black/[0.06] flex flex-wrap items-center justify-between gap-2">
                     <span class="text-[11px] text-[#86868B]">
                         ${flagCount > 0 ? `Flagged ${flagCount}x for verification` : 'Interview over or result out?'}
@@ -1304,6 +1322,31 @@
             if (url.searchParams.has('job')) {
                 url.searchParams.delete('job');
                 window.history.replaceState({}, '', url.toString());
+            }
+        }
+
+        async function smartExtractVacancy(id) {
+            const btn = document.getElementById('smartExtractBtn');
+            if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i>Extracting...'; }
+            try {
+                const res = await fetch(`/api/vacancies/${id}/ai-extract`, { method: 'POST' });
+                const d = await res.json();
+                if (!res.ok) throw new Error(d.detail || 'Extraction failed');
+                if (d.is_active === false) {
+                    allVacancies = allVacancies.filter(x => String(x.id) !== String(id));
+                    closeVacancyDetail();
+                    applyFilters();
+                    showToast('Notice is expired — removed from active feed.');
+                    return;
+                }
+                const v = allVacancies.find(x => String(x.id) === String(id));
+                if (v) Object.assign(v, d);
+                openVacancyDetail(id, false);
+                applyFilters();
+                showToast('Extracted latest details from official PDF.');
+            } catch (e) {
+                showToast(e.message || 'Could not extract PDF');
+                if (btn) { btn.disabled = false; btn.textContent = 'Smart Extract PDF'; }
             }
         }
 

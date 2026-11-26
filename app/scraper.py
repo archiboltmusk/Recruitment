@@ -389,6 +389,459 @@ PORTAL_SOURCES = [
         "state": "All India",
         "pay_scale": "Level 11 (Medical Officer 'SD') + NPA & Perks",
     },
+    # --- Defence, Railways & Atomic Energy (Expanded) ---
+    {
+        "name": "ECHS",
+        "organization": "Ex-Servicemen Contributory Health Scheme (ECHS — Medical Officer)",
+        "url": "https://www.echs.gov.in/advertisement.php",
+        "category": "Defence / Contractual",
+        "state": "All India",
+        "pay_scale": "₹75,000/month (Fixed Consolidated MO / Specialist)",
+    },
+    {
+        "name": "BARC",
+        "organization": "Bhabha Atomic Research Centre (BARC — Medical Officer / SR / Resident)",
+        "url": "https://www.barc.gov.in/careers/recruitment.html",
+        "category": "Central Govt",
+        "state": "Maharashtra",
+        "pay_scale": "Level 10 / Level 11 (MO 'C' / 'D' / Resident) + NPA",
+    },
+    {
+        "name": "DRDO_RAC",
+        "organization": "DRDO Recruitment & Assessment Centre (RAC)",
+        "url": "https://rac.gov.in/",
+        "category": "Defence / Central Govt",
+        "state": "All India",
+        "pay_scale": "Level 10 / Level 11 (Scientist / Medical Officer) + Allowances",
+    },
+    {
+        "name": "Eastern_Railway_RRC",
+        "organization": "Eastern Railway (RRC Kolkata — CMP / Medical Officer)",
+        "url": "https://rrcer.org/notice_board.html",
+        "category": "Railways / Contractual",
+        "state": "West Bengal",
+        "pay_scale": "₹75,000/month (CMP GDMO) / ₹95,000/month (Specialist)",
+    },
+    {
+        "name": "South_Eastern_Railway_RRC",
+        "organization": "South Eastern Railway (RRC-SER Garden Reach — CMP / MO)",
+        "url": "https://www.rrcser.co.in/notice.html",
+        "category": "Railways / Contractual",
+        "state": "West Bengal",
+        "pay_scale": "₹75,000/month (CMP GDMO) / ₹95,000/month (Specialist)",
+    },
+    {
+        "name": "Indian_Railways_RRB",
+        "organization": "Railway Recruitment Boards (RRB Centralised Portal)",
+        "url": "https://www.rrbapply.gov.in/",
+        "category": "Railways / Central Govt",
+        "state": "All India",
+        "pay_scale": "7th CPC Pay Matrix Level 6–10",
+    },
+    # --- All-India AIIMS & National Institutes (INIs) ---
+    {
+        "name": "AIIMS_Bhubaneswar",
+        "organization": "AIIMS Bhubaneswar (Odisha)",
+        "url": "https://aiimsbhubaneswar.nic.in/recruitment-notice/",
+        "category": "Autonomous Institute",
+        "state": "Odisha",
+        "pay_scale": "Level 10 (JR ₹56,100+NPA) / Level 11 (SR ₹67,700+NPA)",
+    },
+    {
+        "name": "AIIMS_Patna",
+        "organization": "AIIMS Patna (Bihar)",
+        "url": "https://aiimspatna.edu.in/advertisement",
+        "category": "Autonomous Institute",
+        "state": "Bihar",
+        "pay_scale": "Level 10 (JR ₹56,100+NPA) / Level 11 (SR ₹67,700+NPA)",
+    },
+    {
+        "name": "AIIMS_Raipur",
+        "organization": "AIIMS Raipur (Chhattisgarh — JR / SR)",
+        "url": "https://www.aiimsraipur.edu.in/user/vacancies-faculty.php?pst=jrsr",
+        "category": "Autonomous Institute",
+        "state": "Chhattisgarh",
+        "pay_scale": "Level 10 (JR ₹56,100+NPA) / Level 11 (SR ₹67,700+NPA)",
+    },
+    {
+        "name": "AIIMS_Rishikesh",
+        "organization": "AIIMS Rishikesh (Uttarakhand)",
+        "url": "https://aiimsrishikesh.edu.in/a1_1/?page_id=2809",
+        "category": "Autonomous Institute",
+        "state": "Uttarakhand",
+        "pay_scale": "Level 10 (JR ₹56,100+NPA) / Level 11 (SR ₹67,700+NPA)",
+    },
+    {
+        "name": "AIIMS_Nagpur",
+        "organization": "AIIMS Nagpur (Maharashtra — SR / JR)",
+        "url": "https://aiimsnagpur.edu.in/recruitment?category=SR%2FJR",
+        "category": "Autonomous Institute",
+        "state": "Maharashtra",
+        "pay_scale": "Level 10 (JR ₹56,100+NPA) / Level 11 (SR ₹67,700+NPA)",
+    },
+    {
+        "name": "AIIMS_Mangalagiri",
+        "organization": "AIIMS Mangalagiri (Andhra Pradesh)",
+        "url": "https://www.aiimsmangalagiri.edu.in/whats-new/",
+        "category": "Autonomous Institute",
+        "state": "Andhra Pradesh",
+        "pay_scale": "Level 10 (JR ₹56,100+NPA) / Level 11 (SR ₹67,700+NPA)",
+    },
+    {
+        "name": "AIIMS_Bilaspur",
+        "organization": "AIIMS Bilaspur (Himachal Pradesh)",
+        "url": "https://www.aiimsbilaspur.edu.in/recruitment",
+        "category": "Autonomous Institute",
+        "state": "Himachal Pradesh",
+        "pay_scale": "Level 10 (JR ₹56,100+NPA) / Level 11 (SR ₹67,700+NPA)",
+    },
+    {
+        "name": "AIIMS_Guwahati",
+        "organization": "AIIMS Guwahati (Assam)",
+        "url": "https://aiimsguwahati.ac.in/",
+        "category": "Autonomous Institute",
+        "state": "Assam",
+        "pay_scale": "Level 10 (JR ₹56,100+NPA) / Level 11 (SR ₹67,700+NPA)",
+    },
+    {
+        "name": "AIIMS_Jodhpur",
+        "organization": "AIIMS Jodhpur (Rajasthan)",
+        "url": "https://rec.aiimsjodhpur.edu.in/",
+        "category": "Autonomous Institute",
+        "state": "Rajasthan",
+        "pay_scale": "Level 10 (JR ₹56,100+NPA) / Level 11 (SR ₹67,700+NPA)",
+    },
+    {
+        "name": "AIIMS_Bhopal",
+        "organization": "AIIMS Bhopal (Madhya Pradesh)",
+        "url": "https://www.aiimsbhopal.edu.in/",
+        "category": "Autonomous Institute",
+        "state": "Madhya Pradesh",
+        "pay_scale": "Level 10 (JR ₹56,100+NPA) / Level 11 (SR ₹67,700+NPA)",
+    },
+    {
+        "name": "AIIMS_Gorakhpur",
+        "organization": "AIIMS Gorakhpur (Uttar Pradesh)",
+        "url": "https://aiimsgorakhpur.edu.in/",
+        "category": "Autonomous Institute",
+        "state": "Uttar Pradesh",
+        "pay_scale": "Level 10 (JR ₹56,100+NPA) / Level 11 (SR ₹67,700+NPA)",
+    },
+    {
+        "name": "NIMHANS_Bengaluru",
+        "organization": "NIMHANS, Bengaluru (Karnataka)",
+        "url": "https://www.nimhans.ac.in/announcements/nimhans-recruitment-and-notifications-announcement",
+        "category": "Autonomous Institute",
+        "state": "Karnataka",
+        "pay_scale": "Level 10 (JR / MO) / Level 11 (SR) + NPA",
+    },
+    # --- Central Maharatna / Navratna PSUs ---
+    {
+        "name": "IOCL_Careers",
+        "organization": "Indian Oil Corporation Limited (IOCL — Medical Officer)",
+        "url": "https://iocl.com/latest-job-opening",
+        "category": "Central Govt / PSU",
+        "state": "All India",
+        "pay_scale": "Grade A / B (₹50,000 - ₹1,80,000) + Perks & NPA",
+    },
+    {
+        "name": "NTPC_Careers",
+        "organization": "NTPC Limited (GDMO / Medical Specialist)",
+        "url": "https://ntpc.co.in/jobs-ntpc",
+        "category": "Central Govt / PSU",
+        "state": "All India",
+        "pay_scale": "E-2 / E-3 Grade (₹50,000 - ₹1,80,000) + Perks",
+    },
+    {
+        "name": "HAL_Careers",
+        "organization": "Hindustan Aeronautics Limited (HAL — Medical Officer)",
+        "url": "https://hal-india.co.in/career",
+        "category": "Central Govt / PSU",
+        "state": "All India",
+        "pay_scale": "Grade II / III (₹40,000 - ₹1,60,000) + Perks",
+    },
+    {
+        "name": "GAIL_Careers",
+        "organization": "GAIL (India) Limited (Medical Officer / GDMO)",
+        "url": "https://www.gailonline.com/Vacancies.html",
+        "category": "Central Govt / PSU",
+        "state": "All India",
+        "pay_scale": "E-2 Grade (₹60,000 - ₹1,80,000) + Perks",
+    },
+    {
+        "name": "NHPC_Careers",
+        "organization": "NHPC Limited (Medical Officer)",
+        "url": "https://www.nhpcindia.com/welcome/job",
+        "category": "Central Govt / PSU",
+        "state": "All India",
+        "pay_scale": "E-2 / E-3 Grade (₹50,000 - ₹1,80,000) + Perks",
+    },
+    {
+        "name": "NMDC_Careers",
+        "organization": "NMDC Limited (Medical Officer / Specialist)",
+        "url": "https://www.nmdc.co.in/careers",
+        "category": "Central Govt / PSU",
+        "state": "All India",
+        "pay_scale": "E-2 / E-3 Grade (₹60,000 - ₹1,80,000) + Allowances",
+    },
+    {
+        "name": "NALCO_Careers",
+        "organization": "National Aluminium Company Limited (NALCO — GDMO / MO)",
+        "url": "https://nalcoindia.com/career/",
+        "category": "Central Govt / PSU",
+        "state": "Odisha",
+        "pay_scale": "E-1 / E-2 Grade (₹40,000 - ₹1,60,000) + Perks",
+    },
+    {
+        "name": "ONGC_Careers",
+        "organization": "Oil and Natural Gas Corporation (ONGC — Medical Officer)",
+        "url": "https://www.ongcindia.com/",
+        "category": "Central Govt / PSU",
+        "state": "All India",
+        "pay_scale": "E-1 / E-2 Grade (₹60,000 - ₹1,80,000) + 35% Perks & NPA",
+    },
+    {
+        "name": "NLC_India",
+        "organization": "NLC India Limited (Neyveli — Medical Officer / GDMO)",
+        "url": "https://www.nlcindia.in/",
+        "category": "Central Govt / PSU",
+        "state": "Tamil Nadu",
+        "pay_scale": "E-3 Grade (₹60,000 - ₹1,80,000) + Perks",
+    },
+    {
+        "name": "NCL_Singrauli",
+        "organization": "Northern Coalfields Limited (NCL — CIL Medical Executive)",
+        "url": "https://www.nclcil.in/data-listing/pages/recruitment",
+        "category": "Central Govt / PSU",
+        "state": "Madhya Pradesh",
+        "pay_scale": "E-3 Medical Executive (₹60,000 - ₹1,80,000) + NPA",
+    },
+    # --- West Bengal Medical Colleges, University & Remaining Districts ---
+    {
+        "name": "RG_Kar_Kolkata",
+        "organization": "R. G. Kar Medical College & Hospital, Kolkata",
+        "url": "https://www.rgkarmch.in/page/cms/recruitment_notice_d54b35",
+        "category": "WB Medical College (JR / House Staff / RMO)",
+        "state": "West Bengal",
+        "pay_scale": "WB Govt House Staff / JR Stipend / RMO Pay",
+    },
+    {
+        "name": "WBUHS",
+        "organization": "West Bengal University of Health Sciences (WBUHS)",
+        "url": "https://wbuhs.ac.in/notice-and-circular/",
+        "category": "State University / Medical",
+        "state": "West Bengal",
+        "pay_scale": "WB Govt / University Pay Scale",
+    },
+    {
+        "name": "BSMC_Bankura",
+        "organization": "Bankura Sammilani Medical College & Hospital (BSMC)",
+        "url": "https://bsmedicalcollege.org.in/",
+        "category": "WB Medical College (JR / House Staff / RMO)",
+        "state": "West Bengal",
+        "pay_scale": "WB Govt House Staff / JR Stipend / RMO Pay",
+    },
+    {
+        "name": "NBMC_Siliguri",
+        "organization": "North Bengal Medical College & Hospital (NBMC), Siliguri",
+        "url": "https://www.nbmc.org.in/",
+        "category": "WB Medical College (JR / House Staff / RMO)",
+        "state": "West Bengal",
+        "pay_scale": "WB Govt House Staff / JR Stipend / RMO Pay",
+    },
+    {
+        "name": "MMC_Midnapore",
+        "organization": "Midnapore Medical College & Hospital (MMC)",
+        "url": "https://midnaporemmc.ac.in/",
+        "category": "WB Medical College (JR / House Staff / RMO)",
+        "state": "West Bengal",
+        "pay_scale": "WB Govt House Staff / JR Stipend / RMO Pay",
+    },
+    {
+        "name": "South_24_Parganas_CMOH",
+        "organization": "South 24 Parganas District Health & Family Welfare Samiti (CMOH)",
+        "url": "https://s24pgs.gov.in/notice_category/recruitment/",
+        "category": "NHM / Contractual",
+        "state": "West Bengal",
+        "pay_scale": "₹60,000/month (Consolidated NHM / NUHM / FRU)",
+    },
+    {
+        "name": "North_24_Parganas_CMOH",
+        "organization": "North 24 Parganas District Health & Family Welfare Samiti (CMOH)",
+        "url": "https://north24parganas.gov.in/past-notices/recruitment/",
+        "category": "NHM / Contractual",
+        "state": "West Bengal",
+        "pay_scale": "₹60,000/month (Consolidated NHM / NUHM / FRU)",
+    },
+    {
+        "name": "Hooghly_CMOH",
+        "organization": "Hooghly District Health & Family Welfare Samiti (CMOH)",
+        "url": "https://hooghly.nic.in/past-notices/recruitment/",
+        "category": "NHM / Contractual",
+        "state": "West Bengal",
+        "pay_scale": "₹60,000/month (Consolidated NHM / NUHM / FRU)",
+    },
+    {
+        "name": "Howrah_CMOH",
+        "organization": "Howrah District Health & Family Welfare Samiti (CMOH)",
+        "url": "https://howrah.gov.in/notice_category/recruitment/",
+        "category": "NHM / Contractual",
+        "state": "West Bengal",
+        "pay_scale": "₹60,000/month (Consolidated NHM / NUHM / FRU)",
+    },
+    {
+        "name": "Nadia_CMOH",
+        "organization": "Nadia District Health & Family Welfare Samiti (CMOH)",
+        "url": "https://nadia.gov.in/notice_category/recruitment/",
+        "category": "NHM / Contractual",
+        "state": "West Bengal",
+        "pay_scale": "₹60,000/month (Consolidated NHM / NUHM / FRU)",
+    },
+    {
+        "name": "Murshidabad_CMOH",
+        "organization": "Murshidabad District Health & Family Welfare Samiti (CMOH)",
+        "url": "https://murshidabad.gov.in/notice_category/recruitment/",
+        "category": "NHM / Contractual",
+        "state": "West Bengal",
+        "pay_scale": "₹60,000/month (Consolidated NHM / NUHM / FRU)",
+    },
+    {
+        "name": "Paschim_Medinipur_CMOH",
+        "organization": "Paschim Medinipur District Health & Family Welfare Samiti (CMOH)",
+        "url": "https://paschimmedinipur.gov.in/notice_category/recruitment/",
+        "category": "NHM / Contractual",
+        "state": "West Bengal",
+        "pay_scale": "₹60,000/month (Consolidated NHM / NUHM / FRU)",
+    },
+    {
+        "name": "Purba_Medinipur_CMOH",
+        "organization": "Purba Medinipur District Health & Family Welfare Samiti (CMOH)",
+        "url": "https://purbamedinipur.gov.in/notice_category/recruitment/",
+        "category": "NHM / Contractual",
+        "state": "West Bengal",
+        "pay_scale": "₹60,000/month (Consolidated NHM / NUHM / FRU)",
+    },
+    {
+        "name": "Paschim_Bardhaman_CMOH",
+        "organization": "Paschim Bardhaman District Health & Family Welfare Samiti (CMOH)",
+        "url": "https://paschimbardhaman.gov.in/past-notices/recruitment/",
+        "category": "NHM / Contractual",
+        "state": "West Bengal",
+        "pay_scale": "₹60,000/month (Consolidated NHM / NUHM / FRU)",
+    },
+    {
+        "name": "Malda_CMOH",
+        "organization": "Malda District Health & Family Welfare Samiti (CMOH)",
+        "url": "https://malda.gov.in/notice_category/recruitment/",
+        "category": "NHM / Contractual",
+        "state": "West Bengal",
+        "pay_scale": "₹60,000/month (Consolidated NHM / NUHM / FRU)",
+    },
+    {
+        "name": "Darjeeling_CMOH",
+        "organization": "Darjeeling District Health & Family Welfare Samiti (CMOH)",
+        "url": "https://darjeeling.gov.in/notice_category/recruitment/",
+        "category": "NHM / Contractual",
+        "state": "West Bengal",
+        "pay_scale": "₹60,000/month (Consolidated NHM / NUHM / FRU)",
+    },
+    # --- Major State PSCs & State Medical Recruitment Boards ---
+    {
+        "name": "OPSC_Odisha",
+        "organization": "Odisha Public Service Commission (OPSC — Medical Officer)",
+        "url": "https://www.opsc.gov.in/",
+        "category": "State PSC",
+        "state": "Odisha",
+        "pay_scale": "ORSP Level 12 (₹56,100 - ₹1,77,500) + Allowances",
+    },
+    {
+        "name": "BPSC_Bihar",
+        "organization": "Bihar Public Service Commission (BPSC — Medical Officer)",
+        "url": "https://bpsc.bihar.gov.in/notification-category/notice/",
+        "category": "State PSC",
+        "state": "Bihar",
+        "pay_scale": "Level 9 / Level 11 (Bihar Health Service)",
+    },
+    {
+        "name": "JPSC_Jharkhand",
+        "organization": "Jharkhand Public Service Commission (JPSC — Medical Officer)",
+        "url": "https://www.jpsc.gov.in/Recruitment.php",
+        "category": "State PSC",
+        "state": "Jharkhand",
+        "pay_scale": "Level 9 / Level 10 (Jharkhand Health Service)",
+    },
+    {
+        "name": "APSC_Assam",
+        "organization": "Assam Public Service Commission (APSC — M&HO-I)",
+        "url": "https://apscrecruitment.in/",
+        "category": "State PSC",
+        "state": "Assam",
+        "pay_scale": "PB-4 (₹30,000 - ₹1,10,000) + Grade Pay ₹12,700 + NPA",
+    },
+    {
+        "name": "UPPSC_UP",
+        "organization": "Uttar Pradesh Public Service Commission (UPPSC — Medical Officer)",
+        "url": "https://uppsc.up.nic.in/CandidatePages/Notifications.aspx",
+        "category": "State PSC",
+        "state": "Uttar Pradesh",
+        "pay_scale": "Level 10 / Level 11 (PMHS UP Medical Officer)",
+    },
+    {
+        "name": "MPSC_Maharashtra",
+        "organization": "Maharashtra Public Service Commission (MPSC — Medical Officer)",
+        "url": "https://mpsc.gov.in/",
+        "category": "State PSC",
+        "state": "Maharashtra",
+        "pay_scale": "S-20 (₹56,100 - ₹1,77,500) + NPA",
+    },
+    {
+        "name": "MPPSC_MP",
+        "organization": "Madhya Pradesh Public Service Commission (MPPSC — Medical Officer)",
+        "url": "https://mppsc.mp.gov.in/",
+        "category": "State PSC",
+        "state": "Madhya Pradesh",
+        "pay_scale": "Level 12 (₹56,100 - ₹1,77,500) + NPA",
+    },
+    {
+        "name": "RPSC_Rajasthan",
+        "organization": "Rajasthan Public Service Commission (RPSC — Medical Officer)",
+        "url": "https://rpsc.rajasthan.gov.in/",
+        "category": "State PSC",
+        "state": "Rajasthan",
+        "pay_scale": "Level 14 (Rajasthan Medical & Health Service)",
+    },
+    {
+        "name": "GPSC_Gujarat",
+        "organization": "Gujarat Public Service Commission (GPSC — Medical Officer Class-II)",
+        "url": "https://gpsc.gujarat.gov.in/",
+        "category": "State PSC",
+        "state": "Gujarat",
+        "pay_scale": "Level 9 / Level 10 (₹53,100 - ₹1,67,800) + NPA",
+    },
+    {
+        "name": "KPSC_Karnataka",
+        "organization": "Karnataka Public Service Commission (KPSC — Medical Officer)",
+        "url": "https://kpsc.karnataka.gov.in/",
+        "category": "State PSC",
+        "state": "Karnataka",
+        "pay_scale": "Karnataka Health & Family Welfare Pay Scale",
+    },
+    {
+        "name": "Kerala_PSC",
+        "organization": "Kerala Public Service Commission (Kerala PSC — Assistant Surgeon)",
+        "url": "https://www.keralapsc.gov.in/notifications",
+        "category": "State PSC",
+        "state": "Kerala",
+        "pay_scale": "₹63,700 - ₹1,23,700 (Kerala Health Services)",
+    },
+    {
+        "name": "TN_MRB",
+        "organization": "Tamil Nadu Medical Services Recruitment Board (TN MRB — Assistant Surgeon)",
+        "url": "https://www.mrb.tn.gov.in/",
+        "category": "State PSC / MRB",
+        "state": "Tamil Nadu",
+        "pay_scale": "Level 22 (₹56,100 - ₹1,77,500) + Allowances",
+    },
 ]
 
 
@@ -484,16 +937,27 @@ class LiveGazetteScraper:
                 break
         return discovered
 
-    @staticmethod
-    def _extract_candidate_links(soup: BeautifulSoup, html_text: str, base_url: str) -> List[Tuple[str, str]]:
-        """Extracts (title, url) pairs from <a> tags, onclick handlers, data-url attributes, and embedded JSON."""
+    _GENERIC_LINK_RE = re.compile(
+        r"^(?:click\s*here|download(?:\s*pdf|\s*notice|\s*file)?|view(?:\s*details|\s*notice|\s*pdf|\s*more)?|read\s*more|pdf|link|open|details|notice|apply(?:\s*online)?)$",
+        re.IGNORECASE,
+    )
+
+    @classmethod
+    def _extract_candidate_links(cls, soup: BeautifulSoup, html_text: str, base_url: str) -> List[Tuple[str, str]]:
+        """Extracts (title, url) pairs from <a> tags, attributes, table/list parents, onclick handlers, and embedded JSON."""
         candidates: List[Tuple[str, str]] = []
         for a in soup.find_all("a", href=True):
             text = " ".join(a.get_text(" ", strip=True).split())
-            if len(text) < 12:
-                parent_row = a.find_parent("tr")
-                if parent_row:
-                    text = " ".join(parent_row.get_text(" ", strip=True).split())
+            if len(text) < 14 or cls._GENERIC_LINK_RE.match(text):
+                attr_text = " ".join((a.get("title") or a.get("aria-label") or "").split())
+                if len(attr_text) >= 14 and not cls._GENERIC_LINK_RE.match(attr_text):
+                    text = attr_text
+                else:
+                    parent_row = a.find_parent("tr") or a.find_parent("li")
+                    if parent_row:
+                        row_text = " ".join(parent_row.get_text(" ", strip=True).split())
+                        if len(row_text) >= 14:
+                            text = row_text
             candidates.append((text, urljoin(base_url, a["href"])))
 
         # Fallback for JS-driven / ASP.NET postback portals using onclick / data-href / data-url
@@ -501,18 +965,26 @@ class LiveGazetteScraper:
             onclick = el.get("onclick") or ""
             m = re.search(r"(?:window\.open|location\.href\s*=)\s*\(?\s*['\"]([^'\"]+)['\"]", onclick)
             if m:
-                text = " ".join(el.get_text(" ", strip=True).split())
+                text = " ".join((el.get_text(" ", strip=True) or el.get("title") or el.get("aria-label") or "").split())
+                if len(text) < 14 or cls._GENERIC_LINK_RE.match(text):
+                    parent_row = el.find_parent("tr") or el.find_parent("li")
+                    if parent_row:
+                        text = " ".join(parent_row.get_text(" ", strip=True).split())
                 if len(text) >= 12:
                     candidates.append((text, urljoin(base_url, m.group(1))))
 
         for attr in ("data-href", "data-url", "data-link"):
             for el in soup.find_all(attrs={attr: True}):
-                text = " ".join(el.get_text(" ", strip=True).split())
+                text = " ".join((el.get_text(" ", strip=True) or el.get("title") or el.get("aria-label") or "").split())
                 if len(text) >= 12:
                     candidates.append((text, urljoin(base_url, el.get(attr))))
 
         # Fallback for embedded JSON/Next.js/SPA payloads containing PDF links
-        for m in re.finditer(r'"title"\s*:\s*"([^"]{12,220})"[^}]{0,240}"(?:url|link|pdf|href)"\s*:\s*"([^"]+\.pdf[^"]*)"', html_text, re.IGNORECASE):
+        for m in re.finditer(
+            r'"(?:title|subject|headline|name)"\s*:\s*"([^"]{12,220})"[^}]{0,260}"(?:url|link|pdf|href|file|path|document)"\s*:\s*"([^"]+\.pdf[^"]*)"',
+            html_text,
+            re.IGNORECASE,
+        ):
             candidates.append((m.group(1), urljoin(base_url, m.group(2).replace("\\/", "/"))))
 
         return candidates
@@ -531,7 +1003,7 @@ class LiveGazetteScraper:
             "last_error": None,
         }
         try:
-            resp = requests.get(source["url"], headers=cls.HEADERS, timeout=8)
+            resp = requests.get(source["url"], headers=cls.HEADERS, timeout=7)
             if not resp.encoding or resp.encoding.lower() == "iso-8859-1":
                 resp.encoding = resp.apparent_encoding or "utf-8"
             telemetry["last_status"] = resp.status_code
@@ -769,7 +1241,7 @@ class LiveGazetteScraper:
 
         all_discovered: List[Dict[str, Any]] = []
         telemetry_batch: List[Dict[str, Any]] = []
-        with ThreadPoolExecutor(max_workers=8) as executor:
+        with ThreadPoolExecutor(max_workers=12) as executor:
             futures = {executor.submit(cls.fetch_portal_links_with_telemetry, src): src for src in PORTAL_SOURCES}
             for fut in as_completed(futures):
                 checked_portals += 1

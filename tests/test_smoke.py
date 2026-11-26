@@ -170,6 +170,30 @@ class MedAlertsSmokeTests(unittest.TestCase):
                     self.assertTrue((static_root / rel).is_file(), f"Missing image: {rel}")
         self.assertEqual(image_count, 15)
 
+    def test_portal_sources_and_link_extractor(self):
+        from bs4 import BeautifulSoup
+        from app.scraper import PORTAL_SOURCES, LiveGazetteScraper
+
+        self.assertGreaterEqual(len(PORTAL_SOURCES), 75)
+        names = [s["name"] for s in PORTAL_SOURCES]
+        urls = [s["url"] for s in PORTAL_SOURCES]
+        self.assertEqual(len(names), len(set(names)), "Duplicate portal names found")
+        self.assertEqual(len(urls), len(set(urls)), "Duplicate portal URLs found")
+        for s in PORTAL_SOURCES:
+            for key in ("name", "organization", "url", "category", "state", "pay_scale"):
+                self.assertTrue(s.get(key), f"Missing {key} in {s.get('name')}")
+
+        html = """
+        <table>
+          <tr><td>Engagement of 12 GDMO under NHM Purulia</td><td><a href="/files/gdmo.pdf">Download PDF</a></td></tr>
+        </table>
+        <script>window.__DATA__ = {"subject": "Walk-in Interview for Junior Resident at AIIMS", "file": "/docs/jr_2026.pdf"};</script>
+        """
+        soup = BeautifulSoup(html, "html.parser")
+        links = LiveGazetteScraper._extract_candidate_links(soup, html, "https://example.gov.in/")
+        self.assertTrue(any("Engagement of 12 GDMO" in t and u.endswith("/files/gdmo.pdf") for t, u in links))
+        self.assertTrue(any("Walk-in Interview for Junior Resident" in t and u.endswith("/docs/jr_2026.pdf") for t, u in links))
+
 
 if __name__ == "__main__":
     unittest.main()

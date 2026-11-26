@@ -31888,9 +31888,9 @@
         "text": "Match List I with List II and select the correct answer using the code given below the lists: List 1 (Genetic disorder)\nList II (Genotype)\nA. Down Syndrome\n1. 47, XY, +21\nB. Turner Syndrome\n2. 46, XY\nC. Noonan Syndrome\n3. 46, XX, 5p-D. Cri-du-chat Syndrome\n4. 45, XO 5. 47, XXY\nCode: A B C D",
         "options": [
           "1 4 2 3",
-          "1 4 3",
+          "1 4 5 3",
           "3 1 2 4",
-          "3 1 4"
+          "3 1 5 4"
         ],
         "correct_option": 0,
         "explanation": "Down syndrome is 47,XY,+21 (A-1), Turner syndrome is 45,XO (B-4), Noonan syndrome has a normal 46,XY/46,XX karyotype (C-2), and Cri-du-chat syndrome is 46,XX,5p- (D-3).",
@@ -41377,10 +41377,10 @@
         "subject": "General Medicine",
         "text": "Match List I with List Il and select the correct answer using the code given below the Lists: List 1 List 11 (Orgunism) (Vector)\nA. Borrelia\n1. Aedes aegypti burgdorfei\n2. Culex mosquito\nB. Dengue\n3. Pediculus hom nis carporis\nC. Japanese encephalitis\n4. Ixodes tick\nD. Rickettsia prowazekii\nCode : D",
         "options": [
-          "4- Exa",
-          "4 sonal",
-          "3",
-          "- 3 2 4"
+          "1 4 2 3",
+          "2 3 4 1",
+          "4 1 2 3",
+          "3 1 2 4"
         ],
         "correct_option": 2,
         "explanation": "Borrelia burgdorferi is transmitted by Ixodes ticks (A-4), dengue by Aedes aegypti (B-1), Japanese encephalitis by Culex mosquitoes (C-2), and Rickettsia prowazekii by body lice Pediculus humanus corporis (D-3).",
@@ -41545,10 +41545,10 @@
         "subject": "General Medicine",
         "text": "Match List I with List Il correct answer using the code given below the Lists:\nList I\nList I| (Globin (Types of chains) haemoglobin)\nA. 02 Bz\n1. Hb Ag\nB. Q2 Y2\n2. Hb A\nC. a2 02\n3. Hb F\nD. Bz Bz\n4. Hb H\nCode : B D",
         "options": [
-          "- 3",
-          "4 3 2",
-          "- 3 4",
-          "2 3 1 * 4"
+          "4 3 1 2",
+          "4 1 3 2",
+          "2 1 3 4",
+          "2 3 1 4"
         ],
         "correct_option": 3,
         "explanation": "Globin chain compositions: α2β2 is HbA (A-2), α2γ2 is HbF (B-3), α2δ2 is HbA2 (C-1), and β4 (tetramer of beta chains) is HbH (D-4).",
@@ -41685,10 +41685,10 @@
         "subject": "General Medicine",
         "text": "Match List 1 with List Il and select the correct answer using the code given below the Lists:\nList I List Il (Clinical (Clinical condition) manifestation)\nA. Lepra reaction\n1. Koebner's phenomenon\nB. Herpes zoster\n2. Erythema\nC. Psoriasis nodosum\nD. Pemphygus\n3. Nikolosky's vulgaris sign\n4. Chickenpox virus\nCode : B C D",
         "options": [
-          "4 3 2",
-          "4 3",
-          "3 4 2",
-          "4 1 3"
+          "1 4 3 2",
+          "2 1 4 3",
+          "3 4 1 2",
+          "2 4 1 3"
         ],
         "correct_option": 3,
         "explanation": "Lepra reaction causes erythema nodosum (A-2), herpes zoster is reactivation of varicella-zoster/chickenpox virus (B-4), psoriasis shows Koebner's phenomenon (C-1), and pemphigus vulgaris shows Nikolsky's sign (D-3).",
@@ -41755,10 +41755,10 @@
         "subject": "General Medicine",
         "text": "Match List I with List Il and select the correct answer using the code given below the Lists:\nList I\nList II (Disease) (Association)\nA. Dermato-\n1. Heliotrope myositis rash\nB. Epidemic *2. Hype dropsy natraemia\nC. Arsenic\n3. Hype poisoning pigmentation\nD. Diabetes\n4. Dihydr insipidus sanguirine\nCode : B",
         "options": [
-          "4",
+          "1 4 3 2",
           "1 3 4 2",
-          "4 3 1",
-          "2 4 1"
+          "2 4 3 1",
+          "2 3 4 1"
         ],
         "correct_option": 0,
         "explanation": "Dermatomyositis shows heliotrope rash (A-1), epidemic dropsy is caused by sanguinarine/dihydrosanguinarine (B-4), arsenic poisoning causes hyperpigmentation (C-3), and diabetes insipidus causes hypernatraemia (D-2).",
@@ -41853,10 +41853,10 @@
         "subject": "General Medicine",
         "text": "Match List I with List Il and select the correct answer using the code given below the Lists:\nList I List Il (Clinical (Association) condition)\nA. Hypo-\n1. Prolonged thyroidism P-R interval\nB. Rheumatic\n2. Pin point cordites pupils\nC. Subarachnoid\n3. Subhyaloid haemorrhage haemorrhage\nD. Morphine\n4. Hung-up poisoning reflex\nCode : erson B C D",
         "options": [
-          "4",
-          "2 4 3",
+          "4 3 1 2",
+          "2 4 3 1",
           "1 2 3 4",
-          "4"
+          "4 1 3 2"
         ],
         "correct_option": 3,
         "explanation": "Hypothyroidism shows hung-up ankle jerk (A-4), rheumatic carditis shows prolonged PR interval (B-1), subarachnoid haemorrhage shows subhyaloid haemorrhage (C-3), and morphine poisoning shows pinpoint pupils (D-2).",
@@ -41965,10 +41965,10 @@
         "subject": "General Medicine",
         "text": "Match List I with List II and select the correct answer using the code given below the Lists:\nList I\nList II (Disease) (CSF analysis)\nA. Acute pyogenic\n1. Normal CSF meningitis\n2. Elevated\nB. Tubercular proteins with meningitis no cells\nC. Gullian-Barre\n3. Elevated syndrome protein and cells (mainly\nD. Neurocyst cercosis polymorphs)\n4. Elevated proteins and cells (mainly (ymphocytes)\nCode : A B D",
         "options": [
-          "4 2 3",
-          "4 2",
-          "4 2",
-          "- 3 4 2"
+          "4 2 3 1",
+          "4 3 2 1",
+          "3 4 2 1",
+          "3 4 1 2"
         ],
         "correct_option": 2,
         "explanation": "Acute pyogenic meningitis shows polymorphs and high protein (A-3), TBM shows lymphocytes and high protein (B-4), GBS shows albuminocytologic dissociation (C-2), and neurocysticercosis typically shows normal CSF (D-1).",
@@ -42022,8 +42022,8 @@
         "text": "Match List I with List Il and select the correct answer using the code given below the Lists:\nList I\nList II (Disease) (Clinical feature)\nA. Acute\n1. Recurrent lymphoblastic knee joint leukaemia swelling\nB. Juvenile\n2. Lymphaden rheumatoid pathy with ersona arthritis petechiae\nC. Thalassaemia\n3. Swelling of small joints\nD. Haemophilia of hands\n4. Hepatosplen megaly with severe pallor\nCode : A B C D",
         "options": [
           "4 1 2 3",
-          "2 4 3",
-          "2 3 4",
+          "2 4 1 3",
+          "2 3 4 1",
           "4 2 3 1"
         ],
         "correct_option": 2,
@@ -44378,9 +44378,9 @@
         "text": "%. Match List I with List II and select the correct answer using the code given below the Lists :\nList I\nList I| (Genetic disorder) (Gene defect)\nA. Familial breast cancer\n1. FGFR\nB. Marfan's syndrome\n2. FBN-1\nC. Cystic fibrosis\n3. BRCA-1\nD. Achondroplasia\n4. CFTR\nCode : A B *D",
         "options": [
           "4 2 1 3",
-          "4 1 2",
-          "3 2 4",
-          "3 4 ° 2"
+          "4 1 2 3",
+          "3 2 4 1",
+          "3 4 2 1"
         ],
         "correct_option": 2,
         "explanation": "Official Answer: Option (c) — Genetic Disorders and Gene Defects Matching Solution Understanding the Matches This solution details the correct pairings between specific genetic disorders and the gene defects responsible. Familial breast cancer is primarily linked to mutations in the BRCA-1 gene. Marfan's syndrome is caused by defects in the FBN-1 gene. Cystic fibrosis is a result of mutations in the CFTR gene. Achondroplasia is associated with mutations in the FGFR (Fibroblast Growth Factor Receptor) gene. Determining...",
@@ -44391,10 +44391,10 @@
         "subject": "General Ability",
         "text": "Match List I with List II and select the correct answer using the code given below the Lists :\nList I\nList II (Disease) (Drugs)\nA. Parkinsonism\n1. Riluzole\nB. Migraine\n2. Levodopa\nC. Motor Neuron\n3. Ergotamine Disease\n4. Interferon-Bla\nD. Multiple sclerosis\nCode : B C D",
         "options": [
-          "2 4 3",
-          "4 2",
-          "2 3 4 1",
-          "2 3 4 2"
+          "2 1 4 3",
+          "4 1 2 3",
+          "2 3 1 4",
+          "2 3 4 1"
         ],
         "correct_option": 3,
         "explanation": "Official Answer: Option (d) — Disease-Drug Matching The question requires matching diseases from List I with their corresponding drugs from List II. Matching Analysis We can determine the correct matches based on standard medical treatments: Parkinsonism (A): Levodopa (2) is a key medication used to manage Parkinsonism symptoms. Migraine (B): Ergotamine (3) is a well-known treatment for acute migraine attacks. Motor Neuron Disease (C): Riluzole (1) is prescribed for certain types of Motor Neuron Disease, such as ALS....",
@@ -44559,10 +44559,10 @@
         "subject": "General Ability",
         "text": "Match List I with List II and select the correct answer using the code given below the Lists: P-DNT-M-HNA-A\nList I List Il (Phase of (Mechanism) jugular venous pulse)\nA. 'y' descent\n1. Emptying of the blood\nB. 'x' descent from right\nC. 'v' wave atrium into right ventricle\nD. 'a' wave\n2. Atrial relaxation\n3. Filling of the right atrium from the vena cava\n4. Onset of atrial systole\nCode : A B C D",
         "options": [
-          "4 3 2",
+          "4 3 2 1",
           "4 2 3 1",
           "1 3 2 4",
-          "2 3 4"
+          "2 1 3 4"
         ],
         "correct_option": 0,
         "explanation": "Official Answer: Option (a) — JVP Pulse Phases and Mechanisms Matching This question requires matching the phases of the jugular venous pulse (JVP) waveform with their corresponding cardiac mechanisms. The JVP provides essential information about right atrial pressure dynamics during the cardiac cycle. List I: Jugular Venous Pulse Phases A. 'y' descent B. 'x' descent C. 'v' wave D. 'a' wave List II: Cardiac Mechanisms 1. Emptying of the blood from right atrium into right ventricle 2. Atrial relaxation 3....",
@@ -44573,10 +44573,10 @@
         "subject": "General Ability",
         "text": "Match List I with List II and select the, correct answer using the code given below the Lists:\nList I\nList II SA (Poison) (Antidote)\nA. Opium\n1. Flumazenil\nB. Cyanide\n2. Naloxone\nC. Mercury\n3. Dimercapto-1-\nD. Diazepam propane sulphate\n4. Sodium thiosulphate\nCode : A B C D",
         "options": [
-          "2 3 4",
-          "2 4 3",
+          "1 2 4 3",
+          "2 4 3 1",
           "4 3 2 1",
-          "2 4 1 3 4"
+          "2 4 1 3"
         ],
         "correct_option": 1,
         "explanation": "Official Answer: Option (b) — Matching Poisons with Antidotes Analysis of Matches The question requires matching specific poisons from List I with their corresponding antidotes from List II. Here is the step-by-step matching based on standard toxicology: Opium (A) is an opioid. Its specific antidote is Naloxone (2), which reverses opioid effects. Cyanide (B) poisoning requires specific antidotes. Sodium thiosulphate (4) is a key component used in cyanide antidote kits. Mercury (C) poisoning is treated with chelating...",
@@ -45609,9 +45609,9 @@
         "subject": "General Medicine",
         "text": "Match List I with List II and select the correct answer using the code given below the Lists:\nList I\nList I (Town) (Industry)\nA. Cuttack\n1. Paper\nB. Indore\n2. Glass .\nC. Kolhapur\n3. Fertilizer\nD. Ramagundam\n4. Textile\nCode :",
         "options": [
-          "1. 2 4",
-          "2 4",
-          ". 4 2 3",
+          "3 1 2 4",
+          "3 2 1 4",
+          "4 1 2 3",
           "4 2 1 3"
         ],
         "correct_option": 2,
@@ -45833,10 +45833,10 @@
         "subject": "Pediatrics",
         "text": "Match List I with List II and select the correct answer using the code given below the Lists :\nList I\nList II ' (Biosphere (State) Reserve)\nA. Dehang-Debang\n1. Arunachal Pradesh\nB. Manas\n2. Assam\nC. Nokrek\n3. Meghalaya\nD. Simlipal\n4. Orissa\nCode :",
         "options": [
-          "4 ..",
+          "1 2 3 4",
           "1 3 2 4",
           "4 2 3 1",
-          "4 3"
+          "4 3 2 1"
         ],
         "correct_option": 0,
         "explanation": "Official Answer: Option (a) — Matching Biosphere Reserves to States This question requires matching the Biosphere Reserves listed in List I to their respective States in List II using the provided options. The correct matching, derived from the designated correct answer (Option A), is as follows: A. Dehang-Debang is matched with 3. Meghalaya. B. Manas is matched with 1. Arunachal Pradesh. C. Nokrek is matched with 4. Orissa. D. Simlipal is matched with 2. Assam. This pairing corresponds to the code A-3, B-1, C-4, D-2.",
@@ -45847,9 +45847,9 @@
         "subject": "Pediatrics",
         "text": "Match List I with List II and select the correct answer using the code given below the Lists:\nList I\nList II (City) (Industry)\nA. Bhopal\n1. Steel\nB. Kapurthala\n2. Heavy electricals\nC. Visakhapatnam \"3. Petr\nD. Vadodara chemicals Person\n4. Rail coaches\nCode : C",
         "options": [
-          "3 4",
-          "2 1 4",
-          "3 4 1. 2",
+          "3 1 4 2",
+          "2 1 4 3",
+          "3 4 1 2",
           "2 4 1 3"
         ],
         "correct_option": 3,
@@ -47195,8 +47195,8 @@
         "options": [
           "1 4 2 3",
           "4 2 1 3",
-          "3 2 1",
-          "3 2 4"
+          "3 2 1 4",
+          "3 1 2 4"
         ],
         "correct_option": 3,
         "explanation": "Official Answer: Option (d) — Vitamins Matched to Clinical Signs This solution correctly pairs essential vitamins with their specific clinical deficiency signs, essential knowledge for health and nutrition studies. Vitamin Deficiency Clues B 12 Matching Vitamins to Clinical Deficiency Signs. List I: Vitamin List II: Clinical Sign Explanation A. Thiamine (Vitamin B ) 3. Cardiac failure Deficiency (Beriberi) can severely impact the heart, leading to cardiac failure. B. Niacin (Vitamin B ) 1. Dermatitis...",
@@ -47235,9 +47235,9 @@
         "subject": "Preventive & Social Medicine",
         "text": "Match List I with List II and select the correct answer using the code given below the Lists:\nList I\nList I| (Measuring (Function/ instrument) measures)\nA. Kata\n1. Mean radiant thermometer temperature\nB. Globe\n2. High air thermometer velocity\nC. Anemometer\n3. Relative humidity\nD. Sling Psychrometer\n4. Low air velocity\nCode : B D",
         "options": [
-          "@4 1 2 3",
-          "4 2 3",
-          "3 1 2 4 Exa",
+          "4 1 2 3",
+          "4 2 1 3",
+          "3 1 2 4",
           "3 2 1 4"
         ],
         "correct_option": 0,
@@ -47445,9 +47445,9 @@
         "subject": "Preventive & Social Medicine",
         "text": "Match List I with List II and select the correct answer using the code given below the Lists:\nList I\nList II (Committee) (Recommendations) ..\nA. Bhore.\n1. Develop a referral services\nB. Mudaliar complex\n2. Strengthening of\nC. Kartar Singh district hospitals\n3. Replace ANM\nD. Srivastava with female health workers\n4. Three months' training in PSM for doctors\nCode : B D",
         "options": [
-          "4 2 1",
-          "1 4",
-          "4 2 3",
+          "4 3 2 1",
+          "1 2 3 4",
+          "4 2 3 1",
           "1 3 2 4"
         ],
         "correct_option": 2,
@@ -47459,10 +47459,10 @@
         "subject": "Preventive & Social Medicine",
         "text": "Match List I with List II and select the correct answer using the code given below the Lists :\nList I List Il Persona (Type of (Disease Vector) transmitted)\nA. Lice\n1. Kyasanur Forest Disease\nB. Fleas\n2. Endemic Typhus\nC. Ticks fever\n3. Epidemic Typhus\nD. Sand Flea fever\n4. Kala-azar\nCode : B D",
         "options": [
-          "2 4",
-          "2 4 3",
-          "1 2 4",
-          "3 2 4"
+          "3 1 2 4",
+          "1 2 4 3",
+          "1 2 3 4",
+          "3 2 1 4"
         ],
         "correct_option": 3,
         "explanation": "Official Answer: Option (d) — Vector-Disease Matching Explanation This question requires matching vectors from List I with the diseases they transmit from List II. The correct pairings are determined by established scientific knowledge and confirmed by the provided correct answer. Correct Vector-Disease Pairings A. Lice match with 3. Epidemic Typhus fever. Lice are well-known vectors for transmitting epidemic typhus caused by Rickettsia prowazekii. B. Fleas match with 2. Endemic Typhus fever. Fleas, particularly those...",
@@ -48540,9 +48540,9 @@
         "text": "Match List I with List II and select the correct answer using the code given below the lists List 1\nList II (Medical condition) (Presentation)\nA. Myxoedema\n1. Anosmia\nB. Kallmann\n2. Hypouricaemia syndrome\nC. Hyper-\n3. Alkalosis aldosteronism\nD. Hepatic failure\n4. Pseudomyotonia\nCode : B C D",
         "options": [
           "2 1 3 4",
-          "1 3 2",
-          "2 1 4",
-          "4 1 2"
+          "4 1 3 2",
+          "2 1 4 3",
+          "4 1 2 3"
         ],
         "correct_option": 2,
         "explanation": "Official Answer: Option (c) — Medical Condition Matching This question involves matching specific medical conditions (List I) with their clinical presentations (List II). The correct pairings, as indicated by the provided answer code C, are: A. Myxoedema corresponds to 2. Hypouricaemia. B. Kallmann syndrome corresponds to 3. Alkalosis. C. Hyperaldosteronism corresponds to 1. Anosmia. D. Hepatic failure corresponds to 4. Pseudomyotonia. Following this match, the resulting code is A-2, B-3, C-1, D-4.",
@@ -48989,7 +48989,7 @@
         "options": [
           "4 3 2 1",
           "4 2 3 1",
-          "2",
+          "1 3 2 4",
           "1 2 3 4"
         ],
         "correct_option": 3,
@@ -49099,10 +49099,10 @@
         "subject": "Pediatrics",
         "text": "Match List I with List II and select the correct answer using the code given below the lists:\nList I\nList II (National Park) (State)\nA. Silent Valley\n1. Kerala\nB. Kaziranga\n2. Assam\nC. Dudwa\n3. Uttar Pradesh\nD. Sariska\n4. Rajasthan 5. Manipur\nCode : C D",
         "options": [
-          "2 3 4",
+          "1 2 3 4",
           "4 5 2 3",
-          ". 1 5 4 3",
-          "5 4 3 India's next lunar mission,"
+          "1 5 4 3",
+          "5 4 3 2"
         ],
         "correct_option": 3,
         "explanation": "Official Answer: Option (d) — Matching National Parks with States This question requires matching the National Parks listed in List I with their corresponding States in List II. List I: National Parks A. Silent Valley B. Kaziranga C. Dudwa D. Sariska List II: States 1. Kerala 2. Assam 3. Uttar Pradesh 4. Rajasthan 5. Manipur Identifying Correct Matches Based on the provided correct answer (Option D), the correct pairings are: List I (National Park) List II (State) A. Silent Valley 5. Manipur B. Kaziranga...",
@@ -49225,9 +49225,9 @@
         "subject": "Pediatrics",
         "text": "The internationally accepted four-colour code system has been adopted by many countries to carry out triage in the situation of mass emergencies. Match the colour with its significance and pick the correct answer using the code given below :\nList I\nList II (Colour) (Significance)\nA. Red\n1. Moribund patients\nB. Yellow\n2. Medium priority treatment\nC. Green\n3. High priority treatment\nD. Black\n4. Ambulatory patients\nCode : B D",
         "options": [
-          "2 , 3 4 1",
-          "3 2 4",
-          "2 1 4",
+          "2 3 4 1",
+          "3 2 4 1",
+          "2 1 4 3",
           "3 2 1 4"
         ],
         "correct_option": 1,
@@ -49437,10 +49437,10 @@
         "subject": "General Surgery",
         "text": "Match List I with List II and select the correct answer using the code given below the Lists:\nList I\nList I| (Name of the (Site of perforators) perforators)\nA. Boyd's\n1. 5 cm above the calcaneus\nB. Dodd's .2. Mid thigh\nC. Cockett's\n3. Below the knee\nD. Bassi's\n4. Above the ankle\nCode : B C",
         "options": [
-          "4 3 - 2",
-          "3 2 4",
-          "3 2 4",
-          "4 3 - 2"
+          "4 1 3 2",
+          "3 2 1 4",
+          "3 2 4 1",
+          "4 3 2 1"
         ],
         "correct_option": 2,
         "explanation": "Official Answer: Option (c) — Perforator Matching Solution This question requires matching specific perforating veins (List I) with their anatomical locations (List II). Correctly identifying these anatomical landmarks is crucial for understanding venous circulation and related pathologies. Matching Perforator Veins to Sites Based on established anatomical references and the provided correct answer code, the correct pairings are: Boyd's (A) perforators are located Below the knee (3). Dodd's (B) perforators are found in...",
@@ -49787,10 +49787,10 @@
         "subject": "General Surgery",
         "text": "Match List I with List II and select the correct answer using the code given below the Lists:\nList I\nList II (Observed (Syndromes) ssociations)\nA. Turcot syndrome\n1. Café-au-lait spots\nB. Neurofibromatosis II\n2. Desmoid\nC. Neurofibromatosis I tumours\nD. Gardner syndrome\n3. Bilateral schwann mas\n4. CNS tumours\nCode : B",
         "options": [
-          "2",
-          "4 1 2",
-          "3. 4 2",
-          "4 3 2"
+          "3 4 1 2",
+          "4 3 1 2",
+          "3 4 2 1",
+          "4 3 2 1"
         ],
         "correct_option": 1,
         "explanation": "Official Answer: Option (b) — Syndrome Association Matching This question requires matching specific syndromes from List I with their characteristic observed associations in List II. The correct matching based on established medical knowledge is: List I (Syndromes) List II (Observed associations) A. Turcot syndrome 4. CNS tumours B. Neurofibromatosis II 3. Bilateral schwannomas C. Neurofibromatosis I 1. Café-au-lait spots D. Gardner syndrome 2. Desmoid tumours Explanation of Associations Turcot syndrome (A) is a rare...",
@@ -50653,12 +50653,12 @@
       {
         "id": "cms11-p2-094",
         "subject": "Preventive & Social Medicine",
-        "text": "Match List I with List II and select the correct answer using the code given below the Lists : List l List Il (Chemical (Harmful Contaminant) effect)\nA. Lead I. Wrist drop\nB. Coal Tar\n2. Leukaemia\nC. Aniline dye\n3. Lung cancer\nD. Benzol\n4. Bladder cancer ona\nCode : D",
+        "text": "Match List I with List II and select the correct answer using the code given below the Lists:\nList I (Chemical Contaminant)\nList II (Harmful effect)\nA. Lead\n1. Wrist drop\nB. Coal Tar\n2. Leukaemia\nC. Aniline dye\n3. Lung cancer\nD. Benzol\n4. Bladder cancer\nCode: A B C D",
         "options": [
           "1 3 2 4",
-          "3 4 2",
-          "3 2 4 .",
-          "1 3"
+          "3 1 4 2",
+          "3 1 2 4",
+          "1 3 4 2"
         ],
         "correct_option": 3,
         "explanation": "Official Answer: Option (d) — Matching Chemical Contaminants to Harmful Effects This section details the matching process between chemical contaminants listed in List I and their corresponding harmful effects in List II. Identifying Contaminant Effects Lead (A): Exposure to lead is known to cause neurological damage, including peripheral neuropathy manifesting as Wrist drop (1). Coal Tar (B): Handling or inhaling substances from coal tar, rich in polycyclic aromatic hydrocarbons (PAHs), is linked to...",
@@ -50739,10 +50739,10 @@
         "subject": "Preventive & Social Medicine",
         "text": "Match List I with List II and select the correct answer using the code given below the Lists: List 1\nList I (Disease) (Active food toxicant)\nA. Lathyrism\n1. Aspergillus flavus\nB. Epidemic dropsy\n2. Beta oxalyi amino alanine\nC. Aflatoxicosis (BOAA),\nD. Endemic ascites\n3. Pyrrolizidine alkaloids\n4. Sanguinarine Code C D",
         "options": [
-          "4 1 2",
-          "2 4 3.",
-          "3 1 4. 2",
-          "1"
+          "3 4 1 2",
+          "2 1 4 3",
+          "3 1 4 2",
+          "2 4 1 3"
         ],
         "correct_option": 3,
         "explanation": "Official Answer: Option (d) — Disease and Toxicant Matching Explained Relative Risk (RR) = Incidence in Non-Exposed Group Incidence in Exposed Group RR = I u I e I e I u I −e I u The question requires matching diseases from List I with their corresponding active food toxicants in List II. List I - List II Matching A. Lathyrism is matched with 2. Beta oxalyl amino alanine (BOAA). Lathyrism is a neurotoxic disorder caused by consuming grass pea seeds, which contain the excitotoxin BOAA. B. Epidemic dropsy...",
@@ -50754,9 +50754,9 @@
         "text": "Match List I with List II and select the correct answer using the code given below the Lists:\nList I\nList I| (Disease) (Common Persona Vectors)\nA. Japanese\n1. Reduviid encephalitis bug\nB. Kala-azar\n2. Tsetse fly\nC. Sleeping\n3. Phlebotomus sickness argentipes\nD. Chagas disease\n4. Culicine mosquitoes\nCode : B C D",
         "options": [
           "1 2 3 4",
-          "3 2 4",
-          ". 4 3 2",
-          "4 2 3"
+          "1 3 2 4",
+          "4 3 2 1",
+          "4 2 3 1"
         ],
         "correct_option": 2,
         "explanation": "Official Answer: Option (c) — Explanation: Matching Diseases with Common Vectors This question requires matching diseases from List I with their respective common vectors from List II. Disease-Vector Matches A. Japanese encephalitis is transmitted by mosquitoes, specifically Culicine mosquitoes (4). B. Kala-azar (Visceral leishmaniasis) is transmitted by the sandfly, Phlebotomus argentipes (3). C. Sleeping sickness (African Trypanosomiasis) is transmitted by the Tsetse fly (2). D. Chagas disease...",
@@ -51652,9 +51652,9 @@
         "text": "Match List I with List II and select the correct answer using the code given below the lists :\nList I\nList I (Type of antibody) (Disease state)\nA. Anti ds DNA\n1. Drug induced lupus\nB. Anti RNP\n2. Crest syndrome\nC. Anti Histone\n3. S.L.E.\nD. Anti Centromere\n4. MCTD\nCode : B C D",
         "options": [
           "2 4 1 3",
-          "2 4",
+          "2 1 4 3",
           "3 4 1 2",
-          "3 4 2"
+          "3 1 4 2"
         ],
         "correct_option": 2,
         "explanation": "Official Answer: Option (c) — Matching Autoantibodies to Autoimmune Diseases This question requires matching specific autoantibodies (List I) with their characteristic associated disease states (List II). Analysis of Antibody Associations The correct matching is determined by established clinical immunology correlations: Anti ds DNA: This antibody is highly specific for Systemic Lupus Erythematosus (S.L.E.). Therefore, A matches with 3. Anti RNP: Antibodies against Ribonucleoprotein (RNP) are a key marker...",
@@ -51694,7 +51694,7 @@
         "text": "Match List I with List Il and select the correct answer using the code given below the lists :\nList I List H (Anti psychotic (Side effect) agent,\nA. Thioridazine\n1. Pigmentary retinopathy\nB. Clozapine\n2. Somnolence\nC. Olanzapine\n3. Akthisia .\nD. Haloperidol\n4. Agranulocytosis\nCode : B C D",
         "options": [
           "1 4 2 3",
-          "1 2 4",
+          "1 2 4 3",
           "3 2 4 1",
           "3 4 2 1"
         ],
@@ -51778,7 +51778,7 @@
         "text": "Match List I with List II andesertEx Cheuide correct answer using the code given below the lists :\nList I List Il (Arrhythmias) (Causative drugs)\nA. Atrio-ventricular\n1. Phenothiazine block\nB. Sinus\n2. Beta blockers tachycardia\nC. Wide QRS\n3. Terfenadinc\nD. QT interval\n4. Theophylline prolongation\nCode : B C D",
         "options": [
           "3 1 4 2",
-          "2 4 3",
+          "2 4 3 1",
           "3 4 1 2",
           "2 4 1 3"
         ],
@@ -52379,10 +52379,10 @@
         "subject": "Pediatrics",
         "text": "Match List I with List II andeselectatheuide correct answer using the code given below the lists :\nList I\nList II (Location of Nuclear . (State) Power Reactor\nA. Kaiga\n1. Gujarat\nB. Kakrapar\n2. Karnataka\nC. Narora\n3. Rajasthan\nD. Rawatbhata\n4. Uttar Pradesh\nCode : C D",
         "options": [
-          "1 2 4",
-          "2 4",
-          "1 2",
-          "2 3 4"
+          "1 2 3 4",
+          "2 1 4 3",
+          "1 2 4 3",
+          "2 1 3 4"
         ],
         "correct_option": 1,
         "explanation": "Official Answer: Option (b) — Nuclear Power Reactor Locations Match This solution involves matching the specific locations of nuclear power reactors (List I) with their corresponding Indian states (List II). Identify Reactor Locations The correct state for each nuclear power plant location listed is: A. Kaiga is located in Karnataka. B. Kakrapar is located in Gujarat. C. Narora is located in Uttar Pradesh. D. Rawatbhata is located in Rajasthan. Summarize Matches The determined matches between List I...",
@@ -52955,10 +52955,10 @@
         "subject": "General Surgery",
         "text": "Match List-I with List-II and select the correct answer using the code given below the Lists :\nList-I List-lI (Condition) (Causative agent)\nA. Viral hepatitis\n1. Enteric bacteria\nB. Amoebic liver\n2. Echinococcus abscess granulosus\nC. Ascending\n3. Hepatitis A, B, C cholangitis\nD. Hydatid liver\n4. Entamoeba disease histolytica\nCode :",
         "options": [
-          "A B C D 1 2",
-          "A B C D 1 4 2",
-          "C 2 4",
-          "A B D 2"
+          "3 4 1 2",
+          "3 1 4 2",
+          "2 4 1 3",
+          "2 1 4 3"
         ],
         "correct_option": 0,
         "explanation": "Official Answer: Option (a) — Matching Medical Conditions and Causative Agents This question requires matching specific medical conditions listed in List-I with their corresponding causative agents in List-II. Condition-Agent Matching A. Viral hepatitis is caused by specific viruses. From List-II, Hepatitis A, B, C (3) are the correct agents. B. Amoebic liver abscess is a condition caused by the parasite Entamoeba histolytica (4). C. Ascending cholangitis is an infection of the biliary tree, often caused by Enteric...",
@@ -53221,10 +53221,10 @@
         "subject": "General Surgery",
         "text": "Match List-I with List-ll and select the correct answer using the code given below the Lists :\nList-I\nList-II (Aetiology) (Type of cyst)\nA. Hamartoma\n1. Enterogenous\nB. Failure of\n2. Urachal connections of tubular elements\nC. Persistence of\n3. Polycystic normal vestigial kidney remnants\nD. Duplication\n4. Lymphatic cyst\nCode :",
         "options": [
-          "1",
-          "D 4 3 1 2",
-          "B D 1 2",
-          "D"
+          "4 3 2 1",
+          "4 3 1 2",
+          "3 4 1 2",
+          "3 4 2 1"
         ],
         "correct_option": 0,
         "explanation": "Official Answer: Option (a) — Matching Cyst Aetiology and Types The question requires matching different causes (aetiologies) of cysts with their corresponding types. The correct pairings are determined as follows: Aetiology: Hamartoma & Type: Lymphatic Cyst Based on the provided correct answer, Hamartoma is matched with Lymphatic cyst. Aetiology: Tubular Connection Failure & Type: Polycystic Kidney A failure of connections of tubular elements is a key cause of Polycystic kidney disease. This results from abnormal...",
@@ -53291,10 +53291,10 @@
         "subject": "Obstetrics & Gynaecology",
         "text": "Match List-I with List-II and select the correct answer using the code given below the Lists :\nList-I List-lI (Changes of pregnancy) (Site of change)\nA. Jacquemier's sign\n1. Breast\nB. Chloasma\n2. Abdomen gravidarum\nC. Striae gravidarum\n3. Uterus\nD. Montgomery's\n4. Vagina tubercles 5. Face\nCode :",
         "options": [
-          "A D 4 1",
-          "A D 4 2",
-          "A B D 4 2",
-          "A B D 2"
+          "5 3 4 1",
+          "4 2 1 3",
+          "4 5 2 1",
+          "3 5 2 4"
         ],
         "correct_option": 2,
         "explanation": "Official Answer: Option (c) — Matching Pregnancy Changes with Their Sites This question requires matching specific physiological changes observed during pregnancy (List-I) with the anatomical locations where these changes occur (List- II). Analyzing the Matches Jacquemier's sign (A): This sign refers to the bluish or purplish discoloration of the Vagina and cervix due to increased vascularity. Therefore, A matches with 4. Chloasma gravidarum (B): Commonly known as the \"mask of pregnancy,\" this involves hyperpigmentation...",
@@ -53389,10 +53389,10 @@
         "subject": "Obstetrics & Gynaecology",
         "text": "Match List-l with List-ll and select the correct answer using the code given below the Lists :\nList-I\nList-I (Fregnancy (Therapy) complications)\nA. Anti-\n1. Intravenous phospholipid immunoglobulins syndrome\nB. Acute toxo-\n2. Orsodeoxycholic plasmosis acid\nC. Unexplained\n3. Low-dose aspirin pregnancy and heparin losses\nD. Cholestatic\n4. Spiramycin jaundice Code ;",
         "options": [
-          "B C D 2 4",
-          "C D Personal Exar 2 1 4 3",
-          "C D 4 2",
-          "B C D 3 1 4 2"
+          "2 4 1 3",
+          "2 1 4 3",
+          "3 4 1 2",
+          "3 1 4 2"
         ],
         "correct_option": 2,
         "explanation": "Official Answer: Option (c) — Pregnancy Complications: Therapies Matching This question requires matching specific pregnancy complications from List-I with their corresponding treatments from List-II. List-I: Pregnancy Complications A. Anti-phospholipid syndrome B. Acute toxoplasmosis C. Unexplained pregnancy losses D. Cholestatic jaundice List-II: Therapy 1. Intravenous immunoglobulins 2. Ursodeoxycholic acid 3. Low-dose aspirin and heparin 4. Spiramycin Matching Logic Explained A. Anti-phospholipid...",
@@ -53543,10 +53543,10 @@
         "subject": "Obstetrics & Gynaecology",
         "text": "Match List-I with List-ll and select the correct answer using the code given below the Lists:\nList-I\nList-I] (Manoeuvre) (Indication)\nA. Pinard's\n1. Delivery of the manoeuvre extended arms in a breech\nB. Lovset's\n2. Delivery of a foot manoeuvre into the vagina in a breech\nC. Mauriceau-\n3. Breech prese Smellie-Veit tation at term manoeuvre\nD. External\n4. Delivery of the cephalic aiter-coming head version of a breech\nCode :",
         "options": [
-          "A D 2 4 1",
-          "A B D 1 4 2",
-          "A B C D 2",
-          "A B D 4 2"
+          "2 4 1 3",
+          "3 1 4 2",
+          "2 1 4 3",
+          "3 4 1 2"
         ],
         "correct_option": 2,
         "explanation": "Official Answer: Option (c) — Obstetric Maneuvers Matching This question requires matching obstetric maneuvers listed in List-I with their corresponding indications in List-II. Maneuver and Indication Pairs A. Pinard's manoeuvre: This technique is used to flex and deliver a foot during a breech presentation. It matches with 2. Delivery of a foot into the vagina in a breech. B. Lovset's manoeuvre: This maneuver involves rotation and traction to deliver the body of a breech presentation, often employed when the arms are...",
@@ -53837,10 +53837,10 @@
         "subject": "Preventive & Social Medicine",
         "text": "Match List-I with List-ll and select the correct answer using the code given below the Lists:\nList-I\nList-II (Health indicators) (Examples)\nA. Morbidity\n1. Dependency indicator ratio\nB. Socio-economic\n2. Bed-occupancy indicator rate\nC. Healthcare\n3. Attendance delivery rates at indicator out-patient department\nD. Utilization rates\n4. Population-bed ratio\nCode :",
         "options": [
-          "A B C D 2 1 3",
-          "A B D 2",
-          "B C 3 1 4 2",
-          "A B C D 2 4"
+          "2 1 4 3",
+          "3 4 1 2",
+          "3 1 4 2",
+          "2 4 1 3"
         ],
         "correct_option": 2,
         "explanation": "Official Answer: Option (c) — Health Indicator Matching Solution This question requires matching different types of health indicators with their appropriate examples. Let's analyze each match: Morbidity Indicator Matching A. Morbidity indicator is correctly matched with 3. Attendance rates at out- patient department. Reasoning: Morbidity indicators measure the prevalence of diseases or ill health in a population. High attendance rates at out-patient departments directly reflect people seeking medical attention for...",
@@ -54005,10 +54005,10 @@
         "subject": "Preventive & Social Medicine",
         "text": "Match List-I with List-Il and select the correct answer using the code given below the Lists:\nList-I\nList-II\nA. Chlorination of\n1. Nitric acid test water\nB. Pasteurization .\n2. Chemical of milk oxygen demand test\nC. Argemone with\n3. Orthotoludine contamination test of mustard oil\nD. Strength of\n4. Phosphatase sewage test\nCode :",
         "options": [
-          "A C D 3 4 2",
-          "A B C D 2 4 3",
-          "A D 2 4 1 3",
-          "A D 1 2"
+          "3 1 4 2",
+          "2 1 4 3",
+          "2 4 1 3",
+          "3 4 1 2"
         ],
         "correct_option": 3,
         "explanation": "Official Answer: Option (d) — Waist-Hip Ratio = Hip Circumference Waist Circumference Ponderal Index = Height (m)3 Weight (kg) Matching Tests for Water, Milk, and Contamination This question requires matching specific tests from List-II to the processes or contaminants listed in List-I. Matching Analysis: A. Chlorination of water is a process to disinfect water. The Orthotoludine test is used to determine the residual chlorine level, confirming effective disinfection. Thus, A matches with 3. B....",
@@ -54089,10 +54089,10 @@
         "subject": "Preventive & Social Medicine",
         "text": "Match List-I with List-ll and select the correct answer using the code given below the Lists:\nList-I\nList-II (Vaccine) (Possible adverse effects)\nA. Oral polio\n1. Persistent inconsolable screaming\nB. BCG\n2. Encephalopathy\nC. Pertussis\n3. Suppurative lymphadenitis\nD. Measles\n4. Paralysis\nCode :",
         "options": [
-          "B C D 2 1 4",
-          "A B C D 2 3 4",
-          "A B D 4 2",
-          "A B D 4 2"
+          "2 3 4 1",
+          "2 3 1 4",
+          "4 3 1 2",
+          "4 1 3 2"
         ],
         "correct_option": 2,
         "explanation": "Official Answer: Option (c) — Explanation: Vaccine Adverse Effects Identification This question involves matching specific vaccines with their known potential adverse effects. Matching Vaccines to Adverse Effects The correct pairings are determined by understanding the common and significant adverse events associated with each vaccine: A. Oral polio vaccine (OPV): Linked to 4. Paralysis, specifically Vaccine- Associated Paralytic Poliomyelitis (VAPP). B. BCG vaccine: Known to potentially cause 3....",
@@ -54215,10 +54215,10 @@
         "subject": "Preventive & Social Medicine",
         "text": "Match List-I with List-ll and select the correct answer using the code given below the Lists :\nList-I\nList-II (Rickettsial diseases) (Rickettsial agents)\nA. Epidemic\n1. Rickettsia typhus conorii\nB. Murine typhus\n2. Rickettsia tsutsugamushi\nC. Scrub typhus\n3. Rickettsia prowazekii\nD. Indian tick\n4. Rickettsia typhi typhus\nCode :",
         "options": [
-          "A D 1 4",
-          "D 1",
-          "D",
-          "A B C D 2 4"
+          "1 2 4 3",
+          "3 4 2 1",
+          "1 4 2 3",
+          "3 2 4 1"
         ],
         "correct_option": 1,
         "explanation": "Official Answer: Option (b) — Matching Rickettsial Diseases with Agents This question requires matching specific Rickettsial diseases listed in List-I with their corresponding Rickettsial agents from List-II. Disease-Agent Matching Epidemic typhus (A) is caused by Rickettsia prowazekii. Murine typhus (B) is caused by Rickettsia typhi. Scrub typhus (C) is caused by Rickettsia tsutsugamushi. Indian tick typhus (D) is caused by Rickettsia conorii. Correct Match Selection Based on the matching: A corresponds to 3 (Rickettsia...",
@@ -54383,10 +54383,10 @@
         "subject": "Preventive & Social Medicine",
         "text": "Match List-1 with List-ll and select the correct answer using the code given below the Lists :\nList-I\nList-II (Vector) (Disease)\nA. Hard tick\n1. Epidemic typhus\nB. Sandfly\n2. Oriental sore\nC. Louse\n3. Tularemia\nD. Soft tick\n4. Relapsing fever\nCode :",
         "options": [
-          "A B C D 2 4",
-          "A B D 3 2 4",
-          "A B C D 4 1 2",
-          "A B C D 4 2 1 O-DNT-K-THB/1A 25"
+          "3 2 1 4",
+          "3 1 2 4",
+          "4 1 2 3",
+          "4 2 1 3"
         ],
         "correct_option": 0,
         "explanation": "Official Answer: Option (a) — Explanation: Vector-Disease Matching Explanation This question requires matching specific vectors (disease carriers) from List-I with the diseases they transmit from List-II. Let's analyze the correct pairings: List-I to List-II Matches: Hard tick (A) is correctly matched with Tularemia (3). Hard ticks are known vectors for this bacterial infection. Sandfly (B) is correctly matched with Oriental sore (2). Sandflies transmit the parasite causing this form of Leishmaniasis....",
@@ -56879,10 +56879,10 @@
         "subject": "Obstetrics & Gynaecology",
         "text": "Match List I with List II and select the correct answer using the code given below the Lists :\nList I List Il (Abnormality in) (Condition the fetomaternal caused/Etiological unit in placenta) effect)\nA. Absence of\n1. Increased Nitabuch's exchange layér of nutrients\nB. Absence\n2. Adherent of secondary placenta invasion of trophoblast\n3. Vasospasm & PIH\nC. Thinning of cytotrophoblasts\n4. Umbilical\nD. Future of cord body stalk\nCode : B C D",
         "options": [
-          "2 3 4",
-          "2 3 4",
-          "4 1 3 2",
-          "4 3 2"
+          "3 4 1 2",
+          "2 4 1 3",
+          "1 4 2 3",
+          "1 3 4 2"
         ],
         "correct_option": 1,
         "explanation": "Official Answer: Option (b) — Matching Placental Abnormalities to Etiological Effects This question requires matching specific abnormalities found in the fetomaternal unit, particularly within the placenta, to their resulting conditions or etiological effects. Correctly identifying these links is crucial for understanding placental pathology and its impact on pregnancy. Analyzing List I and List II Matches We will analyze each pairing based on the provided correct answer (A-2, B-3, C-1, D-4): A. Absence...",
@@ -56921,10 +56921,10 @@
         "subject": "Obstetrics & Gynaecology",
         "text": "Match List I with List II and select the correct answer using the code given below the Lists:\nList I List N (Condition/ (Choice of endometrial treatment) pathology)\nA. Simple\n1. Reassurance hyperplasia\n2. Progestins for\nB. Ovulatory 6 months menorrhagia\n3. Oral contr\nC. Puberty ceptive pills menorrhagia\n4. Hematinics\nD. Irregular shedding\nCode : B CD",
         "options": [
-          "2 41",
-          "2 4 3",
-          "1 3 4",
-          "4 3"
+          "2 3 4 1",
+          "2 4 3 1",
+          "1 3 4 2",
+          "1 4 3 2"
         ],
         "correct_option": 1,
         "explanation": "Official Answer: Option (b) — Matching Conditions and Treatments This section provides a step-by-step solution for matching endometrial pathologies (List I) with their corresponding treatments (List II). Detailed Match Breakdown: A. Simple hyperplasia requires treatment to control endometrial growth. 2. Progestins are the standard medical therapy for this condition, helping to regulate the cycle and reduce thickness. B. Ovulatory menorrhagia involves heavy menstrual bleeding. While treatments like OCPs directly address...",
@@ -57327,10 +57327,10 @@
         "subject": "Preventive & Social Medicine",
         "text": "Match List I with List II and select the correct answer using the code given below the Lists:\nList I\nList II (Name of disease) (Animal host)\nA. Anthrax\n1. Rats\nB. Leptospirosis\n2. Monkeys\nC. Yellow fever\n3. Sheep\nD. Japanese\n4. Pigs encephalitis\nCode : B C D",
         "options": [
-          "4 2",
+          "4 1 2 3",
           "3 2 1 4",
-          "2 3",
-          "3 2 4"
+          "4 2 1 3",
+          "3 1 2 4"
         ],
         "correct_option": 3,
         "explanation": "Official Answer: Option (d) — Disease Matching with Animal Hosts This question requires matching specific diseases listed in List I with their corresponding primary animal hosts in List II. Correct Matches Analysis The correct option is A-3, B-1, C-2, D-4. Let's examine each match: A. Anthrax is correctly matched with 3. Sheep. Anthrax commonly affects livestock, including sheep. B. Leptospirosis is correctly matched with 1. Rats. Rodents, particularly rats, are known reservoirs for Leptospira bacteria....",

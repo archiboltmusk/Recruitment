@@ -631,9 +631,10 @@
                     return html;
                 }
             }
-            // Format multi-statement questions (1. ... 2. ... 3. ... 4. ... 5. ...) cleanly
+            // Format multi-statement questions (Arabic 1.-5. or Roman I.-V.) cleanly on separate lines
             let out = esc(text);
-            out = out.replace(/(?:^|\n|\s+)([1-5]\.\s+[^\n]+)/g, (m, stmt) => `\n<div class="pl-4 py-0.5 text-[15px] font-medium text-[#1D1D1F]">${stmt.trim()}</div>`);
+            out = out.replace(/\s+((?:Select|Which of the (?:above|statements)|Of the above|How many of the)[^\n]*)$/i, '\n<div class="mt-2.5 text-[15px] font-semibold text-[#1D1D1F]">$1</div>');
+            out = out.replace(/(?:^|\n|\s+)((?:[1-5]|I{1,3}|IV|V)\.\s+.*?)(?=(?:\s+(?:[1-5]|I{1,3}|IV|V)\.\s+|\n|<div class="mt-2\.5|$))/g, (m, stmt) => `\n<div class="pl-4 py-1 text-[15px] font-medium text-[#1D1D1F]">${stmt.trim()}</div>`);
             out = out.replace(/\b(except\s*:?)/gi, '<em class="font-bold underline decoration-black/30">$1</em>');
             return out;
         }
@@ -802,7 +803,7 @@
             document.getElementById('reviewContainer').innerHTML = items.map((q, idx) => `
                 <div class="apple-card p-6 space-y-3">
                     <div class="flex justify-between text-xs font-semibold"><span class="text-[#0F766E]">Q${idx+1} • ${q.subject}${q.image_url ? ' • IBQ' : ''}</span><span class="${q.is_correct ? 'text-emerald-700' : (q.is_attempted ? 'text-rose-600' : 'text-[#86868B]')}">${q.is_correct ? 'Correct' : (q.is_attempted ? 'Wrong (-0.33)' : 'Skipped')}</span></div>
-                    <p class="text-sm font-semibold text-[#1D1D1F]">${q.text}</p>
+                    <div class="text-sm font-semibold text-[#1D1D1F]">${formatQuestionHtml(q.text)}</div>
                     ${q.image_url ? `<img src="${q.image_url}" alt="Diagram" class="max-h-56 rounded-2xl border border-black/10 object-contain bg-white p-2">` : ''}
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
                         ${q.options.map((opt, oIdx) => `<div class="p-3 rounded-xl ${oIdx === q.correct_option ? 'bg-emerald-50 text-emerald-900 font-semibold' : (q.user_choice === oIdx ? 'bg-rose-50 text-rose-900' : 'bg-[#F5F5F7] text-[#6E6E73]')}">${letters[oIdx]}. ${opt}</div>`).join('')}

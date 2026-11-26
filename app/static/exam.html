@@ -70,9 +70,12 @@
 
             <!-- Subject-Wise Quick Practice & IBQ Filter -->
             <div class="apple-card p-5 space-y-3">
-                <div class="flex items-center justify-between">
+                <div class="flex flex-wrap items-center justify-between gap-2">
                     <h2 class="text-xs font-bold uppercase tracking-wider text-[#6E6E73]">Quick Subject &amp; Visual Drills</h2>
-                    <span class="text-[11px] text-[#86868B]">Tap any filter to start</span>
+                    <form onsubmit="event.preventDefault(); startKeywordDrill();" class="flex items-center gap-1.5">
+                        <input type="text" id="pyqKeywordInput" placeholder="Search 4,080 PYQs (e.g. NTEP, Rheumatic)..." class="px-3.5 py-1.5 rounded-full bg-[#F5F5F7] border border-black/10 text-xs outline-none focus:ring-2 focus:ring-[#0F766E]/25 w-56 sm:w-64">
+                        <button type="submit" class="pill-btn px-3.5 py-1.5 rounded-full bg-[#0F766E] text-white text-xs font-semibold">Drill</button>
+                    </form>
                 </div>
                 <div id="subjectPillsContainer" class="flex flex-wrap gap-2"></div>
             </div>
@@ -83,8 +86,9 @@
                     <h3 class="text-sm font-bold text-[#1D1D1F]">Mistake Bank (<span id="mistakeCountLabel">0</span> Questions)</h3>
                     <p class="text-xs text-[#6E6E73] mt-0.5">Leitner spaced repetition (1d → 3d → 7d) schedules your due questions.</p>
                 </div>
-                <div class="flex items-center gap-2 shrink-0">
+                <div class="flex flex-wrap items-center gap-2 shrink-0">
                     <button onclick="exportMistakeBank()" class="px-4 py-2.5 bg-[#F5F5F7] hover:bg-gray-200 text-[#1D1D1F] font-semibold text-xs rounded-full transition">Export</button>
+                    <label class="px-4 py-2.5 bg-[#F5F5F7] hover:bg-gray-200 text-[#1D1D1F] font-semibold text-xs rounded-full transition cursor-pointer">Import<input type="file" accept="application/json,.json" onchange="importMistakeBank(event)" class="hidden"></label>
                     <button onclick="clearMistakeBank()" class="px-4 py-2.5 bg-[#F5F5F7] hover:bg-gray-200 text-[#6E6E73] font-semibold text-xs rounded-full transition">Clear</button>
                     <button onclick="startMistakeDrill()" class="pill-btn px-5 py-2.5 bg-rose-600 text-white font-semibold text-xs rounded-full">Retry Due Mistakes</button>
                 </div>
@@ -114,8 +118,13 @@
                 </label>
             </div>
 
-            <!-- UPSC CMS Split Simulators, Ward-Break Flashcards & Viva Deck -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            <!-- UPSC CMS Split Simulators, Full-Day 500-Mark, Ward-Break Flashcards & Viva Deck -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+                <button onclick="startTest('cms-full-day')" class="apple-card p-4 text-left bg-[#1D1D1F] text-white hover:opacity-95 transition">
+                    <span class="text-[10px] font-bold uppercase text-emerald-300">Full-Day Exam</span>
+                    <p class="text-sm font-bold mt-0.5">Paper I + II (500 M)</p>
+                    <p class="text-[11px] text-white/70 mt-0.5">240 Qs • 240 Mins</p>
+                </button>
                 <button onclick="startTest('cms-paper-1')" class="apple-card p-4 text-left hover:border-[#0F766E]/40 transition">
                     <span class="text-[10px] font-bold uppercase text-[#0F766E]">UPSC CMS Paper I</span>
                     <p class="text-sm font-bold text-[#1D1D1F] mt-0.5">Medicine &amp; Paediatrics</p>
@@ -159,7 +168,8 @@
                         <span class="text-xs font-semibold px-3 py-1 rounded-full bg-[#E6F4F1] text-[#0F766E]" id="qSubjectBadge">Subject</span>
                         <span class="text-xs text-[#6E6E73]" id="qNumberText">Question 1</span>
                     </div>
-                    <div class="flex items-center gap-3 text-xs font-semibold">
+                    <div class="flex items-center gap-2.5 text-xs font-semibold">
+                        <button onclick="flagCurrentQuestion()" id="flagQuestionBtn" title="Report OCR typo or wrong key" class="px-2.5 py-1 rounded-full bg-[#F5F5F7] text-[#6E6E73] hover:text-rose-600 transition"><i class="fa-regular fa-flag mr-1"></i>Flag</button>
                         <button onclick="toggleCurrentPearlBookmark()" id="pearlBookmarkBtn" title="Bookmark Clinical Pearl" class="px-2.5 py-1 rounded-full bg-[#F5F5F7] text-[#6E6E73] hover:text-[#0F766E] transition"><i class="fa-regular fa-bookmark"></i></button>
                         <span class="text-emerald-700">+1.0</span>
                         <span class="text-rose-600">-0.33</span>
@@ -349,6 +359,57 @@
             a.download = `medalerts-mistakes-${new Date().toISOString().slice(0, 10)}.json`;
             a.click();
             URL.revokeObjectURL(a.href);
+        }
+        function importMistakeBank(ev) {
+            const file = ev.target.files && ev.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = () => {
+                try {
+                    const arr = JSON.parse(reader.result);
+                    if (!Array.isArray(arr)) throw new Error('Invalid');
+                    const map = {};
+                    getMistakeNotebook().forEach(m => { if (m && m.id) map[m.id] = m; });
+                    let added = 0;
+                    arr.forEach(m => {
+                        if (m && m.id && m.text && Array.isArray(m.options)) {
+                            map[m.id] = m;
+                            added++;
+                        }
+                    });
+                    localStorage.setItem('med_mistake_notebook', JSON.stringify(Object.values(map)));
+                    refreshMistakeBanner();
+                    alert(`Imported ${added} Mistake Bank questions.`);
+                } catch (e) {
+                    alert('Invalid Mistake Bank JSON file.');
+                }
+            };
+            reader.readAsText(file);
+        }
+        async function startKeywordDrill() {
+            const q = (document.getElementById('pyqKeywordInput')?.value || '').trim();
+            if (q.length < 2) return alert('Enter at least 2 characters to search PYQs.');
+            const res = await fetch(`/api/exams/search?q=${encodeURIComponent(q)}&limit=25`);
+            if (!res.ok) return alert('Search failed.');
+            const data = await res.json();
+            if (!data.questions || !data.questions.length) return alert(`No PYQs matched "${q}".`);
+            currentExam = data.exam;
+            questions = data.questions;
+            beginSession();
+        }
+        async function reportQuestionById(qId) {
+            const reason = prompt('Issue with this question? (e.g. OCR typo, Broken table, Wrong answer key)', 'OCR typo');
+            if (reason === null) return;
+            const res = await fetch('/api/exams/report-question', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ question_id: qId, reason: reason.trim() || 'OCR typo' })
+            });
+            if (res.ok) alert(`Flagged ${qId} for review.`);
+        }
+        function flagCurrentQuestion() {
+            const q = questions[currentIndex];
+            if (q) reportQuestionById(q.id);
         }
         function _applyLeitnerUpdate(map, q, isCorrect, correctOpt, explanation, citation) {
             const dayMs = 86400000;
@@ -802,7 +863,7 @@
             }
             document.getElementById('reviewContainer').innerHTML = items.map((q, idx) => `
                 <div class="apple-card p-6 space-y-3">
-                    <div class="flex justify-between text-xs font-semibold"><span class="text-[#0F766E]">Q${idx+1} • ${q.subject}${q.image_url ? ' • IBQ' : ''}</span><span class="${q.is_correct ? 'text-emerald-700' : (q.is_attempted ? 'text-rose-600' : 'text-[#86868B]')}">${q.is_correct ? 'Correct' : (q.is_attempted ? 'Wrong (-0.33)' : 'Skipped')}</span></div>
+                    <div class="flex justify-between items-center text-xs font-semibold"><span class="text-[#0F766E]">Q${idx+1} • ${q.subject}${q.image_url ? ' • IBQ' : ''}</span><div class="flex items-center gap-3"><button onclick="reportQuestionById('${q.id}')" class="text-[#6E6E73] hover:text-rose-600 transition"><i class="fa-regular fa-flag mr-1"></i>Flag</button><span class="${q.is_correct ? 'text-emerald-700' : (q.is_attempted ? 'text-rose-600' : 'text-[#86868B]')}">${q.is_correct ? 'Correct' : (q.is_attempted ? 'Wrong (-0.33)' : 'Skipped')}</span></div></div>
                     <div class="text-sm font-semibold text-[#1D1D1F]">${formatQuestionHtml(q.text)}</div>
                     ${q.image_url ? `<img src="${q.image_url}" alt="Diagram" class="max-h-56 rounded-2xl border border-black/10 object-contain bg-white p-2">` : ''}
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
@@ -826,8 +887,9 @@
             document.getElementById('lobbyNavBtns').classList.remove('hidden'); document.getElementById('mobileBackBtn').classList.remove('hidden');
             document.getElementById('resultsView').classList.remove('hidden');
             document.getElementById('resExamTitle').innerText = res.exam_title; document.getElementById('resCandidate').innerText = res.candidate_name;
-            document.getElementById('resScore').innerText = res.final_score.toFixed(1);
-            const badge = document.getElementById('resStatusBadge'); badge.innerText = res.status_label;
+            document.getElementById('resScore').innerText = res.final_score.toFixed(1) + (res.total_marks === 500 ? ' / 500' : '');
+            const badge = document.getElementById('resStatusBadge');
+            badge.innerText = res.status_label + (res.total_marks === 500 ? ' (Ref Cutoffs: UR ~265 • OBC ~248 • EWS ~245 • SC ~215)' : '');
             badge.className = `inline-block mt-1.5 px-3 py-0.5 rounded-full text-xs font-semibold ${res.qualified ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-800'}`;
             document.getElementById('resCorrect').innerText = res.correct; document.getElementById('resWrong').innerText = res.wrong;
             document.getElementById('resUnattempted').innerText = res.unattempted; document.getElementById('resAccuracy').innerText = `${res.accuracy_pct}%`;

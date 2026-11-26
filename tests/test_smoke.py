@@ -312,6 +312,37 @@ class MedAlertsSmokeTests(unittest.TestCase):
                 tess_cmd = mock_run.call_args_list[2][0][0]
                 self.assertEqual(tess_cmd[-1], "eng+hin+ben")
 
+    def test_exam_search_report_and_full_day_simulator(self):
+        from unittest.mock import patch
+        from app.main import (
+            _resolve_exam_and_questions,
+            search_exam_questions,
+            report_exam_question,
+            QuestionReportRequest,
+            list_question_reports,
+        )
+
+        meta, qs = _resolve_exam_and_questions("cms-full-day")
+        self.assertIsNotNone(meta)
+        self.assertEqual(meta["total_marks"], 500)
+        self.assertEqual(len(qs), 240)
+
+        res = search_exam_questions(q="diabetes", limit=15)
+        self.assertGreater(len(res["questions"]), 0)
+        self.assertLessEqual(len(res["questions"]), 15)
+
+        req = Request({"type": "http", "headers": [], "client": ("127.0.0.1", 12345)})
+        with patch("app.main.check_rate_limit"):
+            rep = report_exam_question(
+                QuestionReportRequest(question_id=res["questions"][0]["id"], reason="OCR typo", note="Check option B"),
+                req,
+                self.db,
+            )
+        self.assertTrue(rep["ok"])
+        reports = list_question_reports(db=self.db)
+        self.assertEqual(len(reports), 1)
+        self.assertEqual(reports[0]["reason"], "OCR typo")
+
 
 if __name__ == "__main__":
     unittest.main()

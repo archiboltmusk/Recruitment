@@ -492,6 +492,25 @@ def health_check_db():
         }
 
 def _resolve_exam_and_questions(exam_id: str):
+    if exam_id == "cms-full-day":
+        all_qs = [q for qs in EXAM_QUESTIONS.values() for q in qs]
+        p1 = [q for q in all_qs if any(k in (q.get("subject") or "").lower() for k in ("medicine", "pediatric", "paediatric"))][:120]
+        p2 = [q for q in all_qs if any(k in (q.get("subject") or "").lower() for k in ("surgery", "obstetrics", "gynaecology", "gynecology", "obg", "psm", "community", "preventive"))][:120]
+        matched = p1 + p2
+        if not matched:
+            return None, []
+        meta = {
+            "id": "cms-full-day",
+            "title": "UPSC CMS Full-Day Simulator (Paper I + II)",
+            "subtitle": f"Combined 500-Mark Written Exam ({len(matched)} Questions)",
+            "total_questions": len(matched),
+            "total_marks": 500,
+            "duration_minutes": 240,
+            "negative_marking": 0.33,
+            "cutoff_reference": 265,
+        }
+        return meta, matched
+
     if exam_id == "cms-paper-1":
         all_qs = [q for qs in EXAM_QUESTIONS.values() for q in qs]
         matched = [q for q in all_qs if any(k in (q.get("subject") or "").lower() for k in ("medicine", "pediatric", "paediatric"))][:120]
@@ -628,6 +647,61 @@ def _bump_metric(db: Optional[Session], key: str):
         db.commit()
     except Exception:
         db.rollback()
+
+class QuestionReportRequest(BaseModel):
+    question_id: str = Field(..., min_length=3, max_length=64)
+    reason: str = Field(default="OCR typo", max_length=60)
+    note: Optional[str] = Field(default="", max_length=300)
+
+@app.get("/api/exams/search")
+def search_exam_questions(q: str = Query(..., min_length=2, max_length=80), limit: int = Query(default=25, ge=5, le=60)):
+    needle = q.strip().lower()
+    all_qs = [item for qs in EXAM_QUESTIONS.values() for item in qs]
+    matched = [
+        item for item in all_qs
+        if needle in (item.get("text") or "").lower() or needle in (item.get("subject") or "").lower()
+    ]
+    picked = matched[:limit]
+    safe_questions = [
+        {"id": item["id"], "subject": item["subject"], "text": item["text"], "options": item["options"], "image_url": item.get("image_url")}
+        for item in picked
+    ]
+    meta = {
+        "id": "keyword-drill",
+        "title": f"Topic Drill: \"{q.strip()}\"",
+        "subtitle": f"{len(safe_questions)} of {len(matched)} matching PYQs",
+        "total_questions": len(safe_questions),
+        "total_marks": len(safe_questions),
+        "duration_minutes": max(10, len(safe_questions) * 2),
+        "negative_marking": 0.33,
+        "cutoff_reference": max(1, int(len(safe_questions) * 0.6)),
+    }
+    return {"exam": meta, "questions": safe_questions, "total_matches": len(matched)}
+
+@app.post("/api/exams/report-question")
+def report_exam_question(payload: QuestionReportRequest, request: Request, db: Session = Depends(get_db)):
+    check_rate_limit(request, "exam_report", max_calls=20, window_sec=300)
+    row = db.query(AppSetting).filter(AppSetting.key == "exam_question_reports").first()
+    items = json.loads(row.value) if row and row.value else []
+    items.insert(0, {
+        "question_id": payload.question_id.strip(),
+        "reason": payload.reason.strip(),
+        "note": (payload.note or "").strip(),
+        "reported_at": _utc_now().isoformat(),
+    })
+    items = items[:200]
+    if not row:
+        db.add(AppSetting(key="exam_question_reports", value=json.dumps(items), updated_at=_utc_now()))
+    else:
+        row.value = json.dumps(items)
+        row.updated_at = _utc_now()
+    db.commit()
+    return {"ok": True, "total_reports": len(items)}
+
+@app.get("/api/exams/reports")
+def list_question_reports(db: Session = Depends(get_db)):
+    row = db.query(AppSetting).filter(AppSetting.key == "exam_question_reports").first()
+    return json.loads(row.value) if row and row.value else []
 
 @app.get("/api/exams/{exam_id}")
 def get_exam_questions(exam_id: str, db: Session = Depends(get_db)):

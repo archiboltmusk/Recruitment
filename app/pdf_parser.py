@@ -7,7 +7,8 @@ import subprocess
 import tempfile
 import ipaddress
 import requests
-from datetime import datetime
+from datetime import datetime, timedelta
+from email.utils import parsedate_to_datetime
 from urllib.parse import urlparse
 from typing import Dict, Any, Optional, List
 from pypdf import PdfReader
@@ -26,10 +27,21 @@ def _parse_indian_date(raw: str) -> Optional[datetime]:
     for fmt in ("%d.%m.%Y", "%d/%m/%Y", "%d-%m-%Y", "%d.%m.%y", "%d/%m/%y", "%d-%m-%y", "%d %b %Y", "%d %B %Y"):
         try:
             dt = datetime.strptime(cleaned, fmt)
-            if 2024 <= dt.year <= 2030:
+            if 2015 <= dt.year <= 2030:
                 return dt
         except ValueError:
             continue
+    return None
+
+
+def _parse_pdf_meta_date(raw: Any) -> Optional[datetime]:
+    s = str(raw or "").strip()
+    m = re.search(r"D:(\d{4})(\d{2})(\d{2})", s)
+    if m:
+        try:
+            return datetime(int(m.group(1)), int(m.group(2)), int(m.group(3)))
+        except ValueError:
+            return None
     return None
 
 
@@ -150,9 +162,11 @@ class GovtNotificationPDFParser:
         return ""
 
     @classmethod
-    def extract_text_from_bytes(cls, pdf_bytes: bytes) -> str:
-        """Extracts text from PDF bytes using pypdf, with OCR fallback for scanned notices."""
+    def extract_text_and_meta_from_bytes(cls, pdf_bytes: bytes) -> Dict[str, Any]:
+        """Extracts text and PDF CreationDate/ModDate metadata from PDF bytes."""
         reader = PdfReader(io.BytesIO(pdf_bytes))
+        meta = reader.metadata or {}
+        pdf_creation_date = _parse_pdf_meta_date(meta.get("/CreationDate")) or _parse_pdf_meta_date(meta.get("/ModDate"))
         text = ""
         max_pages = min(10, len(reader.pages))
         for i in range(max_pages):
@@ -162,11 +176,16 @@ class GovtNotificationPDFParser:
         if len(re.sub(r"\s+", "", text)) < 60:
             ocr_text = cls._ocr_pdf_bytes(pdf_bytes)
             if len(ocr_text.strip()) > len(text.strip()):
-                return ocr_text
-        return text
+                text = ocr_text
+        return {"text": text, "pdf_creation_date": pdf_creation_date}
 
     @classmethod
-    def extract_from_url(cls, url: str) -> str:
+    def extract_text_from_bytes(cls, pdf_bytes: bytes) -> str:
+        """Extracts text from PDF bytes using pypdf, with OCR fallback for scanned notices."""
+        return cls.extract_text_and_meta_from_bytes(pdf_bytes)["text"]
+
+    @classmethod
+    def extract_from_url_with_meta(cls, url: str) -> Dict[str, Any]:
         if not cls.is_safe_url(url):
             raise ValueError("Invalid or restricted URL. Access to local, private, or non-HTTP addresses is blocked.")
 
@@ -187,6 +206,15 @@ class GovtNotificationPDFParser:
                 if cl and int(cl) > MAX_PDF_SIZE_BYTES:
                     raise ValueError("PDF file size exceeds maximum permitted limit (15 MB).")
 
+                last_modified = None
+                lm_raw = resp.headers.get("Last-Modified")
+                if lm_raw:
+                    try:
+                        lm_dt = parsedate_to_datetime(lm_raw)
+                        last_modified = lm_dt.replace(tzinfo=None) if lm_dt else None
+                    except Exception:
+                        last_modified = None
+
                 pdf_bytes = io.BytesIO()
                 downloaded = 0
                 for chunk in resp.iter_content(chunk_size=65536):
@@ -196,8 +224,14 @@ class GovtNotificationPDFParser:
                             raise ValueError("PDF stream exceeded 15 MB limit.")
                         pdf_bytes.write(chunk)
 
-                return cls.extract_text_from_bytes(pdf_bytes.getvalue())
+                res = cls.extract_text_and_meta_from_bytes(pdf_bytes.getvalue())
+                res["last_modified"] = last_modified
+                return res
         raise ValueError("Too many redirects while fetching PDF URL.")
+
+    @classmethod
+    def extract_from_url(cls, url: str) -> str:
+        return cls.extract_from_url_with_meta(url)["text"]
 
     @classmethod
     def parse_notice_text(cls, text: str) -> Dict[str, Any]:
@@ -340,7 +374,7 @@ class GovtNotificationPDFParser:
 
         if not extracted["last_date"]:
             last_date_ctx = re.search(
-                r"(?:last\s*date(?:\s*of\s*(?:full\s*)?(?:submission|registration|application))?|closing\s*date|submit(?:ted)?\s*(?:up\s*to|on\s*or\s*before))\s*[:=-]?\s*(?:midnight\s*of\s*)?([^\n]{5,60})",
+                r"(?:last\s*date(?:\s*of\s*(?:full\s*)?(?:submission|registration|application))?|closing\s*date|submit(?:ted)?\s*(?:up\s*to|on\s*or\s*before))\s*[:=-]?\s*(?:midnight\s*of\s*)?([\s\S]{5,240})",
                 text,
                 re.IGNORECASE,
             )
@@ -349,6 +383,29 @@ class GovtNotificationPDFParser:
                 if found_dates:
                     extracted["last_date"] = max(found_dates).strftime("%Y-%m-%d")
                     signals += 1
+
+        if not extracted["last_date"]:
+            window_ctx = re.search(
+                r"(?:between|from)\s+[^\n]{0,40}?" + DATE_TOKEN_RE.pattern + r"[^\n]{0,40}?\bto\b[^\n]{0,20}?" + DATE_TOKEN_RE.pattern,
+                text,
+                re.IGNORECASE,
+            )
+            if window_ctx:
+                d_end = _parse_indian_date(window_ctx.group(2))
+                if d_end:
+                    extracted["last_date"] = d_end.strftime("%Y-%m-%d")
+                    signals += 1
+
+        all_doc_dates = [d for tok in DATE_TOKEN_RE.findall(text or "") if (d := _parse_indian_date(tok))]
+        latest_doc_date = max(all_doc_dates) if all_doc_dates else None
+        extracted["latest_document_date"] = latest_doc_date.strftime("%Y-%m-%d") if latest_doc_date else None
+        now_ist = datetime.utcnow() + timedelta(hours=5, minutes=30)
+        extracted["is_stale_document"] = bool(
+            not extracted["last_date"]
+            and not extracted["exam_date"]
+            and latest_doc_date is not None
+            and latest_doc_date < (now_ist - timedelta(days=30))
+        )
 
         # 6. Mandatory Service / Rural Bond
         bond_match = re.search(r"(?:bond|service\s*agreement|compulsory\s*(?:rural)?\s*service).*?(?:period\s*of|for)\s*(\d+)\s*years?", text, re.IGNORECASE | re.DOTALL)

@@ -1017,7 +1017,15 @@ class LiveGazetteScraper:
         ):
             candidates.append((m.group(1), urljoin(base_url, m.group(2).replace("\\/", "/"))))
 
-        return candidates
+        # Drop dead anchor/ticker links (e.g. news-announcement.php?, #, javascript:) and prefer .pdf URLs per title
+        filtered: List[Tuple[str, str]] = []
+        for title_txt, href in candidates:
+            low_href = (href or "").strip().lower()
+            if not low_href or low_href.endswith("?") or low_href == "#" or low_href.startswith("javascript:"):
+                continue
+            filtered.append((title_txt, href))
+        filtered.sort(key=lambda pair: 0 if ".pdf" in pair[1].lower() else 1)
+        return filtered
 
     _SESSION: Optional[requests.Session] = None
     _PORTAL_CACHE: Dict[str, Dict[str, str]] = {}
@@ -1126,10 +1134,13 @@ class LiveGazetteScraper:
                     "verification_status": "NEEDS_PDF_CHECK",
                 }
 
+                pdf_meta: Dict[str, Any] = {}
+                parsed: Dict[str, Any] = {}
                 if ".pdf" in full_url.lower() and pdf_parsed_count < 15:
                     pdf_parsed_count += 1
                     try:
-                        pdf_text = GovtNotificationPDFParser.extract_from_url(full_url)
+                        pdf_meta = GovtNotificationPDFParser.extract_from_url_with_meta(full_url)
+                        pdf_text = pdf_meta.get("text", "")
                         parsed = GovtNotificationPDFParser.parse_notice_text(pdf_text)
                         if parsed.get("total_posts"):
                             entry["total_posts"] = parsed["total_posts"]
@@ -1188,8 +1199,14 @@ class LiveGazetteScraper:
                     continue
                 if entry.get("exam_date") and entry["exam_date"] < now_ist:
                     continue
-                if not entry.get("last_date") and (_is_stale_dated_title(text, today) or _STALE_URL_DATE_RE.search(full_url)):
-                    continue
+                if not entry.get("last_date") and not entry.get("exam_date"):
+                    if parsed.get("is_stale_document"):
+                        continue
+                    ref_dt = pdf_meta.get("pdf_creation_date") or pdf_meta.get("last_modified")
+                    if ref_dt and ref_dt < (now_ist - timedelta(days=45)):
+                        continue
+                    if _is_stale_dated_title(text, today) or _STALE_URL_DATE_RE.search(full_url):
+                        continue
 
                 discovered.append(entry)
                 if len(discovered) >= 12:
@@ -1269,7 +1286,6 @@ class LiveGazetteScraper:
             Vacancy.is_active == True,
             Vacancy.last_date.is_(None),
             Vacancy.exam_date.is_(None),
-            Vacancy.verification_status == "NEEDS_PDF_CHECK",
             Vacancy.created_at < now - timedelta(days=7),
         ).update({"is_active": False, "stage": "APPLICATION_CLOSED"}, synchronize_session=False)
         db.commit()
@@ -1279,13 +1295,35 @@ class LiveGazetteScraper:
         active_rows = db.query(Vacancy).filter(Vacancy.is_active == True).all()
         seen_norm_titles = set()
         seen_token_sets: List[Tuple[str, set]] = []
+        undated_pdf_rechecked = 0
         for row in active_rows:
             title_blob = row.title or ""
             summary_blob = f"{title_blob} {row.summary or ''}"
-            if (not MEDICAL_PATTERN.search(title_blob)) or NON_JOB_PATTERN.search(title_blob) or (not row.last_date and not row.exam_date and (_is_stale_dated_title(summary_blob, today_date) or _STALE_URL_DATE_RE.search(row.notification_url or ""))):
+            notif_u = (row.notification_url or "").strip()
+            if (not MEDICAL_PATTERN.search(title_blob)) or NON_JOB_PATTERN.search(title_blob) or notif_u.endswith("?") or (not row.last_date and not row.exam_date and (_is_stale_dated_title(summary_blob, today_date) or _STALE_URL_DATE_RE.search(notif_u))):
                 row.is_active = False
                 row.stage = "RESULTS_OUT" if RESULT_OR_JOINING_PATTERN.search(title_blob) else "APPLICATION_CLOSED"
                 continue
+            if not row.last_date and not row.exam_date and ".pdf" in notif_u.lower() and undated_pdf_rechecked < 15:
+                undated_pdf_rechecked += 1
+                try:
+                    pmeta = GovtNotificationPDFParser.extract_from_url_with_meta(notif_u)
+                    pparsed = GovtNotificationPDFParser.parse_notice_text(pmeta.get("text", ""))
+                    if pparsed.get("last_date"):
+                        ld = datetime.strptime(pparsed["last_date"], "%Y-%m-%d")
+                        row.last_date = ld
+                        if ld < now_ist:
+                            row.is_active = False
+                            row.stage = "APPLICATION_CLOSED"
+                            continue
+                    else:
+                        ref_dt = pmeta.get("pdf_creation_date") or pmeta.get("last_modified")
+                        if pparsed.get("is_stale_document") or (ref_dt and ref_dt < (now_ist - timedelta(days=45))):
+                            row.is_active = False
+                            row.stage = "APPLICATION_CLOSED"
+                            continue
+                except Exception:
+                    pass
             inferred = cls._infer_role_and_qual(title_blob)
             if inferred["qualification"] == "BDS":
                 row.is_active = False

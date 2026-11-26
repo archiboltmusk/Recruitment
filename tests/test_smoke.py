@@ -403,6 +403,65 @@ class MedAlertsSmokeTests(unittest.TestCase):
         finally:
             _find_question_in_memory("cms16-p1-003").update(q_orig)
 
+    def test_stale_siliguri_table_pdf_and_link_filtering(self):
+        from datetime import datetime, timedelta
+        from bs4 import BeautifulSoup
+        from app.scraper import LiveGazetteScraper
+        from app.main import _is_vacancy_expired
+
+        siliguri_ocr_text = (
+            "SILIGURI MUNICIPAL CORPORATION\n"
+            "Memo no 836 Estt./SMC Date 10/2/2026\n"
+            "Applications are invited online for engagement of Health Officer on contract basis\n"
+            "Name of the Post No. of post Remuneration Age Limit Last date of application\n"
+            "1\nHealth Officer (Contractual)\n1 (one)\nRs. 62,000/-\n"
+            "Not more than 62 years as on 01/01/2025\n"
+            "25/02/2026 by 4:30 pm\n"
+        )
+        parsed = GovtNotificationPDFParser.parse_notice_text(siliguri_ocr_text)
+        self.assertEqual(parsed["last_date"], "2026-02-25")
+
+        stale_only_text = "SILIGURI MUNICIPAL CORPORATION\nMemo no 123 Date 10/01/2025\nWalk-in details in annexure."
+        parsed_stale = GovtNotificationPDFParser.parse_notice_text(stale_only_text)
+        self.assertIsNone(parsed_stale["last_date"])
+        self.assertTrue(parsed_stale["is_stale_document"])
+
+        html = """
+        <a href="news-announcement.php?">Online applications are invited for Health Officer at Siliguri Municipal Corporation</a>
+        <a href="userfiles/file/836_Estt_SMC.pdf">Online applications are invited for Health Officer at Siliguri Municipal Corporation</a>
+        """
+        soup = BeautifulSoup(html, "html.parser")
+        links = LiveGazetteScraper._extract_candidate_links(soup, html, "https://www.siligurismc.in/recruitments.php")
+        self.assertEqual(len(links), 1)
+        self.assertTrue(links[0][1].endswith(".pdf"))
+
+        now_ist = datetime(2026, 11, 26, 15, 0)
+        v_old_verified = Vacancy(
+            id="v-old-ver",
+            title="Old Verified PDF Without Date",
+            organization="SMC",
+            category="Contractual",
+            designation="Health Officer",
+            verification_status="VERIFIED_PDF",
+            last_date=None,
+            exam_date=None,
+            is_active=True,
+            created_at=datetime(2026, 11, 10, 10, 0),
+        )
+        self.assertTrue(_is_vacancy_expired(v_old_verified, now_ist))
+
+        v_dead_ticker = Vacancy(
+            id="v-dead-ticker",
+            title="Ticker Notice",
+            organization="SMC",
+            category="Contractual",
+            designation="Health Officer",
+            notification_url="https://www.siligurismc.in/news-announcement.php?",
+            is_active=True,
+            created_at=now_ist - timedelta(hours=6),
+        )
+        self.assertTrue(_is_vacancy_expired(v_dead_ticker, now_ist))
+
 
 if __name__ == "__main__":
     unittest.main()

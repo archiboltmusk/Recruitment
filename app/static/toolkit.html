@@ -9,6 +9,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
     <style>
         body { background-color: #F5F5F7; color: #1D1D1F; font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; -webkit-font-smoothing: antialiased; }
         .apple-card { background: #FFFFFF; border-radius: 22px; border: 1px solid rgba(0,0,0,0.06); box-shadow: 0 2px 12px rgba(0,0,0,0.03); }
@@ -64,6 +65,9 @@
                         <label class="block font-semibold text-[#6E6E73] mb-1">Cadre</label>
                         <select id="calcCadre" onchange="calculateCareer()" class="w-full px-3 py-2.5 bg-[#F5F5F7] rounded-xl font-semibold outline-none">
                             <option value="central_l10">Central Level 10 (CMS/ESIC/JR)</option>
+                            <option value="afms_ssc">AFMS SSC Captain (Level 10B + MSP)</option>
+                            <option value="psu_e2">Central PSU E2 (CIL/BHEL/SAIL)</option>
+                            <option value="wb_ropa16">State PSC / WBHRB GDMO (ROPA L16)</option>
                             <option value="rail_cmp">Railways CMP / ECHS (₹75k)</option>
                             <option value="nhm_kmc">NHM / KMC Walk-in (₹60k)</option>
                             <option value="mcd_adhoc">MCD / BMC Ad-hoc (₹85k)</option>
@@ -134,6 +138,39 @@
             <img id="resizerPreview" alt="Resized preview" class="hidden max-h-40 rounded-xl border border-black/10 p-1 bg-white">
         </section>
 
+        <section class="apple-card p-6 space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div>
+                    <h2 class="text-base font-bold text-[#1D1D1F]">Free Client-Side PDF Merger &amp; Compressor</h2>
+                    <p class="text-xs text-[#6E6E73]">Combine MBBS degree, CRRI, NMC/SMC registration &amp; ID scans into one portal-ready PDF. 100% offline in your browser.</p>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                <div class="sm:col-span-2">
+                    <label class="block font-semibold text-[#6E6E73] mb-1">Select PDFs and/or JPG/PNG Scans (in order)</label>
+                    <label class="flex items-center justify-center gap-2 px-4 py-2.5 bg-[#F5F5F7] hover:bg-gray-200/70 rounded-xl font-semibold text-[#1D1D1F] cursor-pointer transition">
+                        <i class="fa-solid fa-file-pdf text-[#DC2626]"></i>
+                        <span>Choose Files to Merge</span>
+                        <input type="file" id="pdfMergeInput" accept="application/pdf,image/jpeg,image/png,.pdf,.jpg,.jpeg,.png" multiple onchange="handleMergeFiles(event)" class="hidden">
+                    </label>
+                </div>
+                <div>
+                    <label class="block font-semibold text-[#6E6E73] mb-1">Image Compression Quality</label>
+                    <select id="pdfMergeQuality" class="w-full px-3 py-2.5 bg-[#F5F5F7] rounded-xl font-semibold outline-none">
+                        <option value="0.72" selected>Balanced (0.72 — Portal Safe)</option>
+                        <option value="0.50">High Compression (0.50 — &lt;500 KB)</option>
+                        <option value="0.90">High Clarity (0.90)</option>
+                    </select>
+                </div>
+            </div>
+            <div id="pdfMergeQueue" class="space-y-1.5 text-xs text-[#6E6E73]"></div>
+            <div class="flex flex-wrap items-center gap-3 pt-1">
+                <button onclick="mergeAndDownloadPdf()" id="pdfMergeBtn" class="pill-btn px-5 py-2.5 rounded-full bg-[#1D1D1F] text-white text-xs font-semibold">Merge &amp; Download PDF</button>
+                <button onclick="clearMergeQueue()" class="px-4 py-2.5 rounded-full bg-[#F5F5F7] text-[#6E6E73] text-xs font-semibold">Clear</button>
+                <span id="pdfMergeStatus" class="text-xs text-[#6E6E73]">Add 1 or more PDF/image files to combine.</span>
+            </div>
+        </section>
+
         <section class="apple-card p-6 space-y-5">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <div>
@@ -186,11 +223,27 @@
             const hraRate = parseFloat(document.getElementById('calcCity').value);
             const expense = parseFloat(document.getElementById('calcExpense').value) || 0;
             const daRate = (parseFloat(document.getElementById('calcDA').value) || 53) / 100;
-            let inHand = 0, studyHrs = '4-5h', advice = '';
+            let inHand = 0, studyHrs = '4-5h', advice = '', gross = 0;
             if (cadre === 'central_l10') {
                 const basic = 56100, npa = basic * 0.20, da = (basic + npa) * daRate, hra = basic * hraRate;
-                inHand = Math.round(basic + npa + da + hra - ((basic + npa + da) * 0.10 + 9000));
-                studyHrs = '2.5-3.5h'; advice = 'Highest pay (~₹1L+ in-hand), hectic shifts. Great for savings + clinical confidence.';
+                gross = Math.round(basic + npa + da + hra);
+                inHand = Math.round(gross - ((basic + npa + da) * 0.10 + 9000));
+                studyHrs = '2.5-3.5h'; advice = `Gross ~₹${gross.toLocaleString()}. Highest Central pay, hectic shifts. Great for savings + clinical confidence.`;
+            } else if (cadre === 'afms_ssc') {
+                const basic = 61300, msp = 15500, npa = basic * 0.20, da = (basic + npa) * daRate;
+                gross = Math.round(basic + msp + npa + da);
+                inHand = Math.round(gross - (basic * 0.10 + 8500));
+                studyHrs = '2-3h'; advice = `Gross ~₹${gross.toLocaleString()} (Level 10B + ₹15,500 MSP + NPA) + free rations/quarters & PG priority quota.`;
+            } else if (cadre === 'psu_e2') {
+                const basic = 60000, da = basic * 0.45, perks = basic * 0.35;
+                gross = Math.round(basic + da + perks);
+                inHand = Math.round(gross - 12000);
+                studyHrs = '4-5h'; advice = `Gross ~₹${gross.toLocaleString()} (E2 ₹60k basic + IDA + Cafeteria perks). Structured hospital hours + quarters.`;
+            } else if (cadre === 'wb_ropa16') {
+                const basic = 56100, npa = basic * 0.20, da = basic * 0.14, hra = basic * 0.12;
+                gross = Math.round(basic + npa + da + hra);
+                inHand = Math.round(gross - 6500);
+                studyHrs = '3.5-4.5h'; advice = `Gross ~₹${gross.toLocaleString()} (WB ROPA Level 16 + 20% NPA + 14% DA + 12% HRA). Permanent home-state cadre + PG quota.`;
             } else if (cadre === 'rail_cmp') {
                 inHand = 72000; studyHrs = '5-6h'; advice = 'Fixed daytime OPD duty with zero bond. Strong balance for NEET PG / UPSC CMS prep.';
             } else if (cadre === 'nhm_kmc') {
@@ -249,6 +302,80 @@
             document.getElementById('resizerPreview').src = dataUrl; document.getElementById('resizerPreview').classList.remove('hidden');
             const dl = document.getElementById('resizerDownload'); dl.href = dataUrl; dl.classList.remove('hidden');
             document.getElementById('resizerStatus').textContent = `Ready: ${w}×${h}px • ~${kb} KB`;
+        }
+        let _mergeQueue = [];
+        function handleMergeFiles(ev) {
+            const files = Array.from(ev.target.files || []);
+            if (!files.length) return;
+            _mergeQueue = _mergeQueue.concat(files);
+            renderMergeQueue();
+        }
+        function clearMergeQueue() {
+            _mergeQueue = [];
+            const inp = document.getElementById('pdfMergeInput');
+            if (inp) inp.value = '';
+            renderMergeQueue();
+            document.getElementById('pdfMergeStatus').textContent = 'Add 1 or more PDF/image files to combine.';
+        }
+        function renderMergeQueue() {
+            const box = document.getElementById('pdfMergeQueue');
+            if (!box) return;
+            box.innerHTML = _mergeQueue.map((f, i) => `<div class="px-3 py-1.5 bg-[#F5F5F7] rounded-xl flex items-center justify-between"><span>${i + 1}. <b>${f.name}</b> (${(f.size / 1024).toFixed(1)} KB)</span><button onclick="_mergeQueue.splice(${i},1);renderMergeQueue()" class="text-rose-600 font-semibold">Remove</button></div>`).join('');
+        }
+        async function _compressImageToJpegBytes(file, quality) {
+            const img = await new Promise((resolve, reject) => {
+                const el = new Image();
+                el.onload = () => resolve(el);
+                el.onerror = reject;
+                el.src = URL.createObjectURL(file);
+            });
+            const maxDim = 1400;
+            const scale = Math.min(1, maxDim / Math.max(img.width, img.height));
+            const canvas = document.createElement('canvas');
+            canvas.width = Math.round(img.width * scale);
+            canvas.height = Math.round(img.height * scale);
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            const blob = await new Promise(r => canvas.toBlob(r, 'image/jpeg', quality));
+            return new Uint8Array(await blob.arrayBuffer());
+        }
+        async function mergeAndDownloadPdf() {
+            if (!_mergeQueue.length) return alert('Choose at least one PDF or image file first.');
+            if (typeof PDFLib === 'undefined') return alert('PDF library still loading — please try again in a moment.');
+            const st = document.getElementById('pdfMergeStatus');
+            const btn = document.getElementById('pdfMergeBtn');
+            const q = parseFloat(document.getElementById('pdfMergeQuality').value || '0.72');
+            btn.disabled = true; st.textContent = 'Merging locally in browser...';
+            try {
+                const outDoc = await PDFLib.PDFDocument.create();
+                for (const file of _mergeQueue) {
+                    if (file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')) {
+                        const srcBytes = await file.arrayBuffer();
+                        const srcDoc = await PDFLib.PDFDocument.load(srcBytes);
+                        const pages = await outDoc.copyPages(srcDoc, srcDoc.getPageIndices());
+                        pages.forEach(p => outDoc.addPage(p));
+                    } else if (file.type.startsWith('image/')) {
+                        const jpgBytes = await _compressImageToJpegBytes(file, q);
+                        const embedded = await outDoc.embedJpg(jpgBytes);
+                        const page = outDoc.addPage([embedded.width, embedded.height]);
+                        page.drawImage(embedded, { x: 0, y: 0, width: embedded.width, height: embedded.height });
+                    }
+                }
+                const mergedBytes = await outDoc.save({ useObjectStreams: true });
+                const blob = new Blob([mergedBytes], { type: 'application/pdf' });
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = `medalerts-merged-${new Date().toISOString().slice(0, 10)}.pdf`;
+                a.click();
+                URL.revokeObjectURL(a.href);
+                st.textContent = `Done! Merged ${_mergeQueue.length} file(s) • ${(mergedBytes.length / 1024).toFixed(1)} KB`;
+            } catch (e) {
+                st.textContent = 'Failed to merge: ' + (e.message || e);
+            } finally {
+                btn.disabled = false;
+            }
         }
         loadRegState(); calculateCareer(); filterProtocols();
     </script>

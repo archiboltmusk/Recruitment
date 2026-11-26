@@ -84,6 +84,7 @@
                     <p class="text-xs text-[#6E6E73] mt-0.5">Leitner spaced repetition (1d → 3d → 7d) schedules your due questions.</p>
                 </div>
                 <div class="flex items-center gap-2 shrink-0">
+                    <button onclick="exportMistakeBank()" class="px-4 py-2.5 bg-[#F5F5F7] hover:bg-gray-200 text-[#1D1D1F] font-semibold text-xs rounded-full transition">Export</button>
                     <button onclick="clearMistakeBank()" class="px-4 py-2.5 bg-[#F5F5F7] hover:bg-gray-200 text-[#6E6E73] font-semibold text-xs rounded-full transition">Clear</button>
                     <button onclick="startMistakeDrill()" class="pill-btn px-5 py-2.5 bg-rose-600 text-white font-semibold text-xs rounded-full">Retry Due Mistakes</button>
                 </div>
@@ -333,6 +334,16 @@
             if (!confirm('Clear all saved questions from your Mistake Bank?')) return;
             localStorage.removeItem('med_mistake_notebook');
             refreshMistakeBanner();
+        }
+        function exportMistakeBank() {
+            const list = getMistakeNotebook();
+            if (!list.length) return alert('Mistake Bank is empty.');
+            const blob = new Blob([JSON.stringify(list, null, 2)], { type: 'application/json' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `medalerts-mistakes-${new Date().toISOString().slice(0, 10)}.json`;
+            a.click();
+            URL.revokeObjectURL(a.href);
         }
         function _applyLeitnerUpdate(map, q, isCorrect, correctOpt, explanation, citation) {
             const dayMs = 86400000;

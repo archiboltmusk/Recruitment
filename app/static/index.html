@@ -222,6 +222,9 @@
             </div>
         </section>
 
+        <!-- Closing in 72h Urgency Strip -->
+        <section id="closing72Strip" class="hidden apple-card p-3.5 flex flex-wrap items-center gap-2 text-xs border-l-4 border-l-rose-500"></section>
+
         <!-- Corrigenda & Deadline Updates Strip -->
         <section id="corrigendaStrip" class="hidden apple-card p-3.5 flex flex-wrap items-center gap-2 text-xs border-l-4 border-l-amber-500"></section>
 
@@ -616,6 +619,7 @@
                 return matchHidden && matchSearch && matchQual && matchRole && matchCat && matchStage && matchBond && matchUR && matchEligible && matchVerifiedDate && matchThisWeek && matchNear;
             });
             renderRegionalStrip(allVacancies);
+            renderClosing72Strip(allVacancies);
 
             filtered.sort((a, b) => {
                 if (sortBy === 'seats') {
@@ -647,6 +651,15 @@
                 <button onclick="document.getElementById('searchInput').value='All India';applyFilters()" class="px-3 py-1 rounded-full bg-white border border-black/10 text-[#1D1D1F] font-semibold hover:bg-gray-50">All India (${ai})</button>
                 <button onclick="setQuickFilter('Walk-in', null)" class="px-3 py-1 rounded-full bg-[#E6F4F1] text-[#0F766E] font-semibold hover:bg-[#D1ECE6]">Walk-in Open (${wk})</button>
             `;
+        }
+
+        function renderClosing72Strip(list) {
+            const el = document.getElementById('closing72Strip');
+            if (!el || !Array.isArray(list)) return;
+            const urgent = list.filter(v => v.days_left !== null && v.days_left <= 3).slice(0, 5);
+            if (!urgent.length) { el.classList.add('hidden'); return; }
+            el.classList.remove('hidden');
+            el.innerHTML = '<span class="font-bold text-[#DC2626] mr-1"><i class="fa-solid fa-clock mr-1"></i>Closing in 72h:</span>' + urgent.map(v => `<button onclick="openVacancyDetail('${escapeHtml(v.id)}')" class="px-2.5 py-1 rounded-full bg-rose-50 text-[#DC2626] font-semibold hover:bg-rose-100">${escapeHtml((v.organization || v.title).slice(0, 26))} (${v.days_left === 0 ? 'Today' : v.days_left + 'd'})</button>`).join('');
         }
 
         function escapeHtml(str) {
@@ -1364,10 +1377,17 @@
                             </div>
                         </div>
                         <input type="text" value="${escapeHtml(item.note || '')}" onchange="updateTrackNote('${escapeHtml(id)}', this.value)" placeholder="Add App Ref No., Fee Receipt, or Interview notes..." class="w-full px-3 py-1.5 bg-white rounded-xl text-[11px] outline-none">
+                        <div class="flex flex-wrap gap-1.5 pt-0.5">
+                            ${[['reg','NMC Reg'],['crri','CRRI'],['photo','Photo/Sig'],['fee','Fee Paid']].map(([dk, dl]) => `<label class="px-2.5 py-1 rounded-full bg-white text-[10px] font-semibold flex items-center gap-1 cursor-pointer"><input type="checkbox" ${(item.docs && item.docs[dk]) ? 'checked' : ''} onchange="toggleTrackDoc('${escapeHtml(id)}','${dk}',this.checked)" class="accent-[#0F766E]"><span>${dl}</span></label>`).join('')}
+                        </div>
                     </div>
                 `).join('');
             }
             openModal('trackerModal');
+        }
+        function toggleTrackDoc(id, docKey, checked) {
+            const map = getTrackedMap();
+            if (map[id]) { map[id].docs = map[id].docs || {}; map[id].docs[docKey] = !!checked; localStorage.setItem('med_app_tracker', JSON.stringify(map)); }
         }
         function updateTrackStatus(id, status) {
             const map = getTrackedMap();

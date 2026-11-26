@@ -81,11 +81,18 @@ class GovtNotificationPDFParser:
                         stderr=subprocess.DEVNULL,
                         timeout=20,
                     )
+                    avail_langs = set()
+                    try:
+                        lang_res = subprocess.run(["tesseract", "--list-langs"], capture_output=True, text=True, timeout=5)
+                        avail_langs = {ln.strip() for ln in (lang_res.stdout or "").splitlines() if ln.strip() and not ln.startswith("List of")}
+                    except Exception:
+                        avail_langs = {"eng"}
+                    lang_arg = "+".join([l for l in ("eng", "hin", "ben") if l in avail_langs]) or "eng"
                     ocr_chunks: List[str] = []
                     for fname in sorted(os.listdir(tmpdir)):
                         if fname.endswith(".png"):
                             res = subprocess.run(
-                                ["tesseract", os.path.join(tmpdir, fname), "stdout", "-l", "eng"],
+                                ["tesseract", os.path.join(tmpdir, fname), "stdout", "-l", lang_arg],
                                 capture_output=True,
                                 text=True,
                                 timeout=15,

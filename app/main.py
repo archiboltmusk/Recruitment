@@ -1722,6 +1722,11 @@ def sitemap_xml(db: Session = Depends(get_db)):
     xml_body = f'<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="{ns}">' + "".join(urls) + "</urlset>"
     return Response(content=xml_body, media_type="application/xml")
 
+@app.get("/robots.txt")
+def robots_txt():
+    body = f"User-agent: *\nAllow: /\nDisallow: /admin\nSitemap: {APP_BASE_URL}/sitemap.xml\n"
+    return Response(content=body, media_type="text/plain")
+
 class PushSubscribeRequest(BaseModel):
     endpoint: str
     keys: Optional[Dict[str, str]] = None

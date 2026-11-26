@@ -291,6 +291,26 @@ class MedAlertsSmokeTests(unittest.TestCase):
         resolved = resolve_corrigendum_suggestion(pending[0]["id"], decision="APPROVED", db=self.db)
         self.assertEqual(resolved["status"], "APPROVED")
 
+    def test_robots_txt_and_multilang_ocr(self):
+        from unittest.mock import patch, MagicMock
+        from app.main import robots_txt
+
+        rob = robots_txt()
+        self.assertEqual(rob.media_type, "text/plain")
+        self.assertIn(b"Sitemap:", rob.body)
+        self.assertIn(b"/sitemap.xml", rob.body)
+
+        with patch("shutil.which", return_value="/usr/bin/mock"), \
+             patch("subprocess.run") as mock_run:
+            lang_proc = MagicMock(stdout="List of available languages in \"/usr/share/tesseract-ocr/5/tessdata/\" (3):\nben\neng\nhin\n")
+            tess_proc = MagicMock(stdout="Memo No: 123\nTotal 10 posts")
+            mock_run.side_effect = [MagicMock(), lang_proc, tess_proc]
+            with patch("os.listdir", return_value=["page-1.png"]):
+                txt = GovtNotificationPDFParser._ocr_pdf_bytes(b"%PDF-1.4")
+                self.assertIn("Memo No: 123", txt)
+                tess_cmd = mock_run.call_args_list[2][0][0]
+                self.assertEqual(tess_cmd[-1], "eng+hin+ben")
+
 
 if __name__ == "__main__":
     unittest.main()

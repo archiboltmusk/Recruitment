@@ -1,5 +1,6 @@
 import os
 import json
+import base64
 import hmac
 import hashlib
 import html
@@ -8,7 +9,7 @@ from email.mime.text import MIMEText
 import requests
 from datetime import datetime, timedelta
 from sqlalchemy.orm import Session
-from .models import Subscription, NotificationLog, Vacancy, PushSubscription
+from .models import Subscription, NotificationLog, Vacancy, PushSubscription, AppSetting
 from .pdf_parser import GovtNotificationPDFParser
 
 try:
@@ -169,9 +170,37 @@ class Notifier:
         db.commit()
         return status == "SUCCESS"
 
+    @staticmethod
+    def _get_or_create_vapid_keys(db: Session) -> tuple:
+        pub_env = os.getenv('VAPID_PUBLIC_KEY', '').strip()
+        priv_env = os.getenv('VAPID_PRIVATE_KEY', '').strip()
+        if pub_env and priv_env:
+            return pub_env, priv_env
+        try:
+            pub_row = db.query(AppSetting).filter(AppSetting.key == 'vapid_public_key').first()
+            priv_row = db.query(AppSetting).filter(AppSetting.key == 'vapid_private_key').first()
+            if pub_row and priv_row and pub_row.value and priv_row.value:
+                return pub_row.value, priv_row.value
+            from cryptography.hazmat.primitives.asymmetric import ec
+            from cryptography.hazmat.primitives import serialization
+            priv = ec.generate_private_key(ec.SECP256R1())
+            pub_bytes = priv.public_key().public_bytes(
+                serialization.Encoding.X962,
+                serialization.PublicFormat.UncompressedPoint,
+            )
+            priv_num = priv.private_numbers().private_value.to_bytes(32, 'big')
+            pub_b64 = base64.urlsafe_b64encode(pub_bytes).rstrip(b'=').decode('ascii')
+            priv_b64 = base64.urlsafe_b64encode(priv_num).rstrip(b'=').decode('ascii')
+            db.merge(AppSetting(key='vapid_public_key', value=pub_b64, updated_at=datetime.utcnow()))
+            db.merge(AppSetting(key='vapid_private_key', value=priv_b64, updated_at=datetime.utcnow()))
+            db.commit()
+            return pub_b64, priv_b64
+        except Exception:
+            return '', ''
+
     @classmethod
     def broadcast_web_push(cls, db: Session, vacancy: Vacancy) -> int:
-        priv_key = os.getenv('VAPID_PRIVATE_KEY', '').strip()
+        _, priv_key = cls._get_or_create_vapid_keys(db)
         if not (webpush and priv_key):
             return 0
         claims_sub = os.getenv('VAPID_CLAIMS_SUB', 'mailto:alerts@medalerts.onrender.com').strip()

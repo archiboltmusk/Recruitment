@@ -103,6 +103,37 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="protocolsGrid"></div>
         </section>
 
+        <section class="apple-card p-6 space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div>
+                    <h2 class="text-base font-bold text-[#1D1D1F]">Free Sarkari Photo &amp; Signature Resizer</h2>
+                    <p class="text-xs text-[#6E6E73]">100% offline in your browser — zero uploads, zero ads. Ready for UPSC, WBHRB, AIIMS &amp; ESIC.</p>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-4 gap-3 text-xs">
+                <div>
+                    <label class="block font-semibold text-[#6E6E73] mb-1">Preset</label>
+                    <select id="resizerPreset" onchange="applyResizerPreset()" class="w-full px-3 py-2.5 bg-[#F5F5F7] rounded-xl font-semibold outline-none">
+                        <option value="photo">UPSC / WBHRB Photo (200×230, ≤45KB)</option>
+                        <option value="sig">Signature (140×60, ≤20KB)</option>
+                        <option value="custom">Custom Dimensions</option>
+                    </select>
+                </div>
+                <div><label class="block font-semibold text-[#6E6E73] mb-1">Width (px)</label><input type="number" id="resizerW" value="200" oninput="processResizerFile()" class="w-full px-3 py-2.5 bg-[#F5F5F7] rounded-xl font-semibold outline-none"></div>
+                <div><label class="block font-semibold text-[#6E6E73] mb-1">Height (px)</label><input type="number" id="resizerH" value="230" oninput="processResizerFile()" class="w-full px-3 py-2.5 bg-[#F5F5F7] rounded-xl font-semibold outline-none"></div>
+                <div><label class="block font-semibold text-[#6E6E73] mb-1">Max Size (KB)</label><input type="number" id="resizerMaxKb" value="45" oninput="processResizerFile()" class="w-full px-3 py-2.5 bg-[#F5F5F7] rounded-xl font-semibold outline-none"></div>
+            </div>
+            <div class="flex flex-wrap items-center gap-4 pt-1">
+                <label class="px-4 py-2.5 rounded-full bg-[#1D1D1F] text-white text-xs font-semibold cursor-pointer">
+                    <i class="fa-solid fa-image mr-1.5"></i>Choose Photo / Signature
+                    <input type="file" id="resizerInput" accept="image/*" onchange="loadResizerImage(event)" class="hidden">
+                </label>
+                <span id="resizerStatus" class="text-xs text-[#6E6E73]">Select a JPG/PNG to resize &amp; compress locally.</span>
+                <a id="resizerDownload" download="medalerts-resized.jpg" class="hidden px-4 py-2.5 rounded-full bg-[#0F766E] text-white text-xs font-semibold">Download JPEG</a>
+            </div>
+            <img id="resizerPreview" alt="Resized preview" class="hidden max-h-40 rounded-xl border border-black/10 p-1 bg-white">
+        </section>
+
         <section class="apple-card p-6 space-y-5">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <div>
@@ -189,6 +220,35 @@
                     <p class="text-xs text-[#6E6E73] leading-relaxed">${p.body}</p>
                 </div>
             `).join('');
+        }
+        let _resizerImg = null;
+        function applyResizerPreset() {
+            const p = document.getElementById('resizerPreset').value;
+            if (p === 'photo') { document.getElementById('resizerW').value = 200; document.getElementById('resizerH').value = 230; document.getElementById('resizerMaxKb').value = 45; }
+            else if (p === 'sig') { document.getElementById('resizerW').value = 140; document.getElementById('resizerH').value = 60; document.getElementById('resizerMaxKb').value = 20; }
+            processResizerFile();
+        }
+        function loadResizerImage(ev) {
+            const file = ev.target.files && ev.target.files[0];
+            if (!file) return;
+            const img = new Image();
+            img.onload = () => { _resizerImg = img; processResizerFile(); };
+            img.src = URL.createObjectURL(file);
+        }
+        function processResizerFile() {
+            if (!_resizerImg) return;
+            const w = Math.max(40, parseInt(document.getElementById('resizerW').value || '200', 10));
+            const h = Math.max(20, parseInt(document.getElementById('resizerH').value || '230', 10));
+            const maxBytes = Math.max(5, parseInt(document.getElementById('resizerMaxKb').value || '45', 10)) * 1024;
+            const canvas = document.createElement('canvas'); canvas.width = w; canvas.height = h;
+            const ctx = canvas.getContext('2d'); ctx.fillStyle = '#FFFFFF'; ctx.fillRect(0, 0, w, h);
+            ctx.drawImage(_resizerImg, 0, 0, w, h);
+            let q = 0.92, dataUrl = canvas.toDataURL('image/jpeg', q);
+            while (dataUrl.length * 0.75 > maxBytes && q > 0.2) { q -= 0.08; dataUrl = canvas.toDataURL('image/jpeg', q); }
+            const kb = ((dataUrl.length * 0.75) / 1024).toFixed(1);
+            document.getElementById('resizerPreview').src = dataUrl; document.getElementById('resizerPreview').classList.remove('hidden');
+            const dl = document.getElementById('resizerDownload'); dl.href = dataUrl; dl.classList.remove('hidden');
+            document.getElementById('resizerStatus').textContent = `Ready: ${w}×${h}px • ~${kb} KB`;
         }
         loadRegState(); calculateCareer(); filterProtocols();
     </script>

@@ -173,3 +173,19 @@ class CorrigendumSuggestion(Base):
     note = Column(Text, nullable=False)
     status = Column(String(20), default="PENDING")  # PENDING, APPROVED, REJECTED
     created_at = Column(DateTime, default=datetime.utcnow)
+
+
+class AppSetting(Base):
+    __tablename__ = "app_settings"
+
+    key = Column(String(100), primary_key=True)
+    value = Column(Text, nullable=False)
+    updated_at = Column(DateTime, default=datetime.utcnow)
+
+
+class FeatureMetric(Base):
+    __tablename__ = "feature_metrics"
+
+    key = Column(String(100), primary_key=True)
+    count = Column(Integer, default=0)
+    updated_at = Column(DateTime, default=datetime.utcnow)

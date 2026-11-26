@@ -15,7 +15,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func, or_
 
 from .database import engine, Base, get_db, SessionLocal
-from .models import Vacancy, Subscription, NotificationLog, ExamAttempt, PortalHealth, SyncJob, RateLimitBucket, SchemaMigration, DoctorSyncBlob, PushSubscription, CorrigendumLog, CorrigendumSuggestion
+from .models import Vacancy, Subscription, NotificationLog, ExamAttempt, PortalHealth, SyncJob, RateLimitBucket, SchemaMigration, DoctorSyncBlob, PushSubscription, CorrigendumLog, CorrigendumSuggestion, AppSetting, FeatureMetric
 from .collector import VacancyCollector
 from .scraper import LiveGazetteScraper, PORTAL_SOURCES
 from .notifier import Notifier
@@ -612,8 +612,23 @@ def get_weak_drill_questions(subjects: Optional[str] = None, limit: int = Query(
     }
     return {"exam": meta, "questions": safe_questions}
 
+def _bump_metric(db: Optional[Session], key: str):
+    if db is None:
+        return
+    try:
+        row = db.query(FeatureMetric).filter(FeatureMetric.key == key).first()
+        if not row:
+            db.add(FeatureMetric(key=key, count=1, updated_at=datetime.utcnow()))
+        else:
+            row.count = (row.count or 0) + 1
+            row.updated_at = datetime.utcnow()
+        db.commit()
+    except Exception:
+        db.rollback()
+
 @app.get("/api/exams/{exam_id}")
-def get_exam_questions(exam_id: str):
+def get_exam_questions(exam_id: str, db: Session = Depends(get_db)):
+    _bump_metric(db, "exams_started")
     exam_meta, questions = _resolve_exam_and_questions(exam_id)
     if not exam_meta:
         raise HTTPException(status_code=404, detail="Exam not found")
@@ -1640,11 +1655,13 @@ def get_admin_metrics(db: Session = Depends(get_db)):
     notif_total = db.query(NotificationLog).count()
     notif_ok = db.query(NotificationLog).filter(NotificationLog.status == "SUCCESS").count()
     failing = db.query(PortalHealth).filter(PortalHealth.consecutive_failures > 0).order_by(PortalHealth.consecutive_failures.desc()).limit(10).all()
+    f_metrics = {m.key: m.count for m in db.query(FeatureMetric).all()}
     return {
         "active_vacancies": active_vacancies,
         "discovered_7d": discovered_7d,
         "notifications_total": notif_total,
         "notifications_success": notif_ok,
+        "feature_metrics": f_metrics,
         "failing_portals": [{"name": p.name, "failures": p.consecutive_failures, "error": p.last_error} for p in failing],
     }
 
@@ -1674,9 +1691,15 @@ self.addEventListener('fetch', e => {
     return Response(content=sw_code, media_type="application/javascript")
 
 @app.get("/feed.xml")
-def rss_feed(db: Session = Depends(get_db)):
+def rss_feed(state: Optional[str] = None, qualification: Optional[str] = None, db: Session = Depends(get_db)):
     from html import escape
-    rows = db.query(Vacancy).filter(Vacancy.is_active == True).order_by(Vacancy.created_at.desc()).limit(30).all()
+    q = db.query(Vacancy).filter(Vacancy.is_active == True)
+    if state and state.strip():
+        st = state.strip()
+        q = q.filter(or_(Vacancy.state.ilike(f"%{st}%"), Vacancy.state == "All India"))
+    if qualification and qualification.strip():
+        q = q.filter(Vacancy.qualification.ilike(f"%{qualification.strip()}%"))
+    rows = q.order_by(Vacancy.created_at.desc()).limit(30).all()
     items = []
     for v in rows:
         link = f"{APP_BASE_URL}/?job={escape(str(v.id), quote=True)}"
@@ -1706,8 +1729,9 @@ class PushSubscribeRequest(BaseModel):
     state_filter: str = "ALL"
 
 @app.get("/api/push/vapid-key")
-def get_vapid_public_key():
-    return {"public_key": os.getenv("VAPID_PUBLIC_KEY", "").strip()}
+def get_vapid_public_key(db: Session = Depends(get_db)):
+    pub, _ = Notifier._get_or_create_vapid_keys(db)
+    return {"public_key": pub}
 
 @app.post("/api/push/subscribe", status_code=status.HTTP_201_CREATED)
 def save_push_subscription(payload: PushSubscribeRequest, request: Request, db: Session = Depends(get_db)):

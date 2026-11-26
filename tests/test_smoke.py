@@ -264,8 +264,13 @@ class MedAlertsSmokeTests(unittest.TestCase):
         st = get_stats(db=self.db)
         self.assertEqual(st["active_notices"], 1)
 
-        vk = get_vapid_public_key()
+        vk = get_vapid_public_key(db=self.db)
         self.assertIn("public_key", vk)
+
+        rss_wb = rss_feed(state="West Bengal", qualification="MBBS", db=self.db)
+        self.assertIn(b"WBHRB GDMO Recruitment 2026", rss_wb.body)
+        rss_empty = rss_feed(state="Kerala", qualification="MBBS", db=self.db)
+        self.assertNotIn(b"WBHRB GDMO Recruitment 2026", rss_empty.body)
 
         drill = get_weak_drill_questions(subjects="Medicine,Surgery", limit=10)
         self.assertEqual(len(drill["questions"]), 10)

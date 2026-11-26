@@ -7,7 +7,10 @@ import html
 import smtplib
 from email.mime.text import MIMEText
 import requests
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
+
+def _utc_now() -> datetime:
+    return datetime.now(timezone.utc).replace(tzinfo=None)
 from sqlalchemy.orm import Session
 from .models import Subscription, NotificationLog, Vacancy, PushSubscription, AppSetting
 from .pdf_parser import GovtNotificationPDFParser
@@ -162,7 +165,7 @@ class Notifier:
             vacancy_id=vacancy.id,
             channel=sub.channel,
             target=sub.target,
-            sent_at=datetime.utcnow(),
+            sent_at=_utc_now(),
             status=status,
             details=details
         )
@@ -191,8 +194,8 @@ class Notifier:
             priv_num = priv.private_numbers().private_value.to_bytes(32, 'big')
             pub_b64 = base64.urlsafe_b64encode(pub_bytes).rstrip(b'=').decode('ascii')
             priv_b64 = base64.urlsafe_b64encode(priv_num).rstrip(b'=').decode('ascii')
-            db.merge(AppSetting(key='vapid_public_key', value=pub_b64, updated_at=datetime.utcnow()))
-            db.merge(AppSetting(key='vapid_private_key', value=priv_b64, updated_at=datetime.utcnow()))
+            db.merge(AppSetting(key='vapid_public_key', value=pub_b64, updated_at=_utc_now()))
+            db.merge(AppSetting(key='vapid_private_key', value=priv_b64, updated_at=_utc_now()))
             db.commit()
             return pub_b64, priv_b64
         except Exception:
@@ -290,7 +293,7 @@ class Notifier:
                 vacancy_id=vacancy.id,
                 channel="telegram",
                 target=sub.target,
-                sent_at=datetime.utcnow(),
+                sent_at=_utc_now(),
                 status=status,
                 details=details,
             ))
@@ -350,7 +353,7 @@ class Notifier:
                 vacancy_id=vacancy.id,
                 channel="telegram",
                 target=sub.target,
-                sent_at=datetime.utcnow(),
+                sent_at=_utc_now(),
                 status=status,
                 details=details
             ))
@@ -403,7 +406,7 @@ class Notifier:
         if not bot_token:
             return {"sent": 0, "reason": "TELEGRAM_BOT_TOKEN not set"}
 
-        today_start = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
+        today_start = _utc_now().replace(hour=0, minute=0, second=0, microsecond=0)
         if not force:
             already_sent = db.query(NotificationLog).filter(
                 NotificationLog.vacancy_id == "DAILY_DIGEST",
@@ -415,7 +418,7 @@ class Notifier:
 
         active = db.query(Vacancy).filter(Vacancy.is_active == True).all()
         total_seats = sum(v.total_posts for v in active)
-        now = datetime.utcnow()
+        now = _utc_now()
         closing_soon = [v for v in active if v.last_date and (v.last_date - now).days <= 7]
         walkins = [v for v in active if v.selection_mode and "walk-in" in v.selection_mode.lower()]
 
@@ -460,7 +463,7 @@ class Notifier:
                         vacancy_id="DAILY_DIGEST",
                         channel="telegram",
                         target=chat_id,
-                        sent_at=datetime.utcnow(),
+                        sent_at=_utc_now(),
                         status="SUCCESS",
                         details="Daily morning briefing sent"
                     ))

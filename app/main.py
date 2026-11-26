@@ -5,7 +5,10 @@ import json
 import time
 import threading
 import requests
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
+
+def _utc_now() -> datetime:
+    return datetime.now(timezone.utc).replace(tzinfo=None)
 from typing import Optional, List, Dict, Any
 from fastapi import FastAPI, Depends, Query, HTTPException, status, Request, Header, BackgroundTasks
 from fastapi.staticfiles import StaticFiles
@@ -47,10 +50,10 @@ def check_rate_limit(request: Request, bucket: str, max_calls: int = 5, window_s
                 )
             timestamps.append(now)
             if not row:
-                db.add(RateLimitBucket(key=key, timestamps_json=json.dumps(timestamps), updated_at=datetime.utcnow()))
+                db.add(RateLimitBucket(key=key, timestamps_json=json.dumps(timestamps), updated_at=_utc_now()))
             else:
                 row.timestamps_json = json.dumps(timestamps)
-                row.updated_at = datetime.utcnow()
+                row.updated_at = _utc_now()
             db.commit()
             return
         finally:
@@ -311,7 +314,7 @@ def serve_index(job: Optional[str] = None, db: Session = Depends(get_db)):
                 "@type": "JobPosting",
                 "title": v.title,
                 "description": v.summary or desc,
-                "datePosted": (v.created_at or datetime.utcnow()).strftime("%Y-%m-%d"),
+                "datePosted": (v.created_at or _utc_now()).strftime("%Y-%m-%d"),
                 "employmentType": "CONTRACTOR" if (v.selection_mode and "walk-in" in v.selection_mode.lower()) else "FULL_TIME",
                 "hiringOrganization": {"@type": "Organization", "name": v.organization},
                 "jobLocation": {"@type": "Place", "address": {"@type": "PostalAddress", "addressRegion": v.state or "India", "addressCountry": "IN"}},
@@ -618,10 +621,10 @@ def _bump_metric(db: Optional[Session], key: str):
     try:
         row = db.query(FeatureMetric).filter(FeatureMetric.key == key).first()
         if not row:
-            db.add(FeatureMetric(key=key, count=1, updated_at=datetime.utcnow()))
+            db.add(FeatureMetric(key=key, count=1, updated_at=_utc_now()))
         else:
             row.count = (row.count or 0) + 1
-            row.updated_at = datetime.utcnow()
+            row.updated_at = _utc_now()
         db.commit()
     except Exception:
         db.rollback()
@@ -816,7 +819,7 @@ def download_vacancy_calendar(vacancy_id: str, db: Session = Depends(get_db)):
     v = db.query(Vacancy).filter(Vacancy.id == vacancy_id).first()
     if not v:
         raise HTTPException(status_code=404, detail="Vacancy not found")
-    target_dt = v.last_date or (datetime.utcnow() + timedelta(days=7))
+    target_dt = v.last_date or (_utc_now() + timedelta(days=7))
     dt_str = target_dt.strftime("%Y%m%dT090000Z")
     dt_end = target_dt.strftime("%Y%m%dT100000Z")
     ics_content = (
@@ -825,7 +828,7 @@ def download_vacancy_calendar(vacancy_id: str, db: Session = Depends(get_db)):
         "PRODID:-//MedAlerts//Medical Officer Alerts//EN\r\n"
         "BEGIN:VEVENT\r\n"
         f"UID:{v.id}@medalerts.onrender.com\r\n"
-        f"DTSTAMP:{datetime.utcnow().strftime('%Y%m%dT%H%M%SZ')}\r\n"
+        f"DTSTAMP:{_utc_now().strftime('%Y%m%dT%H%M%SZ')}\r\n"
         f"DTSTART:{dt_str}\r\n"
         f"DTEND:{dt_end}\r\n"
         f"SUMMARY:Deadline: {_clean_ics(v.title)} ({_clean_ics(v.organization)})\r\n"
@@ -843,7 +846,7 @@ def download_vacancy_calendar(vacancy_id: str, db: Session = Depends(get_db)):
 CLOSED_STAGES = {"APPLICATION_CLOSED", "RESULTS_OUT", "INTERVIEW_OVER"}
 
 def _ist_now() -> datetime:
-    return datetime.utcnow() + timedelta(hours=5, minutes=30)
+    return _utc_now() + timedelta(hours=5, minutes=30)
 
 def _is_vacancy_expired(v: Vacancy, now_ist: Optional[datetime] = None) -> bool:
     now_ist = now_ist or _ist_now()
@@ -921,7 +924,7 @@ def sync_single_portal(portal_name: str, db: Session = Depends(get_db)):
     if not src:
         raise HTTPException(status_code=404, detail="Portal not found")
     items, tel = LiveGazetteScraper.fetch_portal_links_with_telemetry(src)
-    now = datetime.utcnow()
+    now = _utc_now()
     failed = bool(tel.get("last_error")) or (tel.get("last_status") is not None and tel["last_status"] >= 400)
     ph = db.query(PortalHealth).filter(PortalHealth.name == tel["name"]).first()
     if not ph:
@@ -1323,14 +1326,14 @@ def _run_sync_job(job_id: str):
             job.portals_checked = live_res.get("portals_checked", 0)
             job.live_added = live_res.get("live_added", 0)
             job.sample_added = sample_res.get("added", 0)
-            job.finished_at = datetime.utcnow()
+            job.finished_at = _utc_now()
             db.commit()
     except Exception as exc:
         job = db.query(SyncJob).filter(SyncJob.id == job_id).first()
         if job:
             job.status = "FAILED"
             job.error = str(exc)[:300]
-            job.finished_at = datetime.utcnow()
+            job.finished_at = _utc_now()
             db.commit()
     finally:
         db.close()
@@ -1595,12 +1598,12 @@ def save_cloud_profile(body: ProfileSyncPayload, request: Request, db: Session =
     raw_json = json.dumps(body.payload)[:100000]
     row = db.query(DoctorSyncBlob).filter(DoctorSyncBlob.sync_key == hashed).first()
     if not row:
-        db.add(DoctorSyncBlob(sync_key=hashed, payload_json=raw_json, updated_at=datetime.utcnow()))
+        db.add(DoctorSyncBlob(sync_key=hashed, payload_json=raw_json, updated_at=_utc_now()))
     else:
         row.payload_json = raw_json
-        row.updated_at = datetime.utcnow()
+        row.updated_at = _utc_now()
     db.commit()
-    return {"ok": True, "updated_at": datetime.utcnow().isoformat()}
+    return {"ok": True, "updated_at": _utc_now().isoformat()}
 
 @app.get("/api/profile/sync/{sync_key}")
 def load_cloud_profile(sync_key: str, request: Request, db: Session = Depends(get_db)):
@@ -1648,7 +1651,7 @@ def unsubscribe_email(id: int, token: str, db: Session = Depends(get_db)):
 
 @app.get("/api/metrics", dependencies=[Depends(verify_admin_key)])
 def get_admin_metrics(db: Session = Depends(get_db)):
-    now = datetime.utcnow()
+    now = _utc_now()
     week_ago = now - timedelta(days=7)
     active_vacancies = db.query(Vacancy).filter(Vacancy.is_active == True).count()
     discovered_7d = db.query(Vacancy).filter(Vacancy.created_at >= week_ago).count()
@@ -1703,7 +1706,7 @@ def rss_feed(state: Optional[str] = None, qualification: Optional[str] = None, d
     items = []
     for v in rows:
         link = f"{APP_BASE_URL}/?job={escape(str(v.id), quote=True)}"
-        pub_str = (v.created_at or datetime.utcnow()).strftime("%a, %d %b %Y %H:%M:%S +0000")
+        pub_str = (v.created_at or _utc_now()).strftime("%a, %d %b %Y %H:%M:%S +0000")
         desc = escape(f"{v.organization} • {v.qualification} • {v.total_posts} Posts • {v.state}", quote=True)
         items.append(f"<item><title>{escape(v.title or '', quote=True)}</title><link>{link}</link><guid>{link}</guid><pubDate>{pub_str}</pubDate><description>{desc}</description></item>")
     xml_body = '<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"><channel><title>MedAlerts Vacancies</title>' + f'<link>{escape(APP_BASE_URL, quote=True)}/</link><description>Medical Officer recruitment circulars</description>' + "".join(items) + "</channel></rss>"
@@ -1800,7 +1803,7 @@ def resolve_corrigendum_suggestion(suggestion_id: int, decision: str = Query(...
         if v:
             old_u = v.notification_url or "None"
             v.notification_url = row.suggested_url
-            v.last_verified_at = datetime.utcnow()
+            v.last_verified_at = _utc_now()
             db.add(CorrigendumLog(vacancy_id=v.id, title=v.title, field_changed="notification_url", old_value=old_u[:100], new_value=row.suggested_url[:100]))
     db.commit()
     return {"ok": True, "status": row.status}

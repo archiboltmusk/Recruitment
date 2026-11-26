@@ -207,6 +207,10 @@
             <div class="flex flex-wrap items-center justify-between gap-2 px-1 text-xs text-[#6E6E73]">
                 <span id="filteredCount" class="font-medium">Loading circulars...</span>
                 <div class="flex flex-wrap items-center gap-3">
+                    <button onclick="copyWhatsAppDigest()" class="text-[#1D1D1F] font-semibold hover:text-[#0F766E] transition">
+                        <i class="fa-brands fa-whatsapp text-[#0F766E] mr-1"></i>Copy Digest
+                    </button>
+                    <span class="text-[#86868B]">•</span>
                     <button onclick="exportFilteredCsv()" class="text-[#1D1D1F] font-semibold hover:text-[#0F766E] transition">
                         <i class="fa-solid fa-file-csv text-[#0F766E] mr-1"></i>Export CSV
                     </button>
@@ -272,8 +276,10 @@
                 </label>
                 <textarea id="pdfTextInput" rows="4" placeholder="Or paste circular text to extract age limit, posts &amp; bond..." class="w-full px-4 py-2.5 bg-[#F5F5F7] rounded-xl text-xs outline-none"></textarea>
                 <button onclick="analyzePdfText()" class="pill-btn w-full py-2.5 bg-[#0F766E] text-white font-semibold text-xs rounded-xl">Extract Details</button>
-                <div id="pdfResultBox" class="hidden p-4 bg-[#F5F5F7] rounded-2xl space-y-2 text-xs">
+                <div id="pdfResultBox" class="hidden p-4 bg-[#F5F5F7] rounded-2xl space-y-2.5 text-xs">
                     <div class="grid grid-cols-2 gap-2 text-[#1D1D1F]" id="pdfResultGrid"></div>
+                    <pre id="pdfRawPreview" class="hidden max-h-28 overflow-y-auto whitespace-pre-wrap text-[11px] text-[#6E6E73] bg-white p-2.5 rounded-xl border border-black/5"></pre>
+                    <button onclick="copyPdfSummary()" class="pill-btn px-3.5 py-1.5 rounded-full bg-[#1D1D1F] text-white text-[11px] font-semibold"><i class="fa-brands fa-whatsapp mr-1 text-emerald-400"></i>Copy WhatsApp Summary</button>
                 </div>
             </div>
         </div>
@@ -812,7 +818,7 @@
                 const res = await fetch('/api/parser/analyze-url', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({url}) });
                 const data = await res.json();
                 if (!res.ok) throw new Error(data.detail || 'Analysis failed');
-                showExtracted(data.extracted);
+                showExtracted(data.extracted, data.raw_preview);
             } catch (err) { alert('Error: ' + err.message); }
             finally { btn.disabled = false; btn.textContent = 'Scan'; }
         }
@@ -830,7 +836,7 @@
                     });
                     const data = await res.json();
                     if (!res.ok) throw new Error(data.detail || 'Upload failed');
-                    showExtracted(data.extracted);
+                    showExtracted(data.extracted, data.raw_preview);
                     showToast('PDF extracted: ' + file.name);
                 } catch (err) { alert('Error: ' + err.message); }
             };
@@ -867,14 +873,35 @@
             } catch (err) { alert('Error: ' + err.message); }
         }
 
-        function showExtracted(data) {
+        let _lastPdfSummary = '';
+        function copyWhatsAppDigest() {
+            const list = (lastFilteredVacancies.length ? lastFilteredVacancies : allVacancies).slice(0, 6);
+            if (!list.length) return showToast('No vacancies to copy.');
+            const base = window.location.origin;
+            const lines = list.map((v, i) => `${i + 1}. *${v.title}*\n   ${v.organization} (${v.state}) • ${v.total_posts > 0 ? v.total_posts + ' Seats' : 'Check PDF'} • Due: ${v.last_date || 'Check PDF'}\n   ${base}/?job=${v.id}`);
+            const txt = `🩺 *MedAlerts Top Openings (${new Date().toLocaleDateString('en-IN')})*\n\n${lines.join('\n\n')}`;
+            if (navigator.clipboard) navigator.clipboard.writeText(txt).then(() => showToast('WhatsApp digest copied!'));
+        }
+        function copyPdfSummary() {
+            if (!_lastPdfSummary) return;
+            if (navigator.clipboard) navigator.clipboard.writeText(_lastPdfSummary).then(() => showToast('PDF summary copied!'));
+        }
+        function showExtracted(data, rawPreview) {
             document.getElementById('pdfResultBox').classList.remove('hidden');
             document.getElementById('pdfResultGrid').innerHTML = `
                 <div><span class="text-[#6E6E73]">Degree:</span> <strong>${escapeHtml(data.qualification)}</strong></div>
                 <div><span class="text-[#6E6E73]">Posts:</span> <strong>${escapeHtml(data.total_posts || 'Check text')}</strong></div>
                 <div><span class="text-[#6E6E73]">Max Age:</span> <strong>${escapeHtml(data.max_age)} yrs</strong></div>
+                <div><span class="text-[#6E6E73]">Last Date:</span> <strong>${escapeHtml(data.last_date || 'Check text')}</strong></div>
+                <div><span class="text-[#6E6E73]">Memo:</span> <strong>${escapeHtml(data.memo_number || '-')}</strong></div>
                 <div><span class="text-[#6E6E73]">Bond:</span> <strong>${data.bond_years > 0 ? escapeHtml(data.bond_penalty_amount) : 'Zero Bond'}</strong></div>
             `;
+            const pre = document.getElementById('pdfRawPreview');
+            if (pre) {
+                if (rawPreview && rawPreview.trim()) { pre.textContent = rawPreview.trim(); pre.classList.remove('hidden'); }
+                else pre.classList.add('hidden');
+            }
+            _lastPdfSummary = `🩺 *Scanned Circular Summary*\nDegree: ${data.qualification} | Posts: ${data.total_posts || 'Check PDF'} | Max Age: ${data.max_age} yrs\nLast Date: ${data.last_date || 'Check PDF'} | Bond: ${data.bond_years > 0 ? data.bond_penalty_amount : 'Zero Bond'}${data.memo_number ? '\nMemo: ' + data.memo_number : ''}\nScanned via ${window.location.origin}`;
         }
 
         async function refreshData() {
@@ -1587,5 +1614,6 @@
         updateTrackerBadge();
         init();
     </script>
+    <script src="/static/theme.js"></script>
 </body>
 </html>

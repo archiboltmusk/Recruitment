@@ -114,8 +114,8 @@
                 </label>
             </div>
 
-            <!-- UPSC CMS Split Simulators & Ward-Break Flashcards -->
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <!-- UPSC CMS Split Simulators, Ward-Break Flashcards & Viva Deck -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                 <button onclick="startTest('cms-paper-1')" class="apple-card p-4 text-left hover:border-[#0F766E]/40 transition">
                     <span class="text-[10px] font-bold uppercase text-[#0F766E]">UPSC CMS Paper I</span>
                     <p class="text-sm font-bold text-[#1D1D1F] mt-0.5">Medicine &amp; Paediatrics</p>
@@ -130,6 +130,11 @@
                     <span class="text-[10px] font-bold uppercase text-[#0F766E]">5-Min Duty Break</span>
                     <p class="text-sm font-bold text-[#1D1D1F] mt-0.5">Ward-Break Flashcards</p>
                     <p class="text-[11px] text-[#6E6E73] mt-0.5">Tap to flip &amp; reveal pearls</p>
+                </button>
+                <button onclick="startVivaDeck()" class="apple-card p-4 text-left bg-amber-50/70 hover:bg-amber-50 transition">
+                    <span class="text-[10px] font-bold uppercase text-amber-800">Interview / DV Prep</span>
+                    <p class="text-sm font-bold text-[#1D1D1F] mt-0.5">Health Program Viva</p>
+                    <p class="text-[11px] text-[#6E6E73] mt-0.5">NTEP, NIS, NP-NCD &amp; MLC</p>
                 </button>
             </div>
 
@@ -491,9 +496,31 @@
             document.getElementById('fcAnswerBox').classList.add('hidden');
             document.getElementById('fcRevealBtn').disabled = false;
         }
+        const VIVA_DECK = [
+            { subject: 'NTEP (TB)', text: 'First-line DS-TB regimen for adults under NTEP (2HRZE + 4HRE) — what is the BPaLM regimen for MDR/RR-TB?', viva_answer: 'BPaLM = Bedaquiline + Pretomanid + Linezolid + Moxifloxacin (6 months all-oral regimen under NTEP).', viva_pearl: 'Interview panel favorite: know Nikshay Poshan Yojana (₹1,000/month nutrition support) and CBNAAT/TrueNat upfront testing.' },
+            { subject: 'NIS Immunization', text: 'Which vaccines are given at 6, 10, and 14 weeks under the National Immunization Schedule (India)?', viva_answer: 'OPV-1/2/3, Pentavalent-1/2/3, Rotavirus-1/2/3, fIPV (at 6 & 14 wks), and PCV (at 6 & 14 wks + 9m booster).', viva_pearl: 'Know cold-chain temperatures (+2°C to +8°C ILR) and VVM (Vaccine Vial Monitor) discard stages (Stage 3 & 4).' },
+            { subject: 'NP-NCD', text: 'What is the target population & screening cutoffs under NP-NCD (formerly NPCDCS) at Ayushman Arogya Mandir (HWC)?', viva_answer: 'Population-based screening for ≥30 years: Hypertension (≥140/90 mmHg), Diabetes (RBS ≥140 mg/dL), Oral, Breast & Cervical cancers (VIA every 5 yrs).', viva_pearl: 'Expect questions on CBAC (Community Based Assessment Checklist) score >4.' },
+            { subject: 'MLC & Casualty', text: 'A road-traffic accident patient arrives unconscious with no attendant. Can you delay emergency surgery for police clearance?', viva_answer: 'Never. Stabilize and treat immediately (Supreme Court Parmanand Katara ruling); send Police Intimation (PI) concurrently and document 2 identification marks.', viva_pearl: 'In brought-dead or unnatural deaths, never issue a regular MCCD Death Certificate — mark MLC and hand over body to police for inquest/PM.' },
+            { subject: 'Maternal Health', text: 'First-line uterotonic for PPH prevention & management in PHC/CHC under LaQshya / SUMAN?', viva_answer: 'Oxytocin 10 IU IM/IV within 1 minute of delivery (AMTSL). If unavailable/unrefrigerated, Heat-stable Carbetocin 100 mcg or Misoprostol 600 mcg PO.', viva_pearl: 'Know Magnesium Sulphate Pritchard regimen for eclampsia: 4g IV + 10g IM loading, then 5g IM q4h in alternate buttocks.' },
+            { subject: 'Snakebite Protocol', text: 'Initial dose of polyvalent Anti-Snake Venom (ASV) in a patient with neurotoxic ptosis or 20-min WBCT >20 min?', viva_answer: '10 vials ASV diluted in NS/5D over 1 hour (same dose for children and adults). Repeat 10 vials at 6 hours if WBCT remains unclotted.', viva_pearl: 'For neurotoxic (cobra/krait): add Neostigmine + Atropine test/regimen; never incise or apply tight tourniquet.' },
+            { subject: 'BMW 2016 Rules', text: 'Match the 4 Biomedical Waste bins: Yellow, Red, White (translucent), Blue.', viva_answer: 'Yellow: Anatomical/soiled cotton/expired meds; Red: Recyclable plastics/IV sets/catheters; White: Sharps/needles/scalpels; Blue: Glassware/metallic implants.', viva_pearl: 'Frequently asked in WBHRB, ESIC & UPSC CMS interviews.' },
+            { subject: 'Rabies PEP', text: 'Category III dog-bite management on day 0 at a PHC?', viva_answer: '15-min soap & running water wash + povidone iodine + ERIG/HRIG infiltrated in/around wound + IDRV (0.1 mL x 2 sites on days 0, 3, 7, 28).', viva_pearl: 'Never suture a fresh dog-bite wound unless unavoidable (wait 24–48h after RIG infiltration).' }
+        ];
+        function startVivaDeck() {
+            fcList = VIVA_DECK.slice();
+            fcIdx = 0;
+            document.getElementById('lobbyView').classList.add('hidden');
+            document.getElementById('flashcardView').classList.remove('hidden');
+            renderFlashcard();
+        }
         async function revealFlashcard() {
             const q = fcList[fcIdx]; if (!q) return;
             const box = document.getElementById('fcAnswerBox');
+            if (q.viva_answer) {
+                box.innerHTML = `<p class='font-bold text-emerald-900'>${q.viva_answer}</p><p class='text-emerald-950 leading-relaxed'><strong>Panel Pearl:</strong> ${q.viva_pearl || ''}</p>`;
+                box.classList.remove('hidden');
+                return;
+            }
             const res = await fetch('/api/exams/check-question', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ question_id: q.id, selected_option: 0 }) });
             if (!res.ok) return;
             const fb = await res.json();
@@ -829,5 +856,6 @@
             else if (e.key.toLowerCase() === 'b') toggleCurrentPearlBookmark();
         });
     </script>
+    <script src="/static/theme.js"></script>
 </body>
 </html>

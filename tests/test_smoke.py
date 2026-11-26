@@ -54,6 +54,7 @@ class MedAlertsSmokeTests(unittest.TestCase):
 
     def tearDown(self):
         self.db.close()
+        self.engine.dispose()
 
     def test_pdf_parser_text(self):
         parsed = GovtNotificationPDFParser.parse_notice_text(
@@ -276,7 +277,7 @@ class MedAlertsSmokeTests(unittest.TestCase):
         self.assertEqual(len(drill["questions"]), 10)
 
         req = Request({"type": "http", "headers": [], "client": ("127.0.0.1", 12345)})
-        with patch("app.pdf_parser.GovtNotificationPDFParser.is_safe_url", return_value=True):
+        with patch("app.main.check_rate_limit"), patch("app.pdf_parser.GovtNotificationPDFParser.is_safe_url", return_value=True):
             sug = suggest_vacancy_update(
                 "smoke-vac-1",
                 SuggestUpdateRequest(suggested_url="https://www.hrb.wb.gov.in/notice", note="Date extended to 20 Dec 2026"),
